@@ -1,0 +1,31 @@
+---
+title: Connecting an App to the Tanzu MySQL Instance
+owner: MySQL
+---
+
+<strong><%= modified_date %></strong>
+
+This topic explains how to connect an app to your <%= vars.product_full %> instance.
+
+## <a id='AboutTile'></a>About <%= vars.product_short %>
+
+Connecting an App to the Tanzu MySQL Instance
+
+## <a id='prereq'></a>Prerequisites
+Prerequisites
+
+* Kubectl CLI
+* An existing Tanzu MySQL instance
+
+## <a id='retrieve-creds'></a>Retrieve the MySQL Credentials
+Retrieve the MySQL Credentials
+
+* kubectl get secret INSTANCE_NAME-credentials -o jsonpath='{.data.rootPassword}' | base64 -D
+* Username is always “root”
+
+## <a id='connect-app'></a>Connect your Application to the Tanzu MySQL Database
+Connect your Application to the Tanzu MySQL Database
+
+* App needs to be in the same Kubernetes cluster because we only have a ClusterIP
+* Can be in a different namespace
+* Configure your App’s environment variables with the MySQL username “root” and password as what you retrieved * earlier.
