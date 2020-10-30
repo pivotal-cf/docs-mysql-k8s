@@ -1,0 +1,30 @@
+---
+title: Rotating MySQL Root Credentials
+owner: MySQL
+---
+
+<strong><%= modified_date %></strong>
+
+This topic provides an overview of the on-demand <%= vars.product_full %> service.
+
+## <a id='AboutTile'></a>About <%= vars.product_short %>
+
+Rotating MySQL Root Credentials
+
+## <a id='prereq'></a>Prerequisites
+Prerequisites
+
+## <a id='delete-secret'></a>Option 1: Delete the K8s Secret
+Option 1: Delete the K8s Secret
+
+* kubectl delete secret INSTANCE_NAME-credentials
+* kubectl delete pod INSTANCE_NAME-0 (or Statefulset)
+* Pod comes back with new creds
+
+## <a id='patch-secret'></a>Option 2: Patch the K8s Secret with Custom Password
+Option 2: Patch the K8s Secret with Custom Password
+
+* Your BASE_64_ENCODED_CUSTOM_PASSWORD = `CUSTOM_PASSWORD | base64`
+* kubectl patch secret INSTANCE_NAME-credentials -p='{"data":{"rootPassword":"$(BASE_64_ENCODED_CUSTOM_PASSWORD)"}}' -v=1
+* kubectl delete pod INSTANCE_NAME-0 (or statefulset)
+* Pod comes back with new creds
