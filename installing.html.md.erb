@@ -1,0 +1,31 @@
+---
+title: Installing the Tanzu MySQL for Kubernetes Operator
+owner: MySQL
+---
+
+<strong><%= modified_date %></strong>
+
+This topic provides instructions to operators
+about how to install, configure, and deploy the <%= vars.product_full %> Operator.
+
+## <a id='prereq'></a>Prerequisites
+Prerequisites
+
+* Access to TanzuNet and TanzuNet Registry (Demo)
+* Helm CLI
+* Kubectl CLI
+* An existing Kubernetes environment
+* ClusterAdmin access to the Kubernetes cluster
+
+## <a id='retrieve-helm'></a>Retrieve the Helm Chart and Images from TanzuNet
+Retrieve the Helm Chart and Images from TanzuNet
+
+* helm create secret docker-registry …
+* helm repo add tanzu-mysql-kubernetes …
+* helm fetch tanzu-mysql-kubernetes/tanzu-mysql-operator --version 0.1.0
+
+## <a id='install-operator'></a>Install the Tanzu MySQL Operator
+Install the Tanzu MySQL Operator
+
+* helm install tanzu-mysql-operator ./charts/tanzu-mysql-operator/ --values charts/tanzu-mysql-operator/values.yaml
+* Talk about the values you can set in `values.yaml`
