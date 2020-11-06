@@ -1,0 +1,18 @@
+---
+title: Accessing a Tanzu MySQL Instance
+owner: MySQL
+---
+
+<strong><%= modified_date %></strong>
+
+This topic describes how to access a <%= vars.product_full %> instances.
+
+## <a id='prereq'></a>Prerequisites
+Prerequisites
+* Kubectl CLI
+* An existing Tanzu MySQL instance
+
+## <a id='server-login'></a>Log in to the MySQL Server
+Log in to the MySQL Server
+* kubectl -n YOUR_NAMESPACE exec --stdin --tty pod/INSTANCE_NAME-0 -- /bin/bash
+* mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
