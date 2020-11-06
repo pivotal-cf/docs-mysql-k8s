@@ -15,17 +15,26 @@ Connecting an App to the Tanzu MySQL Instance
 Prerequisites
 
 * Kubectl CLI
-* An existing Tanzu MySQL instance
+* Developers must have permissions to read kubernetes secrets in their target namespace.
+
+NOTE: VMware recommends that developers have namespace-scoped admin access to their target namespace when using Tanzu MySQL to avoid kubernetes permissions issues.
+
 
 ## <a id='retrieve-creds'></a>Retrieve the MySQL Credentials
 Retrieve the MySQL Credentials
 
 * kubectl get secret INSTANCE_NAME-credentials -o jsonpath='{.data.rootPassword}' | base64 -D
+
+Output should be a random string such as `ithLtGMmuZS0aksLK7imblrkjkv0`
+
 * Username is always “root”
+
 
 ## <a id='connect-app'></a>Connect your Application to the Tanzu MySQL Database
 Connect your Application to the Tanzu MySQL Database
 
-* App needs to be in the same Kubernetes cluster because we only have a ClusterIP
+* App needs to be in the same Kubernetes cluster because we only have a ClusterIP.
+For more information, see [K8s](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
+
 * Can be in a different namespace
 * Configure your App’s environment variables with the MySQL username “root” and password as what you retrieved * earlier.
