@@ -9,7 +9,7 @@ This topic explains how to connect an app to your <%= vars.product_full %> insta
 
 ## <a id='AboutTile'></a>About <%= vars.product_short %>
 
-Connecting an App to the Tanzu MySQL Instance
+Connecting an App to the <%= vars.product_short %> Instance
 
 ## <a id='prereq'></a>Prerequisites
 Prerequisites
@@ -17,7 +17,7 @@ Prerequisites
 * Kubectl CLI
 * Developers must have permissions to read kubernetes secrets in their target namespace.
 
-NOTE: VMware recommends that developers have namespace-scoped admin access to their target namespace when using Tanzu MySQL to avoid kubernetes permissions issues.
+NOTE: VMware recommends that developers have namespace-scoped admin access to their target namespace when using <%= vars.product_short %> to avoid kubernetes permissions issues.
 
 
 ## <a id='retrieve-creds'></a>Retrieve the MySQL Credentials
@@ -30,8 +30,8 @@ Output should be a random string such as `ithLtGMmuZS0aksLK7imblrkjkv0`
 * Username is always “root”
 
 
-## <a id='connect-app'></a>Connect your Application to the Tanzu MySQL Database
-Connect your Application to the Tanzu MySQL Database
+## <a id='connect-app'></a>Connect your Application to the <%= vars.product_short %> Database
+Connect your Application to the <%= vars.product_short %> Database
 
 * App needs to be in the same Kubernetes cluster because we only have a ClusterIP.
 For more information, see [K8s](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
