@@ -10,11 +10,29 @@ owner: MySQL
 This topic describes how to access a <%= vars.product_full %> instances.
 
 ## <a id='prereq'></a>Prerequisites
-Prerequisites
-* Kubectl CLI
+Before you access a <%= vars.product_short %> instance, you must:
+
+* Have the Kubernetes command line tool (kubectl CLI) installed
 * An existing <%= vars.product_short %> instance
 
 ## <a id='server-login'></a>Log in to the MySQL Server
-Log in to the MySQL Server
-* kubectl -n YOUR_NAMESPACE exec --stdin --tty pod/INSTANCE_NAME-0 -- /bin/bash
-* mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
+
+
+1. Log in to the MySQL Server
+
+    ```
+    $ kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE_NAME-0 -- /bin/bash
+    $ mysql -uroot -p$(cat $MYSQL-ROOT-PASSWORD-FILE)
+    ```
+    Where:
+    * `YOUR-NAMESPACE` is the namespace you are logging in to.
+    * `INSTANCE-NAME` is the name of the instance you are targeting.
+    * `MYSQL-ROOT-PASSWORD-FILE` is the file containing your <%= vars.product_short %> root password.
+
+    For example:
+    <pre class="terminal">
+    $ kubectl -n my-namespace exec --stdin --tty pod/my-instance-0 -- /bin/bash
+    $ mysql -uroot -p$(cat $my-root.yml)
+    </pre>
+
+1. [CW] SUBSEQUENT STEPS FOR ACCESSING THE INSTANCE?
