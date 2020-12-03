@@ -22,6 +22,10 @@ Overview
 * What value does it bring to the user?
 * What kind of users can use it?
 
+Major Features?
+
+**[Chris] Can we use this as a basis? http://postgres-kubernetes-wip.cfapps.io/1-0/about.html**
+
 ## <a id='about-mysql4k8s'></a>About <%= vars.product_short %>
 * About <%= vars.product_short %>
 
@@ -34,26 +38,28 @@ Overview
 #### <a id='changes-mysql-5-7'></a>Changes since MySQL v5.7
 * Changes since MySQL v5.7
 
-### <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture
+## <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture
 * <%= vars.product_short %> Architecture
 
-#### <a id='operator-framework'></a>Operator Framework
+### <a id='operator-framework'></a>Operator Framework
 * Operator Framework
 
-#### <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
+### <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
 * Controllers and Custom Resource Definitions (CRDs)
 
-### <a id='rto-rpo-characteristics'></a>RTO and RPO Characteristics
-* RTO and RPO Characteristics
+## <a id='rto-rpo-characteristics'></a>RTO and RPO Characteristics
+Recovery Time Objective (RTO) and Recovery Point Objective (RPO) are metrics used to assess the availability of a SERVICE/CLUSTER/? during an outage.
 
-#### <a id='rto-downtime'></a>Expected Downtime
-* Expected downtime for different types of outages (RTO)
+### <a id='rto-downtime'></a>Expected Downtime
+* Expected downtime for different types of outages - (RTO)
  * Pod gets rescheduled? K8s cluster loses network connectivity? etc.
 
-#### <a id='rpo-data-loss'></a>Data Loss
-* How much data is lost for different types of outages (RPO)
+### <a id='rpo-data-loss'></a>Data Loss
+* How much data is lost for different types of outages - (RPO)
 
-### <a id='requirements'></a>Platform Requirements
+## <a id='requirements'></a>Platform Requirements
+**[Chris] Can we use this as a basis? http://postgres-kubernetes-wip.cfapps.io/1-0/prerequisites.html**
+
 * Platform Requirements
 * Works on any Kubernetes v1.18+
 * Tested on Minikube, TKG, and GKE
