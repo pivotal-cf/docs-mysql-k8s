@@ -64,17 +64,7 @@ centralize and consolidate data, MySQL lends itself to dedicated deployment supp
 ## <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture
 * <%= vars.product_short %> Architecture
 
-TODO: Some architecture image of our product
-
-tanzu operator
-
-[service]
-[statefulset]
-[pod/mysql-0] (mysql, backups container)
-[secrets/...credentials]
-[pvc]
-  |
-[s3 storage of backups]
+<img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the operator deployment and application namespace">
 
 
 ### <a id='operator-framework'></a>Operator Framework
