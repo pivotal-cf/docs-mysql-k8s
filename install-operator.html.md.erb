@@ -15,18 +15,21 @@ about how to install, configure, and deploy the <%= vars.product_full %> Operato
 ## <a id='prereq'></a>Prerequisites
 Before you deploy the <%= vars.product_short %> operator, you must:
 
-* Have access to [TanzuNet](https://network.pivotal.io/) and (Tanzu Net Registry](https://registry.pivotal.io/harbor/sign-in?redirect_url=%2Fharbor%2Fprojects)
-* Helm CLI
-* Kubectl CLI
+* Have access to [TanzuNet](https://network.pivotal.io/) and
+[Tanzu Net Registry](https://registry.pivotal.io/harbor/sign-in?redirect_url=%2Fharbor%2Fprojects)
+* Have the Helm CLI installed
+* Have the Kubernetes command line tool (kubectl CLI) installed
 * Have an existing Kubernetes environment
 * `cluster-admin` ClusterRole access to the Kubernetes cluster
 
 ## <a id='retrieve-helm'></a>Retrieve the Helm Chart and Images from TanzuNet
 Retrieve the Helm Chart and Images from TanzuNet
 
-* helm create secret docker-registry …
-* helm repo add tanzu-mysql-kubernetes …
-* helm fetch tanzu-mysql-kubernetes/tanzu-mysql-operator --version 0.1.0
+<pre class="terminal">
+$ helm create secret docker-registry …
+$ helm repo add tanzu-mysql-kubernetes …
+$ helm fetch tanzu-mysql-kubernetes/tanzu-mysql-operator --version 0.1.0
+</pre>
 
 ## <a id='install-operator'></a>Install the <%= vars.product_short %> Operator
 Install the <%= vars.product_short %> Operator
@@ -38,9 +41,8 @@ Install the <%= vars.product_short %> Operator
 
 namespace = cf org
 no equivalent for spaces
-
-
 Operator should not be directly accessible by Codys/Devs
+
 ClusterAdmin should place the Operator in a system Namespace only accessible by K8s administrators
 Can choose whatever name they want
 
@@ -66,6 +68,7 @@ After you Helm Fetch, you will download a repo called "tanzu-mysql-kubernetes"
 
 * Talk about the values you can set in `values.yaml`
 
+<pre>
 ---
 imagePullSecret: tanzu-mysql-image-registry
 operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:latest
@@ -77,6 +80,7 @@ resources:
   requests:
     cpu: 100m
     memory: 20Mi
+</pre>
 
 imagePullSecret has to match the reg
 operatorImage: Image stored in their registry (--docker-server=[REGISTRY-SERVER-URL])
@@ -94,9 +98,12 @@ requests = min
 
 When in that dir, run the helm install command
 
-    cd tanzu-mysql-kubernetes
-    helm --namespace [TANZU-MYSQL-OPERATOR-NAMESPACE] install OPERATOR-NAME ./charts/tanzu-mysql-operator/ --values charts/tanzu-mysql-operator/values.yaml
-    Where OPERATOR-NAME is the name of your Tanzu SQL Operator
+<pre>
+cd tanzu-mysql-kubernetes
+helm --namespace [TANZU-MYSQL-OPERATOR-NAMESPACE] install OPERATOR-NAME ./charts/tanzu-mysql-operator/ --values charts/tanzu-mysql-operator/values.yaml
+</pre>
+
+Where `OPERATOR-NAME` is the name of your Tanzu SQL Operator
 
 For Example
 
