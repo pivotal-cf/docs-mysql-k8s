@@ -11,18 +11,23 @@ This topic provides an overview of <%= vars.product_full %> (<%= vars.product_sh
 
 ## <a id='overview'></a>Overview
 
-Overview
-<%= vars.product_short %> enables developers to provision and use dedicated instances of the MySQL database on demand on any Kubernetes runtime. When you install <%= vars.product_short %>, a Kubernetes Operator is deployed on your Kubernetes platform of choice, which allows developers to create MySQL instances.
+<%= vars.product_short %> is a Kubernetes operator that automates provisioning, management, and operations of dedicated
+MySQL instances running on Kubernetes. MySQL instances provisioned by <%= vars.product_short %> are configured with
+secure and performant settings by default to meet application developer expectations for a general-use relational
+database.
 
-<%= vars.product_short %> is configured with secure and performant settings by default to meet user expectations for a general-use relational database.
+Kubernetes operators are software extensions to Kubernetes that provide custom resources for management of applications,
+services and their components.
 
-[...]
+The operator provides a consistent and easy way to deploy MySQL instances to Kubernetes and run them, including "day
+two" (continuous) operations. MySQL instances deployed using the operator can be used by applications running on
+Kubernetes or outside of Kubernetes.
 
-* What is <%= vars.product_short %>?
-* What value does it bring to the user?
-* What kind of users can use it?
+<%= vars.product_short %> packages a collection of open source software to help you deploy and manage one or more
+instances of the MySQL database on Kubernetes. It includes the following components:
 
-Major Features?
+  * [Percona Server 8.0](https://www.percona.com/software/mysql-database/percona-server)
+  * [Percona XtraBackup 8.0](https://www.percona.com/software/mysql-database/percona-xtrabackup)
 
 **[Chris] Can we use this as a basis? http://postgres-kubernetes-wip.cfapps.io/1-0/about.html**
 
@@ -32,20 +37,250 @@ Major Features?
 ### <a id='about-mysql-8-0'></a>About MySQL 8.0
 * Brief Summary
 
+MySQL is a powerful open-source relational database used by apps since the mid-90s. Developers have relied on MySQL as a
+first step to storing, processing and sharing data. As its user community has grown, MySQL has become a robust system
+capable of handling a wide variety of use cases and very significant workloads. Unlike other traditional databases which
+centralize and consolidate data, MySQL lends itself to dedicated deployment supporting building "cloud native" apps.
+
+[What is MySQL](https://dev.mysql.com/doc/refman/8.0/en/what-is-mysql.html)
+
 #### <a id='features-mysql-8-0'></a>MySQL 8.0 Features
 * What features are offered in MySQL v8.0?
 
-#### <a id='changes-mysql-5-7'></a>Changes since MySQL v5.7
-* Changes since MySQL v5.7
+  Major features of MySQL 8.0 include:
+
+  * Multi-Version Concurrency Control (MVCC)
+  * Tablespaces
+  * Asynchronous replication
+  * Nested transactions (savepoints)
+  * Online/hot backups
+  * Redo logging for fault tolerance
+  * Crash-safe DDL
+  * Unicode
+  * NoSQL Document Store interface
+  * Native JSON datatype
+  * Native Geographic Information System (GIS) support
 
 ## <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture
 * <%= vars.product_short %> Architecture
 
-### <a id='operator-framework'></a>Operator Framework
-* Operator Framework
+<img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the operator deployment and application namespace">
 
 ### <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
+
 * Controllers and Custom Resource Definitions (CRDs)
+
+<%= vars.product_short %> provides extensions to the Kubernetes API via Custom Resources.  Five separate custom
+resources are provided by the product.
+
+* TanzuMySQL - Managed MySQL instance
+
+  Applying this resource will cause the Operator to create a Statefulset with a single Pod with two containers.  One
+  container runs the MySQL database software, and the other runs components to support backups.
+
+  A Kubernetes `Service` with a service type of `ClusterIP` is created to route connections to the pod.
+
+  ```
+  $ kubectl apply -f - <<EOF
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQL
+  metadata:
+    name: tanzumysql-sample
+  spec:
+    resources:
+      mysql:
+        requests:
+          memory: 1Gi
+    storageSize: 1Gi
+    imagePullSecret: tanzu-mysql-image-registry
+  EOF
+  ```
+
+  After applying this resource, the <%= vars.product_short %> Operator will create the low-level Kubernetes resources to run this MySQL instance.
+
+  The status of the instance can be seen by running `kubectl get tanzumysqls.mysql.tanzu.vmware.com`.  Initially this
+  instance will be in a "Pending" state, and should eventually be in a "Running" state.
+
+  ```
+  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
+  NAME                READY   STATUS    AGE
+  tanzumysql-sample           Pending   2s
+  ```
+
+  ...after some time...
+
+  ```
+  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
+  NAME                READY   STATUS    AGE
+  tanzumysql-sample   true    Running   27s
+  ```
+
+* TanzuMySQLBackupLocation - Define an s3 storage bucket for backups
+
+  This resource describes metadata and credentials for storing backups in an S3-compatible object store.
+
+  TanzuMySQLBackup resources will reference this backup location to know where to save backup artifacts.
+
+  ```
+  ---
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: backuplocation-sample-creds
+  stringData:
+    # S3 Credentials
+    accessKeyId: "my-s3-access-key-id"
+    secretAccessKey: "my-s3-secret-access-key"
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLBackupLocation
+  metadata:
+    name: backuplocation-sample
+  spec:
+    storage:
+      # For S3 or Minio:
+      s3:
+        bucket: "s3bucket"
+        bucketPath: "optional/prefix/for/backup/objects/"
+        region: "us-east-1"
+        endpoint:  "" # optional, default to AWS
+        forcePathStyle: false
+        disableSSL: false
+        secret:
+          name: backuplocation-sample-creds
+  EOF
+  ```
+
+  Credentials for s3 are stored in a Kubernetes secret with the keys `accessKeyId`, `secretAccessKey`.
+
+
+  Required fields:
+  - bucket; Name of the storage bucket for this backup location
+  - secret.name; Name of a secret containing the s3 endpoint credentials
+
+  Optional fields:
+  - bucketPath
+  - region (defaults to us-east-1)
+  - endpoint (defaults to aws, may be specified for non-AWS s3 endpoints, e.g. minio)
+  - forcePathStyle - whether to use path-style s3 URLs for compatibility (default: use virtual hosted-style s3 urls)
+  - disableSSL - for dev environments, may disable SSL for the endpoint (Not recommended for production)
+
+  TanzuMySQLBackupLocation resources do not currently have any associated status, but can be listed via `kubectl`
+
+  ```
+  $ kubectl get tanzumysqlbackuplocations.mysql.tanzu.vmware.com
+  NAME                    AGE
+  backuplocation-sample   2m38s
+  ```
+
+* TanzuMySQLBackup - Request for a backups
+
+  This resource requests that a backup be taken as soon as possible.  This will trigger the TanzuMySQL instance to run
+  the Percona XtraBackup utility and upload a backup artifact to the blobstore.
+
+  ```
+  $ kubectl apply -f - <<EOF
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLBackup
+  metadata:
+    name: backup-sample
+  spec:
+    location:
+      name: backuplocation-sample
+    cluster:
+      name: tanzumysql-sample
+  EOF
+  ```
+
+  Status of the backup can be observed via kubectl:
+
+  ```
+  $ kubectl get tanzumysqlbackups.mysql.tanzu.vmware.com
+  NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
+  backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.279522Z   2020-12-07T15:52:16.041156Z   8s
+  ```
+
+* TanzuMySQLBackupSchedule
+
+  This resource defines a schedule on which TanzuMySQLBackup resources should be created.
+
+  ```
+  $ kubectl apply -f - <<EOF
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLBackupSchedule
+  metadata:
+    name: tanzumysqlbackupschedule-sample
+  spec:
+    backupTemplate:
+      spec:
+        location:
+          name: backuplocation-sample
+        cluster:
+          name: tanzumysql-sample
+    schedule: "@daily"
+  EOF
+  ```
+
+  TanzuMySQLBackupSchedule resources do not currently have any associated status, but can be listed via `kubectl`
+
+  ```
+  $ kubectl get tanzumysqlbackupschedules.mysql.tanzu.vmware.com
+  NAME                              AGE
+  tanzumysqlbackupschedule-sample   8s
+  ```
+
+* TanzuMySQLRestore
+
+  This resource requests that the contents of a previously created backup artifact be restored, and a new TanzuMySQL
+  instance created.
+
+  ```
+  $ kubeclt apply -f - <<EOF
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLRestore
+  metadata:
+    name: tanzumysqlrestore-sample
+  spec:
+    tanzuMysqlBackup:
+      name: backup-sample
+    tanzuMysqlTemplate:
+      metadata:
+        name: tanzumysql-sample
+      spec:
+        storageSize: 1Gi
+        imagePullSecret: tanzu-mysql-image-registry
+  EOF
+  ```
+
+  Status of the restore can be observed through kubectl
+
+  ```
+  $ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
+  NAME                       STATUS    TIME STARTED                  TIME COMPLETED   AGE
+  tanzumysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
+  ```
+
+  The restore will take some time to retrieve and unpack the backup artifact and create the TanzuMySQL instance.  The
+  recovery time will be proportional to the size of the backup artifact.
+
+  ```
+  $ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
+  NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
+  tanzumysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T15:56:41.765479Z   20s
+  ```
+
+  Once the restore has completed successfully, the created TanzuMySQL instance will also have been created and in a
+  "Ready" state.
+
+  ```
+  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
+  NAME                READY   STATUS    AGE
+  tanzumysql-sample   true    Running   30s
+  ```
 
 ## <a id='rto-rpo-characteristics'></a>RTO and RPO Characteristics
 Recovery Time Objective (RTO) and Recovery Point Objective (RPO) are metrics used to assess the availability of a SERVICE/CLUSTER/? during an outage.
@@ -58,12 +293,17 @@ Recovery Time Objective (RTO) and Recovery Point Objective (RPO) are metrics use
 * How much data is lost for different types of outages - (RPO)
 
 ## <a id='requirements'></a>Platform Requirements
-**[Chris] Can we use this as a basis? http://postgres-kubernetes-wip.cfapps.io/1-0/prerequisites.html**
 
-* Platform Requirements
-* Works on any Kubernetes v1.18+
-* Tested on Minikube, TKG, and GKE
+  <%= vars.product_short %> requires Kubernetes 1.16 or newer.
 
 ## <a id='license'></a> License
 This product is distributed under the
 [VMware Pre-Release EULA](https://network.pivotal.io/legal_documents/pivotal_beta_eula) license.
+
+### <a id="gen-limits"></a> General Limitations
+
+* This product is currently in beta. VMware does not provide commercial support.
+* This product is intended to be used with any Kubernetes distribution >= 1.16.
+  However, given the number of Kubernetes vendors, versions, and configurations, not all of them have been
+  tested with <%= vars.product_short %>.
+* Product upgrades are not supported. If you want to test a newer version, delete the previous version first.
