@@ -7,70 +7,99 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic explains how to connect an app to your <%= vars.product_full %> instance.
+This topic explains how you, as a developer, connect an app to your <%= vars.product_short %> instance.
 
-## <a id='AboutTile'></a>About Binding Apps to a <%= vars.product_full %> instance
+## <a id='AboutTile'></a>About Binding Apps to a <%= vars.product_short %> Instance
 
-QUICK verbal description about what we're doing here. 
+After you, as a developer, have created a <%= vars.product_short %> instance,
+the next task is to bind it to your app so that your app can access the database.
 
-After you, as a developer, have created a <%= vars.product_full %> instance,
-the next task is to bind it to your app so that....
+You do this by obtaining the password for the root database user and the IP address for the
+<%= vars.product_short %> instance and adding these _connection parameters_ to the app environment variables.
 
-WHAT's the other term for binding? 
-
-DOES this apply to all apps or just "PCF" apps? 
 
 ## <a id='prereq'></a>Prerequisites
 
-Before you bind an app to a <%= vars.product_full %> instance, you must have:
-
-* Prerequisite. See [Link]().
-* Prerequisite. See [Link]().
+Before you bind an app to a <%= vars.product_short %> instance, you must have:
 
 * The Kubernetes Command Line Interface (kubectl).
   See [Installing the Kubernetes CLI](https://docs.pivotal.io/tkgi/installing-kubectl-cli.html)
 
-* Permission to read Kubernetes secrets in your target namespace. [X-REF]
+* Permission to read Kubernetes secrets in your target namespace.
+  For information about Roles and RoleBindings that your Kubernetes cluster admin needs to create
+  to grant permissions,
+  see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
 
-<p class="note"><strong>Note: </strong>To avoid Kubernetes permissions issues,
-   VMware recommends that developers have <code>namespace-scoped</code> admin access
-   to their target namespace.
+    <p class="note">
+        <strong>Note:</strong>
+       To avoid Kubernetes permissions issues,
+       VMware recommends that developers have admin access
+       to their target namespace.
+    </p>
 
+* A <%= vars.product_short %> instance running in the same Kubernetes cluster as the app.
+  This is required the ServiceType is ClusterIP.
+  However, instance can be in a different namespace from the app.
 
-## <a id='retrieve-creds'></a>Retrieve the MySQL Credentials
+    For how to create an instance, see [Creating and Deleting a Tanzu MySQL Instance](create-delete-mysql.html).
 
-To retrieve the MySQL credentials:
+    For information about the ClusterIP ServiceType,
+   see about publishing services in the
+   [Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
 
+## <a id='retrieve-creds'></a>Retrieve Connection Parameters for the <%= vars.product_short %> Instance
 
-1. Output the random string that is the MySQL credentials for XXX by running:
+To connect the app to the database, you provide the app with:
+
+*  The root username and password for the database
+*  The IP address for the <%= vars.product_short %> instance
+
+This procedure describes how to find these connection parameters.
+
+To retrieve connection parameters:
+
+1. Obtain the password for the root user of the database by running:
 
     ```
     kubectl get secret INSTANCE-NAME-credentials -o jsonpath='{.data.rootPassword}' | base64 -D
     ```
 
-    Where is `INSTANCE-NAME` is the XXX.
+    Where is `INSTANCE-NAME` is the name of the <%= vars.product_short %> instance.
 
     For example:
 
     <pre class="terminal">
-    $ kubectl get secret niceinstancename-credentials -o jsonpath='{.data.rootPassword}' | base64 -A
-ithLtGMmuZS0aksLK7imblrkjkv
- </pre> 
+    $ kubectl get secret tanzumysql-sample-credentials \
+      -o jsonpath='{.data.rootPassword}' | base64 -D
+    ithLtGMmuZS0aksLK7imblrkabc
+    </pre> 
 
+2. Record the password string, for example, `ithLtGMmuZS0aksLK7imblrkabc`.
+   You need it to complete the [Connect your App to the MySQL Database](#connect-app) below.
 
+3. Obtain the IP address of the <%= vars.product_short %> instance by running: 
 
-     DO I get only a random string as the output?     
+    ```
+    kubectl get service INSTANCE-NAME
+    ```
 
-     "Output should be a random string such as `ithLtGMmuZS0aksLK7imblrkjkv0`
+    For example:
 
-     * Username is always “root” — DOES this mean that the jsonpath is always jsonpath='{.data.rootPassword}'?
+    <pre class="terminal">$ kubectl get service tanzumysql-sample
 
+    → kubectl get service tanzumysql-sample
+NAME                TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)              AGE
+tanzumysql-sample   ClusterIP   10.110.144.49   <none>        3306/TCP,33060/TCP   5d22h
+    </pre>
 
-## <a id='connect-app'></a>Connect your App to the <%= vars.product_short %> Database
-Connect your App to the <%= vars.product_short %> Database
+2. Record the value of the `CLUSTER-IP`, for example, `10.110.144.49`.
+   You need it to complete the [Connect your App to the MySQL Database](#connect-app) below.
 
-* App needs to be in the same Kubernetes cluster because we only have a ClusterIP.
-For more information, see [K8s](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
+## <a id='connect-app'></a>Connect your App to the MySQL Database
 
-* Can be in a different namespace
-* Configure your App’s environment variables with the MySQL username “root” and password as what you retrieved * earlier.
+To connect your app to the MySQL database on the <%= vars.product_short %> instance: 
+
+1. Manually configure the app environment variables with the connection parameters
+   that you recorded above.
+
+2. Apply these changes to establish a connection to the database.
