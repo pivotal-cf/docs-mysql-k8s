@@ -73,12 +73,16 @@ The major features of MySQL 8.0 include:
 
 ### <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
 
-* Controllers and Custom Resource Definitions (CRDs)
+<%= vars.product_short %> provides extensions to the Kubernetes API via Custom Resources.
+Five separate custom resources are provided by the product:
 
-<%= vars.product_short %> provides extensions to the Kubernetes API via Custom Resources.  Five separate custom
-resources are provided by the product.
++ [TanzuMySQL](#mysql) - Managed MySQL instance
++ [TanzuMySQLBackupLocation](#mysqlbackuplocation) - Define an s3 storage bucket for backups
++ [TanzuMySQLBackup](#mysqlbackup) - Request for a backups
++ [TanzuMySQLBackupSchedule](#mysqlbackupschedule)
++ [TanzuMySQLRestore](#mysqlrestore)
 
-* TanzuMySQL - Managed MySQL instance
+###<a id="mysql"></a> TanzuMySQL - Managed MySQL instance
 
   Applying this resource will cause the Operator to create a Statefulset with a single Pod with two containers.  One
   container runs the MySQL database software, and the other runs components to support backups.
@@ -121,7 +125,7 @@ resources are provided by the product.
   tanzumysql-sample   true    Running   27s
   ```
 
-* TanzuMySQLBackupLocation - Define an s3 storage bucket for backups
+### <a id="mysqlbackuplocation"></a> TanzuMySQLBackupLocation - Define an s3 storage bucket for backups
 
   This resource describes metadata and credentials for storing backups in an S3-compatible object store.
 
@@ -179,7 +183,7 @@ resources are provided by the product.
   backuplocation-sample   2m38s
   ```
 
-* TanzuMySQLBackup - Request for a backups
+### <a id='mysqlbackup'></a> TanzuMySQLBackup - Request for a backups
 
   This resource requests that a backup be taken as soon as possible.  This will trigger the TanzuMySQL instance to run
   the Percona XtraBackup utility and upload a backup artifact to the blobstore.
@@ -207,7 +211,7 @@ resources are provided by the product.
   backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.279522Z   2020-12-07T15:52:16.041156Z   8s
   ```
 
-* TanzuMySQLBackupSchedule
+###<a id="mysqlbackupschedule"></a> TanzuMySQLBackupSchedule
 
   This resource defines a schedule on which TanzuMySQLBackup resources should be created.
 
@@ -237,7 +241,7 @@ resources are provided by the product.
   tanzumysqlbackupschedule-sample   8s
   ```
 
-* TanzuMySQLRestore
+###<a id="mysqlrestore"></a> TanzuMySQLRestore
 
   This resource requests that the contents of a previously created backup artifact be restored, and a new TanzuMySQL
   instance created.
