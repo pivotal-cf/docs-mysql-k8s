@@ -66,13 +66,221 @@ centralize and consolidate data, MySQL lends itself to dedicated deployment supp
 
 <img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the operator deployment and application namespace">
 
-
-### <a id='operator-framework'></a>Operator Framework
-* Operator Framework
-  TODO:  Why?  Is this just an interesting factoid?  Do other Tanzu products advertise "controller-runtime" or something?
-
 ### <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
+
 * Controllers and Custom Resource Definitions (CRDs)
+
+<%= vars.product_short %> provides extensions to the Kubernetes API via Custom Resources.  Five separate custom
+resources are provided by the product.
+
+* TanzuMySQL - Managed MySQL instance
+
+  Applying this resource will cause the Operator to create a Statefulset with a single Pod with two containers.  One
+  container runs the MySQL database software, and the other runs components to support backups.
+
+  A Kubernetes `Service` with a service type of `ClusterIP` is created to route connections to the pod.
+
+  ```
+  $ kubectl apply -f - <<EOF
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQL
+  metadata:
+    name: tanzumysql-sample
+  spec:
+    resources:
+      mysql:
+        requests:
+          memory: 1Gi
+    storageSize: 1Gi
+    imagePullSecret: tanzu-mysql-image-registry
+  EOF
+  ```
+
+  After applying this resource, the <%= vars.product_short %> Operator will create the low-level Kubernetes resources to run this MySQL instance.
+
+  The status of the instance can be seen by running `kubectl get tanzumysqls.mysql.tanzu.vmware.com`.  Initially this
+  instance will be in a "Pending" state, and should eventually be in a "Running" state.
+
+  ```
+  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
+  NAME                READY   STATUS    AGE
+  tanzumysql-sample           Pending   2s
+  ```
+
+  ...after some time...
+
+  ```
+  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
+  NAME                READY   STATUS    AGE
+  tanzumysql-sample   true    Running   27s
+  ```
+
+* TanzuMySQLBackupLocation - Define an s3 storage bucket for backups
+
+  This resource describes metadata and credentials for storing backups in an S3-compatible object store.
+
+  TanzuMySQLBackup resources will reference this backup location to know where to save backup artifacts.
+
+  ```
+  ---
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: backuplocation-sample-creds
+  stringData:
+    # S3 Credentials
+    accessKeyId: "my-s3-access-key-id"
+    secretAccessKey: "my-s3-secret-access-key"
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLBackupLocation
+  metadata:
+    name: backuplocation-sample
+  spec:
+    storage:
+      # For S3 or Minio:
+      s3:
+        bucket: "s3bucket"
+        bucketPath: "optional/prefix/for/backup/objects/"
+        region: "us-east-1"
+        endpoint:  "" # optional, default to AWS
+        forcePathStyle: false
+        disableSSL: false
+        secret:
+          name: backuplocation-sample-creds
+  EOF
+  ```
+
+  Credentials for s3 are stored in a Kubernetes secret with the keys `accessKeyId`, `secretAccessKey`.
+
+
+  Required fields:
+  - bucket; Name of the storage bucket for this backup location
+  - secret.name; Name of a secret containing the s3 endpoint credentials
+
+  Optional fields:
+  - bucketPath
+  - region (defaults to us-east-1)
+  - endpoint (defaults to aws, may be specified for non-AWS s3 endpoints, e.g. minio)
+  - forcePathStyle - whether to use path-style s3 URLs for compatibility (default: use virtual hosted-style s3 urls)
+  - disableSSL - for dev environments, may disable SSL for the endpoint (Not recommended for production)
+
+  TanzuMySQLBackupLocation resources do not currently have any associated status, but can be listed via `kubectl`
+
+  ```
+  $ kubectl get tanzumysqlbackuplocations.mysql.tanzu.vmware.com
+  NAME                    AGE
+  backuplocation-sample   2m38s
+  ```
+
+* TanzuMySQLBackup - Request for a backups
+
+  This resource requests that a backup be taken as soon as possible.  This will trigger the TanzuMySQL instance to run
+  the Percona XtraBackup utility and upload a backup artifact to the blobstore.
+
+  ```
+  $ kubectl apply -f - <<EOF
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLBackup
+  metadata:
+    name: backup-sample
+  spec:
+    location:
+      name: backuplocation-sample
+    cluster:
+      name: tanzumysql-sample
+  EOF
+  ```
+
+  Status of the backup can be observed via kubectl:
+
+  ```
+  $ kubectl get tanzumysqlbackups.mysql.tanzu.vmware.com
+  NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
+  backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.279522Z   2020-12-07T15:52:16.041156Z   8s
+  ```
+
+* TanzuMySQLBackupSchedule
+
+  This resource defines a schedule on which TanzuMySQLBackup resources should be created.
+
+  ```
+  $ kubectl apply -f - <<EOF
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLBackupSchedule
+  metadata:
+    name: tanzumysqlbackupschedule-sample
+  spec:
+    backupTemplate:
+      spec:
+        location:
+          name: backuplocation-sample
+        cluster:
+          name: tanzumysql-sample
+    schedule: "@daily"
+  EOF
+  ```
+
+  TanzuMySQLBackupSchedule resources do not currently have any associated status, but can be listed via `kubectl`
+
+  ```
+  $ kubectl get tanzumysqlbackupschedules.mysql.tanzu.vmware.com
+  NAME                              AGE
+  tanzumysqlbackupschedule-sample   8s
+  ```
+
+* TanzuMySQLRestore
+
+  This resource requests that the contents of a previously created backup artifact be restored, and a new TanzuMySQL
+  instance created.
+
+  ```
+  $ kubeclt apply -f - <<EOF
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLRestore
+  metadata:
+    name: tanzumysqlrestore-sample
+  spec:
+    tanzuMysqlBackup:
+      name: backup-sample
+    tanzuMysqlTemplate:
+      metadata:
+        name: tanzumysql-sample
+      spec:
+        storageSize: 1Gi
+        imagePullSecret: tanzu-mysql-image-registry
+  EOF
+  ```
+
+  Status of the restore can be observed through kubectl
+
+  ```
+  $ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
+  NAME                       STATUS    TIME STARTED                  TIME COMPLETED   AGE
+  tanzumysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
+  ```
+
+  The restore will take some time to retrieve and unpack the backup artifact and create the TanzuMySQL instance.  The
+  recovery time will be proportional to the size of the backup artifact.
+
+  ```
+  $ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
+  NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
+  tanzumysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T15:56:41.765479Z   20s
+  ```
+
+  Once the restore has completed successfully, the created TanzuMySQL instance will also have been created and in a
+  "Ready" state.
+
+  ```
+  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
+  NAME                READY   STATUS    AGE
+  tanzumysql-sample   true    Running   30s
+  ```
 
 ## <a id='rto-rpo-characteristics'></a>RTO and RPO Characteristics
 Recovery Time Objective (RTO) and Recovery Point Objective (RPO) are metrics used to assess the availability of a SERVICE/CLUSTER/? during an outage.
@@ -85,11 +293,8 @@ Recovery Time Objective (RTO) and Recovery Point Objective (RPO) are metrics use
 * How much data is lost for different types of outages - (RPO)
 
 ## <a id='requirements'></a>Platform Requirements
-**[Chris] Can we use this as a basis? http://postgres-kubernetes-wip.cfapps.io/1-0/prerequisites.html**
 
-* Platform Requirements
-* Works on any Kubernetes v1.18+
-* Tested on Minikube, TKG, and GKE
+  <%= vars.product_short %> requires Kubernetes 1.16 or newer.
 
 ## <a id='license'></a> License
 This product is distributed under the
