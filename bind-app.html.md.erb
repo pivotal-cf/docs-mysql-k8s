@@ -7,20 +7,20 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic explains how you, as a developer, connect an app to your <%= vars.product_short %> instance.
+This topic explains how you, as a developer, connect an app to your Tanzu MySQL instance.
 
-## <a id='AboutTile'></a>About Binding Apps to a <%= vars.product_short %> Instance
+## <a id='AboutTile'></a>About Binding Apps to a Tanzu MySQL Instance
 
-After you, as a developer, have created a <%= vars.product_short %> instance,
+After you, as a developer, have created a Tanzu MySQL instance,
 the next task is to bind it to your app so that your app can access the database.
 
 You do this by obtaining the password for the root database user and the IP address for the
-<%= vars.product_short %> instance and adding these _connection parameters_ to the app environment variables.
+Tanzu MySQL instance and adding these _connection parameters_ to the app environment variables.
 
 
 ## <a id='prereq'></a>Prerequisites
 
-Before you bind an app to a <%= vars.product_short %> instance, you must have:
+Before you bind an app to a Tanzu MySQL instance, you must have:
 
 * The Kubernetes Command Line Interface (kubectl).
   See [Installing the Kubernetes CLI](https://docs.pivotal.io/tkgi/installing-kubectl-cli.html).
@@ -37,7 +37,7 @@ Before you bind an app to a <%= vars.product_short %> instance, you must have:
        to their target namespace.
     </p>
 
-* A <%= vars.product_short %> instance running in the same Kubernetes cluster as the app.
+* A Tanzu MySQL instance running in the same Kubernetes cluster as the app.
   This is required the ServiceType is ClusterIP.
   However, instance can be in a different namespace from the app.
 
@@ -47,12 +47,12 @@ Before you bind an app to a <%= vars.product_short %> instance, you must have:
    see about publishing services in the
    [Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
 
-## <a id='retrieve-creds'></a>Retrieve Connection Parameters for the <%= vars.product_short %> Instance
+## <a id='retrieve-creds'></a>Retrieve Connection Parameters for the Tanzu MySQL Instance
 
 To connect the app to the database, you provide the app with:
 
 *  The root username and password for the database
-*  The IP address for the <%= vars.product_short %> instance
+*  The IP address for the Tanzu MySQL instance
 
 This procedure describes how to find these connection parameters.
 
@@ -64,7 +64,7 @@ To retrieve connection parameters:
     kubectl get secret INSTANCE-NAME-credentials -o jsonpath='{.data.rootPassword}' | base64 -D
     ```
 
-    Where is `INSTANCE-NAME` is the name of the <%= vars.product_short %> instance.
+    Where is `INSTANCE-NAME` is the name of the Tanzu MySQL instance.
 
     For example:
 
@@ -77,7 +77,7 @@ To retrieve connection parameters:
 2. Record the password string, for example, `ithLtGMmuZS0aksLK7imblrkabc`.
    You need it to complete the [Connect your App to the MySQL Database](#connect-app) below.
 
-3. Obtain the IP address of the <%= vars.product_short %> instance by running: 
+3. Obtain the IP address of the Tanzu MySQL instance by running: 
 
     ```
     kubectl get service INSTANCE-NAME
@@ -97,7 +97,7 @@ tanzumysql-sample   ClusterIP   10.110.144.49   <none>        3306/TCP,33060/TCP
 
 ## <a id='connect-app'></a>Connect your App to the MySQL Database
 
-To connect your app to the MySQL database on the <%= vars.product_short %> instance: 
+To connect your app to the MySQL database on the Tanzu MySQL instance: 
 
 1. Manually configure the app environment variables with the connection parameters
    that you recorded above.
