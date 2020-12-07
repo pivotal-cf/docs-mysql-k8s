@@ -25,5 +25,5 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 
 | Word | Explanation |
 |------|-------------|
-|  |  |
+| Tanzu MySQL instance  | Use this phrase consistently. Okay to shorten it to "instance". Not okay to use "MySQL instance" or "Tanzu instance" or "database instance". Apply the product variable in the files: `<%= vars.product_short %> instance` |
 |  |  |
