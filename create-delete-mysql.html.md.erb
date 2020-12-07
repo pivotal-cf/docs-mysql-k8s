@@ -5,33 +5,48 @@ owner: MySQL
 
 <%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
 
-DEVELOPER-FACING DOCSET
-
 <strong><%= modified_date %></strong>
 
-This topic describes how to deploy and delete <%= vars.product_full %> instances.
+This topic describes how you, as a developer, deploy and delete <%= vars.product_short %> instances.
 
-## <a id='prereq'></a>Prerequisites
-Prerequisites
+## <a id='prerequisites'></a> Prerequisites
 
-* Have the Kubernetes command line tool (kubectl CLI) installed
-* Developers must have permissions in order to perform the following actions to all custom resources under the mysql.tanzu.vmware.com Kubernetes API group:
-  * create
-  * delete
-  * deletecollection
-  * get
-  * list
-  * patch
-  * update
-  * watch
+Before you can create or delete <%= vars.product_short %> instances, you must have:
 
-## <a id='create-instance'></a>Create a <%= vars.product_short %> instance
-Create a <%= vars.product_short %> instance
+* The Kubernetes Command Line Interface (kubectl).
+  See [Installing the Kubernetes CLI](https://docs.pivotal.io/tkgi/installing-kubectl-cli.html).
 
-1. Target development NAMESPACE where they want to create the <%= vars.product_short %> instances
-1. Create the secret:
+* Full admin access to all Kubernetes resources in your developer namespace.
 
+    For information about Roles and RoleBindings that your Kubernetes cluster admin needs to create,
+    see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
+
+
+## <a id='create-instance'></a>Create a <%= vars.product_short %> Instance
+
+To create a <%= vars.product_short %> instance:
+
+1. Target the development NAMESPACE where you want to create the <%= vars.product_short %> instance.
+
+1. Create the secret by running:
+
+    <code>
 kubectl --namespace=[TANZU-MYSQL-OPERATOR-NAMESPACE] create secret docker-registry tanzu-mysql-image-registry --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] --docker-password=[DOCKER-PASSWORD]
+</code>
+
+    Where:
+    * `TANZU-MYSQL-OPERATOR-NAMESPACE` is the  
+    * `REGISTRY-SERVER-URL` is the  
+    * `DOCKER-USERNAME` is the  
+    * `DOCKER-PASSWORD` is the  
+
+    For example:
+
+    <pre class="terminal">$ kubectl --namespace=[TANZU-MYSQL-OPERATOR-NAMESPACE] \
+    create secret docker-registry tanzu-mysql-image-registry \
+    --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] \
+    --docker-password=[DOCKER-PASSWORD]
+    </pre>
 
 This Kubernetes secret can point to the TanzuNet registry, or a private registry that you have configured for your Kubernetes environment. If you do not have access to the registry credentials, you must contact your kubernetes administrator to have these set up for you in your NAMESPACE.
 
@@ -188,7 +203,15 @@ Delete a <%= vars.product_short %> instance
 
 1. `kubectl delete pvc POD_NAME` for each pod in the <%= vars.product_short %> instance.
 
-WARNING: This is a destructive action. If you destroy your PVC, you are deleting all associated data with your <%= vars.product_short %> database.
+<p class="note warning">
+   <strong> Warning:</strong> This is a destructive action.
+   If you destroy your PVC, you are deleting all data associated with your <%= vars.product_short %> database.
+</p>
 
 
-NOTE: If you delete the Pod or Statefulset associated with the <%= vars.product_short %> resource, a <%= vars.product_short %> controller will recreate it for you. If you want to permanently delete the instance, you need to delete the `tanzumysql` resource.
+<p class="note">
+   <strong>Note:</strong> If you delete the Pod or Statefulset associated
+   with the <%= vars.product_short %> resource,
+   a <%= vars.product_short %> controller recreates it for you.
+   If you want to permanently delete the instance, you need to delete the <code>tanzumysql</code> resource.
+</p>
