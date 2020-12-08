@@ -19,7 +19,8 @@ Before you modify the <%= vars.product_short %> instance, you must:
 
 ## <a id='scale-storage'></a>Scale storageSize
 
-For storage classes that support it, the storageSize may only be expanded but not reduced.
+For storage classes that support it, the storageSize can only be expanded but
+not reduced.
 
 To scale `storageSize`:
 
@@ -35,17 +36,36 @@ To scale `storageSize`:
   standard (default)   kubernetes.io/gce-pd   Delete          Immediate           true                   91s
   ```
 
-  > Note: Since v1.11, Kubernetes ships with [volume expansion support](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims)
-  > for the following in-tree volume plugins: AWS-EBS, GCE-PD, Azure Disk, Azure File, Glusterfs, Cinder, Portworx, and Ceph RBD.
-  > CSI volumes and FlexVolumes may also support expansion.
-  > Once you've determined that volume expansion is supported for the underlying provider,
-  > you may be able to change the `allowVolumeExpansion` field to `true`, if needed,
-  > in the StorageClass object(s). Only PVCs created from a StorageClass with `allowVolumeExpansion`
-  > set to `true` will be allowed to perform volume expansion.
+  <div class="note">
+    <p style="margin-top: 0;">
+      <strong>Note:</strong> For Kubernetes v1.11, Kubernetes ships with volume expansion support
+      for the following in-tree volume plugins:
+    </p>
+    <ul>
+      <li>AWS-EBS</li>
+      <li>GCE-PD</li>
+      <li>Azure Disk</li>
+      <li>Azure File</li>
+      <li>Glusterfs</li>
+      <li>Cinder</li>
+      <li>Portworx</li>
+      <li>Ceph RBD</li>
+    </ul>
+    <p>
+      CSI volumes and FlexVolumes can also support expansion.
+      After you have determined that volume expansion is supported for the underlying provider,
+      you can change the <code>allowVolumeExpansion</code> field to <code>true</code>
+      in StorageClass objects. Only PVCs created from a StorageClass with <code>allowVolumeExpansion</code>
+      set to <code>true</code> are allowed to perform volume expansion.
+    </p>
+    <p>
+      For more information, see [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims).
+    </p>
+  </div>
 
 
-  > If the output does not show the `ALLOWVOLUMEEXPANSION` column, you can use
-  > `kubectl get storageclasses.storage.k8s.io standard -o custom-columns='NAME:.metadata.name,ALLOWVOLUMEEXPANSION:.allowVolumeExpansion'`
+  If the output does not show the `ALLOWVOLUMEEXPANSION` column, you can use
+  `kubectl get storageclasses.storage.k8s.io standard -o custom-columns='NAME:.metadata.name,ALLOWVOLUMEEXPANSION:.allowVolumeExpansion'`
 
 1. Edit the PVC configuration's `spec.resources.requests.storage` field to increase the volume size.
   ```bash
@@ -55,8 +75,8 @@ To scale `storageSize`:
 
 1. Either:
 
-  a. The `storageClass` supports [online expansion](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#resizing-an-in-use-persistentvolumeclaim).
-    Eventually the PVC will be automatically resized, and no further steps are required.
+  a. The `storageClass` supports [online expansion](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#resizing-an-in-use-persistentvolumeclaim) <%# The link name must be "Kubernetes documentation". %>.
+    Eventually the PVC is automatically resized, and no further steps are required.
 
   a. Otherwise, wait for the PVC to have the `FileSystemResizePending` condition, then delete the Pod to unmount the PVC and allow it to resize.
   ```bash
@@ -66,7 +86,8 @@ To scale `storageSize`:
   statefulset.apps/tanzumysql-sample restarted
   ```
 
-  Once the Pod is automatically recreated by the statefulset controller and successfully restarts, the user can observe the storage has been resized.
+  After the Pod is automatically re-created by the StatefulSet controller and
+  successfully restarts, the user can observe the storage has been resized.
   ```bash
   kubectl exec <MYSQL-POD-NAME> -c mysql -- df -h /var/lib/mysql
   Filesystem      Size  Used Avail Use% Mounted on
@@ -77,14 +98,16 @@ To scale `storageSize`:
 
 Expected downtime when expanding storage:
 
-- With online expansion, there is no downtime expected.
-- With offline expansion, there will be downtime while the pod is recreated and the PVC is being resized.
+- With online expansion, there is no downtime expected in most cases.
+- With offline expansion, there is downtime while the Pod is re-created and the
+PVC is being resized.
 
 ## <a id='scale-resources'></a>Scaling CPU and Memory Resources
 
 To scale CPU or Memory resources:
 
-1. Edit the TanzuMySQL configuration's `spec.resources` field to increase the CPU or Memory requirements for the `mysql` or `backups` containers.
+1. Edit the TanzuMySQL configuration's `spec.resources` field to increase the CPU
+or Memory requirements for the `mysql` or `backups` containers.
   ```bash
   # kubectl edit tanzumysql <MYSQL-INSTANCE-NAME>
   tanzumysql.mysql.tanzu.vmware.com/<MYSQL-INSTANCE-NAME> edited
@@ -94,13 +117,16 @@ To scale CPU or Memory resources:
 
 Expected downtime when changing resource reservations:
 
-- Brief downtime while Kubernetes recreates the pods.
-- Risk of longer downtime if the new requested values exceed the available capacity of the Kubernetes cluster.
+- Brief downtime while Kubernetes re-creates the pods.
+- Risk of longer downtime if the new requested values exceed the available capacity
+of the Kubernetes cluster.
 
 ## <a id='other-config'></a>Changing Other Configurations
 
-Changing `storageClassName` or `imagePullSecret` will not have any effect on a running TanzuMySQL instance.
-If a TanzuMySQL instance is not running due to errors in these fields, they can be changed, and changes will be propagated into the statefulset to correct the error.
+Changing `storageClassName` or `imagePullSecret` does not have any effect on a
+running TanzuMySQL instance. If a TanzuMySQL instance is not running due to
+errors in these fields, they can be changed, and changes are propagated into the
+StatefulSet to correct the error.
 
 To change `storageClassName` or `imagePullSecret`:
 
