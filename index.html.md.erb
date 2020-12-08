@@ -42,15 +42,9 @@ capable of handling a wide variety of use cases and very significant workloads.
 Unlike other traditional databases that centralize and consolidate data,
 MySQL lends itself to dedicated deployment, which supports building "cloud native" apps.
 
-### <a id='what-is-mysql'></a> More about MySQL
-
-If you are new to MySQL and want general information about what MySQL is,
-see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/what-is-mysql.html).
 
 ### <a id='features-mysql-8-0'></a>MySQL 8.0 Features
 
-If you are familiar with older versions of MySQL but new to MySQL 8.0,
-then you will want to know about these new features.
 The major features of MySQL 8.0 include:
 
   * Multi-Version Concurrency Control (MVCC)
@@ -65,231 +59,11 @@ The major features of MySQL 8.0 include:
   * Native JSON datatype
   * Native Geographic Information System (GIS) support
 
-## <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture
+### <a id='what-is-mysql'></a> More about MySQL
 
-<img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the operator deployment and app namespace">
+If you are new to MySQL and want general information about what MySQL is,
+see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/what-is-mysql.html).
 
-[Click here to view a larger version of this image.](./images/architecture-diagram.png)
-
-### <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
-
-<%= vars.product_short %> provides extensions to the Kubernetes API via Custom Resources.
-Five separate custom resources are provided by the product:
-
-+ [TanzuMySQL](#mysql) - Managed MySQL instance
-+ [TanzuMySQLBackupLocation](#mysqlbackuplocation) - Define an s3 storage bucket for backups
-+ [TanzuMySQLBackup](#mysqlbackup) - Request for a backups
-+ [TanzuMySQLBackupSchedule](#mysqlbackupschedule)
-+ [TanzuMySQLRestore](#mysqlrestore)
-
-###<a id="mysql"></a> TanzuMySQL - Managed MySQL instance
-
-  Applying this resource will cause the Operator to create a Statefulset with a single Pod with two containers.  One
-  container runs the MySQL database software, and the other runs components to support backups.
-
-  A Kubernetes `Service` with a service type of `ClusterIP` is created to route connections to the pod.
-
-  ```
-  $ kubectl apply -f - <<EOF
-  ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQL
-  metadata:
-    name: tanzumysql-sample
-  spec:
-    resources:
-      mysql:
-        requests:
-          memory: 1Gi
-    storageSize: 1Gi
-    imagePullSecret: tanzu-mysql-image-registry
-  EOF
-  ```
-
-  After applying this resource, the <%= vars.product_short %> Operator will create the low-level Kubernetes resources to run this MySQL instance.
-
-  The status of the instance can be seen by running `kubectl get tanzumysqls.mysql.tanzu.vmware.com`.  Initially this
-  instance will be in a "Pending" state, and should eventually be in a "Running" state.
-
-  ```
-  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
-  NAME                READY   STATUS    AGE
-  tanzumysql-sample           Pending   2s
-  ```
-
-  ...after some time...
-
-  ```
-  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
-  NAME                READY   STATUS    AGE
-  tanzumysql-sample   true    Running   27s
-  ```
-
-### <a id="mysqlbackuplocation"></a> TanzuMySQLBackupLocation - Define an s3 storage bucket for backups
-
-  This resource describes metadata and credentials for storing backups in an S3-compatible object store.
-
-  TanzuMySQLBackup resources will reference this backup location to know where to save backup artifacts.
-
-  ```
-  ---
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: backuplocation-sample-creds
-  stringData:
-    # S3 Credentials
-    accessKeyId: "my-s3-access-key-id"
-    secretAccessKey: "my-s3-secret-access-key"
-  ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQLBackupLocation
-  metadata:
-    name: backuplocation-sample
-  spec:
-    storage:
-      # For S3 or Minio:
-      s3:
-        bucket: "s3bucket"
-        bucketPath: "optional/prefix/for/backup/objects/"
-        region: "us-east-1"
-        endpoint:  "" # optional, default to AWS
-        forcePathStyle: false
-        disableSSL: false
-        secret:
-          name: backuplocation-sample-creds
-  EOF
-  ```
-
-  Credentials for s3 are stored in a Kubernetes secret with the keys `accessKeyId`, `secretAccessKey`.
-
-
-  Required fields:
-  - bucket; Name of the storage bucket for this backup location
-  - secret.name; Name of a secret containing the s3 endpoint credentials
-
-  Optional fields:
-  - bucketPath
-  - region (defaults to us-east-1)
-  - endpoint (defaults to aws, may be specified for non-AWS s3 endpoints, e.g. minio)
-  - forcePathStyle - whether to use path-style s3 URLs for compatibility (default: use virtual hosted-style s3 urls)
-  - disableSSL - for dev environments, may disable SSL for the endpoint (Not recommended for production)
-
-  TanzuMySQLBackupLocation resources do not currently have any associated status, but can be listed via `kubectl`
-
-  ```
-  $ kubectl get tanzumysqlbackuplocations.mysql.tanzu.vmware.com
-  NAME                    AGE
-  backuplocation-sample   2m38s
-  ```
-
-### <a id='mysqlbackup'></a> TanzuMySQLBackup - Request for a backups
-
-  This resource requests that a backup be taken as soon as possible.  This will trigger the TanzuMySQL instance to run
-  the Percona XtraBackup utility and upload a backup artifact to the blobstore.
-
-  ```
-  $ kubectl apply -f - <<EOF
-  ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQLBackup
-  metadata:
-    name: backup-sample
-  spec:
-    location:
-      name: backuplocation-sample
-    cluster:
-      name: tanzumysql-sample
-  EOF
-  ```
-
-  Status of the backup can be observed via kubectl:
-
-  ```
-  $ kubectl get tanzumysqlbackups.mysql.tanzu.vmware.com
-  NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
-  backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.279522Z   2020-12-07T15:52:16.041156Z   8s
-  ```
-
-###<a id="mysqlbackupschedule"></a> TanzuMySQLBackupSchedule
-
-  This resource defines a schedule on which TanzuMySQLBackup resources should be created.
-
-  ```
-  $ kubectl apply -f - <<EOF
-  ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQLBackupSchedule
-  metadata:
-    name: tanzumysqlbackupschedule-sample
-  spec:
-    backupTemplate:
-      spec:
-        location:
-          name: backuplocation-sample
-        cluster:
-          name: tanzumysql-sample
-    schedule: "@daily"
-  EOF
-  ```
-
-  TanzuMySQLBackupSchedule resources do not currently have any associated status, but can be listed via `kubectl`
-
-  ```
-  $ kubectl get tanzumysqlbackupschedules.mysql.tanzu.vmware.com
-  NAME                              AGE
-  tanzumysqlbackupschedule-sample   8s
-  ```
-
-###<a id="mysqlrestore"></a> TanzuMySQLRestore
-
-  This resource requests that the contents of a previously created backup artifact be restored, and a new TanzuMySQL
-  instance created.
-
-  ```
-  $ kubeclt apply -f - <<EOF
-  ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQLRestore
-  metadata:
-    name: tanzumysqlrestore-sample
-  spec:
-    tanzuMysqlBackup:
-      name: backup-sample
-    tanzuMysqlTemplate:
-      metadata:
-        name: tanzumysql-sample
-      spec:
-        storageSize: 1Gi
-        imagePullSecret: tanzu-mysql-image-registry
-  EOF
-  ```
-
-  Status of the restore can be observed through kubectl
-
-  ```
-  $ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
-  NAME                       STATUS    TIME STARTED                  TIME COMPLETED   AGE
-  tanzumysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
-  ```
-
-  The restore will take some time to retrieve and unpack the backup artifact and create the TanzuMySQL instance.  The
-  recovery time will be proportional to the size of the backup artifact.
-
-  ```
-  $ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
-  NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
-  tanzumysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T15:56:41.765479Z   20s
-  ```
-
-  Once the restore has completed successfully, the created TanzuMySQL instance will also have been created and in a
-  "Ready" state.
-
-  ```
-  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
-  NAME                READY   STATUS    AGE
-  tanzumysql-sample   true    Running   30s
-  ```
 
 ## <a id='rto-rpo-characteristics'></a>RTO and RPO Characteristics
 Recovery Time Objective (RTO) and Recovery Point Objective (RPO) are metrics used to assess the availability of a SERVICE/CLUSTER/? during an outage.
@@ -309,7 +83,9 @@ Recovery Time Objective (RTO) and Recovery Point Objective (RPO) are metrics use
 This product is distributed under the
 [VMware Pre-Release EULA](https://network.pivotal.io/legal_documents/pivotal_beta_eula) license.
 
-### <a id="gen-limits"></a> General Limitations
+## <a id="gen-limits"></a> General Limitations
+
+<%= vars.product_short %> has the following limitations:
 
 * This product is currently in beta. VMware does not provide commercial support.
 * This product is intended to be used with any Kubernetes distribution >= 1.16.

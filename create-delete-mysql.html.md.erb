@@ -21,37 +21,43 @@ Before you can create or delete <%= vars.product_short %> instances, you must ha
     For information about Roles and RoleBindings that your Kubernetes cluster admin needs to create,
     see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
 
+* The URL and credentials to access the registry that stores the <%= vars.product_short %> images.
+  This can the TanzuNet registry or the private registry configured for your environment.
+    If you do not have access to the registry credentials, contact your kubernetes administrator
+    to have these set up for you in your namespace.
 
-## <a id='create-instance'></a>Create a <%= vars.product_short %> Instance
+## <a id='create-instance'></a>Create a Tanzu MySQL Instance
 
-To create a <%= vars.product_short %> instance:
+From your namespace, Kubernetes must be able to access the registry that stores the <%= vars.product_short %> images
+To create a Tanzu MySQL instance:
 
-1. Target the development NAMESPACE where you want to create the <%= vars.product_short %> instance.
+1. Target the development namespace where you want to create the Tanzu MySQL instance.
 
-1. Create the secret by running:
+2. From your namespace, Kubernetes must be able to access the registry
+   that stores the <%= vars.product_short %> images. 
+   In order to do allow this, create an imagePullSecret by running:
 
     <code>
-kubectl --namespace=[TANZU-MYSQL-OPERATOR-NAMESPACE] create secret docker-registry tanzu-mysql-image-registry --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] --docker-password=[DOCKER-PASSWORD]
+kubectl --namespace=DEVELOPMENT-NAMESPACE create secret docker-registry tanzu-mysql-image-registry --docker-server=REGISTRY-SERVER-URL --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
 </code>
 
     Where:
-    * `TANZU-MYSQL-OPERATOR-NAMESPACE` is the  
-    * `REGISTRY-SERVER-URL` is the  
-    * `DOCKER-USERNAME` is the  
-    * `DOCKER-PASSWORD` is the  
+    * `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance  
+    * `REGISTRY-SERVER-URL` is the TanzuNet registry or the private registry configured for your environment
+    * `DOCKER-USERNAME` and `DOCKER-PASSWORD` are the credentials used to pull images from the registry.  
 
     For example:
 
-    <pre class="terminal">$ kubectl --namespace=[TANZU-MYSQL-OPERATOR-NAMESPACE] \
-    create secret docker-registry tanzu-mysql-image-registry \
-    --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] \
-    --docker-password=[DOCKER-PASSWORD]
+    <pre class="terminal">$ kubectl create secret --namespace=my-namespace \
+    docker-registry tanzu-mysql-image-registry  \
+    --docker-server=https://registry.pivotal.io/ \
+    --docker-username=sample-username  \
+    --docker-password=sample-password
+    secret/tanzu-mysql-image-registry created
     </pre>
 
-This Kubernetes secret can point to the TanzuNet registry, or a private registry that you have configured for your Kubernetes environment. If you do not have access to the registry credentials, you must contact your kubernetes administrator to have these set up for you in your NAMESPACE.
-
-### <a id='create-yaml'></a>Create a `tanzumysql.yaml` file.
-* Create a `tanzumysql.yaml` file. This is the configuration file for the <%= vars.product_short %> instance.
+3. Create a `tanzumysql.yaml` file.
+   You can use this as a template.
 
     ```
     apiVersion: mysql.tanzu.vmware.com/v1alpha1
@@ -87,7 +93,122 @@ This Kubernetes secret can point to the TanzuNet registry, or a private registry
     #        memory: 200Mi
     ```
 
-* Talk about the values you can set in `tanzumysql.yaml`
+4. Edit the `tanzumysql.yaml` file.
+   For an explanation of the the properties you can set in this file,
+   see [Property Reference for tanzumysql.yml](#tanzumysql.yaml) below.
+
+
+5. Deploy a Tanzu MySQL instance to Kubernetes by running:
+
+    ```
+    kubectl -n DEVELOPMENT-NAMESPACE apply -f tanzumysql.yaml
+    ```
+
+    For example:
+
+    <pre class="terminal">$ kubectl -n my-namespace apply -f tanzumysql.yaml
+    tanzumysql.mysql.tanzu.vmware.com/tanzumysql-sample created
+    </pre>
+
+
+6. Verify that the instance was created successfully by running:
+
+    ```
+    kubectl get tanzumysql INSTANCE-NAME
+    ```
+
+    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in the `tanzumysql.yaml` file.
+
+    For example:
+
+    <pre class="terminal">$ kubectl get tanzumysql tanzumysql-sample
+NAME                READY   STATUS    AGE
+tanzumysql-sample   true    Running   2m17s
+    </pre> 
+
+
+
+## <a id='delete-instance'></a>Delete a Tanzu MySQL instance
+
+
+You get a PVC when you create the instance. 
+The PVC name contains the instance name. 
+mysql-data-INSTANCE-NAME-N
+
+One PVC for each MySQL pod. Right now, only one. Thus, always 0. 
+The PVC contains the data.
+
+You can delete an instance and leave the PVC storing the data.
+If you subsequently want to access the data, you create a new instance with the same name as the deleted instance. 
+The PVC will automatically reattach to the new instance.
+
+<p class="note">
+   <strong>Note:</strong> If you delete the Pod or Statefulset associated
+   with the <%= vars.product_short %> resource,
+   a <%= vars.product_short %> controller recreates it for you.
+   If you want to permanently delete the instance, you need to delete the <code>tanzumysql</code> resource.
+</p>
+
+To delete a Tanzu MySQL instance:
+
+1. Delete the Tanzu MySQL instance by running:
+
+    <code>kubectl -n DEVELOPMENT-NAMESPACE delete tanzumysql INSTANCE-NAME </code>
+
+    Where:
+    * `DEVELOPMENT-NAMESPACE` is the  
+    * `INSTANCE-NAME` is the name of the instance you want to delete.
+
+    For example:
+
+    <pre class="terminal">
+    $ kubectl delete tanzumysql tanzumysql-sample
+tanzumysql.mysql.tanzu.vmware.com "tanzumysql-sample" deleted
+    </pre>
+
+2. (Optional) Delete the Persistent Volume Claim (PVC) as well.
+
+    <p class="note warning">
+       <strong> Warning:</strong> This is a destructive action.
+       If you destroy your PVC, you are deleting all data associated with your <%= vars.product_short %> database.
+    </p>
+
+    1. Review your PVCs by running:
+
+          <code>kubectl get pvc </code>
+
+          For example:
+
+          <pre class="terminal">
+       $ kubectl get pvc
+NAME                              STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mysql-data-tanzumysql-sample-0    Bound    pvc-3262e841-c4aa-4aa4-b53a-68cd3078f806   1Gi        RWO            standard       7d1h
+mysql-data-another-sample-0       Bound    pvc-87c8a3a9-263b-46e6-8acb-ed474434fd24   1Gi        RWO            standard       6d21h
+          </pre>
+    2. Determine the name of the PVCs that correspond to the name of the instance you deleted above.
+
+    3. Delete the PVC associated with each Tanzu MySQL Pod by running, for each pod:
+
+          <code>kubectl delete pvc mysql-data-INSTANCE-NAME-n  </code>
+ 
+          Where:
+          + INSTANCE-NAME is the name of the TanzuMySQL instance that you deleted
+          + n is the index of each pod in the TanzuMySQL instance
+
+          For example:
+
+          <pre class="terminal">
+       $ kubectl delete pvc mysql-data-tanzumysql-sample-0
+persistentvolumeclaim "mysql-data-tanzumysql-sample-0" deleted
+          </pre>
+
+
+
+
+##<a id="tanzumysql-yaml"></a> Property Reference for tanzumysql.yml
+
+The table below explains the properties that can be set in the `tanzumysql.yml` file
+created in [#create-instance](#) above.
 
 <table class="nice">
 <th>Property</th>
@@ -100,7 +221,7 @@ This Kubernetes secret can point to the TanzuNet registry, or a private registry
   <td>metadata.name</td>
   <td>String</td>
   <td>None</td>
-  <td>The name of your TanzuMySQL instance. Must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. For more information, see http://kubernetes.io/docs/user-guide/identifiers#names</td>
+  <td>The name of your Tanzu MySQL instance. Must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. For more information, see http://kubernetes.io/docs/user-guide/identifiers#names</td>
   <td>my-instance</td>
   <td>Yes</td>
 </tr>
@@ -184,34 +305,3 @@ This Kubernetes secret can point to the TanzuNet registry, or a private registry
 </tr>
 </table>
 
-## <a id='deploy-instance'></a>Deploy Instance to Kubernetes
-* kubectl -n YOUR_NAMESPACE apply -f tanzumysql.yaml
-* Verify that is was successfully created:
-kubectl get tanzumysql INSTANCE_NAME
-
-
-
-## <a id='delete-instance'></a>Delete a <%= vars.product_short %> instance
-Delete a <%= vars.product_short %> instance
-
-    kubectl -n YOUR_NAMESPACE delete tanzumysql INSTANCE_NAME
-
-* If you want, also delete the Persistent Volume Claim (PVC).
-1. Review your PVCs
-
-    `kubectl get pvc`
-
-1. `kubectl delete pvc POD_NAME` for each pod in the <%= vars.product_short %> instance.
-
-<p class="note warning">
-   <strong> Warning:</strong> This is a destructive action.
-   If you destroy your PVC, you are deleting all data associated with your <%= vars.product_short %> database.
-</p>
-
-
-<p class="note">
-   <strong>Note:</strong> If you delete the Pod or Statefulset associated
-   with the <%= vars.product_short %> resource,
-   a <%= vars.product_short %> controller recreates it for you.
-   If you want to permanently delete the instance, you need to delete the <code>tanzumysql</code> resource.
-</p>
