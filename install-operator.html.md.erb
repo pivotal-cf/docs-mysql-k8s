@@ -5,37 +5,72 @@ owner: MySQL
 
 <%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
 
-KUBERNETES-ADMIN FACING
 
 <strong><%= modified_date %></strong>
 
-This topic provides instructions to operators
-about how to install, configure, and deploy the <%= vars.product_full %> Operator.
+This topic describes how operators install, configure,
+and deploy the <%= vars.product_full %> Operator.
 
 ## <a id='prereq'></a>Prerequisites
-Before you deploy the <%= vars.product_short %> operator, you must:
 
-* Have access to [TanzuNet](https://network.pivotal.io/) and
-[Tanzu Net Registry](https://registry.pivotal.io/harbor/sign-in?redirect_url=%2Fharbor%2Fprojects)
-* Have the Helm CLI installed
-* Have the Kubernetes command line tool (kubectl CLI) installed
+Before you deploy the <%= vars.product_short %> Operator:
+
+* Have access to Tanzu Network and
+Tanzu Network Registry. For more information about accessing these 
+services, see [Tanzu Network](https://network.pivotal.io/) and
+[Harbor](https://registry.pivotal.io/harbor/sign-in?redirect_url=%2Fharbor%2Fprojects)
+
+* Have the Helm CLI installed. For more information, see [Installing 
+Helm](https://helm.sh/docs/intro/install/) from the Helm documentation.
+
+* Have the Kubernetes command line tool (kubectl) installed. For more 
+information, see [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) 
+from the Kubernetes documentation.
+
 * Have an existing Kubernetes environment
+
 * `cluster-admin` ClusterRole access to the Kubernetes cluster
 
-## <a id='retrieve-helm'></a>Retrieve the Helm Chart and Images from TanzuNet
-Retrieve the Helm Chart and Images from TanzuNet
+## <a id='retrieve-helm'></a>Retrieve the Helm Chart and Images from Tanzu Network
+
+To retrieve the Helm chart and images from Tanzu Network:
+
+1. Create a registry secret in the namespace by running:
+  ```
+  kubectl create secret docker-registry tanzu-mysql-image-registry \
+  --docker-server=https://registry.pivotal.io/ \
+  --docker-username=$(lpass show "Shared-Dedicated-MySQL/mysql4k8s-ci-secrets" --notes|bosh interpolate - --path=/tanzumysql-ci-registry_username) \
+  --docker-password=$(lpass show "Shared-Dedicated-MySQL/mysql4k8s-ci-secrets" --notes|bosh interpolate - --path=/tanzumysql-ci-registry_password)
+  ```
+
+1. Add a chart repository for <%= vars.product_short %> by running:
+  ```
+  helm repo add tanzu-mysql-kubernetes URL
+  ```
+
+1. Download <%= vars.product_short %> Operator by running:
+  ```
+  helm pull tanzu-mysql-kubernetes/tanzu-mysql-operator --version 0.1.0
+  ```
 
 <pre class="terminal">
 $ helm create secret docker-registry …
 $ helm repo add tanzu-mysql-kubernetes …
-$ helm fetch tanzu-mysql-kubernetes/tanzu-mysql-operator --version 0.1.0
+$ helm pull tanzu-mysql-kubernetes/tanzu-mysql-operator --version 0.1.0
 </pre>
 
 ## <a id='install-operator'></a>Install the <%= vars.product_short %> Operator
+
 Install the <%= vars.product_short %> Operator
 
 
-### <a id='install-operator'></a>Fetch repo
+### <a id='install-operator'></a>Fetch Repository
+
+1. Run: 
+  ```
+  helm pull tanzu-mysql-kubernetes/tanzu-mysql-operator --version 0.1.0
+  ```
+
 
 ### <a id='install-operator'></a>Create and Target the Namespace in which you want to install the OPERATOR
 
@@ -43,7 +78,7 @@ namespace = cf org
 no equivalent for spaces
 Operator should not be directly accessible by Codys/Devs
 
-ClusterAdmin should place the Operator in a system Namespace only accessible by K8s administrators
+ClusterAdmin should place the Operator in a system Namespace only accessible by K8s administrators<%# "admins" is preferred. %>
 Can choose whatever name they want
 
 TANZU-MYSQL-OPERATOR-NAMESPACE
@@ -51,20 +86,25 @@ TANZU-MYSQL-OPERATOR-NAMESPACE
 
 ### <a id='install-operator'></a>Create Secret
 
-NOTE: kubectl create secret docker-registry SAMPLE-SECRET --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] --docker-password=[DOCKER-PASSWORD]
+<p class="note"><strong>Note:</strong> kubectl create secret docker-registry SAMPLE-SECRET --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] --docker-password=[DOCKER-PASSWORD]</p>
 
+To create your secret:
 
-    kubectl --namespace=[TANZU-MYSQL-OPERATOR-NAMESPACE] create secret docker-registry tanzu-mysql-image-registry --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] --docker-password=[DOCKER-PASSWORD]
+1. Run:
 
-This Kubernetes secret can point to the TanzuNet registry, or a private registry that you have configured for your Kubernetes environment.
+  ```
+  kubectl --namespace=[TANZU-MYSQL-OPERATOR-NAMESPACE] create secret docker-registry tanzu-mysql-image-registry --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] --docker-password=[DOCKER-PASSWORD]
+  ```
 
-For Example
+  This Kubernetes secret can point to the TanzuNet registry, or a private registry that you have configured for your Kubernetes environment.
 
-<pre class="terminal">secret/tanzu-mysql-image-registry created</pre>
+  For example:
 
-### <a id='install-operator'></a>Modify values
+  <pre class="terminal">secret/tanzu-mysql-image-registry created</pre>
 
-After you Helm Fetch, you will download a repo called "tanzu-mysql-kubernetes"
+### <a id='install-operator'></a>Modify Values
+
+After you Helm Fetch, you will<%# Avoid "will": present tense is preferred. %> download a repo<%# "repository" is preferred. %> called "tanzu-mysql-kubernetes"
 
 * Talk about the values you can set in `values.yaml`
 
@@ -90,24 +130,26 @@ operatorImage: Image stored in their registry (--docker-server=[REGISTRY-SERVER-
 resources should be sufficient for the operator computing needed
 CAN scale up if desired.
 
-For more information about `limits` and `requests`, see [](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits).
+For more information about `limits` and `requests`, see [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#requests-and-limits).
 limits = max
 requests = min
 
 ### <a id='install-operator'></a>Helm Install
 
-When in that dir, run the helm install command
+To complete installation:
 
-<pre>
-cd tanzu-mysql-kubernetes
-helm --namespace [TANZU-MYSQL-OPERATOR-NAMESPACE] install OPERATOR-NAME ./charts/tanzu-mysql-operator/ --values charts/tanzu-mysql-operator/values.yaml
-</pre>
+1. When in that directory, run the `helm install` command:
 
-Where `OPERATOR-NAME` is the name of your Tanzu SQL Operator
+  <pre>
+  cd tanzu-mysql-kubernetes
+  helm --namespace [TANZU-MYSQL-OPERATOR-NAMESPACE] install OPERATOR-NAME ./charts/tanzu-mysql-operator/ --values charts/tanzu-mysql-operator/values.yaml
+  </pre>
 
-For Example
+  Where `OPERATOR-NAME` is the name of your Tanzu SQL Operator
 
-<pre class="terminal"> helm --namespace [TANZU-MYSQL-OPERATOR-NAMESPACE] install tanzu-mysql-operator ./charts/tanzu-mysql-operator/ --values charts/tanzu-mysql-operator/values.yaml</pre>
+  For example:
+
+  <pre class="terminal"> helm --namespace [TANZU-MYSQL-OPERATOR-NAMESPACE] install tanzu-mysql-operator ./charts/tanzu-mysql-operator/ --values charts/tanzu-mysql-operator/values.yaml</pre>
 
 
 ## <a id='uninstall-operator'></a>Uninstall the Operator
