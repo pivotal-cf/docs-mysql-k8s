@@ -20,16 +20,19 @@ This topic provides some architectural information about <%= vars.product_full %
 <%= vars.product_short %> provides extensions to the Kubernetes API through custom resources.
 Five separate custom resources are provided by the product:
 
-+ [TanzuMySQL](#mysql) - Managed MySQL instance
-+ [TanzuMySQLBackupLocation](#mysqlbackuplocation) - Define an S3 storage bucket for backups
-+ [TanzuMySQLBackup](#mysqlbackup) - Request for a backups
-+ [TanzuMySQLBackupSchedule](#mysqlbackupschedule)
-+ [TanzuMySQLRestore](#mysqlrestore)
++ [TanzuMySQL](#mysql): Managed MySQL instance
++ [TanzuMySQLBackupLocation](#mysqlbackuplocation): Define an S3 storage bucket for backups
++ [TanzuMySQLBackup](#mysqlbackup): Request for a backup
++ [TanzuMySQLBackupSchedule](#mysqlbackupschedule): Define a backup schedule
++ [TanzuMySQLRestore](#mysqlrestore): Request to restore data
 
-###<a id="mysql"></a> TanzuMySQL - Managed Tanzu MySQL Instance
+###<a id="mysql"></a> TanzuMySQL
 
-Applying this resource causes the operator to create a Statefulset with a single Pod with two containers.
+Applying this resource causes the Kubernetes operator to create a Statefulset with a single Pod
+with two containers.
 One container runs the MySQL database software, and the other runs components to support backups.
+
+The Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
 
 A Kubernetes `Service` with a service type of `ClusterIP` is created to route connections to the Pod.
 
@@ -50,10 +53,11 @@ A Kubernetes `Service` with a service type of `ClusterIP` is created to route co
   EOF
   ```
 
-After applying this resource, the <%= vars.product_short %> operator creates
+After applying this resource, the operator creates
 the low-level Kubernetes resources to run this Tanzu MySQL instance.
 
 The status of the instance can be seen by running `kubectl get tanzumysqls.mysql.tanzu.vmware.com`.
+
 Initially, this instance is in a pending state:
 
   ```
@@ -70,11 +74,13 @@ Later, the instance transitions to a running state:
   tanzumysql-sample   true    Running   27s
   ```
 
-### <a id="mysqlbackuplocation"></a> TanzuMySQLBackupLocation - Define an S3 Storage Bucket for Backups
+### <a id="mysqlbackuplocation"></a> TanzuMySQLBackupLocation
 
 This resource describes metadata and credentials for storing backups in an S3-compatible object store.
 
-  TanzuMySQLBackup resources reference this backup location to know where to save backup artifacts.
+TanzuMySQLBackup resources reference this backup location to know where to save backup artifacts.
+The operator creates or maintains a TanzuMySQLBackup resource for every artifact found in the backup location.
+Consequently, creating a TanzuMySQLBackupLocation that contains existing artifacts generates new, corresponding TanzuMySQLBackup resources.
 
   ```
   ---
@@ -108,22 +114,72 @@ This resource describes metadata and credentials for storing backups in an S3-co
 
 Credentials for S3 are stored in a Kubernetes secret with the keys `accessKeyId`, `secretAccessKey`.
 
+<table class="nice">
+<col width="25%">
+<col width="60%">
+        <tr>
+                <th colspan="3">Required Fields:</th>
+        </tr>
+        <tr>
+                <th>Name</th>
+                <th>Description</th>
+	        <th>Default</th>
+        </tr>
+	<tr>
+		<td>bucket</td>
+		<td>Name of the storage bucket for this backup location</td>
+		<td><em>N/A</em></td>
+	</tr>
+	<tr>
+		<td>secret.name</td>
+		<td>Name of a secret containing the S3 endpoint credentials</td>
+		<td><em>N/A</em></td>
+	</tr>
+</table>
 
-Required fields:
 
-  - bucket; Name of the storage bucket for this backup location
-  - secret.name; Name of a secret containing the S3 endpoint credentials
-
-Optional fields:
-
-  - bucketPath
-  - region (defaults to us-east-1)
-  - endpoint (defaults to aws, may be specified for non-AWS S3 endpoints, e.g. minio)
-  - forcePathStyle - whether to use path-style S3 URLs for compatibility (default: use virtual hosted-style S3 urls)
-  - disableSSL - for dev environments, may disable SSL for the endpoint (Not recommended for production)
+<table class="nice">
+<col width="25%">
+<col width="60%">
+        <tr>
+                <th colspan="3">Optional Fields:</th>
+        </tr>
+        <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Default</th>
+        </tr>
+        <tr>
+		<td>bucketPath</td>
+		<td>Path prefix within the bucket to store backups</td>
+		<td>no prefix</td>
+	</tr>
+        <tr>
+		<td>region</td>
+		<td></td>
+		<td>us-east-1</td>
+	</tr>
+        <tr>
+		<td>endpoint</td>
+		<td>Setting for non-AWS S3 endpoints such as Minio</td>
+		<td>AWS</td>
+	</tr>
+        <tr>
+		<td>forcePathStyle</td>
+		<td>True to use path-style S3 URLs for compatibility or
+                    false to use virtual hosted-style S3 URLs</td>
+		<td><code>false</code></td>
+	</tr>
+        <tr>
+		<td>disableSSL</td>
+		<td>For development environments, you can disable SSL for the endpoint.
+                    VMware does not recommend disabling SSL in production.</td>
+		<td><code>false</code></td>
+	</tr>
+</table>
 
 TanzuMySQLBackupLocation resources do not currently have any associated status,
-but can be listed via `kubectl`.
+but can be listed through `kubectl`.
 For example:
 
 <pre class='terminal'>
@@ -132,14 +188,17 @@ NAME                    AGE
 backuplocation-sample   2m38s
 </pre>
 
-### <a id='mysqlbackup'></a> TanzuMySQLBackup - Request for a backups
+### <a id='mysqlbackup'></a> TanzuMySQLBackup
 
-[//]: # (REQUEST for a backup or for backups?)
+This resource triggers the instance to run the Percona XtraBackup utility and
+upload a backup artifact to the blobstore.
+Blobstore artifacts are represented as TanzuMySQLBackup resources for subsequent restore.
+The resource requests that a backup be taken as soon as possible.
+(For a resource that requests a scheduled backup,
+see [TanzuMySQLBackupSchedule](#mysqlbackupschedule) below.)
 
-This resource requests that a backup be taken as soon as possible.
-This triggers the Tanzu MySQL instance to run
-the Percona XtraBackup utility and upload a backup artifact to the blobstore.
 For example:
+
 
 <pre class='terminal'>
 $ kubectl apply -f - <<<span>E</span>OF
@@ -156,7 +215,7 @@ spec:
 EOF
 </pre>
 
-Status of the backup can be observed via kubectl.
+Status of the backup can be observed through kubectl.
 For example:
 
 <pre class='terminal'>
@@ -167,7 +226,7 @@ backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.27
 
 ###<a id="mysqlbackupschedule"></a> TanzuMySQLBackupSchedule
 
-This resource defines a schedule on which TanzuMySQLBackup resources should be created.
+This resource defines a schedule to automatically create TanzuMySQLBackup resources.
 For example:
 
 <pre class='terminal'>
@@ -189,7 +248,7 @@ EOF
 </pre>
 
 TanzuMySQLBackupSchedule resources do not currently have any associated status,
-but can be listed via `kubectl`.
+but can be listed through `kubectl`.
 For example:
 
 <pre class='terminal'>
@@ -200,8 +259,10 @@ tanzumysqlbackupschedule-sample   8s
 
 ###<a id="mysqlrestore"></a> TanzuMySQLRestore
 
-This resource requests that the contents of a previously created backup artifact be restored,
-and a new Tanzu MySQL instance created.
+This resource instructs the operator to create a new PVC and a new TanzuMySQL instance
+from an existing TanzuMySQLBackup resource.
+The TanzuMySQLBackup resource's backup artifact is loaded into the new PVC
+before the MySQL database is started.
 For example:
 
 <pre class='terminal'>
@@ -232,9 +293,8 @@ NAME                       STATUS    TIME STARTED                  TIME COMPLETE
 tanzumysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
 </pre>
 
-[//]: # (WHAT is the significance of ""takes time"? Is there an estimate? )
-The restore takes time to retrieve and unpack the backup artifact and create the TanzuMySQL instance.
-The recovery time is proportional to the size of the backup artifact.
+The restore retrieves and unpacks the backup artifact and creates the TanzuMySQL instance.
+The restore time is proportional to the size of the backup artifact.
 For example:
 <pre class='terminal'>
 $ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
@@ -243,9 +303,8 @@ tanzumysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T
 </pre>
 
 
-[//]: # (WHAT is this sentence trying to say?)
-After the restore has completed successfully, the created TanzuMySQL instance will also have been created and in a
-  ready state.
+At the end of the restore process, you have a TanzuMySQL instance with the READY state true
+and with STATUS running.
 For example:
 
 <pre class='terminal'>
