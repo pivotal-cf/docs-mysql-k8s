@@ -26,5 +26,5 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 | Word | Explanation |
 |------|-------------|
 | Pod  | From the [word list](https://docs.google.com/spreadsheets/d/1hkadtxR1hY57kK7h5HN4ITHLJleZixCDH_RJPUpNq_A/edit?usp=sharing) |
-| Tanzu MySQL instance  | Use this phrase consistently. Okay to shorten it to "instance". Not okay to use "MySQL instance" or "Tanzu instance" or "database instance".|
+| TanzuMySQL instance  | Use this phrase consistently. Okay to shorten it to "instance". Not okay to use "MySQL instance" or "Tanzu instance" or "database instance".|
 |  |  |
