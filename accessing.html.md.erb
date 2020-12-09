@@ -17,22 +17,116 @@ Before you access a <%= vars.product_short %> instance, you must:
 
 ## <a id='server-login'></a>Log in to the MySQL Server
 
-
 1. Log in to the MySQL Server
 
     ```
-    $ kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE_NAME-0 -- /bin/bash
-    $ mysql -uroot -p$(cat $MYSQL-ROOT-PASSWORD-FILE)
+    $ kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -- /bin/bash
+    $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     ```
     Where:
     * `YOUR-NAMESPACE` is the namespace you are logging in to.
     * `INSTANCE-NAME` is the name of the instance you are targeting.
-    * `MYSQL-ROOT-PASSWORD-FILE` is the file containing your <%= vars.product_short %> root password.
 
     For example:
     <pre class="terminal">
     $ kubectl -n my-namespace exec --stdin --tty pod/my-instance-0 -- /bin/bash
-    $ mysql -uroot -p$(cat $my-root.yml)
+    $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     </pre>
 
-1. [CW] SUBSEQUENT STEPS FOR ACCESSING THE INSTANCE?
+
+## <a id='port-forward'></a>Connecting to the MySQL Server via the Kubernetes apiserver
+
+> **Note**: Connecting with `kubectl port-forward` proxies the connection through the apiserver.
+> It is intended for debugging access, and its performance is notably slower than a direct connection.
+
+1. Get the root password. The root user's password is available in the Kubernetes Secret named after
+  the TanzuMySQL instance suffixed with `-credentials`.
+
+  ```
+  $ MYSQL_ROOT_PASSWORD=kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}'
+  ```
+
+1. Start a port-forwarding proxy with [`kubectl port-forward`](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#port-forward).
+
+  ```
+  $ kubectl port-forward service/INSTANCE-NAME 3306 &
+  Forwarding from 127.0.0.1:3306 -> 3306
+  Forwarding from [::1]:3306 -> 3306
+  ```
+
+1. Connect to the service via the poxy port. For example, to connect with the mysql client:
+
+  ```
+  $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD}
+  ```
+
+1. When done with the connection, stop the proxy by killing the kubectl process.
+
+  For example:
+  ```
+  $ jobs
+  [1]+  Running                 kubectl port-forward service/tanzumysql-sample 3306 &
+  $ kill %1
+  ```
+
+## <a id='app-connect'></a>Connecting an in-cluster application to the MySQL Server
+
+<%= vars.product_short %> creates a Kubernetes Service that can be used to connect
+applications to the database from within the Kubernetes cluster.
+The name of the Service is the same as the name of the TanzuMySQL instance.
+
+1. Log in to the MySQL server [as above](#server-login)
+1. Create a database and user for the application to use.
+1. Provide the DNS name of the TanzuMySQL instance's Service to the application,
+  along with the username and password created for the application user.
+
+### Example deployment of Bitnami Wordpress with <%= vars.product_short %>
+
+The [Bitnami Wordpress helm chart](https://github.com/bitnami/charts/tree/master/bitnami/wordpress)
+can be configured to connect to an external database instead of deploying its own database.
+
+Here is an example of setting up <%= vars.product_short %> with a database and user
+that can be used with the Wordpress helm chart.
+
+```
+$ kubectl exec -it tanzumysql-sample-0 -c mysql -- bash
+mysql@tanzumysql-sample-0:/$ mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
+mysql> CREATE DATABASE bitnami_wordpress;
+Query OK, 1 row affected (0.20 sec)
+
+mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED BY 'hunter2';
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> GRANT ALL PRIVILEGES ON bitnami_wordpress.* TO 'bn_wordpress'@'%';
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.10 sec)
+```
+
+Next, the DNS name of the TanzuMySQL's Service is
+passed in to the chart as the value of `externalDatabase.host`.
+
+```
+$ helm repo add bitnami https://charts.bitnami.com/bitnami
+"bitnami" has been added to your repositories
+$ helm install wp bitnami/wordpress \
+    --set mariadb.enabled=false \
+    --set externalDatabase.host=tanzumysql-sample.default.svc.cluster.local \
+    --set externalDatabase.password=hunter2
+NAME: wp
+LAST DEPLOYED: Tue Dec  8 14:32:08 2020
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+** Please be patient while the chart is being deployed **
+...
+```
+
+The Wordpress user password can be retrieved as follows:
+
+```
+$ kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
+```
