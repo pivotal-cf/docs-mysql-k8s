@@ -53,7 +53,7 @@ A Kubernetes `Service` with a service type of `ClusterIP` is created to route co
 After applying this resource, the <%= vars.product_short %> operator creates
 the low-level Kubernetes resources to run this Tanzu MySQL instance.
 
-The status of the instance can be seen by running `kubectl get tanzumysqls.mysql.tanzu.vmware.com`. 
+The status of the instance can be seen by running `kubectl get tanzumysqls.mysql.tanzu.vmware.com`.
 Initially, this instance is in a pending state:
 
   ```
@@ -205,7 +205,7 @@ and a new Tanzu MySQL instance created.
 For example:
 
 <pre class='terminal'>
-$ kubeclt apply -f - <<<span>E</span>OF
+$ kubectl apply -f - <<<span>E</span>OF
 ---
 apiVersion: mysql.tanzu.vmware.com/v1alpha1
 kind: TanzuMySQLRestore
