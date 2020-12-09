@@ -3,6 +3,8 @@ title: Backup and Restore in Tanzu MySQL for Kubernetes
 owner: MySQL
 ---
 
+===== JUDY NOTES =====
+
 ### Overview of Backup and Restore
 
 The Backup and Restore feature of Tanzu MySQL for Kubernetes allows you to generate on-demand backups,
@@ -267,7 +269,7 @@ tanzumysqlrestore.mysql.tanzu.vmware.com/tanzumysqlrestore-sample created
 
 3. Verify that a restore has been triggered and track the progress of your restore by doing the following.
 ```
-→ k get tanzumysqlrestore tanzumysqlrestore-sample -n DEV-NAMESPACE
+→ kubectl get tanzumysqlrestore tanzumysqlrestore-sample -n DEV-NAMESPACE
 NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
 tanzumysqlrestore-sample   Succeeded   2020-12-01T21:52:30.000000Z   2020-12-01T21:53:09.163336Z   13m
 ```
@@ -284,12 +286,49 @@ tanzumysqlrestore-sample   Succeeded   2020-12-01T21:52:30.000000Z   2020-12-01T
 
 ### Restoring a Backup to a Different Namespace or Kubernetes Cluster
 
-### Troubleshooting
+If a BackupLocation referencing an external blobstore that contains existing TanzuMySQL backup
+artifacts is created in any namespace/k8s cluster, the associated TanzuMysqlBackup resources
+will be automatically created in that namespace.
 
-#### Failed Backup
+Therefore, to restore to a different namespace or Kubernetes cluster, you must create a
+BackupLocation in the target namespace.
 
-#### Failed Restore 
+1. Target the correct k8s cluster or namespace.
+1. Create a BackupLocation that contains the backup artifact you wish to restore. Follow steps in (Creating a TanzuMysqlBackupLocation)
+1. Wait until you see the TanzuMysqlBackup artifact you wish to restore.
+   ```
+   → k get tanzumysqlbackup
+     NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
+     sample-backup   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.148835Z   2020-12-01T21:49:30.609250Z   5d17h
+   ```
+1. Trigger a restore by following steps in (Restore from a Backup).
 
+### Troubleshooting Backup and Restore
+
+Detect potential failures or issues by monitoring the `STATUS` column of any Tanzu MySQL custom
+resource. If the status is `Failed`, or if it seems to be stuck in `Pending`, `Scheduled`, or
+`Running`, this may be indicative of a misconfiguration, possible issues with the external
+blobstore, or issues with the Tanzu MySQL Operator. For example:
+```
+$ kubectl get tanzumysqlbackup backup-sample
+NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
+backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   2m44s
+```
+
+You can further diagnose the issue by inspecting the Kubernetes events of the resource in question.
+For example:
+```
+$ kubectl get events --field-selector involvedObject.name=backup-sample
+LAST SEEN   TYPE      REASON   OBJECT                           MESSAGE
+2m43s       Warning   Failed   tanzumysqlbackup/backup-sample   Secret "backuplocation-sample-creds" not found
+```
+
+You can read the message in the `MESSAGE` column to understand why the failure occurred. In this
+example, the `backup-sample` expected a Kubernetes secret called `backuplocation-sample-creds` to
+exist. You can fix the problem by creating the `backuplocation-sample-creds` secret. The template
+for this secret is located in the `backuplocation.yaml` template.
+
+===== END JUDY NOTES =====
 
 <%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
 
