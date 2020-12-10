@@ -1,0 +1,521 @@
+---
+title: Backup and Restore in Tanzu MySQL for Kubernetes
+owner: MySQL
+---
+
+===== JUDY NOTES =====
+
+### Overview of Backup and Restore
+
+The Backup and Restore feature of Tanzu MySQL for Kubernetes allows you to generate on-demand backups,
+configured scheduled automated backups, and restore backups to new TanzuMySQL instances.
+
+Tanzu MySQL for Kubernetes currently only supports S3, Minio, and other S3-compatible storages
+for uploading and retrieving backup artifacts.
+
+Tanzu MySQL for Kubernetes Backup and Restore consists of the following Custom Resource
+Definitions (CRDs):
+  * TanzuMysqlBackup - References a TanzuMysql backup artifact that exists in an
+    external blobstore (S3, Minio, ...). A new TanzuMysqlBackup resource is created
+    every time a backup (on-demand or scheduled) is generated.
+  * TanzuMysqlBackupLocation - References an external blobstore and credentials
+    necessary to access the blobstore.
+  * TanzuMysqlBackupSchedule - Represents a CronJob schedule on which to perform
+    backups.
+  * TanzuMysqlRestore - References an instance of a restore that was performed. A
+    new TanzuMysqlRestore resource is created every time a restore is performed.
+
+#### Synchronization of Backups with the External Blobstore
+
+Tanzu MySQL for Kubernetes syncs TanzuMysqlBackup resources in a Kubernetes cluster with the
+contents of the external blobstore. The external blobstore is treated as the source of truth.
+This means that, if a TanzuMysqlBackup resource is deleted on the Kubernetes cluster, but the
+associated backup artifact still exists in the external blobstore, Tanzu MySQL for Kubernetes
+will eventually recreate the TanzuMysqlBackup resource to match the contents of the external
+blobstore.
+
+This behavior also applies when in a different namespace or Kubernetes cluster. If a
+TanzuMySQLBackupLocation is created in a different namespace and/or Kubernetes cluster, Tanzu
+MySQL for Kubernetes will automatically create TanzuMysqlBackup resources for all
+identifiable* backup artifacts in the external blobstore.
+
+This behavior is particularly useful for restoring backups to a TanzuMysql instance in a
+different namespace or Kubernetes clusters. For more information, see (the section below
+on restoring to a different namespace/cluster).
+
+*: Backup artifacts in blobstores are identified as TanzuMySQL backups using object metadata.
+
+### Creating a TanzuMysqlBackupLocation
+1. Configure your Backup Location using the TanzuMysqlBackupLocation YAML template. Example YAML file:
+```
+---
+apiVersion: mysql.tanzu.vmware.com/v1alpha1
+kind: TanzuMySQLBackupLocation
+metadata:
+  name: backuplocation-sample
+spec:
+  storage:
+    # For S3 or Minio:
+    s3:
+      bucket: "name-of-bucket"
+      bucketPath: "my-backups-prefix/"
+      # region: "us-east-1"
+      endpoint:  "" # optional, default to AWS
+      forcePathStyle: false
+      disableSSL: false
+      secret:
+        name: backuplocation-sample-creds
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backuplocation-sample-creds
+stringData:
+  # S3 Credentials
+  accessKeyId: "my-access-key-id"
+  secretAccessKey: "my-secret-access-key"
+```
+
+TanzuMySQLBackupLocation (make into a table)
+* Property, Type, Default, Description, Example, Required?
+* metadata.name, String, None, The name of the TanzuMysqlBackupLocation. Must be unique within a namespace., backuplocation-sample, Yes
+* spec.storage.s3.bucket, String, None, The name of an existing s3 bucket., s3-bucket-sample, Yes
+* spec.storage.s3.bucketPath, String, None, The name of the path under which backup artifacts will be uploaded. If a folder in
+  the path doesn't exist already, it will be created automatically., s3-sample-path/sample-subpath/, No
+* spec.storage.s3.region, String, us-east-1, The geographic region of the bucket. Non-AWS S3 implementations may not require this value., us-west-1, No
+* spec.storage.s3.endpoint, String, https://[bucket-name].s3.[Region].amazonaws.com/, The endpoint URL for the configured s3-compatible provider. Leave blank for Amazon S3., http://minio.default:9000, No
+* spec.storage.s3.forcePathStyle, boolean, false, When set to true, forces the use of path-style addressing for s3 operations. May be required for certain non-AWS
+  s3 providers. For more information, see https://aws.amazon.com/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story/, false, No
+* spec.storage.s3.disableSSL, boolean, false, When set to true, disables SSL when performing S3 operations. This should only be enabled for development purposes., false, No
+* spec.storage.s3.secret.name, String, None, Name of the k8s secret containing the credentials for connecting to S3., backuplocation-sample-creds, Yes
+
+Secret (make into a table)
+* Property, Type, Default, Description, Example, Required?
+* metadata.name, String, None, The name of the Secret. Must match spec.storage.s3.secret.name in a BackupLocation, and must be unique within a namespace.,
+  backuplocation-sample-creds, Yes
+* stringData.accessKeyId, String, None, The Access Key ID for an AWS IAM user that has permissions to read/write from the s3 bucket., "AKIAIOSFODNN7EXAMPLE", Yes
+* stringData.secretAccessKey, String, None, The Secret Access Key for an AWS IAM user that has permissions to read/write from the s3 bucket."wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", Yes
+
+2. Create the TanzuMysqlBackupLocation in the same namespace as the TanzuMysql instance(s) that
+   you want to take backups of.
+```
+→ kubectl apply -f backuplocation.yaml -n DEV-NAMESPACE
+tanzumysqlbackuplocation.mysql.tanzu.vmware.com/backuplocation-sample created
+secret/backuplocation-sample-creds configured
+```
+
+3. Verify that the TanzuMysqlBackupLocation has been created.
+```
+→ kubectl get tanzumysqlbackuplocation backuplocation-sample -o json -n DEV-NAMESPACE | jq .spec
+{
+  "storage": {
+    "s3": {
+      "bucket": "bucket-sample",
+      "disableSSL": false,
+      "forcePathStyle": false,
+      "region": "us-west-1",
+      "secret": {
+        "name": "backuplocation-sample-creds"
+      }
+    }
+  }
+}
+```
+
+### Create a TanzuMysqlBackupSchedule
+1. Configure your backup schedule using the TanzuMysqlBackupSchedule YAML template. Example YAML file:
+```
+---
+apiVersion: mysql.tanzu.vmware.com/v1alpha1
+kind: TanzuMySQLBackupSchedule
+metadata:
+  name: tanzumysqlbackupschedule-sample
+spec:
+  backupTemplate:
+    spec:
+      location:
+        name: backuplocation-sample
+      cluster:
+        name: tanzumysql-sample
+  schedule: "@daily"
+```
+
+TanzuMySQLBackupSchedule (make into a table)
+* Property, Type, Default, Description, Example, Required?
+* metadata.name, String, None, The name of the TanzuMysqlBackupSchedule. Must be unique within a namespace., backupschedule-sample, Yes
+* spec.backupTemplate.spec.location.name, String, None, The name of the TanzuMySQLBackupLocation that represents the blobstore where backups will be uploaded. Must be in the same namespace as the TanzuMysqlBackupSchedule., backuplocation-sample, Yes
+* spec.backupTemplate.spec.cluster.name, String, None, The name of the TanzuMySQL instance on which you would like to perform scheduled backups. Must be in the same namespace as the TanzuMysqlBackupSchedule., tanzumysql-sample, Yes
+* spec.schedule, String (Cron schedule), None, The cron schedule on which backups will be performed. Must be a valid cron schedule., "0 23 * * 6" (every Saturday at 11PM), Yes
+
+2. Create the TanzuMysqlBackupSchedule in the same namespace as the TanzuMysqlBackupLocation and TanzuMysql instance that
+   you referenced in the TanzuMysqlBackupSchedule YAML file.
+```
+→ kubectl apply -f backupschedule.yaml -n DEV-NAMESPACE
+tanzumysqlbackupschedule.mysql.tanzu.vmware.com/backupschedule-sample created
+```
+
+3. Verify that the TanzuMysqlBackupSchedule has been created.
+```
+→ kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o json -n DEV-NAMESPACE | jq .spec
+{
+  "backupTemplate": {
+    "spec": {
+      "cluster": {
+        "name": "demo-db"
+      },
+      "location": {
+        "name": "demo-backuplocation"
+      }
+    }
+  },
+  "schedule": "@daily"
+}
+```
+
+If you've correctly configured both a TanzuMySQLBackupLocation and TanzuMySQLBackupSchedule for an existing
+TanzuMySQL instance, you should start seeing backups being generated and uploaded to the external blobstore.
+
+### Perform an On-Demand Backup
+
+You must have an existing TanzuMysql instance that you want to take a backup of. You must also have already
+configured a TanzuMysqlBackupLocation that represents the external blobstore to which you will upload the
+generated backup artifact.
+
+1. Configure your backup using the TanzuMysqlBackup YAML template. Example YAML file:
+```
+---
+apiVersion: mysql.tanzu.vmware.com/v1alpha1
+kind: TanzuMySQLBackup
+metadata:
+  name: backup-sample
+spec:
+  location:
+    name: backuplocation-sample
+  cluster:
+    name: tanzumysql-sample
+```
+
+TanzuMySQLBackup (make into a table)
+* Property, Type, Default, Description, Example, Required?
+* metadata.name, String, None, The name of the TanzuMysqlBackup. Must be unique within a namespace., backup-sample, Yes
+* spec.location.name, String, None, The name of the TanzuMySQLBackupLocation that represents the blobstore where the backup will be uploaded. Must be in the same namespace as the TanzuMySQL instance., Yes
+* spec.cluster.name, String, None, The name of the TanzuMySQL instance on which you would like to perform the on-demand backup., Yes
+
+2. Trigger the backup by creating the TanzuMysqlBackup in the same namespace as the TanzuMysql instance
+   that you want to take a backup of.
+```
+→ kubectl apply -f tanzumysqlbackup.yaml -n DEV-NAMESPACE
+tanzumysqlbackup.mysql.tanzu.vmware.com/backup-sample created
+```
+
+3. Verify that a backup has been generated and track the progress of your backup by doing the following.
+```
+→ kubectl get tanzumysqlbackup backup-sample -n DEV-NAMESPACE
+NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
+backup-sample   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.148835Z   2020-12-01T21:49:30.609250Z   16m
+```
+  - STATUS - Represents the current status of the backup. Possible values can be:
+    - Pending: The backup has been received but not yet scheduled on a TanzuMySQL pod.
+    - Scheduled: The backup has been scheduled on a selected TanzuMySQL pod but has not started.
+    - Running: The backup is currently being generated and streamed to the external blobstore
+    - Succeeded: The backup has completed successfully
+    - Failed: The backup has failed to complete. To troubleshoot, see the below section on how to troubleshoot a failed backup.
+  - TIME SCHEDULED - The time at which the backup was scheduled on a selected TanzuMySQL pod.
+  - TIME STARTED - The time at which the backup process started.
+  - TIME COMPLETED - The time at which the backup process completed. If the backup fails, this value will be empty.
+  - AGE - Age of the backup since it was requested.
+
+### Restore from a Backup
+
+You must have an existing TanzuMysqlBackup in your current namespace. You must also have a TanzuMysqlBackupLocation
+that represents the bucket where the existing backup artifact is stored.
+
+TanzuMysqlRestores will always restore to a new TanzuMySQL instance. The TanzuMySQL instance is created automatically
+when the restore is triggered. Tanzu MySQL for Kubernetes does not allow restoring a backup to an existing TanzuMySQL
+instance. Although it is possible to perform this manually by interacting directly with the Kubernetes API, VMware
+strongly discourages this action as you may run the risk of losing data.
+
+1. Configure your restore using the TanzuMysqlRestore YAML template. Example YAML file:
+```
+---
+apiVersion: mysql.tanzu.vmware.com/v1alpha1
+kind: TanzuMySQLRestore
+metadata:
+  name: tanzumysqlrestore-sample
+spec:
+  tanzuMysqlBackup:
+    name: backup-sample
+  tanzuMysqlTemplate:
+    metadata:
+      name: tanzumysql-sample
+    spec:
+      storageSize: 1Gi
+      imagePullSecret: tanzu-mysql-image-registry
+
+```
+
+TanzuMySQLRestore (make into a table)
+* Property, Type, Default, Description, Example, Required?
+* metadata.name, String, None, The name of the TanzuMysqlRestore. Must be unique within a namespace., tanzumysqlrestore-sample, Yes
+* spec.tanzuMysqlBackup.name, String, None, The name of the TanzuMySQLBackup that represents the backup artifact you wish to restore. Must be in the same namespace as the TanzuMySQLRestore., Yes
+* spec.MysqlTemplate, , , The configuration for the TanzuMysql instance that the backup artifact will be restored to. This TanzuMysql instance will be created automatically as part of the restore, so the name must not already exist in the namespace.
+  For descriptions of each value in the configuration template, see [Creating a TanzuMySQL instance](http://docs-pcf-staging.cfapps.io/tanzu-mysql-kubernetes/1-n/create-delete-mysql.html#create-yaml)., Yes
+
+2. Trigger the restore by creating the TanzuMysqlRestore in the same namespace as the TanzuMysqlBackup and TanzuMysqlBackupLocation.
+```
+→ kubectl apply -f tanzumysqlrestore.yaml -n DEV-NAMESPACE
+tanzumysqlrestore.mysql.tanzu.vmware.com/tanzumysqlrestore-sample created
+```
+
+3. Verify that a restore has been triggered and track the progress of your restore by doing the following.
+```
+→ kubectl get tanzumysqlrestore tanzumysqlrestore-sample -n DEV-NAMESPACE
+NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
+tanzumysqlrestore-sample   Succeeded   2020-12-01T21:52:30.000000Z   2020-12-01T21:53:09.163336Z   13m
+```
+  - STATUS - Represents the current status of the restore. Possible values can be:
+    - Pending: The restore has been received but not yet scheduled.
+    - Scheduled: The restore has been scheduled but has not started.
+    - Running: The restore is currently in process.
+    - Succeeded: The restore has completed successfully
+    - Failed: The restore has failed to complete. To troubleshoot, see the below section on how to troubleshoot a failed restore.
+  - TIME SCHEDULED - The time at which the restore was scheduled.
+  - TIME STARTED - The time at which the restore process started.
+  - TIME COMPLETED - The time at which the restore process completed. If the restore fails, this value will be empty.
+  - AGE - Age of the restore since it was requested.
+
+### Restoring a Backup to a Different Namespace or Kubernetes Cluster
+
+If a BackupLocation referencing an external blobstore that contains existing TanzuMySQL backup
+artifacts is created in any namespace/k8s cluster, the associated TanzuMysqlBackup resources
+will be automatically created in that namespace.
+
+Therefore, to restore to a different namespace or Kubernetes cluster, you must create a
+BackupLocation in the target namespace.
+
+1. Target the correct k8s cluster or namespace.
+1. Create a BackupLocation that contains the backup artifact you wish to restore. Follow steps in (Creating a TanzuMysqlBackupLocation)
+1. Wait until you see the TanzuMysqlBackup artifact you wish to restore.
+   ```
+   → k get tanzumysqlbackup
+     NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
+     sample-backup   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.148835Z   2020-12-01T21:49:30.609250Z   5d17h
+   ```
+1. Trigger a restore by following steps in (Restore from a Backup).
+
+### Troubleshooting Backup and Restore
+
+Detect potential failures or issues by monitoring the `STATUS` column of any Tanzu MySQL custom
+resource. If the status is `Failed`, or if it seems to be stuck in `Pending`, `Scheduled`, or
+`Running`, this may be indicative of a misconfiguration, possible issues with the external
+blobstore, or issues with the Tanzu MySQL Operator. For example:
+```
+$ kubectl get tanzumysqlbackup backup-sample
+NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
+backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   2m44s
+```
+
+You can further diagnose the issue by inspecting the Kubernetes events of the resource in question.
+For example:
+```
+$ kubectl get events --field-selector involvedObject.name=backup-sample
+LAST SEEN   TYPE      REASON   OBJECT                           MESSAGE
+2m43s       Warning   Failed   tanzumysqlbackup/backup-sample   Secret "backuplocation-sample-creds" not found
+```
+
+You can read the message in the `MESSAGE` column to understand why the failure occurred. In this
+example, the `backup-sample` expected a Kubernetes secret called `backuplocation-sample-creds` to
+exist. You can fix the problem by creating the `backuplocation-sample-creds` secret. The template
+for this secret is located in the `backuplocation.yaml` template.
+
+===== END JUDY NOTES =====
+
+<%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
+
+DEVELOPER-FACING DOCSET
+
+<strong><%= modified_date %></strong>
+
+This topic describes how to deploy and delete <%= vars.product_full %> instances.
+
+## <a id='prereq'></a>Prerequisites
+Prerequisites
+
+* Kubectl CLI
+* Developers must have permissions in order to perform the following actions to all custom resources under the mysql.tanzu.vmware.com Kubernetes API group:
+  * create
+  * delete
+  * deletecollection
+  * get
+  * list
+  * patch
+  * update
+  * watch
+
+## <a id='create-instance'></a>Create a <%= vars.product_short %> instance
+Create a <%= vars.product_short %> instance
+
+1. Target development NAMESPACE where they want to create the <%= vars.product_short %> instances
+1. Create the secret:
+
+kubectl --namespace=[TANZU-MYSQL-OPERATOR-NAMESPACE] create secret docker-registry tanzu-mysql-image-registry --docker-server=[REGISTRY-SERVER-URL] --docker-username=[DOCKER-USERNAME] --docker-password=[DOCKER-PASSWORD]
+
+This Kubernetes secret can point to the TanzuNet registry, or a private registry that you have configured for your Kubernetes environment. If you do not have access to the registry credentials, you must contact your kubernetes administrator to have these set up for you in your NAMESPACE.
+
+### <a id='create-yaml'></a>Create a `tanzumysql.yaml` file.
+* Create a `tanzumysql.yaml` file. This is the configuration file for the <%= vars.product_short %> instance.
+
+    ```
+    apiVersion: mysql.tanzu.vmware.com/v1alpha1
+    kind: TanzuMySQL
+    metadata:
+      name: tanzumysql-sample
+    spec:
+      storageSize: 1Gi
+      imagePullSecret: tanzu-mysql-image-registry
+
+    #### Set the storage class name to change storage class of the PVC associated with this resource
+    #  storageClassName: standard
+
+    #### Examples to set resource limit/request for mysql/backup pods.
+
+    #  resources:
+
+    #### This is the container running the mysql server.
+    #    mysql:
+    #      limits:
+    #        cpu: 3
+    #        memory: 800Mi
+    #      requests:
+    #        cpu: 2
+    #        memory: 500Mi
+    #### This is the sidecar container that takes a backup and streams to the storage backend.
+    #    backups:
+    #      limits:
+    #        cpu: 2
+    #        memory: 500Mi
+    #      requests:
+    #        cpu: 1
+    #        memory: 200Mi
+    ```
+
+* Talk about the values you can set in `tanzumysql.yaml`
+
+<table class="nice">
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+<th>Example</th>
+<th>Required?</th>
+<tr>
+  <td>metadata.name</td>
+  <td>String</td>
+  <td>None</td>
+  <td>The name of your TanzuMySQL instance. Must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. For more information, see http://kubernetes.io/docs/user-guide/identifiers#names</td>
+  <td>my-instance</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>spec.storageSize</td>
+  <td></td>
+  <td>None</td>
+  <td>StorageSize specifies the size of the persistent volume claims for the <%= vars.product_short %> pods. Unit of measure can be M for Megabyte, for example. For more information about what units are expected for persistent volume claim sizes, see <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities">this Github page</a>.
+
+  </td>
+  <td>50Gi</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>spec.imagePullSecret</td>
+  <td>String</td>
+  <td>None</td>
+  <td>Refers to an existing Kubernetes docker-registry secret that can access the registry that contains the TanzuMySQL image.</td>
+  <td>tanzu-mysql-image-registry</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>spec.storageClassName</td>
+  <td>String</td>
+  <td>Standard</td>
+  <td>Specifies the StorageClass for the persistent volume claims for the <%= vars.product_short %> pods. For the types of StorageClasses available, contact your Kubernetes administrator. For more information about the Kubernetes StorageClass concept, see this doc:https://kubernetes.io/docs/concepts/storage/storage-classes/</td>
+  <td>standard</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.resources.mysql</td>
+  <td>
+    <ul>
+      <li>limits.cpu</li>
+      <li>limits.memory</li>
+    </ul>
+  </td>
+  <td>Best Effort</td>
+  <td>Describes the maximum amount of compute resources (CPU, Memory) allowed for the MySQL container. If left blank, Kubernetes will do best effort to allocate necessary compute resources for the MySQL container. For more information, see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/</td>
+  <td>limits.cpu: 3 , limits.memory: 800Mi</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.resources.mysql</td>
+  <td>
+    <ul>
+      <li>requests.cpu</li>
+      <li>requests.memory</li>
+    </ul>
+  </td>
+  <td>Best Effort</td>
+  <td>Describes the minimum amount of compute resources (CPU, Memory) allowed for the MySQL container. If left blank, it defaults to Limits if that is explicitly specified. For more information, see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/</td>
+  <td>requests.cpu: 2 , requests.memory: 500Mi</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.resources.backups</td>
+  <td>
+    <ul>
+      <li>limits.cpu</li>
+      <li>limits.memory</li>
+    </ul>
+  </td>
+  <td>Best Effort</td>
+  <td>Describes the maximum amount of compute resources (CPU, Memory) allowed for the backups container. If left blank, Kubernetes will do best effort to allocate necessary compute resources for the backups container. For more information, see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/</td>
+  <td>limits.cpu: 2 , limits.memory: 500Mi</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.resources.backups</td>
+  <td>
+    <ul>
+      <li>requests.cpu</li>
+      <li>requests.memory</li>
+    </ul>
+  </td>
+  <td>Best Effort</td>
+  <td>Describes the minimum amount of compute resources (CPU, Memory) allowed for the backups container. If left blank, it defaults to Limits if that is explicitly specified. For more information, see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/</td>
+  <td>requests.cpu: 1 , requests.memory: 200Mi</td>
+  <td>No</td>
+</tr>
+</table>
+
+## <a id='deploy-instance'></a>Deploy Instance to Kubernetes
+* kubectl -n YOUR_NAMESPACE apply -f tanzumysql.yaml
+* Verify that is was successfully created:
+kubectl get tanzumysql INSTANCE_NAME
+
+
+
+## <a id='delete-instance'></a>Delete a <%= vars.product_short %> instance
+Delete a <%= vars.product_short %> instance
+
+    kubectl -n YOUR_NAMESPACE delete tanzumysql INSTANCE_NAME
+
+* If you want, also delete the Persistent Volume Claim (PVC).
+1. Review your PVCs
+
+    `kubectl get pvc`
+
+1. `kubectl delete pvc POD_NAME` for each pod in the <%= vars.product_short %> instance.
+
+WARNING: This is a destructive action. If you destroy your PVC, you are deleting all associated data with your <%= vars.product_short %> database.
+
+
+NOTE: If you delete the Pod or Statefulset associated with the <%= vars.product_short %> resource, a <%= vars.product_short %> controller will recreate it for you. If you want to permanently delete the instance, you need to delete the `tanzumysql` resource.
