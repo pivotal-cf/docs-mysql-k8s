@@ -11,68 +11,75 @@ This topic provides some architectural information about <%= vars.product_full %
 
 ## <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture Diagram
 
+The diagram below shows the architecture of <%= vars.product_short %>:
 <img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the operator deployment and app namespace">
 
-[Click here to view a larger version of this image.](./images/architecture-diagram.png)
+<a href="./images/architecture-diagram.png" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
+<%# It would be valuable to have some text describing this diagram. %>
 
 ## <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
 
 <%= vars.product_short %> provides extensions to the Kubernetes API through custom resources.
-Five separate custom resources are provided by the product:
+The product provides five separate custom resources:
 
-+ [TanzuMySQL](#mysql): Managed MySQL instance
-+ [TanzuMySQLBackupLocation](#mysqlbackuplocation): Define an S3 storage bucket for backups
-+ [TanzuMySQLBackup](#mysqlbackup): Request for a backup
-+ [TanzuMySQLBackupSchedule](#mysqlbackupschedule): Define a backup schedule
-+ [TanzuMySQLRestore](#mysqlrestore): Request to restore data
++ [TanzuMySQL](#mysql): A managed MySQL instance
++ [TanzuMySQLBackupLocation](#mysqlbackuplocation): Defines an S3 storage bucket for backups
++ [TanzuMySQLBackup](#mysqlbackup): Requests for a backup
++ [TanzuMySQLBackupSchedule](#mysqlbackupschedule): Defines a backup schedule
++ [TanzuMySQLRestore](#mysqlrestore): Requests to restore data
 
 ###<a id="mysql"></a> TanzuMySQL
 
-Applying this resource causes the Kubernetes operator to create a Statefulset with a single Pod
+Applying this resource causes the Kubernetes Operator to create a StatefulSet with a single Pod
 with two containers.
 One container runs the MySQL database software, and the other runs components to support backups.
 
 The Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
 
 A Kubernetes `Service` with a service type of `ClusterIP` is created to route connections to the Pod.
+<%# who/what creates this? does the user have to do this? %>
 
-  ```
-  $ kubectl apply -f - <<EOF
-  ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQL
-  metadata:
-    name: tanzumysql-sample
-  spec:
-    resources:
-      mysql:
-        requests:
-          memory: 1Gi
-    storageSize: 1Gi
-    imagePullSecret: tanzu-mysql-image-registry
-  EOF
-  ```
+<pre class="terminal">
+$ kubectl apply -f - <span><<</span>EOF
+---
+apiVersion: mysql.tanzu.vmware.com/v1alpha1
+kind: TanzuMySQL
+metadata:
+  name: tanzumysql-sample
+spec:
+  resources:
+    mysql:
+      requests:
+        memory: 1Gi
+  storageSize: 1Gi
+  imagePullSecret: tanzu-mysql-image-registry
+EOF
+</pre>
 
 After applying this resource, the operator creates
-the low-level Kubernetes resources to run this TanzuMySQL instance.
+the low-level Kubernetes resources to run this Tanzu MySQL instance.
 
-The status of the instance can be seen by running `kubectl get tanzumysqls.mysql.tanzu.vmware.com`.
+You can see the status of the instance by running:
+
+```
+kubectl get tanzumysqls.mysql.tanzu.vmware.com
+```
 
 Initially, this instance is in a pending state:
 
-  ```
-  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
-  NAME                READY   STATUS    AGE
-  tanzumysql-sample           Pending   2s
-  ```
+<pre class="terminal">
+$ kubectl get tanzumysqls.mysql.tanzu.vmware.com
+NAME                READY   STATUS    AGE
+tanzumysql-sample           Pending   2s
+</pre>
 
 Later, the instance transitions to a running state:
 
-  ```
-  $ kubectl get tanzumysqls.mysql.tanzu.vmware.com
-  NAME                READY   STATUS    AGE
-  tanzumysql-sample   true    Running   27s
-  ```
+<pre class="terminal">
+$ kubectl get tanzumysqls.mysql.tanzu.vmware.com
+NAME                READY   STATUS    AGE
+tanzumysql-sample   true    Running   27s
+</pre>
 
 ### <a id="mysqlbackuplocation"></a> TanzuMySQLBackupLocation
 
@@ -82,104 +89,112 @@ TanzuMySQLBackup resources reference this backup location to know where to save 
 The operator creates or maintains a TanzuMySQLBackup resource for every artifact found in the backup location.
 Consequently, creating a TanzuMySQLBackupLocation that contains existing artifacts generates new, corresponding TanzuMySQLBackup resources.
 
-  ```
-  ---
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: backuplocation-sample-creds
-  stringData:
-    # S3 Credentials
-    accessKeyId: "my-s3-access-key-id"
-    secretAccessKey: "my-s3-secret-access-key"
-  ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQLBackupLocation
-  metadata:
-    name: backuplocation-sample
-  spec:
-    storage:
-      # For S3 or Minio:
-      s3:
-        bucket: "s3bucket"
-        bucketPath: "optional/prefix/for/backup/objects/"
-        region: "us-east-1"
-        endpoint:  "" # optional, default to AWS
-        forcePathStyle: false
-        disableSSL: false
-        secret:
-          name: backuplocation-sample-creds
-  EOF
-  ```
+<%#
+Could we add the following to the below code snippet?
+
+<pre class="terminal">
+$ kubectl apply -f - <span><<</span>EOF
+%>
+```
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backuplocation-sample-creds
+stringData:
+  # S3 Credentials
+  accessKeyId: "my-s3-access-key-id"
+  secretAccessKey: "my-s3-secret-access-key"
+---
+apiVersion: mysql.tanzu.vmware.com/v1alpha1
+kind: TanzuMySQLBackupLocation
+metadata:
+  name: backuplocation-sample
+spec:
+  storage:
+    # For S3 or Minio:
+    s3:
+      bucket: "s3bucket"
+      bucketPath: "optional/prefix/for/backup/objects/"
+      region: "us-east-1"
+      endpoint:  "" # optional, default to AWS
+      forcePathStyle: false
+      disableSSL: false
+      secret:
+        name: backuplocation-sample-creds
+EOF
+```
 
 Credentials for S3 are stored in a Kubernetes secret with the keys `accessKeyId`, `secretAccessKey`.
 
+The table below lists the required fields:
+
 <table class="nice">
 <col width="25%">
 <col width="60%">
-        <tr>
-                <th colspan="3">Required Fields:</th>
-        </tr>
-        <tr>
-                <th>Name</th>
-                <th>Description</th>
-	        <th>Default</th>
-        </tr>
-	<tr>
-		<td>bucket</td>
-		<td>Name of the storage bucket for this backup location</td>
-		<td><em>N/A</em></td>
-	</tr>
-	<tr>
-		<td>secret.name</td>
-		<td>Name of a secret containing the S3 endpoint credentials</td>
-		<td><em>N/A</em></td>
-	</tr>
+  <tr>
+    <th colspan="3">Required Fields:</th>
+  </tr>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Default</th>
+  </tr>
+  <tr>
+    <td>bucket</td>
+    <td>Name of the storage bucket for this backup location</td>
+    <td><em>N/A</em></td>
+  </tr>
+  <tr>
+    <td>secret.name</td>
+    <td>Name of a secret containing the S3 endpoint credentials</td>
+    <td><em>N/A</em></td>
+  </tr>
 </table>
 
+The table below lists the optional fields:
 
 <table class="nice">
 <col width="25%">
 <col width="60%">
-        <tr>
-                <th colspan="3">Optional Fields:</th>
-        </tr>
-        <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Default</th>
-        </tr>
-        <tr>
-		<td>bucketPath</td>
-		<td>Path prefix within the bucket to store backups</td>
-		<td>no prefix</td>
-	</tr>
-        <tr>
-		<td>region</td>
-		<td>Name of the region where the bucket is located.</td>
-		<td>us-east-1</td>
-	</tr>
-        <tr>
-		<td>endpoint</td>
-		<td>Setting for non-AWS S3 endpoints such as Minio</td>
-		<td>AWS</td>
-	</tr>
-        <tr>
-		<td>forcePathStyle</td>
-		<td>True to use path-style S3 URLs for compatibility or
-                    false to use virtual hosted-style S3 URLs</td>
-		<td><code>false</code></td>
-	</tr>
-        <tr>
-		<td>disableSSL</td>
-		<td>For development environments, you can disable SSL for the endpoint.
-                    VMware does not recommend disabling SSL in production.</td>
-		<td><code>false</code></td>
-	</tr>
+  <tr>
+    <th colspan="3">Optional Fields:</th>
+  </tr>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Default</th>
+  </tr>
+  <tr>
+    <td>bucketPath</td>
+    <td>Path prefix within the bucket to store backups</td>
+    <td>no prefix</td>
+  </tr>
+  <tr>
+    <td>region</td>
+    <td>Name of the region where the bucket is located.</td>
+    <td>us-east-1</td>
+  </tr>
+  <tr>
+    <td>endpoint</td>
+    <td>Setting for non-Amazon S3 endpoints such as Minio</td>
+    <td>AWS</td>
+  </tr>
+  <tr>
+    <td>forcePathStyle</td>
+    <td>True to use path-style S3 URLs for compatibility or false to use virtual hosted-style S3 URLs</td>
+    <td><code>false</code></td>
+  </tr>
+  <tr>
+    <td>disableSSL</td>
+    <td>For development environments, you can disable SSL for the endpoint.
+      VMware discourages disabling SSL in production.</td>
+    <td><code>false</code></td>
+  </tr>
 </table>
 
 TanzuMySQLBackupLocation resources do not currently have any associated status,
-but can be listed through `kubectl`.
+but you can list them using kubectl.
 For example:
 
 <pre class='terminal'>
@@ -193,12 +208,10 @@ backuplocation-sample   2m38s
 This resource triggers the instance to run the Percona XtraBackup utility and
 upload a backup artifact to the blobstore.
 Blobstore artifacts are represented as TanzuMySQLBackup resources for subsequent restore.
-The resource requests that a backup be taken as soon as possible.
-(For a resource that requests a scheduled backup,
-see [TanzuMySQLBackupSchedule](#mysqlbackupschedule) below.)
-
+The resource requests for a backup to be taken as soon as possible.
+For a resource that requests a scheduled backup,
+see [TanzuMySQLBackupSchedule](#mysqlbackupschedule) below.
 For example:
-
 
 <pre class='terminal'>
 $ kubectl apply -f - <<<span>E</span>OF
@@ -215,7 +228,7 @@ spec:
 EOF
 </pre>
 
-Status of the backup can be observed through kubectl.
+You can see the status of the backup using kubectl.
 For example:
 
 <pre class='terminal'>
@@ -248,7 +261,7 @@ EOF
 </pre>
 
 TanzuMySQLBackupSchedule resources do not currently have any associated status,
-but can be listed through `kubectl`.
+but you can list them using kubectl.
 For example:
 
 <pre class='terminal'>
@@ -259,9 +272,9 @@ tanzumysqlbackupschedule-sample   8s
 
 ###<a id="mysqlrestore"></a> TanzuMySQLRestore
 
-This resource instructs the operator to create a new PVC and a new TanzuMySQL instance
+This resource instructs the operator to create a new PVC and a new Tanzu MySQL instance
 from an existing TanzuMySQLBackup resource.
-The TanzuMySQLBackup resource's backup artifact is loaded into the new PVC
+The backup artifact for the TanzuMySQLBackup resource is loaded into the new PVC
 before the MySQL database is started.
 For example:
 
@@ -284,7 +297,7 @@ spec:
 EOF
 </pre>
 
-Status of the restore can be observed through kubectl.
+You can see the status of the restore using kubectl.
 For example:
 
 <pre class='terminal'>
@@ -293,9 +306,10 @@ NAME                       STATUS    TIME STARTED                  TIME COMPLETE
 tanzumysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
 </pre>
 
-The restore retrieves and unpacks the backup artifact and creates the TanzuMySQL instance.
+The restore retrieves and unpacks the backup artifact and creates the Tanzu MySQL instance.
 The restore time is proportional to the size of the backup artifact.
 For example:
+
 <pre class='terminal'>
 $ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
 NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
@@ -303,8 +317,8 @@ tanzumysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T
 </pre>
 
 
-At the end of the restore process, you have a TanzuMySQL instance with the READY state true
-and with STATUS running.
+At the end of the restore process, you have a Tanzu MySQL instance with the `READY` state `true`
+and with `STATUS` `running`.
 For example:
 
 <pre class='terminal'>

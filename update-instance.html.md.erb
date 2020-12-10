@@ -27,7 +27,7 @@ but not reduce it.
 
 To scale `storageSize`:
 
-1. Look up the storage class associated with the MySQL Pod’s PersistentVolumeClaim (PVC).
+1. Look up the storage class associated with the MySQL Pod’s Persistent Volume Claim (PVC).
   <pre><code>kubectl get pvc mysql-data-MYSQL-POD-NAME -o jsonpath='{.spec.storageClassName}'</code></pre>
 
 1. Check if the storage class allows volume expansion.
