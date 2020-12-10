@@ -11,19 +11,19 @@ This topic provides an overview of <%= vars.product_full %> (<%= vars.product_sh
 
 ## <a id='about-mysql4k8s'></a>About <%= vars.product_short %>
 
-<%= vars.product_short %> is a Kubernetes operator that automates provisioning, management,
+<%= vars.product_short %> is a Kubernetes Operator that automates provisioning, management,
 and operations of dedicated MySQL instances running on Kubernetes.
 By default, MySQL instances provisioned by <%= vars.product_short %> are configured with
-secure and performant settings to meet app developer expectations for a general-use relational
+secure and functional settings to meet app developer expectations for a general-use relational
 database.
 
-Kubernetes operators are software extensions to Kubernetes that provide custom resources
-for management of apps, services, and their components.
+Kubernetes Operators are software extensions to Kubernetes that provide custom resources
+for the management of apps, services, and their components.
 
-The operator provides a consistent way to deploy MySQL instances to Kubernetes and to run them,
-including "day two", continuous operations.
-MySQL instances deployed using the operator can be used by apps running on
-Kubernetes or outside of Kubernetes.
+The Operator provides a consistent way to deploy MySQL instances to Kubernetes and to run them.
+This includes "day two", continuous operations.
+Apps running on Kubernetes or outside of Kubernetes can use MySQL instances
+deployed using the Operator.
 
 <%= vars.product_short %> packages a collection of open-source software to help you deploy
 and manage one or more instances of the MySQL database on Kubernetes.
@@ -61,9 +61,10 @@ The major features of MySQL 8.0 include:
 
 ### <a id='what-is-mysql'></a> More about MySQL
 
-If you are new to MySQL and want general information about what MySQL is,
+If you are new to MySQL and want general information about MySQL,
 see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/what-is-mysql.html).
 
+<%# should there be a product snapshot here? %>
 
 ## <a id='rto-rpo-characteristics'></a>RTO and RPO Characteristics
 Recovery Time Objective (RTO) and Recovery Point Objective (RPO) are metrics used to assess the availability of a SERVICE/CLUSTER/? during an outage.
@@ -88,7 +89,7 @@ This product is distributed under the
 <%= vars.product_short %> has the following limitations:
 
 * This product is currently in beta. VMware does not provide commercial support.
-* This product is intended to be used with any Kubernetes distribution >= 1.16.
+* This product is intended to be used with any Kubernetes distribution v1.16 or later.
   However, given the number of Kubernetes vendors, versions, and configurations, not all of them have been
   tested with <%= vars.product_short %>.
 * Product upgrades are not supported. If you want to test a newer version, delete the previous version first.
