@@ -57,7 +57,7 @@ EOF
 </pre>
 
 After applying this resource, the operator creates
-the low-level Kubernetes resources to run this Tanzu MySQL instance.
+the low-level Kubernetes resources to run this TanzuMySQL instance.
 
 You can see the status of the instance by running:
 
@@ -272,7 +272,7 @@ tanzumysqlbackupschedule-sample   8s
 
 ###<a id="mysqlrestore"></a> TanzuMySQLRestore
 
-This resource instructs the operator to create a new PVC and a new Tanzu MySQL instance
+This resource instructs the operator to create a new PVC and a new TanzuMySQL instance
 from an existing TanzuMySQLBackup resource.
 The backup artifact for the TanzuMySQLBackup resource is loaded into the new PVC
 before the MySQL database is started.
@@ -306,7 +306,7 @@ NAME                       STATUS    TIME STARTED                  TIME COMPLETE
 tanzumysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
 </pre>
 
-The restore retrieves and unpacks the backup artifact and creates the Tanzu MySQL instance.
+The restore retrieves and unpacks the backup artifact and creates the TanzuMySQL instance.
 The restore time is proportional to the size of the backup artifact.
 For example:
 
@@ -317,7 +317,7 @@ tanzumysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T
 </pre>
 
 
-At the end of the restore process, you have a Tanzu MySQL instance with the `READY` state `true`
+At the end of the restore process, you have a TanzuMySQL instance with the `READY` state `true`
 and with `STATUS` `running`.
 For example:
 
