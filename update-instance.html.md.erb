@@ -11,107 +11,113 @@ This topic describes how to scale or change configurations on a
 <%= vars.product_full %> instance.
 
 ## <a id='prereq'></a>Prerequisites
-Before you update the <%= vars.product_short %> instance, you must:
 
+Before you update the <%= vars.product_short %> instance, you must have:
 
-* Have access and permissions to the <%= vars.product_short %> instance.
+* **Access and permissions to the <%= vars.product_short %> instance.**
 
-* Have the Kubernetes command line tool (kubectl) installed. For more
-information, see [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-from the Kubernetes documentation.
+* **The Kubernetes Command Line Interface (kubectl):**
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
 
 ## <a id='scale-storage'></a>Scale storageSize
 
-For storage classes that support `storageSize`, the `storageSize` can only be expanded but
-not reduced.
+For storage classes that support `storageSize`, you can expand the `storageSize`
+but not reduce it.
 
 To scale `storageSize`:
 
-1. Look up the storage class associated with the MySQL Pod’s PVC.
-  <pre>
-  kubectl get pvc mysql-data-MYSQL-POD-NAME -o jsonpath='{.spec.storageClassName}'
-  </pre>
+1. Look up the storage class associated with the MySQL Pod’s PersistentVolumeClaim (PVC).
+  <pre><code>kubectl get pvc mysql-data-MYSQL-POD-NAME -o jsonpath='{.spec.storageClassName}'</code></pre>
 
-1. Check to see if the storage class supports volume expansion. See the `ALLOWVOLUMEEXPANSION` column by running:.<pre>
-kubectl get storageclass standard</pre>
-  See example output:
-  <pre class="terminal">
+1. Check if the storage class allows volume expansion.
+Look for the `ALLOWVOLUMEEXPANSION` column by running:
+<pre><code>kubectl get storageclass standard</code></pre>
+For example:
+<pre class="terminal">$ kubectl get storageclass standard
 NAME                 PROVISIONER            RECLAIMPOLICY   VOLUMEBINDINGMODE    ALLOWVOLUMEEXPANSION   AGE
 standard (default)   kubernetes.io/gce-pd   Delete          Immediate            true                   91s</pre>
 
 1. If the output does not show the `ALLOWVOLUMEEXPANSION` column, run:
-  <pre>kubectl get storageclasses.storage.k8s.io standard -o \
-    custom-columns='NAME:.metadata.name,ALLOWVOLUMEEXPANSION:.allowVolumeExpansion'</pre>
+  <pre><code>kubectl get storageclasses.storage.k8s.io standard \
+    -o custom-columns='NAME:.metadata.name,ALLOWVOLUMEEXPANSION:.allowVolumeExpansion'</code></pre>
 
 1. If you are using Kubernetes v1.11 and volume expansion is supported, change the `allowVolumeExpansion` field to `true`
       in StorageClass objects. Only PVCs created from a StorageClass with `allowVolumeExpansion`
       set to `true` are allowed to perform volume expansion.
       For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims).
 
-1. Edit the PVC `spec.resources.requests.storage` field to increase the volume size by running: <pre>
-kubectl edit pvc mysql-data->MYSQL-POD-NAME</pre>
-  See example output:
-  <pre class="terminal">persistentvolumeclaim/mysql-data-mysql-pod-name edited</pre>
+<%# Is running this command all you need to do to increase the volume size? %>
+1. Edit the PVC `spec.resources.requests.storage` field to increase the volume size by running:
+<pre><code>kubectl edit pvc mysql-data-MYSQL-POD-NAME</code></pre>
+For example:
+<pre class="terminal">$ kubectl edit pvc mysql-data-MYSQL-POD-NAME
+persistentvolumeclaim/mysql-data-MYSQL-POD-NAME edited</pre>
 
-1. Do either of the following:
+1. Do one of the following:
+    * **If the storageClass supports online expansion:**
+      Wait for the PVC to automatically resize. For more information, see the
+      [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#resizing-an-in-use-persistentvolumeclaim).<br><br>
+    * **Otherwise:** Wait for the PVC to have the `FileSystemResizePending` condition.
+    Delete the Pod to unmount the PVC and allow it to resize.
+    <pre><code>kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-MYSQL-POD-NAME</code></pre>
+    <pre><code>kubectl rollout restart statefulset MYSQL-INSTANCE-NAME</code></pre>
+    For example:
+    <pre class="terminal">$ kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-MYSQL-POD-NAME
+    persistentvolumeclaim/mysql-data-tanzumysql-sample-0 condition met <br>
+    $ kubectl rollout restart statefulset MYSQL-INSTANCE-NAME
+    statefulset.apps/tanzumysql-sample restarted</pre>
 
-  1. **If the storageClass supports online expansion:**
-    Wait for PVC to automatically resize. For more information, see [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#resizing-an-in-use-persistentvolumeclaim).<br><br>
-
-  1. **Otherwise:** Wait for the PVC to have the `FileSystemResizePending` condition. Delete the Pod to 
-  unmount the PVC and allow it to resize.<pre>
-  kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-MYSQL-POD-NAME</pre>
-  See example output:
-  <pre class="terminal">persistentvolumeclaim/mysql-data-tanzumysql-sample-0 condition met</pre>
-  And run:
-  <pre>kubectl rollout restart statefulset MYSQL-INSTANCE-NAME statefulset.apps/tanzumysql-sample restarted</pre>
-
-1. After the Pod is automatically re-created by the StatefulSet controller and successfully restarts, the user can observe the storage has been resized.<pre>
-kubectl exec MYSQL-POD-NAME -c mysql -- df -h /var/lib/mysql</pre>
-  See example output:
-  <pre class="terminal">
+1. After the StatefulSet controller has automatically re-created the Pod, and the Pod
+has successfully restarted, verify that the storage has been resized.
+<pre><code>kubectl exec MYSQL-POD-NAME -c mysql -- df -h /var/lib/mysql</code></pre>
+For example:
+<pre class="terminal">$ kubectl exec MYSQL-POD-NAME -c mysql -- df -h /var/lib/mysql
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/sdb        3.0G  346M  2.6G  12% /var/lib/mysql</pre>
 
-### <a id='scale-storage-downtime'></a>Expected Downtime
+### <a id='scale-storage-downtime'></a>Expected Downtime When Scaling storageSize
 
-You can expected downtime when expanding storage in the following ways:
+The expected downtime when expanding storage is as follows:
 
 - **With online expansion:** There is no downtime expected in most cases.
 - **With offline expansion:** There is downtime while the Pod is re-created and the
 PVC is being resized.
 
-## <a id='scale-resources'></a>Scaling CPU and Memory Resources
+## <a id='scale-resources'></a>Scale CPU and Memory Resources
 
 To scale CPU or memory resources:
 
-1. Edit the TanzuMySQL configuration's `spec.resources` field to increase the CPU
-or Memory requirements for the `mysql` or `backups` containers.
-  <pre>
-  kubectl edit tanzumysql MYSQL-INSTANCE-NAME</pre>
-  See example output:
-  <pre class="terminal">tanzumysql.mysql.tanzu.vmware.com/mysql-instance-name edited</pre>
+<%# Is running this command all you need to do to increase the resources?
+Does this command just apply an edit you have made somewhere else?
+It seems to be the same command as the one for changing imagePullSecret. %>
+1. Edit the Tanzu MySQL configuration's `spec.resources` field to increase the CPU
+or memory requirements for the `mysql` or `backups` containers.
+  <pre><code>kubectl edit tanzumysql MYSQL-INSTANCE-NAME</code></pre>
+  For example:
+  <pre class="terminal">$ kubectl edit tanzumysql MYSQL-INSTANCE-NAME
+  tanzumysql.mysql.tanzu.vmware.com/MYSQL-INSTANCE-NAME edited</pre>
 
-### <a id='scale-resources-downtime'></a>Expected Downtime
+### <a id='scale-resources-downtime'></a>Expected Downtime When Scaling CPU and Memory Resources
 
-You can expect downtime when changing resource reservations in the following ways:
+The expected downtime when changing resource reservations is as follows:
 
-- Brief downtime while Kubernetes re-creates the pods.
+- Brief downtime while Kubernetes re-creates the Pods.
 - Risk of longer downtime if the new requested values exceed the available capacity
 of the Kubernetes cluster.
 
 ## <a id='other-config'></a>Change Other Configurations
 
 Changing `storageClassName` or `imagePullSecret` does not have any effect on a
-running TanzuMySQL instance. If a TanzuMySQL instance is not running due to
-errors in these fields, they can be changed, and changes are propagated into the
-StatefulSet to correct the error.
+running Tanzu MySQL instance.
+If a Tanzu MySQL instance is not running due to errors in these fields, you can change them.
+The changes are propagated into the StatefulSet to correct the error.
 
 To change `storageClassName` or `imagePullSecret`:
 
-1. Edit the TanzuMySQL configuration `spec`.
-<pre>
-kubectl edit tanzumysql MYSQL-INSTANCE-NAME</pre>
-  See example output:<pre class="terminal">
+<%# Is running this command all you need to do? %>
+1. Edit the Tanzu MySQL configuration `spec`.
+<pre><code>kubectl edit tanzumysql MYSQL-INSTANCE-NAME</code></pre>
+For example:
+<pre class="terminal">$ kubectl edit tanzumysql MYSQL-INSTANCE-NAME
 tanzumysql.mysql.tanzu.vmware.com/MYSQL-INSTANCE-NAME edited</pre>
