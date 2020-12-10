@@ -1,5 +1,5 @@
 ---
-title: Connecting an App to the Tanzu MySQL Instance
+title: Connecting an App to the TanzuMySQL Instance
 owner: MySQL
 ---
 
@@ -7,20 +7,20 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic explains how you, as a developer, connect an app to your Tanzu MySQL instance.
+This topic explains how you, as a developer, connect an app to your TanzuMySQL instance.
 
-## <a id='AboutTile'></a>About Binding Apps to a Tanzu MySQL Instance
+## <a id='AboutTile'></a>About Binding Apps to a TanzuMySQL Instance
 
-After you have created a Tanzu MySQL instance,
+After you have created a TanzuMySQL instance,
 the next task is to bind it to your app so that your app can access the database.
 
 You do this by obtaining the password for the root database user and the IP address for the
-Tanzu MySQL instance and then adding these connection parameters to the app environment variables.
+TanzuMySQL instance and then adding these connection parameters to the app environment variables.
 
 
 ## <a id='prereq'></a>Prerequisites
 
-Before you bind an app to a Tanzu MySQL instance, you must have:
+Before you bind an app to a TanzuMySQL instance, you must have:
 
 <%# is there a reason why we use a the TKGI docs installation here and not the k8s docs installation? %>
 * **The Kubernetes Command Line Interface (kubectl):**
@@ -36,19 +36,19 @@ Before you bind an app to a Tanzu MySQL instance, you must have:
        VMware recommends that developers have admin access to their target namespace.
     </p>
 
-* **A Tanzu MySQL instance running in the same Kubernetes cluster as the app:**
+* **A TanzuMySQL instance running in the same Kubernetes cluster as the app:**
   This is required. The ServiceType is ClusterIP.
   However, instances can be in a different namespace from the app.<br>
-  For how to create an instance, see [Creating and Deleting a Tanzu MySQL Instance](create-delete-mysql.html).<br>
+  For how to create an instance, see [Creating and Deleting a TanzuMySQL Instance](create-delete-mysql.html).<br>
   For information about the ClusterIP ServiceType, see the
   [Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
 
-## <a id='retrieve-creds'></a>Retrieve Connection Parameters for the Tanzu MySQL Instance
+## <a id='retrieve-creds'></a>Retrieve Connection Parameters for the TanzuMySQL Instance
 
 To connect the app to the database, you provide the app with:
 
 *  The root username and password for the database
-*  The IP address for the Tanzu MySQL instance
+*  The IP address for the TanzuMySQL instance
 
 This procedure describes how to find these connection parameters.
 
@@ -60,7 +60,7 @@ To retrieve connection parameters:
     kubectl get secret INSTANCE-NAME-credentials -o jsonpath='{.data.rootPassword}' | base64 -D
     ```
 
-    Where `INSTANCE-NAME` is the name of the Tanzu MySQL instance.
+    Where `INSTANCE-NAME` is the name of the TanzuMySQL instance.
 
     For example:
 
@@ -73,7 +73,7 @@ To retrieve connection parameters:
 2. Record the password string, for example, `examplepassword`.
    You need it to complete the [Connect your App to the MySQL Database](#connect-app) below.
 
-3. Obtain the IP address of the Tanzu MySQL instance by running:
+3. Obtain the IP address of the TanzuMySQL instance by running:
 
     ```
     kubectl get service INSTANCE-NAME
@@ -93,7 +93,7 @@ tanzumysql-sample   ClusterIP   10.110.144.49   <none>        3306/TCP,33060/TCP
 
 ## <a id='connect-app'></a>Connect your App to the MySQL Database
 
-To connect your app to the MySQL database on the Tanzu MySQL instance:
+To connect your app to the MySQL database on the TanzuMySQL instance:
 
 1. Manually configure the app environment variables with the connection parameters
    that you recorded above.

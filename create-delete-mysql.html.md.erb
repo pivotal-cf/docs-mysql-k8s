@@ -1,5 +1,5 @@
 ---
-title: Creating and Deleting a Tanzu MySQL Instance
+title: Creating and Deleting a TanzuMySQL Instance
 owner: MySQL
 ---
 
@@ -7,11 +7,11 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic describes how you, as a developer, deploy and delete Tanzu MySQL instances.
+This topic describes how you, as a developer, deploy and delete TanzuMySQL instances.
 
 ## <a id='prerequisites'></a> Prerequisites
 
-Before you can create or delete Tanzu MySQL instances, you must have:
+Before you can create or delete TanzuMySQL instances, you must have:
 
 * The Kubernetes Command Line Interface (kubectl).
   See [Installing the Kubernetes CLI](https://docs.pivotal.io/tkgi/installing-kubectl-cli.html).
@@ -26,12 +26,12 @@ Before you can create or delete Tanzu MySQL instances, you must have:
     If you do not have access to the registry credentials, contact your kubernetes administrator
     to have these set up for you in your namespace.
 
-## <a id='create-instance'></a>Create a Tanzu MySQL Instance
+## <a id='create-instance'></a>Create a TanzuMySQL Instance
 
 From your namespace, Kubernetes must be able to access the registry that stores the <%= vars.product_short %> images
-To create a Tanzu MySQL instance:
+To create a TanzuMySQL instance:
 
-1. Target the development namespace where you want to create the Tanzu MySQL instance.
+1. Target the development namespace where you want to create the TanzuMySQL instance.
 
 2. From your namespace, Kubernetes must be able to access the registry
    that stores the <%= vars.product_short %> images. 
@@ -98,7 +98,7 @@ kubectl --namespace=DEVELOPMENT-NAMESPACE create secret docker-registry tanzu-my
    see [Property Reference for tanzumysql.yml](#tanzumysql.yaml) below.
 
 
-5. Deploy a Tanzu MySQL instance to Kubernetes by running:
+5. Deploy a TanzuMySQL instance to Kubernetes by running:
 
     ```
     kubectl -n DEVELOPMENT-NAMESPACE apply -f tanzumysql.yaml
@@ -128,7 +128,7 @@ tanzumysql-sample   true    Running   2m17s
 
 
 
-## <a id='delete-instance'></a>Delete a Tanzu MySQL instance
+## <a id='delete-instance'></a>Delete a TanzuMySQL instance
 
 
 You get a PVC when you create the instance. 
@@ -149,9 +149,9 @@ The PVC will automatically reattach to the new instance.
    If you want to permanently delete the instance, you need to delete the <code>tanzumysql</code> resource.
 </p>
 
-To delete a Tanzu MySQL instance:
+To delete a TanzuMySQL instance:
 
-1. Delete the Tanzu MySQL instance by running:
+1. Delete the TanzuMySQL instance by running:
 
     <code>kubectl -n DEVELOPMENT-NAMESPACE delete tanzumysql INSTANCE-NAME </code>
 
@@ -221,7 +221,7 @@ created in [#create-instance](#) above.
   <td>metadata.name</td>
   <td>String</td>
   <td>None</td>
-  <td>The name of your Tanzu MySQL instance. Must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. For more information, see http://kubernetes.io/docs/user-guide/identifiers#names</td>
+  <td>The name of your TanzuMySQL instance. Must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. For more information, see http://kubernetes.io/docs/user-guide/identifiers#names</td>
   <td>my-instance</td>
   <td>Yes</td>
 </tr>
