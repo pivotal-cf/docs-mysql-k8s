@@ -11,6 +11,17 @@ owner: MySQL
 This topic describes how operators install, configure,
 and deploy the <%= vars.product_full %> Operator.
 
+## <a id="overview"></a> Overview
+
+To install and configure <%= vars.product_short %>, you must download 
+and install the <%= vars.product_short %> Operator using Helm.
+
+To download and install the Operator::
+
+1. [Download Resources](#download)
+1. [(Optional) Edit Helm Chart](#edit-chart)
+1. [Install Operator](#install)
+
 ## <a id='prereq'></a>Prerequisites
 
 Before you deploy the <%= vars.product_short %> Operator:
@@ -32,7 +43,7 @@ from the Kubernetes documentation.
 
 
 
-## <a id="install"></a> Download Resources
+## <a id="download"></a> Download Resources
 
 To install the <%= vars.product_short %> Operator, you must download
 the deployment templates and artifact references.
@@ -40,7 +51,8 @@ the deployment templates and artifact references.
 To download the resources:
 
 1. Log in to Helm from the command line by running:
-  <pre>helm registry login registry.pivotal.io --username=USER-EMAIL --password=USER-PASSWORD</pre>
+  <pre>helm registry login registry.pivotal.io \
+    --username=USER-EMAIL --password=USER-PASSWORD</pre>
 
 1. Log in to [Tanzu Network](https://network.pivotal.io) and go to the **<%= vars.product_full %>** product page.
 
@@ -51,7 +63,7 @@ open to reference in the following step.
 
 1. Download each of the artifact references using the command line.
   1. **To download `tanzu-mysql-operator-chart` to the Helm cache:** Click the artifact from Tanzu Network and paste the 
-  two commands from the modal into the command line.
+  two commands into the command line.
   <br><%= image_tag("tanzu-mysql-operator-artifact.png", :width => "450px", :alt=>"Modal shows 4 pieces of data: type, digest, 'set the environment variable' and 'pull this chart'") %>
   <br>For example:
   <pre class="terminal">$ export HELM_EXPERIMENTAL_OCI=1
@@ -65,7 +77,7 @@ version: v0.1.0
 Status: Downloaded newer chart for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:v0.1.0</pre>
   Record the `ref` value from the output.<br><br>
   1. **To download `tanzu-mysql-instance`:** Click the artifact from Tanzu Network and paste the 
-  command from the modal into the command line.
+  command into the command line.
   <br><br>For example:
   <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:v0.1.0
     <br>v0.1.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-instance
@@ -87,7 +99,7 @@ Digest: sha256:78073dcf626603da192b78643bda24e0098f944d0bd54da1d60924b20d5eea8c
 Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:v0.1.0
 registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:v0.1.0</pre>
   1. **To download `tanzu-mysql-operator`:** Click the artifact from Tanzu Network and paste the 
-  command from the modal into the command line.
+  command into the command line.
   <br><br>For example:
   <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:v0.1.0
     <br>v0.1.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-operator
@@ -119,7 +131,7 @@ To edit your Helm chart:
 1. Open the `values.yaml` file inside your local `tanzu-mysql-operator` directory.
     You can edit the following values:
     
-    | Key            | Value         | Description                     | 
+    | Key            | Value Type    | Description                     | 
     |----------------|---------------|---------------------------------|
     | imagePullSecret| String        | Name of image secret. You enter this string when you create a secret with `kubectl create secret`.         |
     | operatorImage  | URI           | Location of <%= vars.product_short %> Operator image registry. You can change to your own image registry.  |
@@ -139,3 +151,53 @@ To edit your Helm chart:
         cpu: 100m
         memory: 20Mi
     </pre>
+
+## <a id="install"></a> Install Operator
+
+To install the <%= vars.product_short %> Operator, you must use kubectl to create a namespace and secret. Then, you 
+use the Helm CLI to install the Operator.
+
+To install the Operator:
+
+1. Create the namespace by running:
+
+    ```
+    kubectl create namespace tanzu-mysql-for-kubernetes-system
+    ```
+
+1. Set the context of the namespace by running:
+
+    ```
+    kubectl config set-context --current --namespace tanzu-mysql-for-kubernetes-system
+    ```
+
+1. Create the secret for the <%= vars.product_short %> image by running:
+
+    ```
+    kubectl create secret docker-registry tanzu-mysql-image-registry --docker-server=https://registry.pivotal.io/ \
+    --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
+    ```
+
+1. Go to the `tanzu-mysql-operator` directory.
+    <br>For example:
+    <pre class="terminal">$ cd ./tanzu-mysql-operator</pre>
+
+1. Install the <%= vars.product_short %> Operator by running:
+
+    ```
+    helm install tanzu-mysql-operator .
+    ```
+
+1. See that your Operator has the `STATUS` of `Running` by running:
+
+    ```
+    kubectl get all
+    ```
+    See example output:
+    <pre class="terminal">NAME                                                           READY   STATUS    RESTARTS   AGE
+pod/mysql-for-kubernetes-controller-manager-84d76dfb77-lq5mb   1/1     <span style="color: #77bf00;">Running</span>   0          21s
+<br>NAME                                                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/mysql-for-kubernetes-controller-manager   1/1     1            1           23s
+<br>NAME                                                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/mysql-for-kubernetes-controller-manager-84d76dfb77   1         1         1       23s</pre>
+    <p class="note"><strong>Note:</strong> You can only have one <%= vars.product_short %> Operator installed.</p>
