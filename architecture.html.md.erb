@@ -34,27 +34,25 @@ Applying this resource causes the Kubernetes Operator to create a StatefulSet wi
 with two containers.
 One container runs the MySQL database software, and the other runs components to support backups.
 
-The Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
+The TanzuMySQL Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
 
-A Kubernetes `Service` with a service type of `ClusterIP` is created to route connections to the Pod.
-<%# who/what creates this? does the user have to do this? %>
+When a TanzuMySQL instance is created, the Tanzu MySQL operator automatically creates a Kubernetes service
+with a service type of `ClusterIP` which routes connections to the TanzuMySQL Pod.
 
-<pre class="terminal">
-$ kubectl apply -f - <span><<</span>EOF
----
-apiVersion: mysql.tanzu.vmware.com/v1alpha1
-kind: TanzuMySQL
-metadata:
-  name: tanzumysql-sample
-spec:
-  resources:
-    mysql:
-      requests:
-        memory: 1Gi
-  storageSize: 1Gi
-  imagePullSecret: tanzu-mysql-image-registry
-EOF
-</pre>
+  ```
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQL
+  metadata:
+    name: tanzumysql-sample
+  spec:
+    resources:
+      mysql:
+        requests:
+          memory: 1Gi
+    storageSize: 1Gi
+    imagePullSecret: tanzu-mysql-image-registry
+  ```
 
 After applying this resource, the operator creates
 the low-level Kubernetes resources to run this TanzuMySQL instance.
@@ -89,110 +87,36 @@ TanzuMySQLBackup resources reference this backup location to know where to save 
 The operator creates or maintains a TanzuMySQLBackup resource for every artifact found in the backup location.
 Consequently, creating a TanzuMySQLBackupLocation that contains existing artifacts generates new, corresponding TanzuMySQLBackup resources.
 
-<%#
-Could we add the following to the below code snippet?
-
-<pre class="terminal">
-$ kubectl apply -f - <span><<</span>EOF
-%>
-```
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: backuplocation-sample-creds
-stringData:
-  # S3 Credentials
-  accessKeyId: "my-s3-access-key-id"
-  secretAccessKey: "my-s3-secret-access-key"
----
-apiVersion: mysql.tanzu.vmware.com/v1alpha1
-kind: TanzuMySQLBackupLocation
-metadata:
-  name: backuplocation-sample
-spec:
-  storage:
-    # For S3 or Minio:
-    s3:
-      bucket: "s3bucket"
-      bucketPath: "optional/prefix/for/backup/objects/"
-      region: "us-east-1"
-      endpoint:  "" # optional, default to AWS
-      forcePathStyle: false
-      disableSSL: false
-      secret:
-        name: backuplocation-sample-creds
-EOF
-```
+  ```
+  ---
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: backuplocation-sample-creds
+  stringData:
+    # S3 Credentials
+    accessKeyId: "my-s3-access-key-id"
+    secretAccessKey: "my-s3-secret-access-key"
+  ---
+  apiVersion: mysql.tanzu.vmware.com/v1alpha1
+  kind: TanzuMySQLBackupLocation
+  metadata:
+    name: backuplocation-sample
+  spec:
+    storage:
+      # For S3 or Minio:
+      s3:
+        bucket: "s3bucket"
+        bucketPath: "optional/prefix/for/backup/objects/"
+        region: "us-east-1"
+        endpoint:  "" # optional, default to AWS
+        forcePathStyle: false
+        disableSSL: false
+        secret:
+          name: backuplocation-sample-creds
+  ```
 
 Credentials for S3 are stored in a Kubernetes secret with the keys `accessKeyId`, `secretAccessKey`.
-
-The table below lists the required fields:
-
-<table class="nice">
-<col width="25%">
-<col width="60%">
-  <tr>
-    <th colspan="3">Required Fields:</th>
-  </tr>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  <tr>
-    <td>bucket</td>
-    <td>Name of the storage bucket for this backup location</td>
-    <td><em>N/A</em></td>
-  </tr>
-  <tr>
-    <td>secret.name</td>
-    <td>Name of a secret containing the S3 endpoint credentials</td>
-    <td><em>N/A</em></td>
-  </tr>
-</table>
-
-The table below lists the optional fields:
-
-<table class="nice">
-<col width="25%">
-<col width="60%">
-  <tr>
-    <th colspan="3">Optional Fields:</th>
-  </tr>
-  <tr>
-    <th>Name</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  <tr>
-    <td>bucketPath</td>
-    <td>Path prefix within the bucket to store backups</td>
-    <td>no prefix</td>
-  </tr>
-  <tr>
-    <td>region</td>
-    <td>Name of the region where the bucket is located.</td>
-    <td>us-east-1</td>
-  </tr>
-  <tr>
-    <td>endpoint</td>
-    <td>Setting for non-Amazon S3 endpoints such as Minio</td>
-    <td>AWS</td>
-  </tr>
-  <tr>
-    <td>forcePathStyle</td>
-    <td>True to use path-style S3 URLs for compatibility or false to use virtual hosted-style S3 URLs</td>
-    <td><code>false</code></td>
-  </tr>
-  <tr>
-    <td>disableSSL</td>
-    <td>For development environments, you can disable SSL for the endpoint.
-      VMware discourages disabling SSL in production.</td>
-    <td><code>false</code></td>
-  </tr>
-</table>
-
 TanzuMySQLBackupLocation resources do not currently have any associated status,
 but you can list them using kubectl.
 For example:
@@ -213,8 +137,7 @@ For a resource that requests a scheduled backup,
 see [TanzuMySQLBackupSchedule](#mysqlbackupschedule) below.
 For example:
 
-<pre class='terminal'>
-$ kubectl apply -f - <<<span>E</span>OF
+```
 ---
 apiVersion: mysql.tanzu.vmware.com/v1alpha1
 kind: TanzuMySQLBackup
@@ -225,8 +148,7 @@ spec:
     name: backuplocation-sample
   cluster:
     name: tanzumysql-sample
-EOF
-</pre>
+```
 
 You can see the status of the backup using kubectl.
 For example:
@@ -242,8 +164,7 @@ backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.27
 This resource defines a schedule to automatically create TanzuMySQLBackup resources.
 For example:
 
-<pre class='terminal'>
-$ kubectl apply -f - <<<span>E</span>OF
+```
 ---
 apiVersion: mysql.tanzu.vmware.com/v1alpha1
 kind: TanzuMySQLBackupSchedule
@@ -257,8 +178,7 @@ spec:
       cluster:
         name: tanzumysql-sample
   schedule: "@daily"
-EOF
-</pre>
+```
 
 TanzuMySQLBackupSchedule resources do not currently have any associated status,
 but you can list them using kubectl.
@@ -278,8 +198,7 @@ The backup artifact for the TanzuMySQLBackup resource is loaded into the new PVC
 before the MySQL database is started.
 For example:
 
-<pre class='terminal'>
-$ kubectl apply -f - <<<span>E</span>OF
+```
 ---
 apiVersion: mysql.tanzu.vmware.com/v1alpha1
 kind: TanzuMySQLRestore
@@ -294,8 +213,7 @@ spec:
     spec:
       storageSize: 1Gi
       imagePullSecret: tanzu-mysql-image-registry
-EOF
-</pre>
+```
 
 You can see the status of the restore using kubectl.
 For example:
