@@ -1,0 +1,154 @@
+---
+title: Property Reference for tanzumysql.yml
+owner: MySQL
+---
+
+<%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
+
+<strong><%= modified_date %></strong>
+
+This topic is a property reference table for the `tanzumysql.yml`.
+Refer to this table when you are creating the YAML file for a TanzuMySQL instance.
+For more information, see [Create a TanzuMysql Instance](create-delete-mysql.html#create-instance) in 
+_Creating and Deleting a TanzuMySQL Instance_.
+
+The table below explains the properties that can be set in the `tanzumysql.yml` file.
+
+<table style="width:1000px" class="nice">
+<col width="10%">
+<col width="15%">
+<col width="10%">
+<col width="40%">
+<col width="15%">
+<col width="5%">
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+<th>Example</th>
+<th>Req?</th>
+<tr>
+  <td>metadata.name</td>
+  <td>String</td>
+  <td><em>N/A</em></td>
+  <td>The name of your TanzuMySQL instance:<br><br>
+      <ul>
+         <li>Must be unique within a namespace</li>
+         <li>Cannot be updated</li>
+         <li>Required when creating resources, although some resources may allow a client
+             to request the generation of an appropriate name automatically</li>
+      </ul>
+      Name is primarily intended for creation idempotence and configuration definition.
+      For more information about Name, see the <a href="http://kubernetes.io/docs/user-guide/identifiers#names">
+      Kubernetes documentation</a>.</td>
+  <td><code>my&#8209;instance</code></td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>spec.storageSize</td>
+  <td></td>
+  <td><em>N/A</em></td>
+  <td>StorageSize specifies the size of the persistent volume claims for the <%= vars.product_short %> pods.
+      For information about the units allowed for these PVC sizes, see about resource quantities in
+      <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities">
+      kubernetes / community</a> in GitHub.
+  </td>
+  <td><code>50Gi</code></td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>spec.imagePullSecret</td>
+  <td>String</td>
+  <td><em>N/A</em></td>
+  <td>Refers to an existing Kubernetes docker-registry secret that can access the registry that contains the TanzuMySQL image.</td>
+  <td><code>tanzu-mysql-image-registry</code></td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>spec.storageClassName</td>
+  <td>String</td>
+  <td>Standard
+  <td>Specifies the StorageClass for the PVCs for the <%= vars.product_short %> Pods.
+      For the types of StorageClasses available, contact your Kubernetes administrator.
+      For more information about the Kubernetes StorageClass concept, see the
+      <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">
+      Kubernetes documentation</a>.</td>
+  <td><code>standard</code>
+  </td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.resources.mysql</td>
+  <td>
+    <ul>
+      <li>limits.cpu</li>
+      <li>limits.memory</li>
+    </ul>
+  </td>
+  <td>Best effort</td>
+  <td>Describes the maximum CPU and memory allowed for the MySQL container.
+      If left blank, Kubernetes does best effort to allocate necessary compute resources
+      for the MySQL container.
+      For more information about managing resources for containers,
+      see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
+      Kubernetes documentation</a>.</td>
+  <td><code>limits.cpu: 3 , limits.memory: 800Mi</code></td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.resources.mysql</td>
+  <td>
+    <ul>
+      <li>requests.cpu</li>
+      <li>requests.memory</li>
+    </ul>
+  </td>
+  <td>Best effort</td>
+  <td>Describes the minimum CPU and memory allowed for the MySQL container.
+      If left blank, it defaults to limits if limits have been explicitly specified.
+      For more information about limits, see the
+      <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
+      Kubernetes documentation</a>.
+  </td>
+  <td><code>requests.cpu: 2 , requests.memory: 500Mi</code></td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.resources.backups</td>
+  <td>
+    <ul>
+      <li>limits.cpu</li>
+      <li>limits.memory</li>
+    </ul>
+  </td>
+  <td>Best effort</td>
+  <td>Describes the maximum CPU and memory allowed for the backups container.
+      If left blank, Kubernetes does best effort to allocate the necessary compute resources
+      for the backups container.
+      For more information about CPU and memory resources,
+      see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
+      Kubernetes documentation</a>.
+  </td>
+  <td><code>limits.cpu: 2 , limits.memory: 500Mi</code></td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.resources.backups</td>
+  <td>
+    <ul>
+      <li>requests.cpu</li>
+      <li>requests.memory</li>
+    </ul>
+  </td>
+  <td>Best effort</td>
+  <td>Describes the minimum CPU and memory allowed for the backups container.
+      If left blank, it defaults to limits if limits have been explicitly specified.
+      For more information about limits, see the
+      <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
+      Kubernetes documentation</a>.
+  </td>
+  <td><code>requests.cpu:&nbsp;1&nbsp;, requests.memory:&nbsp;200Mi</code>
+  </td>
+  <td>No</td>
+</tr>
+</table>
