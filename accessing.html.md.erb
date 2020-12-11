@@ -2,26 +2,31 @@
 title: Accessing a TanzuMySQL Instance
 owner: MySQL
 ---
+<% current_page.data.title = "Accessing a " + vars.product_short + " Instance" %>
 
 <%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to access a <%= vars.product_full %> instances.
+This topic describes how to access a <%= vars.product_full %> instance.
+
 
 ## <a id='prereq'></a>Prerequisites
-Before you access a <%= vars.product_short %> instance, you must:
 
-* Have the Kubernetes command line tool (kubectl CLI) installed
+Before you access a <%= vars.product_short %> instance, you must have:
+
+* The Kubernetes command line tool (kubectl) installed
 * An existing <%= vars.product_short %> instance
 
-## <a id='server-login'></a>Log in to the MySQL Server
 
-1. Log in to the MySQL Server
+## <a id='server-login'></a> Log in to the MySQL Server
+
+To log in to the MySQL server:
+
+1. Log in to the Kubernetes namespace by running:
 
     ```
-    $ kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -- /bin/bash
-    $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
+    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -- /bin/bash
     ```
     Where:
     * `YOUR-NAMESPACE` is the namespace you are logging in to.
@@ -30,63 +35,86 @@ Before you access a <%= vars.product_short %> instance, you must:
     For example:
     <pre class="terminal">
     $ kubectl -n my-namespace exec --stdin --tty pod/my-instance-0 -- /bin/bash
+    </pre>
+
+1. Log in to the MySQL server by running:
+
+    ```
+    mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
+    ```
+
+    For example:
+    <pre class="terminal">
     $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     </pre>
 
+## <a id='port-forward'></a> Connect to the MySQL Server with the Kubernetes API Server
 
-## <a id='port-forward'></a>Connecting to the MySQL Server via the Kubernetes apiserver
+<p class="note"><strong>Note:</strong> Connecting with `kubectl port-forward` proxies
+  the connection through the apiserver. It is intended for debugging access, and
+  its performance is notably slower than a direct connection.</p>
 
-> **Note**: Connecting with `kubectl port-forward` proxies the connection through the apiserver.
-> It is intended for debugging access, and its performance is notably slower than a direct connection.
+To connect to the MySQL server with the Kubernetes API server:
 
-1. Get the root password. The root user's password is available in the Kubernetes Secret named after
+1. Get the root password. The root user password is available in the Kubernetes Secret named after
   the TanzuMySQL instance suffixed with `-credentials`.
 
-  ```
-  $ MYSQL_ROOT_PASSWORD=kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}'
-  ```
+    ```
+    $ MYSQL_ROOT_PASSWORD=kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}'
+    ```
 
-1. Start a port-forwarding proxy with [`kubectl port-forward`](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#port-forward).
+1. Start a port-forwarding proxy with `kubectl port-forward`. For more information
+about the command, see [Kubernetes documentation](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#port-forward).
 
-  ```
-  $ kubectl port-forward service/INSTANCE-NAME 3306 &
-  Forwarding from 127.0.0.1:3306 -> 3306
-  Forwarding from [::1]:3306 -> 3306
-  ```
+    ```
+    kubectl port-forward service/INSTANCE-NAME 3306 &
+    ```
 
-1. Connect to the service via the poxy port. For example, to connect with the mysql client:
+    For example:
+    <pre class="terminal">
+    $ kubectl port-forward service/tanzumysql-sample 3306 &
+    <br>Forwarding from 127.0.0.1:3306 -> 3306
+    Forwarding from [::1]:3306 -> 3306
+    </pre>
 
-  ```
-  $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD}
-  ```
+1. Connect to the service through the poxy port. For example, to connect with
+the MySQL client:
 
-1. When done with the connection, stop the proxy by killing the kubectl process.
+    ```
+    $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD}
+    ```
 
-  For example:
-  ```
-  $ jobs
-  [1]+  Running                 kubectl port-forward service/tanzumysql-sample 3306 &
-  $ kill %1
-  ```
+1. When done with the connection, stop the proxy by stopping the kubectl process.
 
-## <a id='app-connect'></a>Connecting an in-cluster application to the MySQL Server
+    For example:
 
-<%= vars.product_short %> creates a Kubernetes Service that can be used to connect
-applications to the database from within the Kubernetes cluster.
-The name of the Service is the same as the name of the TanzuMySQL instance.
+    <pre class="terminal">
+    $ jobs
+    [1]+  Running                 kubectl port-forward service/tanzumysql-sample 3306 &
+    $ kill %1
+    </pre>
 
-1. Log in to the MySQL server [as above](#server-login)
-1. Create a database and user for the application to use.
-1. Provide the DNS name of the TanzuMySQL instance's Service to the application,
-  along with the username and password created for the application user.
+## <a id='app-connect'></a> Connect an In-Cluster App to the MySQL Server
 
-### Example deployment of Bitnami Wordpress with <%= vars.product_short %>
+<%= vars.product_short %> creates a Kubernetes Service used to connect
+apps to the database from within the Kubernetes cluster.
+The name of the service is the same as the name of the <%= vars.product_short %> instance.
 
-The [Bitnami Wordpress helm chart](https://github.com/bitnami/charts/tree/master/bitnami/wordpress)
-can be configured to connect to an external database instead of deploying its own database.
+1. Log in to the MySQL server. See [Log in to the MySQL Server](#server-login) above.
 
-Here is an example of setting up <%= vars.product_short %> with a database and user
-that can be used with the Wordpress helm chart.
+1. Create a database and user for the app to use.
+
+1. Provide the DNS name of the <%= vars.product_short %> instance service to the app,
+  along with the username and password created for the app user.
+
+### <a id="example-bitnami-wordpress"></a> Example Deployment of Bitnami Wordpress with <%= vars.product_short %>
+
+The Bitnami Wordpress Helm chart can be configured to connect to an external database
+instead of deploying its own database. For more information about the Helm chart,
+see [charts/bitnami/wordpress](https://github.com/bitnami/charts/tree/master/bitnami/wordpress) in GitHub.
+
+See the following example of setting up <%= vars.product_short %> with a database and user
+that you can use with the Wordpress Helm chart.
 
 ```
 $ kubectl exec -it tanzumysql-sample-0 -c mysql -- bash
@@ -125,7 +153,7 @@ NOTES:
 ...
 ```
 
-The Wordpress user password can be retrieved as follows:
+Retrieve the Wordpress user password by running:
 
 ```
 $ kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
