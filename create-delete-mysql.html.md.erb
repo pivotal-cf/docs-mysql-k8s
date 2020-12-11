@@ -178,6 +178,7 @@ To delete a TanzuMySQL instance:
 1. Delete the TanzuMySQL instance by running:
 
     <code>kubectl -n DEVELOPMENT-NAMESPACE delete tanzumysql INSTANCE-NAME </code>
+
     Where:
     * `DEVELOPMENT-NAMESPACE` is the namespace where you created the instance.
     * `INSTANCE-NAME` is the name of the instance you want to delete.
@@ -214,6 +215,7 @@ mysql-data-another-sample-0       Bound    pvc-87c8a3a9-263b-46e6-8acb-ed474434f
     3. Delete the PVC associated with each Tanzu MySQL Pod by running, for each Pod:
 
         <code>kubectl delete pvc mysql-data-INSTANCE-NAME-n  </code>
+
         Where:
         + `INSTANCE-NAME` is the name of the TanzuMySQL instance that you deleted above.
         + `N` is the index of each Pod in the TanzuMySQL instance.
