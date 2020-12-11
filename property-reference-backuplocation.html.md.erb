@@ -1,0 +1,152 @@
+---
+title: Property Reference for TanzuMySQLBackupLocation and Secret
+owner: MySQL
+---
+
+<%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
+
+<strong><%= modified_date %></strong>
+
+This topic is a property reference table for the `backuplocation.yaml` and 
+the property reference table for `secret`.
+Refer to this table when you are creating the TanzuMySQLBackupLocation resource.
+For more information,
+see [Create a TanzuMySQLBackupLocation Resource](create-delete-mysql.html#create-instance) in
+_Backing Up and Restoring_.
+
+The table below explains the properties that can be set in the `backuplocation.yaml` file.
+
+<table style="width:1000px" class="nice">
+<col width="10%">
+<col width="15%">
+<col width="10%">
+<col width="40%">
+<col width="15%">
+<col width="5%">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Example</th>
+  <th>Req?</th>
+</tr>
+<tr>
+  <td>metadata.name</td>
+  <td>String</td>
+  <td>None</td>
+  <td>The name of the TanzuMysqlBackupLocation. Must be unique within a namespace.</td>
+  <td>backuplocation-sample</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>spec.storage.s3.bucket</td>
+  <td>String</td>
+  <td>None</td>
+  <td>
+      v1: The name of an existing s3 bucket.<br> 
+      v2: Name of the storage bucket for this backup location
+  </td>
+  <td>s3-bucket-sample</td>
+  <td>Yes</tr>
+</tr>
+<tr>
+  <td>spec.storage.s3.bucketPath</td>
+  <td>String</td>
+  <td>None</td>
+  <td>The name of the path under which backup artifacts will be uploaded.
+      If a folder in the path does not already exist, it will be created automatically.</td>
+  <td>s3-sample-path/sample-subpath/</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.storage.s3.region</td>
+  <td>String</td>
+  <td>us-east-1</td>
+  <td>The geographic region of the bucket. CLARIFY: Non-AWS S3 implementations may not require this value.</td>
+  <td>us-west-1</td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.storage.s3.endpoint</td>
+  <td>String</td>
+  <td>https://[bucket-name].s3.[Region].amazonaws.com/</td>
+  <td>The endpoint URL for the configured S3-compatible provider. Leave blank for Amazon S3.</td>
+  <td>http://minio.default:9000</td>
+  <td>No</td>
+</tr>
+  <td>spec.storage.s3.forcePathStyle</td>
+  <td>boolean</td><td>false</td>
+  <td>True forces the use of path-style S3 URLs for compatibility.
+      May be required for certain non-AWS S3 providers.
+      False uses virtual hosted-style S3 URLs.<br>
+      For information about Amazon S3 Path Deprecation, see the <a href="https://aws.amazon.com/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story/">
+      AWS blog site</a>.
+  </td>
+  <td>false</td>
+  <td>No</tr>
+</tr>
+<tr>
+  <td>spec.storage.s3.disableSSL</td>
+  <td>boolean</td>
+  <td>false</td>
+  <td>For development environments, set to true to disable SSL for S3 operations.
+      For production environments, set to false.</td>
+  <td>false</td>
+  <td>No</td>
+</tr>
+  <td>spec.storage.s3.secret.name</td>
+  <td>String</td>
+  <td>None</td>
+  <td>Name of the Kubernetes secret that contains the credentials for connecting to S3.</td>
+  <td>backuplocation-sample-creds</td>
+  <td>Yes</tr>
+</tr>    
+</table>
+
+
+
+The table below explains the properties that can be set in the `secret`.
+
+<table style="width:1000px" class="nice">
+<col width="10%">
+<col width="15%">
+<col width="10%">
+<col width="40%">
+<col width="15%">
+<col width="5%">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Example</th>
+  <th>Req?</th>
+</tr>
+<tr>
+  <td>metadata.name</td>
+  <td>String</td>
+  <td>None</td>
+  <td>The name of the Secret. Must match spec.storage.s3.secret.name in a BackupLocation,
+      and must be unique within a namespace.</td>
+  <td>backuplocation-sample-creds</td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>stringData.accessKeyId</td>
+  <td> String</td>
+  <td> None</td>
+  <td> The Access Key ID for an AWS IAM user that has permissions to read/write from the s3 bucket.</td>
+  <td> "AKIAIOSFODNN7EXAMPLE"</td>
+  <td> Yes</td>
+</tr>
+<tr>
+  <td>stringData.secretAccessKey</td>
+  <td>String</td>
+  <td>None</td>
+  <td>The Secret Access Key for an AWS IAM user that has permissions to read/write from the s3 bucket</td>
+  <td>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"</td>
+  <td>Yes</td>
+</tr>
+</table>
+

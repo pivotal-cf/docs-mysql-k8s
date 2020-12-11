@@ -1,91 +1,97 @@
 ---
-title: Backup and Restore in <%= vars.product_short %>
+title: Backing Up and Restoring in <%= vars.product_short %>
 owner: MySQL
 ---
 <% current_page.data.title = "Backup and Restore in " + vars.product_short %>
 
 This topic describes how to back up and restore <%= vars.product_full %>.
 
-<%#===== JUDY NOTES ===== %>
-
 ## <a id="overview"></a> Overview
 
-The Backup and Restore feature of <%= vars.product_short %> allows you to generate on-demand backups,
-configured scheduled automated backups, and restore backups to new <%= vars.product_short %> instances.
+<%= vars.product_short %> allows you to generate on-demand backups,
+configure a schedules for automated backups, and restore backups to new TanzuMySQL instances.
 
-<%= vars.product_short %> currently only supports S3, Minio, and other S3-compatible storages
-for uploading and retrieving backup artifacts.
+For uploading and retrieving backup artifacts,
+<%= vars.product_short %> currently supports S3, Minio, and other S3-compatible storage.
 
-<%= vars.product_short %> Backup and Restore consists of the following Custom Resource
-Definitions (CRDs):
+For backing up and restoring, 
+<%= vars.product_short %> uses four of the five Custom Resource Definitions (CRDs):
 
-  * **TanzuMysqlBackup** - References a TanzuMysql backup artifact that exists in an
-    external blobstore such as S3 or Minio. A new TanzuMysqlBackup resource is created
+  * **TanzuMySQLBackup:** References a TanzuMySQL backup artifact that exists in an
+    external blobstore such as S3 or Minio. A new TanzuMySQLBackup resource is created
     every time an on-demand or scheduled backup is generated.
 
-  * **TanzuMysqlBackupLocation** - References an external blobstore and credentials
+  * **TanzuMySQLBackupLocation:** References an external blobstore and credentials
     necessary to access the blobstore.
 
-  * **TanzuMysqlBackupSchedule** - Represents a CronJob schedule on which to perform
+  * **TanzuMySQLBackupSchedule:** Represents a CronJob schedule on which to perform
     backups.
 
-  * **TanzuMysqlRestore** - References an instance of a restore that was performed. A
-    new TanzuMysqlRestore resource is created every time a restore is performed.
+  * **TanzuMySQLRestore:** References an instance of a restore that was performed.
+    A new TanzuMySQLRestore resource is created every time a restore is performed.
 
-#### Synchronization of Backups with the External Blobstore
+For detailed information about the CRDs,
+see [Controllers and Custom Resource Definitions (CRDs)](architecture.html#controllers-crds)
+in _Tanzu MySQL for Kubernetes Architecture_.
 
-<%= vars.product_short %> syncs TanzuMysqlBackup resources in a Kubernetes cluster with the
+## About Synchronization of Backups with the External Blobstore
+
+<%= vars.product_short %> syncs TanzuMySQLBackup resources in a Kubernetes cluster with the
 contents of the external blobstore.
 The external blobstore is treated as the source of truth.
-This means that, if a `TanzuMysqlBackup` resource is deleted on the Kubernetes cluster, but the
+This means that, if a `TanzuMySQLBackup` resource is deleted on the Kubernetes cluster, but the
 associated backup artifact still exists in the external blobstore, <%= vars.product_short %>
-re-creates the `TanzuMysqlBackup` resource to match the contents of the external
+re-creates the `TanzuMySQLBackup` resource to match the contents of the external
 blobstore.
 
-If you want to restore a backup to a different namespace or Kubernetes cluster, you can
-create a `TanzuMySQLBackupLocation` in the target namespace or Kubernetes cluster.
-Then, <%= vars.product_short %> will automatically create `TanzuMySQLBackup` resources for all
-identifiable* backup artifacts in the external blobstore.
-For more information, see (the section below on restoring to a different namespace/cluster).
 
-*: Backup artifacts in blobstores are identified as TanzuMySQL backups using object metadata.
+##<a id="create-backuplocation"></a> Create a TanzuMySQLBackupLocation Resource
 
-### Create a TanzuMysqlBackupLocation Resource <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
-[Why are we creating a TanzuMySQLBackupLocation? Configure the namespace with location of blobstore and credentials to access it.]
+The purpose of creating this TanzuMySQLBackupLocation Resource is to configure the namespace
+with the location of the blobstore and the credentials to access it.
 
-1. Configure your backup location using the TanzuMysqlBackupLocation YAML template. Example YAML file:
-```
----
-apiVersion: mysql.tanzu.vmware.com/v1alpha1
-kind: TanzuMySQLBackupLocation
-metadata:
-  name: backuplocation-sample
-spec:
-  storage:
-    # For S3 or Minio:
-    s3:
-      bucket: "name-of-bucket"
-      bucketPath: "my-backups-prefix/"
-      # region: "us-east-1"
-      endpoint:  "" # optional, default to AWS
-      forcePathStyle: false
-      disableSSL: false
-      secret:
-        name: backuplocation-sample-creds
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: backuplocation-sample-creds
-stringData:
-  # S3 Credentials
-  accessKeyId: "my-access-key-id"
-  secretAccessKey: "my-secret-access-key"
-```
+To create a TanzuMySQLBackupLocation resource:
+
+CAN I REPLACE?
+
+1. Configure your backup location using the following TanzuMySQLBackupLocation YAML as a template:
+
+WITH:
+
+1. Create a backuplocation.yaml file. You can use this as a template:
+
+    ```
+    ---
+    apiVersion: mysql.tanzu.vmware.com/v1alpha1
+    kind: TanzuMySQLBackupLocation
+    metadata:
+      name: backuplocation-sample
+    spec:
+      storage:
+        # For S3 or Minio:
+        s3:
+          bucket: "name-of-bucket"
+          bucketPath: "my-backups-prefix/"
+          # region: "us-east-1"
+          endpoint:  "" # optional, default to AWS
+          forcePathStyle: false
+          disableSSL: false
+          secret:
+            name: backuplocation-sample-creds
+    ---
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: backuplocation-sample-creds
+    stringData:
+      # S3 Credentials
+      accessKeyId: "my-access-key-id"
+      secretAccessKey: "my-secret-access-key"
+    ```
 
 TanzuMySQLBackupLocation (make into a table, put on a separate page)
 * Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
-* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMysqlBackupLocation. Must be unique within a namespace., backuplocation-sample, Yes
+* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMySQLBackupLocation. Must be unique within a namespace., backuplocation-sample, Yes
 * s<%# Bullet points start with uppercase letters. %>pec.storage.s3.bucket, String, None, The name of an existing s3 bucket., s3-bucket-sample, Yes
 * s<%# Bullet points start with uppercase letters. %>pec.storage.s3.bucketPath, String, None, The name of the path under which backup artifacts will<%# Avoid "will": present tense is preferred. %> be uploaded. If a folder<%# "directory" is preferred. %> in
   the path doesn't<%# Do not use contractions. %> exist already, it will<%# Avoid "will": present tense is preferred. %> be created automatically., s3-sample-path/sample-subpath/, No
@@ -103,7 +109,7 @@ Secret (make into a table)
 * s<%# Bullet points start with uppercase letters. %>tringData.accessKeyId, String, None, The Access Key ID for an AWS IAM user that has permissions to read/write from the s3 bucket., "AKIAIOSFODNN7EXAMPLE", Yes
 * s<%# Bullet points start with uppercase letters. %>tringData.secretAccessKey, String, None, The Secret Access Key for an AWS IAM user that has permissions to read/write from the s3 bucket."wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", Yes
 
-2. Create the TanzuMysqlBackupLocation resource in the same namespace as the TanzuMysql instance(s)<%# Do not combine a singular and a plural. Maybe write "one or more" instead. %> that
+2. Create the TanzuMySQLBackupLocation resource in the same namespace as the TanzuMySQL instance(s)<%# Do not combine a singular and a plural. Maybe write "one or more" instead. %> that
    you want to take backups of.
 ```
 → kubectl apply -f backuplocation.yaml -n DEVELOPMENT-NAMESPACE
@@ -111,7 +117,7 @@ tanzumysqlbackuplocation.mysql.tanzu.vmware.com/backuplocation-sample created
 secret/backuplocation-sample-creds configured
 ```
 
-3. Verify that the TanzuMysqlBackupLocation has been created.
+3. Verify that the TanzuMySQLBackupLocation has been created.
 ```
 → kubectl get tanzumysqlbackuplocation backuplocation-sample -o json -n DEVELOPMENT-NAMESPACE | jq .spec
 {
@@ -129,9 +135,9 @@ secret/backuplocation-sample-creds configured
 }
 ```
 
-### Create a TanzuMysqlBackupSchedule Resource <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
-[Why are we creating a TanzuMysqlBackupSchedule? To set a schedule for automatic backups.]
-1. Configure your backup schedule using the TanzuMysqlBackupSchedule YAML template. Example YAML file:
+### Create a TanzuMySQLBackupSchedule Resource <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+[Why are we creating a TanzuMySQLBackupSchedule? To set a schedule for automatic backups.]
+1. Configure your backup schedule using the TanzuMySQLBackupSchedule YAML template. Example YAML file:
 ```
 ---
 apiVersion: mysql.tanzu.vmware.com/v1alpha1
@@ -150,19 +156,19 @@ spec:
 
 TanzuMySQLBackupSchedule (make into a table)
 * Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
-* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMysqlBackupSchedule. Must be unique within a namespace., backupschedule-sample, Yes
-* s<%# Bullet points start with uppercase letters. %>pec.backupTemplate.spec<%# "specifications" is preferred. %>.location.name, String, None, The name of the TanzuMySQLBackupLocation that represents the blobstore where backups will<%# Avoid "will": present tense is preferred. %> be uploaded. Must be in the same namespace as the TanzuMysqlBackupSchedule., backuplocation-sample, Yes
-* s<%# Bullet points start with uppercase letters. %>pec.backupTemplate.spec<%# "specifications" is preferred. %>.cluster.name, String, None, The name of the TanzuMySQL instance on which you would<%# Re-phrase for present tense if possible. %> like to perform scheduled backups. Must be in the same namespace as the TanzuMysqlBackupSchedule., tanzumysql-sample, Yes
+* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMySQLBackupSchedule. Must be unique within a namespace., backupschedule-sample, Yes
+* s<%# Bullet points start with uppercase letters. %>pec.backupTemplate.spec<%# "specifications" is preferred. %>.location.name, String, None, The name of the TanzuMySQLBackupLocation that represents the blobstore where backups will<%# Avoid "will": present tense is preferred. %> be uploaded. Must be in the same namespace as the TanzuMySQLBackupSchedule., backuplocation-sample, Yes
+* s<%# Bullet points start with uppercase letters. %>pec.backupTemplate.spec<%# "specifications" is preferred. %>.cluster.name, String, None, The name of the TanzuMySQL instance on which you would<%# Re-phrase for present tense if possible. %> like to perform scheduled backups. Must be in the same namespace as the TanzuMySQLBackupSchedule., tanzumysql-sample, Yes
 * s<%# Bullet points start with uppercase letters. %>pec.schedule, String (Cron schedule), None, The cron schedule on which backups will<%# Avoid "will": present tense is preferred. %> be performed. Must be a valid cron schedule., "0 23 * * 6" (every Saturday at 11PM), Yes
 
-2. Create the TanzuMysqlBackupSchedule resource in the same namespace as the TanzuMysqlBackupLocation and TanzuMysql instance that
-   you referenced in the TanzuMysqlBackupSchedule YAML file.
+2. Create the TanzuMySQLBackupSchedule resource in the same namespace as the TanzuMySQLBackupLocation and TanzuMySQL instance that
+   you referenced in the TanzuMySQLBackupSchedule YAML file.
 ```
 → kubectl apply -f backupschedule.yaml -n DEV-NAMESPACE
 tanzumysqlbackupschedule.mysql.tanzu.vmware.com/backupschedule-sample created
 ```
 
-3. Verify that the TanzuMysqlBackupSchedule has been created.
+3. Verify that the TanzuMySQLBackupSchedule has been created.
 ```
 → kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o json -n DEV-NAMESPACE | jq .spec
 {
@@ -191,11 +197,11 @@ and a backup was taken at timestamp `1607633463`, then the TanzuMySQLBackup will
 
 ### Perform an On-Demand Backup
 
-You must have an existing TanzuMysql instance that you want to take a backup of. You must also have already
-configured a TanzuMysqlBackupLocation that represents the external blobstore to which you will<%# Avoid "will": present tense is preferred. %> upload the
+You must have an existing TanzuMySQL instance that you want to take a backup of. You must also have already
+configured a TanzuMySQLBackupLocation that represents the external blobstore to which you will<%# Avoid "will": present tense is preferred. %> upload the
 generated backup artifact.
 
-1. Configure your backup using the TanzuMysqlBackup YAML template. Example YAML file:
+1. Configure your backup using the TanzuMySQLBackup YAML template. Example YAML file:
 ```
 ---
 apiVersion: mysql.tanzu.vmware.com/v1alpha1
@@ -211,11 +217,11 @@ spec:
 
 TanzuMySQLBackup (make into a table)
 * Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
-* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMysqlBackup. Must be unique within a namespace., backup-sample, Yes
+* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMySQLBackup. Must be unique within a namespace., backup-sample, Yes
 * s<%# Bullet points start with uppercase letters. %>pec.location.name, String, None, The name of the TanzuMySQLBackupLocation that represents the blobstore where the backup will<%# Avoid "will": present tense is preferred. %> be uploaded. Must be in the same namespace as the TanzuMySQL instance., Yes
 * s<%# Bullet points start with uppercase letters. %>pec.cluster.name, String, None, The name of the TanzuMySQL instance on which you would<%# Re-phrase for present tense if possible. %> like to perform the on-demand backup., Yes
 
-2. Trigger the backup by creating the TanzuMysqlBackup in the same namespace as the TanzuMysql instance
+2. Trigger the backup by creating the TanzuMySQLBackup in the same namespace as the TanzuMySQL instance
    that you want to take a backup of.
 ```
 → kubectl apply -f tanzumysqlbackup.yaml -n DEV-NAMESPACE
@@ -258,17 +264,24 @@ To delete a backup,
 1. make sure it's deleted in the blobstore.
 1. on your k8s cluster, `kubectl delete tanzumysqlbackup BACKUP-NAME -n DEV-NAMESPACE`
 
-### Restore from a Backup <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+##<id="restore"></a>Restore
 
-You must have an existing TanzuMysqlBackup in your current namespace. You must also have a TanzuMysqlBackupLocation
+This section discusses restoring.
+
++ Restore from a Backup
++ Restoring a Backup to a Different Namespace or Kubernetes Cluster
+
+###<a id="restore-from-backup"></a> Restore from a Backup <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+
+You must have an existing TanzuMySQLBackup in your current namespace. You must also have a TanzuMySQLBackupLocation
 that represents the bucket where the existing backup artifact is stored.
 
-TanzuMysqlRestores will<%# Avoid "will": present tense is preferred. %> always restore to a new TanzuMySQL instance. The TanzuMySQL instance is created automatically
+TanzuMySQLRestores will<%# Avoid "will": present tense is preferred. %> always restore to a new TanzuMySQL instance. The TanzuMySQL instance is created automatically
 when the restore is triggered. <%= vars.product_short %> does not allow restoring a backup to an existing TanzuMySQL
 instance. Although it is possible to<%# Consider shortening to "You can" or rewriting the sentence as an imperative. %> perform this manually by interacting directly with the Kubernetes API, VMware
 strongly<%# Consider deleting, especially if it precedes "recommend". %> discourages this action as you may<%# "can" usually works better. Use "might" to convey possibility. %> run the risk of losing data.
 
-1. Configure your restore using the TanzuMysqlRestore YAML template. Example YAML file:
+1. Configure your restore using the TanzuMySQLRestore YAML template. Example YAML file:
 ```
 ---
 apiVersion: mysql.tanzu.vmware.com/v1alpha1
@@ -289,12 +302,12 @@ spec:
 
 TanzuMySQLRestore (make into a table)
 * Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
-* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMysqlRestore. Must be unique within a namespace., tanzumysqlrestore-sample, Yes
+* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMySQLRestore. Must be unique within a namespace., tanzumysqlrestore-sample, Yes
 * s<%# Bullet points start with uppercase letters. %>pec.tanzuMysqlBackup.name, String, None, The name of the TanzuMySQLBackup that represents the backup artifact you wish<%# "want" is preferred. %> to restore. Must be in the same namespace as the TanzuMySQLRestore., Yes
-* s<%# Bullet points start with uppercase letters. %>pec.MysqlTemplate, , , The configuration for the TanzuMysql instance that the backup artifact will<%# Avoid "will": present tense is preferred. %> be restored to. This TanzuMysql instance will<%# Avoid "will": present tense is preferred. %> be created automatically as part of the restore, so the name must not already exist in the namespace.
+* s<%# Bullet points start with uppercase letters. %>pec.MysqlTemplate, , , The configuration for the TanzuMySQL instance that the backup artifact will<%# Avoid "will": present tense is preferred. %> be restored to. This TanzuMySQL instance will<%# Avoid "will": present tense is preferred. %> be created automatically as part of the restore, so the name must not already exist in the namespace.
   For descriptions of each value in the configuration template, see [Creating a TanzuMySQL instance](http://docs-pcf-staging.cfapps.io/tanzu-mysql-kubernetes/1-n/create-delete-mysql.html#create-yaml)., Yes <%# Do not link to staging versions of the docs. %>
 
-2. Trigger the restore by creating the TanzuMysqlRestore in the same namespace as the TanzuMysqlBackup and TanzuMysqlBackupLocation.
+2. Trigger the restore by creating the TanzuMySQLRestore in the same namespace as the TanzuMySQLBackup and TanzuMySQLBackupLocation.
 ```
 → kubectl apply -f tanzumysqlrestore.yaml -n DEV-NAMESPACE
 tanzumysqlrestore.mysql.tanzu.vmware.com/tanzumysqlrestore-sample created
@@ -317,24 +330,35 @@ tanzumysqlrestore-sample   Succeeded   2020-12<%# Use &ndash; for a range, not a
   - TIME COMPLETED - The time at which the restore process completed. If the restore fails, this value will<%# Avoid "will": present tense is preferred. %> be empty.
   - AGE - Age of the restore since<%# Do not use "since" where you can use "because". %> it was requested.
 
-### Restoring a Backup to a Different Namespace or Kubernetes Cluster <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+###<a id="restore-to-different"></a> Restoring a Backup to a Different Namespace or Kubernetes Cluster
 
-If a BackupLocation referencing an external blobstore that contains existing TanzuMySQL backup
-artifacts is created in any namespace/k8s cluster, the associated TanzuMysqlBackup resources
-will<%# Avoid "will": present tense is preferred. %> be automatically created in that namespace.
+If you want to restore a backup to a different namespace or a different Kubernetes cluster,
+create a `TanzuMySQLBackupLocation` in the target namespace or Kubernetes cluster.
+Then, <%= vars.product_short %> automatically creates `TanzuMySQLBackup` resources for all
+identifiable* backup artifacts in the external blobstore.
 
-Therefore, to restore to a different namespace or Kubernetes cluster, you must create a
-BackupLocation in the target namespace.
+To restore to a different namespace or Kubernetes cluster, you create a
+BackupLocation in the target namespace:
 
-1. Target the correct k8s cluster or namespace.
-1. Create a BackupLocation that contains the backup artifact you wish<%# "want" is preferred. %> to restore. Follow steps in (Creating a TanzuMysqlBackupLocation)
-1. Wait until you see the TanzuMysqlBackup artifact you wish<%# "want" is preferred. %> to restore.
-   ```
-   → k get tanzumysqlbackup
+1. Target the destination cluster or namespace.
+
+1. Create a TanzuMySQLBackupLocation resource that contains the backup artifact to restore.
+   For how to do this, see [Create a TanzuMySQLBackupLocation Resource](#create-backuplocation).
+
+
+1. Confirm that the TanzuMySQLBackup artifact to restore is included in the list by running:
+
+    ```
+    kubectl get tanzumysqlbackup
+    ```
+   For example:
+   <pre class='terminal'>
+   $ kubectl get tanzumysqlbackup
      NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
      sample-backup   Succeeded   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:26.138676Z   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:26.148835Z   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:30.609250Z   5d17h
-   ```
-1. Trigger a restore by following steps in (Restore from a Backup).
+   </pre>
+
+1. Trigger a restore by following steps in [Restore from a Backup](#restore-from-backup).
 
 ### Troubleshooting Backup and Restore <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
 
@@ -552,3 +576,11 @@ WARNING<%# "Warning" is preferred. %>: This is a destructive action. If you dest
 
 
 NOTE: If you delete the Pod or Statefulset<%# "StatefulSet" is the K8s docs style. %> associated with the <%= vars.product_short %> resource, a <%= vars.product_short %> controller will<%# Avoid "will": present tense is preferred. %> recreate<%# "re-create" is preferred. %> it for you. If you want to<%# Maybe replace with just "To". %> permanently delete the instance, you need to delete the `tanzumysql` resource.
+
+
+
+Removed from restoring:
+
+*: Backup artifacts in blobstores are identified as TanzuMySQL backups using object metadata.
+
+WHY IS this important? Wouldn't you have to make some effort to un-identify a backup?
