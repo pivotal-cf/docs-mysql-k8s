@@ -34,26 +34,26 @@ Definitions (CRDs):
 
 #### Synchronization of Backups with the External Blobstore
 
-<%= vars.product_short %> syncs `TanzuMysqlBackup` resources in a Kubernetes cluster with the
-contents of the external blobstore. The external blobstore is treated as the source of truth.
+<%= vars.product_short %> syncs TanzuMysqlBackup resources in a Kubernetes cluster with the
+contents of the external blobstore.
+The external blobstore is treated as the source of truth.
 This means that, if a `TanzuMysqlBackup` resource is deleted on the Kubernetes cluster, but the
 associated backup artifact still exists in the external blobstore, <%= vars.product_short %>
- re-creates the `TanzuMysqlBackup` resource to match the contents of the external
+re-creates the `TanzuMysqlBackup` resource to match the contents of the external
 blobstore.
 
-This behavior also applies when in a different namespace or Kubernetes cluster. If a
-TanzuMySQLBackupLocation is created in a different namespace and/or<%# "or" is preferred. %> Kubernetes cluster, Tanzu
-MySQL for Kubernetes automatically creates TanzuMysqlBackup resources for all
+If you want to restore a backup to a different namespace or Kubernetes cluster, you can
+create a `TanzuMySQLBackupLocation` in the target namespace or Kubernetes cluster.
+Then, <%= vars.product_short %> will automatically create `TanzuMySQLBackup` resources for all
 identifiable* backup artifacts in the external blobstore.
-
-This behavior is particularly useful for restoring backups to a TanzuMysql instance in a
-different namespace or Kubernetes clusters. For more information, see (the section below
-on restoring to a different namespace/cluster).
+For more information, see (the section below on restoring to a different namespace/cluster).
 
 *: Backup artifacts in blobstores are identified as TanzuMySQL backups using object metadata.
 
-### Creating a TanzuMysqlBackupLocation <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
-1. Configure your Backup Location using the TanzuMysqlBackupLocation YAML template. Example YAML file:
+### Create a TanzuMysqlBackupLocation Resource <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+[Why are we creating a TanzuMySQLBackupLocation? Configure the namespace with location of blobstore and credentials to access it.]
+
+1. Configure your backup location using the TanzuMysqlBackupLocation YAML template. Example YAML file:
 ```
 ---
 apiVersion: mysql.tanzu.vmware.com/v1alpha1
@@ -83,7 +83,7 @@ stringData:
   secretAccessKey: "my-secret-access-key"
 ```
 
-TanzuMySQLBackupLocation (make into a table)
+TanzuMySQLBackupLocation (make into a table, put on a separate page)
 * Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
 * m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMysqlBackupLocation. Must be unique within a namespace., backuplocation-sample, Yes
 * s<%# Bullet points start with uppercase letters. %>pec.storage.s3.bucket, String, None, The name of an existing s3 bucket., s3-bucket-sample, Yes
@@ -103,17 +103,17 @@ Secret (make into a table)
 * s<%# Bullet points start with uppercase letters. %>tringData.accessKeyId, String, None, The Access Key ID for an AWS IAM user that has permissions to read/write from the s3 bucket., "AKIAIOSFODNN7EXAMPLE", Yes
 * s<%# Bullet points start with uppercase letters. %>tringData.secretAccessKey, String, None, The Secret Access Key for an AWS IAM user that has permissions to read/write from the s3 bucket."wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", Yes
 
-2. Create the TanzuMysqlBackupLocation in the same namespace as the TanzuMysql instance(s)<%# Do not combine a singular and a plural. Maybe write "one or more" instead. %> that
+2. Create the TanzuMysqlBackupLocation resource in the same namespace as the TanzuMysql instance(s)<%# Do not combine a singular and a plural. Maybe write "one or more" instead. %> that
    you want to take backups of.
 ```
-→ kubectl apply -f backuplocation.yaml -n DEV-NAMESPACE
+→ kubectl apply -f backuplocation.yaml -n DEVELOPMENT-NAMESPACE
 tanzumysqlbackuplocation.mysql.tanzu.vmware.com/backuplocation-sample created
 secret/backuplocation-sample-creds configured
 ```
 
 3. Verify that the TanzuMysqlBackupLocation has been created.
 ```
-→ kubectl get tanzumysqlbackuplocation backuplocation-sample -o json -n DEV-NAMESPACE | jq .spec
+→ kubectl get tanzumysqlbackuplocation backuplocation-sample -o json -n DEVELOPMENT-NAMESPACE | jq .spec
 {
   "storage": {
     "s3": {
@@ -129,7 +129,8 @@ secret/backuplocation-sample-creds configured
 }
 ```
 
-### Create a TanzuMysqlBackupSchedule <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+### Create a TanzuMysqlBackupSchedule Resource <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+[Why are we creating a TanzuMysqlBackupSchedule? To set a schedule for automatic backups.]
 1. Configure your backup schedule using the TanzuMysqlBackupSchedule YAML template. Example YAML file:
 ```
 ---
@@ -154,7 +155,7 @@ TanzuMySQLBackupSchedule (make into a table)
 * s<%# Bullet points start with uppercase letters. %>pec.backupTemplate.spec<%# "specifications" is preferred. %>.cluster.name, String, None, The name of the TanzuMySQL instance on which you would<%# Re-phrase for present tense if possible. %> like to perform scheduled backups. Must be in the same namespace as the TanzuMysqlBackupSchedule., tanzumysql-sample, Yes
 * s<%# Bullet points start with uppercase letters. %>pec.schedule, String (Cron schedule), None, The cron schedule on which backups will<%# Avoid "will": present tense is preferred. %> be performed. Must be a valid cron schedule., "0 23 * * 6" (every Saturday at 11PM), Yes
 
-2. Create the TanzuMysqlBackupSchedule in the same namespace as the TanzuMysqlBackupLocation and TanzuMysql instance that
+2. Create the TanzuMysqlBackupSchedule resource in the same namespace as the TanzuMysqlBackupLocation and TanzuMysql instance that
    you referenced in the TanzuMysqlBackupSchedule YAML file.
 ```
 → kubectl apply -f backupschedule.yaml -n DEV-NAMESPACE
@@ -179,8 +180,14 @@ tanzumysqlbackupschedule.mysql.tanzu.vmware.com/backupschedule-sample created
 }
 ```
 
-If you correctly configur both a `TanzuMySQLBackupLocation` and `TanzuMySQLBackupSchedule` for an existing
-TanzuMySQL instance, you should start seeing backups being generated and uploaded to the external blobstore.
+If you correctly configure both a `TanzuMySQLBackupLocation` resource and `TanzuMySQLBackupSchedule` resource for
+an existing TanzuMySQL instance, you should start seeing backups being generated and uploaded to the external blobstore.
+By default, Tanzu MySQL for Kubernetes stores backup artifacts under the subfolder structure `yyyy > mm > dd`.
+
+TanzuMySQLBackup resources that are automatically generated as a result of a TanzuMySQLBackupSchedule are named
+`[SCHEDULE-NAME]-[TIMESTAMP]`. For example, if a TanzuMySQLBackupSchedule name is `tanzumysqlbackupschedule-sample`,
+and a backup was taken at timestamp `1607633463`, then the TanzuMySQLBackup will be named
+`tanzumysqlbackupschedule-sample-1607633463`.
 
 ### Perform an On-Demand Backup
 
@@ -215,22 +222,41 @@ TanzuMySQLBackup (make into a table)
 tanzumysqlbackup.mysql.tanzu.vmware.com/backup-sample created
 ```
 
-3. Verify that a backup has been generated and track the progress of your backup by doing the following.
+3. Verify that a backup has been generated and track the progress of your backup by doing the following. For an explanation
+   of what each column means, see "List existing TanzuMySQLBackup resources"
 ```
 → kubectl get tanzumysqlbackup backup-sample -n DEV-NAMESPACE
 NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
 backup-sample   Succeeded   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:26.138676Z   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:26.148835Z   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:30.609250Z   16m
 ```
-  - STATUS - Represents the current status of the backup. Possible values can be<%# Consider switching to active voice. %>:
-    - Pending: The backup has been received but not yet<%# 1st preference: delete. 2nd preference: replace these words with "currently". %> scheduled on a TanzuMySQL pod<%# "Pod" is capitalized per the K8s docs style. %>.
-    - Scheduled: The backup has been scheduled on a selected TanzuMySQL pod<%# "Pod" is capitalized per the K8s docs style. %> but has not started.
-    - Running: The backup is currently being generated and streamed to the external blobstore
-    - Succeeded: The backup has completed successfully
-    - Failed: The backup has failed to complete. To troubleshoot, see the below section on how to troubleshoot a failed backup.
-  - TIME SCHEDULED - The time at which the backup was scheduled on a selected TanzuMySQL pod<%# "Pod" is capitalized per the K8s docs style. %>.
-  - TIME STARTED - The time at which the backup process started.
-  - TIME COMPLETED - The time at which the backup process completed. If the backup fails, this value will<%# Avoid "will": present tense is preferred. %> be empty.
-  - AGE - Age of the backup since<%# Do not use "since" where you can use "because". %> it was requested.
+
+
+### List existing TanzuMySQLBackup resources
+1. `kubectl get tanzumysqlbackup`
+```
+→ k get tanzumysqlbackup
+NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
+backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   23h
+```
+- STATUS - Represents the current status of the backup. Possible values can be<%# Consider switching to active voice. %>:
+  - Pending: The backup has been received but not yet<%# 1st preference: delete. 2nd preference: replace these words with "currently". %> scheduled on a TanzuMySQL pod<%# "Pod" is capitalized per the K8s docs style. %>.
+  - Scheduled: The backup has been scheduled on a selected TanzuMySQL pod<%# "Pod" is capitalized per the K8s docs style. %> but has not started.
+  - Running: The backup is currently being generated and streamed to the external blobstore
+  - Succeeded: The backup has completed successfully
+  - Failed: The backup has failed to complete. To troubleshoot, see the below section on how to troubleshoot a failed backup.
+- TIME SCHEDULED - The time at which the backup was scheduled on a selected TanzuMySQL pod<%# "Pod" is capitalized per the K8s docs style. %>.
+- TIME STARTED - The time at which the backup process started.
+- TIME COMPLETED - The time at which the backup process completed. If the backup fails, this value will<%# Avoid "will": present tense is preferred. %> be empty.
+- AGE - Age of the backup since<%# Do not use "since" where you can use "because". %> it was requested.
+
+### Deleting Old Backup Artifacts
+Tanzu MySQL for Kubernetes does not natively support retention policies for backup artifacts. You may configure
+retention policies on your external blobstore. If you do, you must also delete the associated TanzuMySQLBackup
+resources in the Kubernetes cluster, as those are not automatically deleted by Tanzu MySQL for Kubernetes.
+
+To delete a backup,
+1. make sure it's deleted in the blobstore.
+1. on your k8s cluster, `kubectl delete tanzumysqlbackup BACKUP-NAME -n DEV-NAMESPACE`
 
 ### Restore from a Backup <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
 
