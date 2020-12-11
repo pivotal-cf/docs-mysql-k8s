@@ -95,7 +95,7 @@ kubectl --namespace=DEVELOPMENT-NAMESPACE create secret docker-registry tanzu-my
 
 4. Edit the `tanzumysql.yaml` file.
    For an explanation of the the properties you can set in this file,
-   see [Property Reference for tanzumysql.yml](#tanzumysql.yaml) below.
+   see [Property Reference for tanzumysql.yml](property-reference.html).
 
 
 5. Deploy a TanzuMySQL instance to Kubernetes by running:
@@ -201,107 +201,3 @@ mysql-data-another-sample-0       Bound    pvc-87c8a3a9-263b-46e6-8acb-ed474434f
        $ kubectl delete pvc mysql-data-tanzumysql-sample-0
 persistentvolumeclaim "mysql-data-tanzumysql-sample-0" deleted
           </pre>
-
-
-
-
-##<a id="tanzumysql-yaml"></a> Property Reference for tanzumysql.yml
-
-The table below explains the properties that can be set in the `tanzumysql.yml` file
-created in [#create-instance](#) above.
-
-<table class="nice">
-<th>Property</th>
-<th>Type</th>
-<th>Default</th>
-<th>Description</th>
-<th>Example</th>
-<th>Required?</th>
-<tr>
-  <td>metadata.name</td>
-  <td>String</td>
-  <td>None</td>
-  <td>The name of your TanzuMySQL instance. Must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. For more information, see http://kubernetes.io/docs/user-guide/identifiers#names</td>
-  <td>my-instance</td>
-  <td>Yes</td>
-</tr>
-<tr>
-  <td>spec.storageSize</td>
-  <td></td>
-  <td>None</td>
-  <td>StorageSize specifies the size of the persistent volume claims for the <%= vars.product_short %> pods. Unit of measure can be M for Megabyte, for example. For more information about what units are expected for persistent volume claim sizes, see <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities">this Github page</a>.
-
-  </td>
-  <td>50Gi</td>
-  <td>Yes</td>
-</tr>
-<tr>
-  <td>spec.imagePullSecret</td>
-  <td>String</td>
-  <td>None</td>
-  <td>Refers to an existing Kubernetes docker-registry secret that can access the registry that contains the TanzuMySQL image.</td>
-  <td>tanzu-mysql-image-registry</td>
-  <td>Yes</td>
-</tr>
-<tr>
-  <td>spec.storageClassName</td>
-  <td>String</td>
-  <td>Standard</td>
-  <td>Specifies the StorageClass for the persistent volume claims for the <%= vars.product_short %> pods. For the types of StorageClasses available, contact your Kubernetes administrator. For more information about the Kubernetes StorageClass concept, see this doc:https://kubernetes.io/docs/concepts/storage/storage-classes/</td>
-  <td>standard</td>
-  <td>No</td>
-</tr>
-<tr>
-  <td>spec.resources.mysql</td>
-  <td>
-    <ul>
-      <li>limits.cpu</li>
-      <li>limits.memory</li>
-    </ul>
-  </td>
-  <td>Best Effort</td>
-  <td>Describes the maximum amount of compute resources (CPU, Memory) allowed for the MySQL container. If left blank, Kubernetes will do best effort to allocate necessary compute resources for the MySQL container. For more information, see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/</td>
-  <td>limits.cpu: 3 , limits.memory: 800Mi</td>
-  <td>No</td>
-</tr>
-<tr>
-  <td>spec.resources.mysql</td>
-  <td>
-    <ul>
-      <li>requests.cpu</li>
-      <li>requests.memory</li>
-    </ul>
-  </td>
-  <td>Best Effort</td>
-  <td>Describes the minimum amount of compute resources (CPU, Memory) allowed for the MySQL container. If left blank, it defaults to Limits if that is explicitly specified. For more information, see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/</td>
-  <td>requests.cpu: 2 , requests.memory: 500Mi</td>
-  <td>No</td>
-</tr>
-<tr>
-  <td>spec.resources.backups</td>
-  <td>
-    <ul>
-      <li>limits.cpu</li>
-      <li>limits.memory</li>
-    </ul>
-  </td>
-  <td>Best Effort</td>
-  <td>Describes the maximum amount of compute resources (CPU, Memory) allowed for the backups container. If left blank, Kubernetes will do best effort to allocate necessary compute resources for the backups container. For more information, see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/</td>
-  <td>limits.cpu: 2 , limits.memory: 500Mi</td>
-  <td>No</td>
-</tr>
-<tr>
-  <td>spec.resources.backups</td>
-  <td>
-    <ul>
-      <li>requests.cpu</li>
-      <li>requests.memory</li>
-    </ul>
-  </td>
-  <td>Best Effort</td>
-  <td>Describes the minimum amount of compute resources (CPU, Memory) allowed for the backups container. If left blank, it defaults to Limits if that is explicitly specified. For more information, see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/</td>
-  <td>requests.cpu: 1 , requests.memory: 200Mi</td>
-  <td>No</td>
-</tr>
-</table>
-
