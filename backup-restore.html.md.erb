@@ -34,7 +34,7 @@ For detailed information about the CRDs,
 see [Controllers and Custom Resource Definitions (CRDs)](architecture.html#controllers-crds)
 in _Tanzu MySQL for Kubernetes Architecture_.
 
-## About Synchronization of Backups with the External Blobstore
+##<a id="sync-of-backups"></a> About Synchronization of Backups with the External Blobstore
 
 <%= vars.product_short %> syncs TanzuMySQLBackup resources in a Kubernetes cluster with the
 contents of the external blobstore.
@@ -89,33 +89,20 @@ WITH:
       secretAccessKey: "my-secret-access-key"
     ```
 
-TanzuMySQLBackupLocation (make into a table, put on a separate page)
-* Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
-* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMySQLBackupLocation. Must be unique within a namespace., backuplocation-sample, Yes
-* s<%# Bullet points start with uppercase letters. %>pec.storage.s3.bucket, String, None, The name of an existing s3 bucket., s3-bucket-sample, Yes
-* s<%# Bullet points start with uppercase letters. %>pec.storage.s3.bucketPath, String, None, The name of the path under which backup artifacts will<%# Avoid "will": present tense is preferred. %> be uploaded. If a folder<%# "directory" is preferred. %> in
-  the path doesn't<%# Do not use contractions. %> exist already, it will<%# Avoid "will": present tense is preferred. %> be created automatically., s3-sample-path/sample-subpath/, No
-* s<%# Bullet points start with uppercase letters. %>pec.storage.s3.region, String, us-east-1, The geographic region of the bucket. Non-AWS S3<%# "Amazon S3" is preferred. %> implementations may<%# "can" usually works better. Use "might" to convey possibility. %> not require this value., us-west-1, No
-* s<%# Bullet points start with uppercase letters. %>pec.storage.s3.endpoint, String, https://[bucket-name].s3.[Region].amazonaws.com/, The endpoint URL for the configured s3-compatible provider. Leave blank for Amazon S3., http://minio.default:9000, No
-* s<%# Bullet points start with uppercase letters. %>pec.storage.s3.forcePathStyle, boolean, false, When set to true, forces the use of path-style addressing for s3 operations. May be required for certain non-AWS
-  s3 providers. For more information, see https://aws.amazon.com/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story/, false, No
-* s<%# Bullet points start with uppercase letters. %>pec.storage.s3.disableSSL, boolean, false, When set to true, disables SSL when performing S3 operations. This should only be enabled for development purposes., false, No
-* s<%# Bullet points start with uppercase letters. %>pec.storage.s3.secret.name, String, None, Name of the k8s secret containing the credentials for connecting to S3., backuplocation-sample-creds, Yes
+2. Create the TanzuMySQLBackupLocation resource in the same namespace as the TanzuMySQL instances that
+   you want backup by running:
 
-Secret (make into a table)
-* Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
-* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the Secret. Must match spec<%# "specifications" is preferred. %>.storage.s3.secret.name in a BackupLocation, and must be unique within a namespace.,
-  backuplocation-sample-creds, Yes
-* s<%# Bullet points start with uppercase letters. %>tringData.accessKeyId, String, None, The Access Key ID for an AWS IAM user that has permissions to read/write from the s3 bucket., "AKIAIOSFODNN7EXAMPLE", Yes
-* s<%# Bullet points start with uppercase letters. %>tringData.secretAccessKey, String, None, The Secret Access Key for an AWS IAM user that has permissions to read/write from the s3 bucket."wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY", Yes
+    ```
+    kubectl apply -f backuplocation.yaml -n DEVELOPMENT-NAMESPACE
+    ```
+    Where is `DEVELOPMENT-NAMESPACE` is the namespace for the instance.
 
-2. Create the TanzuMySQLBackupLocation resource in the same namespace as the TanzuMySQL instance(s)<%# Do not combine a singular and a plural. Maybe write "one or more" instead. %> that
-   you want to take backups of.
-```
-→ kubectl apply -f backuplocation.yaml -n DEVELOPMENT-NAMESPACE
+    For example:
+
+    <pre class="terminal">$ kubectl apply -f backuplocation.yaml -n my-namespace
 tanzumysqlbackuplocation.mysql.tanzu.vmware.com/backuplocation-sample created
 secret/backuplocation-sample-creds configured
-```
+    </pre>
 
 3. Verify that the TanzuMySQLBackupLocation has been created.
 ```
