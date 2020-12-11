@@ -39,7 +39,7 @@ This is a place to keep track of the placeholder we use.
 We want to use placeholders consistently througout the doc.
 
 | Placeholder | Sample | Explanation | Used in |
-|------|-------------|-------------|
+|-------------|--------|-------------|---------|
 | DEVELOPMENT-NAMESPACE | my-namespace | "is the namespace in which you want to create the instance" or "is the namespace where you created the instance." | create-delete.html |
 | REGISTRY-SERVER-URL |https://registry.pivotal.io/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
 | DOCKER-PASSWORD | sample-password | credentials used to pull images from the registry | create-delete.html |
