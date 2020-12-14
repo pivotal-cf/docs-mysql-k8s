@@ -22,7 +22,7 @@ Before you can create or delete TanzuMySQL instances, you must have:
     see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
 
 * The URL and credentials to access the registry that stores the <%= vars.product_short %> images.
-  This can the TanzuNet registry or the private registry configured for your environment.
+  This can be the TanzuNet registry or the private registry configured for your environment.
     If you do not have access to the registry credentials, contact your Kubernetes administrator
     to have these set up for you in your namespace.
 
@@ -69,7 +69,7 @@ kubectl --namespace=DEVELOPMENT-NAMESPACE create secret docker-registry tanzu-my
     #### Set the storage class name to change storage class of the PVC associated with this resource
     #  storageClassName: standard
 
-    #### Examples to set resource limit/request for mysql/backup pods.
+    #### Examples to set resource limit/request for mysql/backups containers.
 
     #  resources:
 
@@ -127,7 +127,7 @@ tanzumysql-sample   true    Running   2m17s
 
 ## <a id='delete-instance'></a>Delete a TanzuMySQL Instance
 
-This section provides some conceputal information about persistent volume claims (PVCs)
+This section provides some conceptual information about persistent volume claims (PVCs)
 and deleting an instance.
 It also provides the procedure for how to delete an instance.
  
