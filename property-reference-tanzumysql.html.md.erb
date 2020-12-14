@@ -9,10 +9,10 @@ owner: MySQL
 
 This topic is a property reference table for the `tanzumysql.yml`.
 Refer to this table when you are creating the YAML file for a TanzuMySQL instance.
-For more information, see [Create a TanzuMysql Instance](create-delete-mysql.html#create-instance) in 
+For more information, see [Create a TanzuMysql Instance](create-delete-mysql.html#create-instance) in
 _Creating and Deleting a TanzuMySQL Instance_.
 
-The table below explains the properties that can be set in the `tanzumysql.yml` file.
+The table below explains the properties that you can set in the `tanzumysql.yml` file.
 
 <table style="width:1000px" class="nice">
 <col width="10%">
@@ -28,14 +28,14 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
 <th>Example</th>
 <th>Req?</th>
 <tr>
-  <td>metadata.name</td>
+  <td><code>metadata.name</code></td>
   <td>String</td>
   <td><em>N/A</em></td>
   <td>The name of your TanzuMySQL instance:<br><br>
       <ul>
          <li>Must be unique within a namespace</li>
          <li>Cannot be updated</li>
-         <li>Required when creating resources, although some resources may allow a client
+         <li>Required when creating resources, although some resources might allow a client
              to request the generation of an appropriate name automatically</li>
       </ul>
       Name is primarily intended for creation idempotence and configuration definition.
@@ -45,10 +45,10 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
   <td>Yes</td>
 </tr>
 <tr>
-  <td>spec.storageSize</td>
+  <td><code>spec.storageSize</code></td>
   <td></td>
   <td><em>N/A</em></td>
-  <td>StorageSize specifies the size of the persistent volume claims for the <%= vars.product_short %> pods.
+  <td>StorageSize specifies the size of the persistent volume claims (PVCs) for the <%= vars.product_short %> Pods.
       For information about the units allowed for these PVC sizes, see about resource quantities in
       <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities">
       kubernetes / community</a> in GitHub.
@@ -57,19 +57,20 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
   <td>Yes</td>
 </tr>
 <tr>
-  <td>spec.imagePullSecret</td>
+  <td><code>spec.imagePullSecret</code></td>
   <td>String</td>
   <td><em>N/A</em></td>
-  <td>Refers to an existing Kubernetes docker-registry secret that can access the registry that contains the TanzuMySQL image.</td>
+  <td>Refers to an existing Kubernetes docker-registry secret that can access the
+    registry that contains the TanzuMySQL image.</td>
   <td><code>tanzu-mysql-image-registry</code></td>
   <td>Yes</td>
 </tr>
 <tr>
-  <td>spec.storageClassName</td>
+  <td><code>spec.storageClassName</code></td>
   <td>String</td>
   <td>Standard
   <td>Specifies the StorageClass for the PVCs for the <%= vars.product_short %> Pods.
-      For the types of StorageClasses available, contact your Kubernetes administrator.
+      For the types of StorageClasses available, contact your Kubernetes admin.
       For more information about the Kubernetes StorageClass concept, see the
       <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">
       Kubernetes documentation</a>.</td>
@@ -78,7 +79,7 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
   <td>No</td>
 </tr>
 <tr>
-  <td>spec.resources.mysql</td>
+  <td><code>spec.resources.mysql</code></td>
   <td>
     <ul>
       <li>limits.cpu</li>
@@ -87,7 +88,7 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
   </td>
   <td>Best effort</td>
   <td>Describes the maximum CPU and memory allowed for the MySQL container.
-      If left blank, Kubernetes does best effort to allocate necessary compute resources
+      If left blank, Kubernetes does its best effort to allocate necessary compute resources
       for the MySQL container.
       For more information about managing resources for containers,
       see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
@@ -96,7 +97,7 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
   <td>No</td>
 </tr>
 <tr>
-  <td>spec.resources.mysql</td>
+  <td><code>spec.resources.mysql</code></td>
   <td>
     <ul>
       <li>requests.cpu</li>
@@ -114,7 +115,7 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
   <td>No</td>
 </tr>
 <tr>
-  <td>spec.resources.backups</td>
+  <td><code>spec.resources.backups</code></td>
   <td>
     <ul>
       <li>limits.cpu</li>
@@ -123,7 +124,7 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
   </td>
   <td>Best effort</td>
   <td>Describes the maximum CPU and memory allowed for the backups container.
-      If left blank, Kubernetes does best effort to allocate the necessary compute resources
+      If left blank, Kubernetes does its best effort to allocate the necessary compute resources
       for the backups container.
       For more information about CPU and memory resources,
       see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
@@ -133,7 +134,7 @@ The table below explains the properties that can be set in the `tanzumysql.yml` 
   <td>No</td>
 </tr>
 <tr>
-  <td>spec.resources.backups</td>
+  <td><code>spec.resources.backups</code></td>
   <td>
     <ul>
       <li>requests.cpu</li>
