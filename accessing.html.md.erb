@@ -60,7 +60,7 @@ To connect to the MySQL server with the Kubernetes API server:
   the TanzuMySQL instance suffixed with `-credentials`.
 
     ```
-    $ MYSQL_ROOT_PASSWORD=kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}'
+    $ MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
     ```
 
 1. Start a port-forwarding proxy with `kubectl port-forward`. For more information
