@@ -68,19 +68,19 @@ open to reference in the following step.
   <br><%= image_tag("tanzu-mysql-operator-artifact.png", :width => "450px", :alt=>"Modal shows 4 pieces of data: type, digest, 'set the environment variable' and 'pull this chart'") %>
   <br>For example:
   <pre class="terminal">$ export HELM_EXPERIMENTAL_OCI=1
-$ helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:v0.1.0
-<br>v0.1.0: Pulling from registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
-ref:     <span style="color: #77bf00;">registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:v0.1.0</span>
+$ helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
+<br>0.1.0: Pulling from registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
+ref:     <span style="color: #77bf00;">registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0</span>
 digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
 size:    4.2 KiB
 name:    tanzu-mysql-operator
-version: v0.1.0
-Status: Downloaded newer chart for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:v0.1.0</pre>
+version: 0.1.0
+Status: Downloaded newer chart for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0</pre>
   1. **To download `tanzu-mysql-instance`:** Click the artifact from Tanzu Network and paste the
   command into the command line.
   <br><br>For example:
-  <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:v0.1.0
-    <br>v0.1.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-instance
+  <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0
+    <br>0.1.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-instance
 f22ccc0b8772: Pull complete
 3cf8fb62ba5f: Pull complete
 e80c964ece6a: Pull complete
@@ -96,18 +96,18 @@ e9ad4cffabdc: Pull complete
 4b9107ee1e3e: Pull complete
 faffd54990ce: Pull complete
 Digest: sha256:78073dcf626603da192b78643bda24e0098f944d0bd54da1d60924b20d5eea8c
-Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:v0.1.0
-registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:v0.1.0</pre>
+Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0
+registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0</pre>
   1. **To download `tanzu-mysql-operator`:** Click the artifact from Tanzu Network and paste the
   command into the command line.
   <br><br>For example:
-  <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:v0.1.0
-    <br>v0.1.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-operator
+  <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0
+    <br>0.1.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-operator
 be69922ffb42: Pull complete
 ef291e196a72: Pull complete
 Digest: sha256:91664f6866b7228b68d3fb9ff8e13af95f618b7b78e5fd35690dd29394a08db1
-Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:v0.1.0
-registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:v0.1.0</pre>
+Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0
+registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0</pre>
 
 ## <a id="edit-chart"></a> (Optional) Edit Helm Chart
 
@@ -128,8 +128,8 @@ To edit your Helm chart:
     <br>See the following example `values.yaml` file:
     <pre class="terminal">---
     imagePullSecret: tanzu-mysql-image-registry
-    <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:v0.1.0
-    <br>tanzuMySQLImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:v0.1.0
+    <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0
+    <br>tanzuMySQLImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0
     <br>resources:
       limits:
         cpu: 100m
@@ -171,12 +171,12 @@ To install the Operator:
     Where `VERSION-TAG` is the version of the Helm chart.
     
     <br>For example:
-    <pre class="terminal">$ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:v0.1.0
-    <br>ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:v0.1.0
+    <pre class="terminal">$ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
+    <br>ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
     digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
     size:    4.2 KiB
     name:    tanzu-mysql-operator
-    version: v0.1.0
+    version: 0.1.0
     Exported chart to tanzu-mysql-operator/
     </pre>
 
