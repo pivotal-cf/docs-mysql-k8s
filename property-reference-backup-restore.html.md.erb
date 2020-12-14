@@ -259,3 +259,57 @@ MISSING EXAMPLES
   <td>Yes</td>
 </tr>
 </table>
+
+
+
+##<a name=""></a> Properties for the
+
+The table below explains the properties that can be set in the `zzz.yaml` file
+for .
+
+
+<table style="width:1000px" class="nice">
+<col width="10%">
+<col width="15%">
+<col width="10%">
+<col width="40%">
+<col width="15%">
+<col width="5%">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Example</th>
+  <th>Req?</th>
+</tr>
+<tr>
+  <td>metadata.name</td>
+  <td>String</td>
+  <td>None</td>
+  <td>The name of the TanzuMySQLRestore. Must be unique within a namespace.</td>
+  <td><code>tanzumysqlrestore-sample</code></td>
+  <td>Yes</td>
+</tr>
+<tr> 
+   <td>spec.tanzuMysqlBackup.name</td>
+   <td>String</td>
+   <td>None</td>
+   <td>The name of the TanzuMySQLBackup that represents the backup artifact to restore.
+       Must be in the same namespace as the TanzuMySQLRestore.</td>
+   <td> </td>
+   <td>Yes</td>
+</tr>
+<tr>
+   <td>spec.MysqlTemplate</td>
+   <td> </td>
+   <td> </td>
+   <td>The configuration for the TanzuMySQL instance that the backup artifact will be restored to.
+       This TanzuMySQL instance will be created automatically as part of the restore,
+       so the name must not already exist in the namespace.
+       For descriptions of each value in the configuration template,
+      see <a href="create-delete-mysql.html#create-instance">Create a TanzuMySQL Instance</a>.</td>
+   <td> </td>
+   <td>Yes</td>
+</tr>
+</table>

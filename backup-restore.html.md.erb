@@ -46,7 +46,7 @@ blobstore.
 
 ##<a id="backup"></a> Back Up Data
 
-NEED SOME INTRO HERE THAT PREPARES READER FOR THE TASKS INVOLVED IN BACKING UP.
+NEED SOME INTRO HERE THAT PREPARES READER FOR THE TASKS INVOLVED IN BACKING UP.NEED SOME INTRO HERE THAT PREPARES READER FOR THE TASKS INVOLVED IN BACKING UP.
 
 ###<a id="create-backuplocation"></a> Create a TanzuMySQLBackupLocation Resource
 
@@ -343,9 +343,9 @@ backup-sample   Failed   2020-12-09T18:28:23.339156Z                            
 
 ##<a id="delete-backups"></a> Delete Old Backup Artifacts
 
-Tanzu MySQL for Kubernetes does not natively support retention policies for backup artifacts. You may configure
+Tanzu MySQL for Kubernetes does not natively support retention policies for backup artifacts. You can configure
 retention policies on your external blobstore. If you do, you must also delete the associated TanzuMySQLBackup
-resources in the Kubernetes cluster, as those are not automatically deleted by Tanzu MySQL for Kubernetes.
+resources in the Kubernetes cluster, because those are not automatically deleted by Tanzu MySQL for Kubernetes.
 
 To delete a backup:
 
@@ -367,37 +367,52 @@ To delete a backup:
 
 This section discusses restoring.
 
-+ Restore from a Backup
-+ Restoring a Backup to a Different Namespace or Kubernetes Cluster
++ [Restore from a Backup](#restore-from-backup)
++ [Restore a Backup to a Different Namespace or Kubernetes Cluster](#restore-to-different)
 
-###<a id="restore-from-backup"></a> Restore from a Backup <%# Make H2 and H3 headers anchors. Use "a id" to include the anchor in the subnav. Use "a name" to leave it out. %>
+###<a id="restore-from-backup"></a> Restore from a Backup
 
-You must have an existing TanzuMySQLBackup in your current namespace. You must also have a TanzuMySQLBackupLocation
-that represents the bucket where the existing backup artifact is stored.
+TanzuMySQLRestores always restores to a new TanzuMySQL instance.
+The TanzuMySQL instance is created automatically when the restore is triggered.
 
-TanzuMySQLRestores will<%# Avoid "will": present tense is preferred. %> always restore to a new TanzuMySQL instance. The TanzuMySQL instance is created automatically
-when the restore is triggered. <%= vars.product_short %> does not allow restoring a backup to an existing TanzuMySQL
-instance. Although it is possible to<%# Consider shortening to "You can" or rewriting the sentence as an imperative. %> perform this manually by interacting directly with the Kubernetes API, VMware
-strongly<%# Consider deleting, especially if it precedes "recommend". %> discourages this action as you may<%# "can" usually works better. Use "might" to convey possibility. %> run the risk of losing data.
+<%= vars.product_short %> does not allow restoring a backup to an existing TanzuMySQL instance.
+Although you can perform this manually by interacting directly with the Kubernetes API, VMware
+strongly discourages you from doing this because you might lose data.
+
+#### Prerequisites
+
+Before you restore from a backup, you must have:
+
+*  An existing TanzuMySQLBackup in your current namespace. See [LINK] <= WHAT IS the best link for this?.
+*  A TanzuMySQLBackupLocation that represents the bucket where the existing backup artifact is stored.
+   See [Create a TanzuMySQLBackupLocation Resource](##create-backuplocation) above.
+
+#### Procedure
+
+To restore from a backup:
 
 1. Configure your restore using the TanzuMySQLRestore YAML template. Example YAML file:
-```
----
-apiVersion: mysql.tanzu.vmware.com/v1alpha1
-kind: TanzuMySQLRestore
-metadata:
-  name: tanzumysqlrestore-sample
-spec:
-  tanzuMysqlBackup:
-    name: backup-sample
-  tanzuMysqlTemplate:
-    metadata:
-      name: tanzumysql-sample
-    spec:
-      storageSize: 1Gi
-      imagePullSecret: tanzu-mysql-image-registry
 
-```
+OR
+
+1. Create a `xxxx.yaml` file. You can use this as a template.
+
+    ```
+    ---
+    apiVersion: mysql.tanzu.vmware.com/v1alpha1
+    kind: TanzuMySQLRestore
+    metadata:
+      name: tanzumysqlrestore-sample
+    spec:
+      tanzuMysqlBackup:
+        name: backup-sample
+      tanzuMysqlTemplate:
+        metadata:
+          name: tanzumysql-sample
+        spec:
+          storageSize: 1Gi
+          imagePullSecret: tanzu-mysql-image-registry
+    ```
 
 TanzuMySQLRestore (make into a table)
 * Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
