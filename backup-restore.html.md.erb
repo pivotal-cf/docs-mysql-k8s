@@ -48,12 +48,12 @@ blobstore.
 
 Performing backups for <%= vars.product_short %> requires creating a TanzuMySQLBackupLocation resource
 that references an external blobstore.
-Both on-demand backups as well as scheduled backups will use the TanzuMySQLBackupLocation to upload
+Both on-demand backups and scheduled backups use the TanzuMySQLBackupLocation to upload
 backup artifacts to the external blobstore.
 
-Prior to starting the following procedures for backing up a <%= vars.product_short %> instance,
-you should know the configuration details of your external blobstore and the desired frequency
-with which you would like to perform scheduled backups.
+Before starting the procedures for backing up a <%= vars.product_short %> instance,
+ensure that you know the configuration details of your external blobstore and how often 
+you want to perform scheduled backups.
 
 ###<a id="create-backuplocation"></a> Create a TanzuMySQLBackupLocation Resource
 
@@ -162,7 +162,7 @@ To set a schedule for automatic backups, create a TanzuMySQLBackupSchedule resou
 
 2. Edit the `backupschedule.yaml` file with the name of the TanzuMySQLBackupLocation resource
    that you created in [Create a TanzuMySQLBackupLocation Resource](backup-restore.html#create-backuplocation)
-   and the name of the TanzuMySQL instance you wish to perform scheduled backups.
+   and the name of the TanzuMySQL instance you want scheduled backups of.
    For an explanation of the properties that you can set in this file,
    see [Property Reference for Backup and Restore](property-reference-backup-restore.html#backupschedule).
 
@@ -212,8 +212,8 @@ TanzuMySQLBackup resources that are automatically generated as a result of a Tan
 `SCHEDULE-NAME-TIMESTAMP`.
 
 By default, <%= vars.product_short %> stores backup artifacts under the subfolder structure `yyyy > mm > dd`.
-Users can configure a custom path for backups such that backup artifacts are stored under the subfolder
-structure `CUSTOM_PATH > yyyy > mm > dd`.
+You can configure a custom path for backups so that backup artifacts are stored under the subfolder
+structure `CUSTOM-PATH > yyyy > mm > dd`.
 
 Backup artifacts stored in the external blobstore are named `DATETIME-RANDOM_STRING-backup.xb`.
 
@@ -282,11 +282,12 @@ backup-sample   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.14
 
 ##<a id="list-resources"></a> List Existing TanzuMySQLBackup Resources
 
-You might want to list existing TanzuMySQLBackup resources for a multitude of reasons, for example:
+You might want to list existing TanzuMySQLBackup resources for various reasons, for example:
 
-* To select a backup to restore. For steps to restore a backup, see [Restore](backup-restore.html#restore).
+* To select a backup to restore.
+  For steps to restore a backup, see [Restore](backup-restore.html#restore).
 * To see the last successful backup.
-* To verify scheduled backups are running as expected.
+* To verify that scheduled backups are running as expected.
 * To find old backups that need to be cleaned up. For steps to delete backups,
   see [Delete Old Backup Artifacts](backup-restore.html#delete-backups).
 
@@ -382,8 +383,10 @@ on an existing TanzuMySQL instance.
 The TanzuMySQL instance is created automatically when the restore is triggered.
 
 <%= vars.product_short %> does not allow you to restore a backup to an existing TanzuMySQL instance.
-Although you can perform this manually by interacting directly with the Kubernetes API, VMware
-strongly discourages you from doing this because you might lose data.
+Although you can perform this manually by copying the MySQL data from the backup artifact
+onto an existing TanzuMySQL instance,
+VMware strongly discourages you from doing this because
+you might clobber existing data on the TanzuMySQL instance.
 
 #### Prerequisites
 
@@ -470,10 +473,6 @@ To restore from a backup:
                         </ul>
                    </td>
               </tr>
-             <tr>
-                   <td><code>TIME SCHEDULED</code></td>
-                   <td> The time at which the restore was scheduled.</td>
-             </tr>
              <tr>
                    <td><code>TIME STARTED</code></td><td> The time that the restore process started.
              </tr>
