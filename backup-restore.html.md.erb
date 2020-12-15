@@ -365,7 +365,7 @@ To delete a backup:
 
 ##<a id="restore"></a>Restore
 
-This section discusses restoring.
+This section discusses restoring:
 
 + [Restore from a Backup](#restore-from-backup)
 + [Restore a Backup to a Different Namespace or Kubernetes Cluster](#restore-to-different)
@@ -414,6 +414,8 @@ OR
           imagePullSecret: tanzu-mysql-image-registry
     ```
 
+   For an explanation of the properties that you can set in this file,
+   see [Property Reference for Backup and Restore](property-reference-backup-restore.html#restore).
 TanzuMySQLRestore (make into a table)
 * Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
 * m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMySQLRestore. Must be unique within a namespace., tanzumysqlrestore-sample, Yes
