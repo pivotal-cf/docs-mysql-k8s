@@ -236,10 +236,6 @@ see [Create a TanzuMySQLBackupLocation Resource](#create-backuplocation) above.
 
 To take a backup:
 
-1. Configure your backup using the TanzuMySQLBackup YAML template. Example YAML file:
-
-OR
-
 1. Create a `backup.yaml` file. You can use this as a template:
 
     ```
@@ -272,7 +268,7 @@ OR
 3. Verify that a backup has been generated and track its progress by running:
 
     ```
-    kubectl get tanzumysqlbackup backup-sample -n DEV-NAMESPACE
+    kubectl get tanzumysqlbackup backup-sample -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
@@ -286,7 +282,7 @@ backup-sample   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.14
 
 ##<a id="list-resources"></a> List Existing TanzuMySQLBackup Resources
 
-You may wish to list existing TanzuMySQLBackup resources for a multitude of reasons, for example:
+You might want to list existing TanzuMySQLBackup resources for a multitude of reasons, for example:
 
 * To select a backup to restore. For steps to restore a backup, see [Restore](backup-restore.html#restore).
 * To see the last successful backup.
@@ -303,12 +299,11 @@ You may wish to list existing TanzuMySQLBackup resources for a multitude of reas
     For example:
     <pre  class="terminal">
     $ kubectl get tanzumysqlbackup
-NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
-backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   23h
+    NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
+    backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   23h
     </pre>
 
-2. Refer to the table below to understand the output:
-
+2. To understand the output, see the table below:
 
     <table class="nice">
     <col width="20%">
@@ -318,7 +313,7 @@ backup-sample   Failed   2020-12-09T18:28:23.339156Z                            
 	            <th>Meaning</th>
             </tr>
             <tr>
-                    <td> STATUS</td>
+                    <td><code>STATUS</code></td>
                     <td> Represents the current status of the backup.
                         Allowed values are:
                         <ul>
@@ -328,25 +323,25 @@ backup-sample   Failed   2020-12-09T18:28:23.339156Z                            
                            <li>Succeeded: The backup has completed successfully.</li>
                            <li>Failed: The backup has failed to complete.
                                To troubleshoot a failed backup,
-                               see <a href="#troubleshoot">Troubleshoot Backup and Restore</a>](#troubleshoot) below.</li>
+                               see <a href="#troubleshoot">Troubleshoot Backup and Restore</a> below.</li>
                         </ul>
                    </td>
               </tr>
              <tr>
-                   <td> TIME SCHEDULED </td>
+                   <td><code>TIME SCHEDULED</code></td>
                    <td> The time at which the backup was scheduled on a selected TanzuMySQL Pod.</td>
              </tr>
              <tr>
-                   <td> TIME STARTED </td><td> The time that the backup process started.
+                   <td><code>TIME STARTED</code></td><td> The time that the backup process started.
              </tr>
              <tr>
-                   <td> TIME COMPLETED </td>
+                   <td><code>TIME COMPLETED</code></td>
                    <td> The time that the backup process finished.
                         If the backup fails, this value is empty.</td>
              </tr>
              <tr>
-                   <td>AGE</td>
-                   <td>Age of the backup since it was requested.</td>
+                   <td><code>AGE</code></td>
+                   <td>The time since the backup was requested.</td>
              </tr>
     </table>
 
@@ -375,7 +370,7 @@ To delete a backup:
 
 ##<a id="restore"></a>Restore
 
-This section discusses restoring:
+This section discusses two kinds of restoring:
 
 + [Restore from a Backup](#restore-from-backup)
 + [Restore a Backup to a Different Namespace or Kubernetes Cluster](#restore-to-different)
@@ -386,7 +381,7 @@ TanzuMySQLRestores always restores to a new TanzuMySQL instance to avoid clobber
 on an existing TanzuMySQL instance.
 The TanzuMySQL instance is created automatically when the restore is triggered.
 
-<%= vars.product_short %> does not allow restoring a backup to an existing TanzuMySQL instance.
+<%= vars.product_short %> does not allow you to restore a backup to an existing TanzuMySQL instance.
 Although you can perform this manually by interacting directly with the Kubernetes API, VMware
 strongly discourages you from doing this because you might lose data.
 
@@ -403,11 +398,7 @@ Before you restore from a backup, you must have:
 
 To restore from a backup:
 
-1. Configure your restore using the TanzuMySQLRestore YAML template. Example YAML file:
-
-OR
-
-1. Create a `tanzumysqlrestore.yaml` file. You can use this as a template.
+1. Create a `tanzumysqlrestore.yaml` file. You can use this as a template:
 
     ```
     ---
@@ -426,44 +417,83 @@ OR
           imagePullSecret: tanzu-mysql-image-registry
     ```
 
-   For an explanation of the properties that you can set in this file,
-   see [Property Reference for Backup and Restore](property-reference-backup-restore.html#restore).
-TanzuMySQLRestore (make into a table)
-* Property, Type, Default, Description, Example,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> Required?
-* m<%# Bullet points start with uppercase letters. %>etadata.name, String, None, The name of the TanzuMySQLRestore. Must be unique within a namespace., tanzumysqlrestore-sample, Yes
-* s<%# Bullet points start with uppercase letters. %>pec.tanzuMysqlBackup.name, String, None, The name of the TanzuMySQLBackup that represents the backup artifact you wish<%# "want" is preferred. %> to restore. Must be in the same namespace as the TanzuMySQLRestore., Yes
-* s<%# Bullet points start with uppercase letters. %>pec.MysqlTemplate, , , The configuration for the TanzuMySQL instance that the backup artifact will<%# Avoid "will": present tense is preferred. %> be restored to. This TanzuMySQL instance will<%# Avoid "will": present tense is preferred. %> be created automatically as part of the restore, so the name must not already exist in the namespace.
-  For descriptions of each value in the configuration template, see [Creating a TanzuMySQL instance](http://docs-pcf-staging.cfapps.io/tanzu-mysql-kubernetes/1-n/create-delete-mysql.html#create-yaml)., Yes <%# Do not link to staging versions of the docs. %>
+    For an explanation of the properties that you can set in this file,
+    see [Property Reference for Backup and Restore](property-reference-backup-restore.html#restore).
 
-2. Trigger the restore by creating the TanzuMySQLRestore in the same namespace as the TanzuMySQLBackup and TanzuMySQLBackupLocation.
-```
-→ kubectl apply -f tanzumysqlrestore.yaml -n DEV-NAMESPACE
-tanzumysqlrestore.mysql.tanzu.vmware.com/tanzumysqlrestore-sample created
-```
+2. Trigger the restore by creating the TanzuMySQLRestore in the same namespace
+   as the TanzuMySQLBackup and TanzuMySQLBackupLocation by running:
 
-3. Verify that a restore has been triggered and track the progress of your restore by doing the following.
-```
-→ kubectl get tanzumysqlrestore tanzumysqlrestore-sample -n DEV-NAMESPACE
-NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
-tanzumysqlrestore-sample   Succeeded   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:52:30.000000Z   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:53:09.163336Z   13m
-```
-  - STATUS - Represents the current status of the restore. Possible values can be<%# Consider switching to active voice. %>:
-    - Pending: The restore has been received but not yet<%# 1st preference: delete. 2nd preference: replace these words with "currently". %> scheduled.
-    - Scheduled: The restore has been scheduled but has not started.
-    - Running: The restore is currently in process.
-    - Succeeded: The restore has completed successfully
-    - Failed: The restore has failed to complete. To troubleshoot, see the below section on how to troubleshoot a failed restore.
-  - TIME SCHEDULED - The time at which the restore was scheduled.
-  - TIME STARTED - The time at which the restore process started.
-  - TIME COMPLETED - The time at which the restore process completed. If the restore fails, this value will<%# Avoid "will": present tense is preferred. %> be empty.
-  - AGE - Age of the restore since<%# Do not use "since" where you can use "because". %> it was requested.
+    ```
+    kubectl apply -f tanzumysqlrestore.yaml -n DEVELOPMENT-NAMESPACE
+    ```
+
+    For example:
+    <pre  class="terminal">
+    $ kubectl apply -f tanzumysqlrestore.yaml -n my-namespace
+    tanzumysqlrestore.mysql.tanzu.vmware.com/tanzumysqlrestore-sample created
+    </pre>
+
+3. Verify that a restore has been triggered and track the progress of your restore by running:
+
+    ```
+    kubectl get tanzumysqlrestore tanzumysqlrestore-sample -n DEVELOPMENT-NAMESPACE
+    ```
+
+    For example:
+    <pre  class="terminal">
+    $ kubectl get tanzumysqlrestore tanzumysqlrestore-sample -n my-namespace
+    NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
+    tanzumysqlrestore-sample   Succeeded   2020-12-01T21:52:30.000000Z   2020-12-01T21:53:09.163336Z   13m
+   </pre>
+
+4. To understand the output, see the table below:
+    <table class="nice">
+    <col width="20%">
+    <col width="80%">
+            <tr>
+	            <th>Column Name</th>
+	            <th>Meaning</th>
+            </tr>
+            <tr>
+                    <td><code>STATUS</code></td>
+                    <td> Represents the current status of the restore process.<br>
+                        Allowed values are:
+                        <ul>
+                           <li>Pending: The restore has been received but not yet scheduled
+                               on a TanzuMySQL Pod.</li>
+                           <li>Scheduled: The restore has been scheduled but has not started.</li>
+                           <li>Running: The restore is in progress.</li>
+                           <li>Succeeded: The restore has completed successfully.</li>
+                           <li>Failed: The restore failed.
+                               To troubleshoot, see <a href="#troubleshoot">Troubleshoot
+                               Backup and Restore</a> below.</li>
+                        </ul>
+                   </td>
+              </tr>
+             <tr>
+                   <td><code>TIME SCHEDULED</code></td>
+                   <td> The time at which the restore was scheduled.</td>
+             </tr>
+             <tr>
+                   <td><code>TIME STARTED</code></td><td> The time that the restore process started.
+             </tr>
+             <tr>
+                   <td><code>TIME COMPLETED</code></td>
+                   <td> The time that the restore process finished.
+                        If the restore fails, this value is empty.</td>
+             </tr>
+             <tr>
+                   <td><code>AGE</code></td>
+                   <td>The time since the restore was requested.</td>
+             </tr>
+    </table>
 
 ###<a id="restore-to-different"></a> Restoring a Backup to a Different Namespace or Kubernetes Cluster
 
 If you want to restore a backup to a different namespace or a different Kubernetes cluster,
 create a `TanzuMySQLBackupLocation` in the target namespace or Kubernetes cluster.
-Then, <%= vars.product_short %> automatically creates `TanzuMySQLBackup` resources for all
-identifiable* backup artifacts in the external blobstore.
+Then, <%= vars.product_short %> automatically creates `TanzuMySQLBackup` resources
+for the backup artifacts in the external blobstore.
 
 To restore to a different namespace or Kubernetes cluster, you create a
 BackupLocation in the target namespace:
@@ -472,7 +502,6 @@ BackupLocation in the target namespace:
 
 1. Create a TanzuMySQLBackupLocation resource that contains the backup artifact to restore.
    For how to do this, see [Create a TanzuMySQLBackupLocation Resource](#create-backuplocation).
-
 
 1. Confirm that the TanzuMySQLBackup artifact to restore is included in the list by running:
 
@@ -483,32 +512,45 @@ BackupLocation in the target namespace:
    <pre class='terminal'>
    $ kubectl get tanzumysqlbackup
      NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
-     sample-backup   Succeeded   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:26.138676Z   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:26.148835Z   2020-12<%# Use &ndash; for a range, not a regular dash. %>-01T21:49:30.609250Z   5d17h
+     sample-backup   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.148835Z   2020-12-01T21:49:30.609250Z   5d17h
    </pre>
 
 1. Trigger a restore by following steps in [Restore from a Backup](#restore-from-backup).
 
 ##<a id="troubleshoot"></a> Troubleshoot Backup and Restore
 
-Detect potential failures or issues by monitoring the `STATUS` column of any Tanzu MySQL custom
-resource. If the status is `Failed`, or if it seems to be stuck in `Pending`, `Scheduled`, or
-`Running`, this may<%# "can" usually works better. Use "might" to convey possibility. %> be indicative of a misconfiguration, possible issues with the external
-blobstore,<%# If this sentence contains a list, reformat the list as bullets. If the sentence is just rambling, break it up into small sentences. %> or issues with the Tanzu MySQL Operator. For example:
-```
-$ kubectl get tanzumysqlbackup backup-sample
-NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
-backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   2m44s
-```
+Basic troubleshooting begins with reviewing the status for the resource and
+reading the messages associated with the resource events. 
 
-You can further diagnose the issue by inspecting the Kubernetes events of the resource in question.
-For example:
-```
-$ kubectl get events --field-selector involvedObject.name=backup-sample
-LAST SEEN   TYPE      REASON   OBJECT                           MESSAGE
-2m43s       Warning   Failed   tanzumysqlbackup/backup-sample   Secret "backuplocation-sample-creds" not found
-```
+To troubleshoot problems with backup and restore: 
 
-You can read the message in the `MESSAGE` column to understand why the failure occurred. In this
-example, the `backup-sample` expected<%# Consider replacing with "in most cases" to sound more confident. %> a Kubernetes secret called `backuplocation-sample-creds` to
-exist. You can fix the problem by creating the `backuplocation-sample-creds` secret. The template
-for this secret is located in the `backuplocation.yaml` template.
+1. Detect issues by monitoring the `STATUS` column of any Tanzu MySQL custom resource.
+   If the status is `Failed` or is stuck in `Pending`, `Scheduled`, or `Running`,
+    then one of the following might be the problem:
+    + Misconfiguration
+    + Problem with the external blobstore
+    + issues with the Tanzu MySQL Operator
+
+    In this example, the `kubectl get` command outputs a `Failed` status:
+
+    <pre class="terminal">
+    $ kubectl get tanzumysqlbackup backup-sample
+    NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
+    backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   2m44s
+   </pre>
+
+2. Diagnose the issue by inspecting the Kubernetes events of the resource:
+
+    For example:
+    <pre class="terminal">
+    $ kubectl get events --field-selector involvedObject.name=backup-sample
+    LAST SEEN   TYPE      REASON   OBJECT                           MESSAGE
+    2m43s       Warning   Failed   tanzumysqlbackup/backup-sample   Secret "backuplocation-sample-creds" not found
+    </pre>
+
+3. Read the message in the `MESSAGE` column to understand why the failure occurred.<br><br>
+
+    In the example above, the `backup-sample` expected a Kubernetes secret called
+   `backuplocation-sample-creds` to exist.
+    Fix this problem by creating the `backuplocation-sample-creds` secret. 
+    The template for this secret is located in the `backuplocation.yaml` template.
