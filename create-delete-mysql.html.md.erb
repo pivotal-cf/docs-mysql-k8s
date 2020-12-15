@@ -13,8 +13,8 @@ This topic describes how you, as a developer, deploy and delete TanzuMySQL insta
 
 Before you can create or delete TanzuMySQL instances, you must have:
 
-* **The Kubernetes Command Line Interface (kubectl).**
-  See [Installing the Kubernetes CLI](https://docs.pivotal.io/tkgi/installing-kubectl-cli.html).
+* **The Kubernetes Command Line Interface (kubectl):**
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
 * **Full admin access to all Kubernetes resources in your developer namespace.**
 
@@ -30,7 +30,16 @@ Before you can create or delete TanzuMySQL instances, you must have:
 
 To create a TanzuMySQL instance:
 
-1. Target the development namespace where you want to create the TanzuMySQL instance.
+1. Target the development namespace where you want to create the TanzuMySQL instance:
+
+    ```
+    kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
+    ```
+    Where `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance.
+
+    For example:
+    <pre class="terminal">$ kubectl config set-context --current --namespace=my-namespace
+    </pre>
 
 2. From your namespace, Kubernetes must be able to access the registry
    that stores the <%= vars.product_short %> images.
@@ -183,8 +192,9 @@ To delete a TanzuMySQL instance:
     For example:
 
     <pre class="terminal">
-    $ kubectl delete tanzumysql tanzumysql-sample
-tanzumysql.mysql.tanzu.vmware.com "tanzumysql-sample" deleted</pre>
+    $ kubectl -n my-namespace delete tanzumysql tanzumysql-sample
+    tanzumysql.mysql.tanzu.vmware.com "tanzumysql-sample" deleted
+    </pre>
 
 2. (Optional) Delete the Persistent Volume Claim (PVC).
 
