@@ -33,6 +33,7 @@ To log in to the MySQL server:
     * `INSTANCE-NAME` is the name of the instance you are targeting.
 
     For example:
+
     <pre class="terminal">
     $ kubectl -n my-namespace exec --stdin --tty pod/my-instance-0 -- /bin/bash
     </pre>
@@ -44,13 +45,14 @@ To log in to the MySQL server:
     ```
 
     For example:
+
     <pre class="terminal">
     $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     </pre>
 
 ## <a id='port-forward'></a> Connect to the MySQL Server with the Kubernetes API Server
 
-<p class="note"><strong>Note:</strong> Connecting with `kubectl port-forward` proxies
+<p class="note"><strong>Note:</strong> Connecting with <code>kubectl port-forward</code> proxies
   the connection through the apiserver. It is intended for debugging access, and
   its performance is notably slower than a direct connection.</p>
 
@@ -71,6 +73,7 @@ about the command, see [Kubernetes documentation](https://kubernetes.io/docs/ref
     ```
 
     For example:
+
     <pre class="terminal">
     $ kubectl port-forward service/tanzumysql-sample 3306 &
     <br>Forwarding from 127.0.0.1:3306 -> 3306
@@ -109,12 +112,12 @@ The name of the service is the same as the name of the <%= vars.product_short %>
 
 ### <a id="example-bitnami-wordpress"></a> Example Deployment of Bitnami Wordpress with <%= vars.product_short %>
 
-The Bitnami Wordpress Helm chart can be configured to connect to an external database
+You can configure the Bitnami Wordpress Helm chart to connect to an external database
 instead of deploying its own database. For more information about the Helm chart,
 see [charts/bitnami/wordpress](https://github.com/bitnami/charts/tree/master/bitnami/wordpress) in GitHub.
 
 See the following example of setting up <%= vars.product_short %> with a database and user
-that you can use with the Wordpress Helm chart.
+that you can use with the Wordpress Helm chart:
 
 ```
 $ kubectl exec -it tanzumysql-sample-0 -c mysql -- bash
