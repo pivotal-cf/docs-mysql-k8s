@@ -18,33 +18,31 @@ the <%= vars.product_short %> Operator using Helm.
 
 To download resources and install the Operator:
 
-1. [Download Resources](#download)
-1. [(Optional) Edit Helm Chart](#edit-chart)
-1. [Install Operator](#install)
+1. [Download the Resources](#download)
+1. [(Optional) Edit the Helm Chart](#edit-chart)
+1. [Install the Operator](#install)
 
 ## <a id='prereq'></a>Prerequisites
 
 Before you deploy the <%= vars.product_short %> Operator, you need:
 
-* Access to <%= vars.product_short %> in Tanzu Network and Tanzu Network Registry.
+* Access to <%= vars.product_short %> in <%= vars.product_network %> and <%= vars.product_network %> Registry.
 
 * The Helm command line tool installed. For more information, see [Installing
 Helm](https://helm.sh/docs/intro/install/) from the Helm documentation.
 
 * The Kubernetes command line tool (kubectl) installed. For more
-information, see [Install and Set Up kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-from the Kubernetes documentation.
+information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-* The Docker command line tool installed and Docker running on your machine.
+* The Docker command line tool installed and Docker running on your local machine.
 
 * An existing Kubernetes environment.
 
-* `cluster-admin` ClusterRole access to the Kubernetes cluster. For more information, see Kubernetes
-documentation for [User-facing roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
+* `cluster-admin` ClusterRole access to the Kubernetes cluster.
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
 
 
-
-## <a id="download"></a> Download Resources
+## <a id="download"></a> Download the Resources
 
 To install the <%= vars.product_short %> Operator, you must download the Helm chart,
 images, and deployment templates.
@@ -52,20 +50,25 @@ images, and deployment templates.
 To download the resources:
 
 1. Log in to Helm from the command line by running:
-  <pre>helm registry login registry.pivotal.io \
-    --username=USER-EMAIL --password=USER-PASSWORD</pre>
 
-1. Log in to [Tanzu Network](https://network.pivotal.io) and go to the **<%= vars.product_full %>** product page.
+    ```
+    helm registry login registry.pivotal.io \
+    --username=USER-EMAIL --password=USER-PASSWORD
+    ```
 
-1. Click **Tanzu MySQL Deployment Templates** to download the deployment templates to your machine.
+1. Log in to [<%= vars.product_network %>](https://network.pivotal.io) and go to
+the **<%= vars.product_full %>** product page.
 
-1. Click **Artifact References** to navigate into the artifacts folder. Keep the page
+1. Click **Tanzu MySQL Deployment Templates** to download the deployment templates to your local machine.
+
+1. Click **Artifact References** to navigate into the artifacts directory. Keep the page
 open to reference in the following step.
 
 1. Download each of the artifact references using the command line.
-  1. **To download `tanzu-mysql-operator-chart` to the Helm cache:** Click the artifact from Tanzu Network and paste the
+  1. **To download `tanzu-mysql-operator-chart` to the Helm cache:** Click the artifact from <%= vars.product_network %> and paste the
   two commands into the command line.
-  <br><%= image_tag("tanzu-mysql-operator-artifact.png", :width => "450px", :alt=>"Modal shows 4 pieces of data: type, digest, 'set the environment variable' and 'pull this chart'") %>
+  <br><%= image_tag("tanzu-mysql-operator-artifact.png", :width => "450px",
+  :alt=>"Modal shows 4 pieces of data: type, digest, 'set the environment variable' and 'pull this chart'") %>
   <br>For example:
   <pre class="terminal">$ export HELM_EXPERIMENTAL_OCI=1
 $ helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
@@ -76,7 +79,7 @@ size:    4.2 KiB
 name:    tanzu-mysql-operator
 version: 0.1.0
 Status: Downloaded newer chart for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0</pre>
-  1. **To download `tanzu-mysql-instance`:** Click the artifact from Tanzu Network and paste the
+  1. **To download `tanzu-mysql-instance`:** Click the artifact from <%= vars.product_network %> and paste the
   command into the command line.
   <br><br>For example:
   <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0
@@ -98,7 +101,7 @@ faffd54990ce: Pull complete
 Digest: sha256:78073dcf626603da192b78643bda24e0098f944d0bd54da1d60924b20d5eea8c
 Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0
 registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0</pre>
-  1. **To download `tanzu-mysql-operator`:** Click the artifact from Tanzu Network and paste the
+  1. **To download `tanzu-mysql-operator`:** Click the artifact from <%= vars.product_network %> and paste the
   command into the command line.
   <br><br>For example:
   <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0
@@ -109,24 +112,55 @@ Digest: sha256:91664f6866b7228b68d3fb9ff8e13af95f618b7b78e5fd35690dd29394a08db1
 Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0
 registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0</pre>
 
-## <a id="edit-chart"></a> (Optional) Edit Helm Chart
 
-You may want to edit the values in your <%= vars.product_short %> Operator Helm chart before you install.
+## <a id="edit-chart"></a> (Optional) Edit the Helm Chart
+
+You might want to edit the values in your <%= vars.product_short %> Operator Helm chart before you install.
 
 To edit your Helm chart:
 
 1. Open the `values.yaml` file inside your local `tanzu-mysql-operator` directory.
     You can edit the following values:
 
-    | Key            | Value Type    | Description                     |
-    |----------------|---------------|---------------------------------|
-    | imagePullSecret| String        | Name of image secret. This value must match the name of the Kubernetes secret you create in [Install Operator](#install) below. |
-    | operatorImage  | URI           | Reference to the <%= vars.product_short %> Operator image. If you uploaded the Operator image to a private registry, you must change this reference to pull the Operator image from your registry.  |
-    | tanzuMySQLImage| URI           | Reference to the <%= vars.product_short %> image. If you have uploaded the <%= vars.product_short %> image to a private registry, you must change this reference to pull the <%= vars.product_short %> image from your registry.  |
-    | resources      | List          | CPU and memory limits and requests for the <%= vars.product_short %> Operator. You can change these values to scale your resources.  |
-
+    <table>
+      <thead>
+        <tr>
+          <th width="15%">Key</th>
+          <th width="10%">Value Type</th>
+          <th width="35%">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>imagePullSecret</code></td>
+          <td>String</td>
+          <td>Name of image secret. This value must match the name of the Kubernetes
+            secret you create in <a href="#install">Install the Operator</a> below.</td>
+        </tr>
+        <tr>
+          <td><code>operatorImage</code></td>
+          <td>URI</td>
+          <td>Reference to the <%= vars.product_short %> Operator image.
+            If you uploaded the Operator image to a private registry, you must
+            change this reference to pull the Operator image from your registry.</td>
+        </tr>
+        <tr>
+          <td><code>tanzuMySQLImage</code></td>
+          <td>URI</td>
+          <td>Reference to the <%= vars.product_short %> image.
+            If you have uploaded the <%= vars.product_short %> image to a private registry,
+            you must change this reference to pull the <%= vars.product_short %> image from your registry.</td>
+        </tr>
+        <tr>
+          <td><code>resources</code></td>
+          <td>List</td>
+          <td>Limits and requests for CPU and memory for the <%= vars.product_short %> Operator.
+            You can change these values to scale your resources.</td>
+        </tr>
+      </tbody>
+    </table>
     <br>See the following example `values.yaml` file:
-    <pre class="terminal">---
+    <pre><code>---
     imagePullSecret: tanzu-mysql-image-registry
     <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0
     <br>tanzuMySQLImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0
@@ -137,12 +171,13 @@ To edit your Helm chart:
       requests:
         cpu: 100m
         memory: 20Mi
-    </pre>
+    </code></pre>
 
-## <a id="install"></a> Install Operator
 
-To install the <%= vars.product_short %> Operator, you must use kubectl to create a namespace and secret. Then, you
-use the Helm CLI to install the Operator.
+## <a id="install"></a> Install the Operator
+
+To install the <%= vars.product_short %> Operator, you must use kubectl to create a namespace and secret.
+Then, use the Helm CLI to install the Operator.
 
 To install the Operator:
 
@@ -165,11 +200,14 @@ To install the Operator:
     --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
     ```
 1. Download the Helm chart to your current working directory on your local machine by running:
-    <pre>helm chart export REGISTRY-URL</pre>
+
+    ```
+    helm chart export REGISTRY-URL
+    ```
     Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart. <br>The value of `REGISTRY-URL` has the following pattern:
-    <pre>registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-TAG</pre>
-    Where `VERSION-TAG` is the version of the Helm chart.
-    
+    `registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG`
+    Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
+
     <br>For example:
     <pre class="terminal">$ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
     <br>ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
@@ -192,11 +230,14 @@ To install the Operator:
     kubectl get all
     ```
     The <%= vars.product_short %> Operator has finished installing when you see the value of the `STATUS` column for the
-    <%= vars.product_short %> Operator pod is `Running`. See example output:
-    <pre class="terminal">NAME                                                           READY   STATUS    RESTARTS   AGE
+    <%= vars.product_short %> Operator Pod is `Running`. See example output:
+    <pre class="terminal">$ kubectl get all
+NAME                                                           READY   STATUS    RESTARTS   AGE
 pod/mysql-for-kubernetes-controller-manager-84d76dfb77-lq5mb   1/1     <span style="color: #77bf00;">Running</span>   0          21s
 <br>NAME                                                      READY   UP-TO-DATE   AVAILABLE   AGE
 deployment.apps/mysql-for-kubernetes-controller-manager   1/1     1            1           23s
 <br>NAME                                                                 DESIRED   CURRENT   READY   AGE
 replicaset.apps/mysql-for-kubernetes-controller-manager-84d76dfb77   1         1         1       23s</pre>
-    <p class="note"><strong>Note:</strong> You can only have one <%= vars.product_short %> Operator installed in a Kubernetes cluster.</p>
+    <p class="note">
+      <strong>Note:</strong> You can only have one <%= vars.product_short %> Operator installed in a Kubernetes cluster.
+    </p>
