@@ -14,7 +14,7 @@ configure schedules for automated backups, and restore backups to new TanzuMySQL
 For uploading and retrieving backup artifacts,
 <%= vars.product_short %> currently supports S3, Minio, and other S3-compatible storage.
 
-For backing up and restoring, 
+For backing up and restoring,
 <%= vars.product_short %> uses four of the five Custom Resource Definitions (CRDs):
 
   * **TanzuMySQLBackup:** References a TanzuMySQL backup artifact that exists in an
@@ -44,9 +44,16 @@ associated backup artifact still exists in the external blobstore, <%= vars.prod
 re-creates the `TanzuMySQLBackup` resource to match the contents of the external
 blobstore.
 
-##<a id="backup"></a> Back Up Data
+##<a id="backup"></a> Back Up <%= vars.product_short %> Data
 
-NEED SOME INTRO HERE THAT PREPARES READER FOR THE TASKS INVOLVED IN BACKING UP.NEED SOME INTRO HERE THAT PREPARES READER FOR THE TASKS INVOLVED IN BACKING UP.
+Performing backups for <%= vars.product_short %> requires creating a TanzuMySQLBackupLocation resource
+that references an external blobstore.
+Both on-demand backups as well as scheduled backups will use the TanzuMySQLBackupLocation to upload
+backup artifacts to the external blobstore.
+
+Prior to starting the following procedures for backing up a <%= vars.product_short %> instance,
+you should know the configuration details of your external blobstore and the desired frequency
+with which you would like to perform scheduled backups.
 
 ###<a id="create-backuplocation"></a> Create a TanzuMySQLBackupLocation Resource
 
@@ -54,12 +61,6 @@ The purpose of creating this TanzuMySQLBackupLocation Resource is to configure t
 with the location of the blobstore and the credentials to access it.
 
 To create a TanzuMySQLBackupLocation resource:
-
-CAN I REPLACE?
-
-1. Configure your backup location using the following TanzuMySQLBackupLocation YAML as a template:
-
-WITH:
 
 1. Create a backuplocation.yaml file. You can use this as a template:
 
@@ -92,17 +93,17 @@ WITH:
       secretAccessKey: "my-secret-access-key"
     ```
 
-2. Edit the `xxxx.yaml` file.
+2. Edit the `backuplocation.yaml` file with the configuration for your external blobstore.
    For an explanation of the properties that you can set in this file,
    see [Property Reference for Backup and Restore](property-reference-backup-restore.html#backuplocation).
 
 3. Create the TanzuMySQLBackupLocation resource in the same namespace as the TanzuMySQL instances that
-   you want backup by running:
+   you want to back up by running:
 
     ```
     kubectl apply -f backuplocation.yaml -n DEVELOPMENT-NAMESPACE
     ```
-    Where is `DEVELOPMENT-NAMESPACE` is the namespace for the instance.
+    Where is `DEVELOPMENT-NAMESPACE` is the namespace for the TanzuMySQL instance.
 
     For example:
 
@@ -117,7 +118,7 @@ secret/backuplocation-sample-creds configured
     kubectl get tanzumysqlbackuplocation backuplocation-sample \
     -o json -n DEVELOPMENT-NAMESPACE | jq .spec
     ```
- 
+
     For example:
 
     <pre class="terminal">
@@ -141,12 +142,7 @@ secret/backuplocation-sample-creds configured
 
 To set a schedule for automatic backups, create a TanzuMySQLBackupSchedule resource:
 
-1. Configure your backup schedule using the TanzuMySQLBackupSchedule YAML template.
-   Example YAML file:
-
-OR
-
-1. Create a `xxxx.yaml` file. You can use this as a template.
+1. Create a `backupschedule.yaml` file. You can use this as a template.
 
     ```
     ---
@@ -164,7 +160,9 @@ OR
       schedule: "@daily"
     ```
 
-2. Edit the `xxxx.yaml` file.
+2. Edit the `backupschedule.yaml` file with the name of the TanzuMySQLBackupLocation resource
+   that you created in [Create a TanzuMySQLBackupLocation Resource](backup-restore.html#create-backuplocation)
+   and the name of the TanzuMySQL instance you wish to perform scheduled backups.
    For an explanation of the properties that you can set in this file,
    see [Property Reference for Backup and Restore](property-reference-backup-restore.html#backupschedule).
 
@@ -214,19 +212,24 @@ TanzuMySQLBackup resources that are automatically generated as a result of a Tan
 `SCHEDULE-NAME-TIMESTAMP`.
 
 By default, <%= vars.product_short %> stores backup artifacts under the subfolder structure `yyyy > mm > dd`.
+Users can configure a custom path for backups such that backup artifacts are stored under the subfolder
+structure `CUSTOM_PATH > yyyy > mm > dd`.
 
-For example, if a TanzuMySQLBackupSchedule name is `tanzumysqlbackupschedule-sample`
-and a backup was taken at timestamp `1607633463`, then the artifact is named
-`tanzumysqlbackupschedule-sample-1607633463`
-and the path to the artifact is 2020/12/10.
+Backup artifacts stored in the external blobstore are named `DATETIME-RANDOM_STRING-backup.xb`.
 
-IS THERE A FILE EXTENSION on the backup artifact? 
+For example, if a TanzuMySQLBackupSchedule name is `tanzumysqlbackupschedule-sample`, the custom backup
+path is `my-backups/`, and a backup was taken on Thursday, December 10, 2020 at 8:51:03 PM GMT
+(timestamp `1607633463`), then:
+
+* The TanzuMySQLBackup resource on the Kubernetes cluster is named `tanzumysqlbackupschedule-sample-1607633463`
+* The backup artifact in the external blobstore is named `20201210T205103-kzw54l-backup.xb`
+* The path to the artifact is `my-backups/2020/12/10/`.
 
 ### <a id="on-demand"></a>Perform an On-Demand Backup
 
 In addition to scheduled backups, you can take individual backups whenever you want.
 
-**Prerequisite:** A TanzuMySQLBackupLocation resource that represents the external blobstore 
+**Prerequisite:** A TanzuMySQLBackupLocation resource that represents the external blobstore
 to which you upload the generated backup artifact.
 To configure the TanzuMySQLBackupLocation resource,
 see [Create a TanzuMySQLBackupLocation Resource](#create-backuplocation) above.
@@ -255,7 +258,7 @@ OR
      For an explanation of the properties that you can set in this file,
      see [Property Reference for Backup and Restore](property-reference-backup-restore.html#on-demand-backup).
 
-2. Trigger the backup by creating the TanzuMySQLBackup in the same namespace as the instance by running:
+2. Trigger the backup by creating the TanzuMySQLBackup resource in the same namespace as the instance by running:
 
     ```
     kubectl apply -f tanzumysqlbackup.yaml -n DEVELOPMENT-NAMESPACE
@@ -283,9 +286,15 @@ backup-sample   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.14
 
 ##<a id="list-resources"></a> List Existing TanzuMySQLBackup Resources
 
-INTRO: WHEN AND WHY DO I DO THIS?
+You may wish to list existing TanzuMySQLBackup resources for a multitude of reasons, for example:
 
-1. Run:
+* To select a backup to restore. For steps to restore a backup, see [Restore](backup-restore.html#restore).
+* To see the last successful backup.
+* To verify scheduled backups are running as expected.
+* To find old backups that need to be cleaned up. For steps to delete backups,
+  see [Delete Old Backup Artifacts](backup-restore.html#delete-backups).
+
+1. To list existing TanzuMySQLBackup resources, run:
 
     ```
     kubectl get tanzumysqlbackup
@@ -295,7 +304,7 @@ INTRO: WHEN AND WHY DO I DO THIS?
     <pre  class="terminal">
     $ kubectl get tanzumysqlbackup
 NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
-backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   23h 
+backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   23h
     </pre>
 
 2. Refer to the table below to understand the output:
@@ -343,15 +352,16 @@ backup-sample   Failed   2020-12-09T18:28:23.339156Z                            
 
 ##<a id="delete-backups"></a> Delete Old Backup Artifacts
 
-Tanzu MySQL for Kubernetes does not natively support retention policies for backup artifacts. You can configure
-retention policies on your external blobstore. If you do, you must also delete the associated TanzuMySQLBackup
-resources in the Kubernetes cluster, because those are not automatically deleted by Tanzu MySQL for Kubernetes.
+Tanzu MySQL for Kubernetes does not natively support retention policies for backup artifacts.
+You can configure retention policies on your external blobstore.
+If you do, you must also delete the associated TanzuMySQLBackup resources in the Kubernetes cluster,
+because those are not automatically deleted by Tanzu MySQL for Kubernetes.
 
 To delete a backup:
 
 1. Delete the backup in the external blobstore.
 
-2. On your Kubernetest cluster delete the TanzuMySQLBackup resource by running:
+2. On your Kubernetes cluster delete the TanzuMySQLBackup resource by running:
 
     ```
     kubectl delete tanzumysqlbackup BACKUP-NAME -n DEVELOPER-NAMESPACE
@@ -372,7 +382,8 @@ This section discusses restoring:
 
 ###<a id="restore-from-backup"></a> Restore from a Backup
 
-TanzuMySQLRestores always restores to a new TanzuMySQL instance.
+TanzuMySQLRestores always restores to a new TanzuMySQL instance to avoid clobbering any data
+on an existing TanzuMySQL instance.
 The TanzuMySQL instance is created automatically when the restore is triggered.
 
 <%= vars.product_short %> does not allow restoring a backup to an existing TanzuMySQL instance.
@@ -383,7 +394,8 @@ strongly discourages you from doing this because you might lose data.
 
 Before you restore from a backup, you must have:
 
-*  An existing TanzuMySQLBackup in your current namespace. See [LINK] <= WHAT IS the best link for this?.
+*  An existing TanzuMySQLBackup in your current namespace. To select an existing TanzuMySQLBackup to
+   restore, see [List Existing TanzuMySQLBackup Resources](backup-restore.html#list-resources).
 *  A TanzuMySQLBackupLocation that represents the bucket where the existing backup artifact is stored.
    See [Create a TanzuMySQLBackupLocation Resource](##create-backuplocation) above.
 
@@ -395,7 +407,7 @@ To restore from a backup:
 
 OR
 
-1. Create a `xxxx.yaml` file. You can use this as a template.
+1. Create a `tanzumysqlrestore.yaml` file. You can use this as a template.
 
     ```
     ---
@@ -500,4 +512,3 @@ You can read the message in the `MESSAGE` column to understand why the failure o
 example, the `backup-sample` expected<%# Consider replacing with "in most cases" to sound more confident. %> a Kubernetes secret called `backuplocation-sample-creds` to
 exist. You can fix the problem by creating the `backuplocation-sample-creds` secret. The template
 for this secret is located in the `backuplocation.yaml` template.
-
