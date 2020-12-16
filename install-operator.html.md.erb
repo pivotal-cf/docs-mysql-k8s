@@ -146,11 +146,16 @@ To create the namespace and secret:
     ```
     helm chart export REGISTRY-URL
     ```
-    Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart. <br>The value of `REGISTRY-URL` has the following pattern:
-    `registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG`
+    Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart.
+
+    <br>The value of `REGISTRY-URL` has the following pattern:
+
+    ```
+    registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
+    ```
     Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
 
-    This will download a directory named `tanzu-mysql-operator/` which contains the <%= vars.product_short %> Helm chart and other files into
+    <br>This will download a directory named `tanzu-mysql-operator/` which contains the <%= vars.product_short %> Helm chart and other files into
     your current working directory.
 
     <br>For example:
@@ -233,8 +238,10 @@ To install the Operator using the Helm CLI:
     helm install tanzu-mysql-operator ./tanzu-mysql-operator/
     ```
 
-    You must be in the same working directory as where you downloaded the Helm
-    chart in Step 4 of [Create Namespace and Secret](install-operator.html#create-namespace-secret).
+    <p class="note">
+      <strong>Note:</strong> You must be in the same working directory as where you downloaded the Helm
+      chart in Step 4 of <a href="#create-namespace-secret">Create Namespace and Secret</a> above.
+    </p>
 
 1. See that your Operator has installed successfully by running:
 
@@ -250,6 +257,7 @@ pod/mysql-for-kubernetes-controller-manager-84d76dfb77-lq5mb   1/1     <span sty
 deployment.apps/mysql-for-kubernetes-controller-manager   1/1     1            1           23s
 <br>NAME                                                                 DESIRED   CURRENT   READY   AGE
 replicaset.apps/mysql-for-kubernetes-controller-manager-84d76dfb77   1         1         1       23s</pre>
+
     <p class="note">
       <strong>Note:</strong> You can only have one <%= vars.product_short %> Operator installed in a Kubernetes cluster.
     </p>
