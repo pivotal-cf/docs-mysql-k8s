@@ -14,17 +14,33 @@ owner: MySQL
 ### Features
 New features and changes in this release:
 
-* **MySQL for Kubernetes Operator:** <%= vars.product_full %> implements the [Kubernetes Operator Pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
-  to provision and manage on-demand TanzuMySQL instances. <%= vars.product_short %> supports single node MySQL database instances, which provides basic high availability (HA)
-  by using Kubernetes StatefulSets. For more information on <%= vars.product_short %> features and compatibility, see [Overview](/index.html). For information on <%= vars.product_short %> architecture, see [Architecture](architecture.html).
-* **Installation using Helm:** Kubernetes Administrators can use Helm to install the <%= vars.product_short %> Operator. This simplifies the installation process while maintaining flexibility in configuration. For information on
-  how to install the <%= vars.product_short %> Operator, see [Installing the Operator](install-operator.html).
-* **Backup and Restore:** <%= vars.product_short %> automates on-demand and scheduled full physical backups using the [Percona XtraBackup](https://www.percona.com/software/mysql-database/percona-xtrabackup) tool.
-  It also automates restoring and managing backups. For more information, see [Backup and Restore in Tanzu MySQL for Kubernetes](backup-restore.html).
-* **Sane and Secure Server Defaults:** <%= vars.product_short %> configures MySQL server settings to optimize for security and performance. Certain server settings, like `max-connections`, are autotuned based on
-  the compute resources and persistent storage provisioned for the <%= vars.product_short %> instance. To see all MySQL server settings configured, follow the procedure in [Log in to the MySQL Server](accessing.html#server-login)
-  to SSH onto the MySQL container, then view the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
-* **MySQL credential management:** <%= vars.product_short %> uses Kubernetes automation to simplify rotating MySQL user credentials. For more information, see [Rotating MySQL Credentials](rotating-credentials.html).
+* **MySQL for Kubernetes Operator:** <%= vars.product_full %> implements the Kubernetes Operator Pattern
+  to provision and manage on-demand TanzuMySQL instances. <%= vars.product_short %> supports single node
+  MySQL database instances, which provides basic high availability (HA) by using Kubernetes StatefulSets.
+  <br><br>For more information about <%= vars.product_short %> features and compatibility, see [Overview](/index.html).
+  For information about <%= vars.product_short %> architecture, see [Architecture](architecture.html).
+  For more information about the Kubernetes Operator Pattern,
+  see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
+
+* **Installation using Helm:** Kubernetes Admins can use Helm to install the <%= vars.product_short %> Operator.
+  This simplifies the installation process while maintaining flexibility in configuration.
+  For information about how to install the <%= vars.product_short %> Operator,
+  see [Installing the Operator](install-operator.html).
+
+* **Backup and Restore:** <%= vars.product_short %> automates on-demand and scheduled full physical backups
+  using the [Percona XtraBackup](https://www.percona.com/software/mysql-database/percona-xtrabackup) tool.
+  It also automates restoring and managing backups. For more information,
+  see [Backup and Restore in Tanzu MySQL for Kubernetes](backup-restore.html).
+
+* **Sane and Secure Server Defaults:** <%= vars.product_short %> configures MySQL server settings to optimize
+  for security and performance. Certain server settings, like `max-connections`, are autotuned based on
+  the compute resources and persistent storage provisioned for the <%= vars.product_short %> instance.
+  <br><br>To see all MySQL server settings configured, follow the procedure in
+  [Log in to the MySQL Server](accessing.html#server-login) to SSH onto the MySQL container,
+  then view the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
+
+* **MySQL credential management:** <%= vars.product_short %> uses Kubernetes automation to simplify rotating
+  MySQL user credentials. For more information, see [Rotating MySQL Credentials](rotating-credentials.html).
 
 ### Compatibility
 The following components are compatible with this release:
@@ -36,12 +52,7 @@ The following components are compatible with this release:
     <th>Version</th>
   </tr>
 
-  <tr><td>Percona Server</td><td>8.0.21-12</td></tr>
+  <tr><td>Percona Server</td><td>8.0.21&ndash;12</td></tr>
   <tr><td>Percona XtraBackup</td><td>8.0.14</td></tr>
 
 </table>
-
-## <a id="view"></a> View Release Notes for Another Version
-
-To view the release notes for another product version, select the version from
-dropdown at the top of this page.
