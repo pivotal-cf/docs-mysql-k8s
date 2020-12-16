@@ -25,8 +25,8 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 
 | Word | Explanation |
 |------|-------------|
-| administrator (Should this be admin instead?)  | Use as a person's job description instead of operator. Decided: JD, Kim Bassett, and David Sharp 2020.12.09. If this specifically refers to the Kubernetes administrator, use "Kubernetes administrator" in first use on the page. |
-| Kubernetes administrator | See "administrator" above. |
+| admin | Use as a person's job description instead of operator. Decided: JD, Kim Bassett, and David Sharp 2020.12.09 and changed to admin because that's our house style. If this specifically refers to the Kubernetes admin, use "Kubernetes admin" in first use on the page. |
+| Kubernetes admin | See "admin" above. |
 | Operator | Don't use as a job description for a person. Use as the "Tanzu MySQL Operator" or "Kubernetes Operator". Decided: 2020.12.10 Judy explained that the Tanzu MySQL operator is a more precise term than the Kubernetes operator. The Tanzu MySQL operator is a type of Kubernetes operator.|
 | Pod  | From the [word list](https://docs.google.com/spreadsheets/d/1hkadtxR1hY57kK7h5HN4ITHLJleZixCDH_RJPUpNq_A/edit?usp=sharing) See "TanzuMySQL Pod" below. |
 | persistent volume claim (PVC)  | Spell out on first use on page.|
