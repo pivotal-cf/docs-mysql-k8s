@@ -150,6 +150,9 @@ To create the namespace and secret:
     `registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG`
     Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
 
+    This will download a directory named `tanzu-mysql-operator/` which contains the <%= vars.product_short %> Helm chart and other files into
+    your current working directory.
+
     <br>For example:
     <pre class="terminal">$ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
     <br>ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
@@ -229,6 +232,9 @@ To install the Operator using the Helm CLI:
     ```
     helm install tanzu-mysql-operator ./tanzu-mysql-operator/
     ```
+
+    You must be in the same working directory as where you downloaded the Helm
+    chart in Step 4 of [Create Namespace and Secret](install-operator.html#create-namespace-secret).
 
 1. See that your Operator has installed successfully by running:
 
