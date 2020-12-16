@@ -380,7 +380,7 @@ This section discusses two kinds of restoring:
 
 ###<a id="restore-from-backup"></a> Restore from a Backup
 
-TanzuMySQLRestores always restores to a new TanzuMySQL instance to avoid clobbering any data
+TanzuMySQLRestores always restores to a new TanzuMySQL instance to avoid overwriting any data
 on an existing TanzuMySQL instance.
 The TanzuMySQL instance is created automatically when the restore is triggered.
 
@@ -388,7 +388,7 @@ The TanzuMySQL instance is created automatically when the restore is triggered.
 Although you can perform this manually by copying the MySQL data from the backup artifact
 onto an existing TanzuMySQL instance,
 VMware strongly discourages you from doing this because
-you might clobber existing data on the TanzuMySQL instance.
+you might overwrite existing data on the TanzuMySQL instance.
 
 #### Prerequisites
 
