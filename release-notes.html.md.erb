@@ -36,8 +36,7 @@ New features and changes in this release:
   for security and performance. Certain server settings, like `max-connections`, are autotuned based on
   the compute resources and persistent storage provisioned for the <%= vars.product_short %> instance.
   <br><br>To see all MySQL server settings configured, follow the procedure in
-  [Log in to the MySQL Server](accessing.html#server-login) to SSH onto the MySQL container,
-  then view the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
+  [(Optional) Verify MySQL Server Settings](accessing.html#verify-settings).
 
 * **MySQL credential management:** <%= vars.product_short %> uses Kubernetes automation to simplify rotating
   MySQL user credentials. For more information, see [Rotating MySQL Credentials](rotating-credentials.html).
