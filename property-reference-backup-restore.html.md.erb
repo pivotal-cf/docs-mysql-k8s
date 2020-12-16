@@ -18,9 +18,9 @@ The table below explains the properties that can be set in the `backuplocation.y
 
 <table style="width:1000px" class="nice">
 <col width="10%">
-<col width="15%">
 <col width="10%">
-<col width="40%">
+<col width="10%">
+<col width="50%">
 <col width="15%">
 <col width="5%">
 <tr>
@@ -70,7 +70,7 @@ The table below explains the properties that can be set in the `backuplocation.y
 <tr>
   <td>spec.storage.s3.endpoint</td>
   <td>String</td>
-  <td>https://BUCKET-NAME.s3.REGION.amazonaws.com/</td>
+  <td>https://<br>BUCKET-NAME<br>.s3.REGION<br>.amazonaws.com/</td>
   <td>The endpoint URL for the configured S3-compatible provider. Leave blank for AWS S3.</td>
   <td><code>http://minio.default:9000</code></td>
   <td>No</td>
@@ -101,7 +101,7 @@ The table below explains the properties that can be set in the `backuplocation.y
   <td>The name of the Kubernetes secret that contains the credentials for connecting to S3.</td>
   <td><code>backuplocation-sample-creds</code></td>
   <td>Yes</tr>
-</tr>    
+</tr>
 </table>
 
 
@@ -289,7 +289,7 @@ for the TanzuMySQLRestore resource.
   <td><code>tanzumysqlrestore-sample</code></td>
   <td>Yes</td>
 </tr>
-<tr> 
+<tr>
    <td>spec.tanzuMySQLBackup.name</td>
    <td>String</td>
    <td>None</td>
