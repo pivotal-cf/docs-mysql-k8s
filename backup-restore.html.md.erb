@@ -108,21 +108,21 @@ To create a TanzuMySQLBackupLocation resource:
     For example:
 
     <pre class="terminal">$ kubectl apply -f backuplocation.yaml -n my-namespace
-tanzumysqlbackuplocation.mysql.tanzu.vmware.com/backuplocation-sample created
-secret/backuplocation-sample-creds configured
+    tanzumysqlbackuplocation.mysql.tanzu.vmware.com/backuplocation-sample created
+    secret/backuplocation-sample-creds configured
     </pre>
 
 3. Verify that the TanzuMySQLBackupLocation has been created by running:
 
     ```
     kubectl get tanzumysqlbackuplocation backuplocation-sample \
-    -o json -n DEVELOPMENT-NAMESPACE | jq .spec
+    -o jsonpath={.spec} -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
 
     <pre class="terminal">
-    $ kubectl get tanzumysqlbackuplocation backuplocation-sample -o json -n my-namespace | jq .spec
+    $ kubectl get tanzumysqlbackuplocation backuplocation-sample -o jsonpath={.spec} -n my-namespace
     {
       "storage": {
         "s3": {
@@ -181,12 +181,12 @@ To set a schedule for automatic backups, create a TanzuMySQLBackupSchedule resou
 3. Verify that the TanzuMySQLBackupSchedule has been created by running:
 
     ```
-    kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o json -n DEVELOPMENT-NAMESPACE | jq .spec
+    kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o jsonpath={.spec} -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
     <pre class="terminal">
-    $ kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o json -n my-namespace | jq .spec
+    $ kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o jsonpath={.spec} -n my-namespace
     {
       "backupTemplate": {
         "spec": {
