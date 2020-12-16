@@ -15,7 +15,9 @@ This topic describes how to access a <%= vars.product_full %> instance.
 
 Before you access a <%= vars.product_short %> instance, you must have:
 
-* The Kubernetes command line tool (kubectl) installed
+* The Kubernetes Command Line Interface (kubectl) installed.
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+
 * An existing <%= vars.product_short %> instance
 
 
@@ -52,9 +54,11 @@ To log in to the MySQL server:
 
 ## <a id='port-forward'></a> Connect to the MySQL Server with the Kubernetes API Server
 
-<p class="note"><strong>Note:</strong> Connecting with <code>kubectl port-forward</code> proxies
-  the connection through the apiserver. It is intended for debugging access, and
-  its performance is notably slower than a direct connection.</p>
+<p class="note">
+  <strong>Note:</strong> Connecting with <code>kubectl port-forward</code> proxies
+  the connection through the API server. It is intended for debugging access, and
+  its performance is slower than a direct connection.
+</p>
 
 To connect to the MySQL server with the Kubernetes API server:
 
@@ -62,8 +66,9 @@ To connect to the MySQL server with the Kubernetes API server:
   the TanzuMySQL instance suffixed with `-credentials`.
 
     ```
-    $ MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
+    MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
     ```
+    Where `INSTANCE-NAME` is the name of your instance.
 
 1. Start a port-forwarding proxy with `kubectl port-forward`. For more information
 about the command, see [Kubernetes documentation](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#port-forward).
@@ -83,25 +88,25 @@ about the command, see [Kubernetes documentation](https://kubernetes.io/docs/ref
 1. Connect to the service through the poxy port. For example, to connect with
 the MySQL client:
 
-    ```
+    <pre class="terminal">
     $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD}
-    ```
+    </pre>
 
-1. When done with the connection, stop the proxy by stopping the kubectl process.
+1. When you have finished with the connection, stop the proxy by stopping the kubectl process.
 
     For example:
 
     <pre class="terminal">
     $ jobs
-    [1]+  Running                 kubectl port-forward service/tanzumysql-sample 3306 &
+    [1]+  Running    kubectl port-forward service/tanzumysql-sample 3306 & <br>
     $ kill %1
     </pre>
 
 ## <a id='app-connect'></a> Connect an In-Cluster App to the MySQL Server
 
-<%= vars.product_short %> creates a Kubernetes Service used to connect
+<%= vars.product_short %> creates a Kubernetes Service that is used to connect
 apps to the database from within the Kubernetes cluster.
-The name of the service is the same as the name of the <%= vars.product_short %> instance.
+The name of the Service is the same as the name of the <%= vars.product_short %> instance.
 
 1. Log in to the MySQL server. See [Log in to the MySQL Server](#server-login) above.
 
@@ -119,7 +124,7 @@ see [charts/bitnami/wordpress](https://github.com/bitnami/charts/tree/master/bit
 See the following example of setting up <%= vars.product_short %> with a database and user
 that you can use with the Wordpress Helm chart:
 
-```
+<pre class="terminal">
 $ kubectl exec -it tanzumysql-sample-0 -c mysql -- bash
 mysql@tanzumysql-sample-0:/$ mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
 mysql> CREATE DATABASE bitnami_wordpress;
@@ -133,14 +138,14 @@ Query OK, 0 rows affected (0.03 sec)
 
 mysql> FLUSH PRIVILEGES;
 Query OK, 0 rows affected (0.10 sec)
-```
+</pre>
 
-Next, the DNS name of the TanzuMySQL's Service is
-passed in to the chart as the value of `externalDatabase.host`.
+Next, the DNS name of the TanzuMySQL service is
+passed in to the chart as the value of `externalDatabase.host`:
 
-```
+<pre class="terminal">
 $ helm repo add bitnami https://charts.bitnami.com/bitnami
-"bitnami" has been added to your repositories
+"bitnami" has been added to your repositories<br>
 $ helm install wp bitnami/wordpress \
     --set mariadb.enabled=false \
     --set externalDatabase.host=tanzumysql-sample.default.svc.cluster.local \
@@ -154,10 +159,10 @@ TEST SUITE: None
 NOTES:
 ** Please be patient while the chart is being deployed **
 ...
-```
+</pre>
 
 Retrieve the Wordpress user password by running:
 
-```
+<pre class="terminal">
 $ kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
-```
+</pre>
