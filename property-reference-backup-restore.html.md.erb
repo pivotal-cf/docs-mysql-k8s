@@ -7,12 +7,10 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic is a property reference table for the `backuplocation.yaml` and 
-the property reference table for `secret`.
-Refer to this table when you are creating the TanzuMySQLBackupLocation resource.
-For more information,
-see [Create a TanzuMySQLBackupLocation Resource](create-delete-mysql.html#create-instance) in
-_Backing Up and Restoring_.
+This topic contains property reference tables for the resources that you create for performing
+backup and restore.
+For information about backup and restore,
+see [Backing Up and Restoring in Tanzu MySQL for Kubernetes](backup-restore.html).
 
 ##<a name="backuplocation"></a> Properties for the TanzuMySQLBackupLocation Resource
 
@@ -37,7 +35,7 @@ The table below explains the properties that can be set in the `backuplocation.y
   <td>metadata.name</td>
   <td>String</td>
   <td>None</td>
-  <td>The name of the TanzuMysqlBackupLocation. Must be unique within a namespace.</td>
+  <td>The name of the TanzuMySQLBackupLocation. Must be unique within a namespace.</td>
   <td><code>backuplocation-sample</code></td>
   <td>Yes</td>
 </tr>
@@ -46,8 +44,7 @@ The table below explains the properties that can be set in the `backuplocation.y
   <td>String</td>
   <td>None</td>
   <td>
-      v1: The name of an existing s3 bucket.<br> 
-      v2: Name of the storage bucket for this backup location
+      The name of an existing S3-compatible bucket for this backup location.
   </td>
   <td><code>s3-bucket-sample</code></td>
   <td>Yes</tr>
@@ -56,8 +53,8 @@ The table below explains the properties that can be set in the `backuplocation.y
   <td>spec.storage.s3.bucketPath</td>
   <td>String</td>
   <td>None</td>
-  <td>The name of the path under which backup artifacts will be uploaded.
-      If a folder in the path does not already exist, it will be created automatically.</td>
+  <td>The name of the path where backup artifacts will be uploaded.
+      If a folder in the path does not already exist, it is created automatically.</td>
   <td><code>s3-sample-path/sample-subpath/</code></td>
   <td>No</td>
 </tr>
@@ -65,7 +62,8 @@ The table below explains the properties that can be set in the `backuplocation.y
   <td>spec.storage.s3.region</td>
   <td>String</td>
   <td>us-east-1</td>
-  <td>The geographic region of the bucket. CLARIFY: Non-AWS S3 implementations may not require this value.</td>
+  <td>The geographic region of the bucket.
+      Some non-AWS S3 implementations do not require this value.</td>
   <td><code>us-west-1</code></td>
   <td>No</td>
 </tr>
@@ -73,16 +71,16 @@ The table below explains the properties that can be set in the `backuplocation.y
   <td>spec.storage.s3.endpoint</td>
   <td>String</td>
   <td>https://BUCKET-NAME.s3.REGION.amazonaws.com/</td>
-  <td>The endpoint URL for the configured S3-compatible provider. Leave blank for Amazon S3.</td>
+  <td>The endpoint URL for the configured S3-compatible provider. Leave blank for AWS S3.</td>
   <td><code>http://minio.default:9000</code></td>
   <td>No</td>
 </tr>
   <td>spec.storage.s3.forcePathStyle</td>
   <td>boolean</td><td>false</td>
-  <td>True forces the use of path-style S3 URLs for compatibility.
-      May be required for certain non-AWS S3 providers.
-      False uses virtual hosted-style S3 URLs.<br>
-      For information about Amazon S3 Path Deprecation, see the <a href="https://aws.amazon.com/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story/">
+  <td><code>true</code> forces the use of path-style S3 URLs for compatibility.
+      May be required for some non-AWS S3 providers.<br>
+      <code>false</code> uses virtual hosted-style S3 URLs.<br>
+      For information about AWS S3 Path Deprecation, see the <a href="https://aws.amazon.com/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story/">
       AWS blog site</a>.
   </td>
   <td><code>false</code></td>
@@ -92,15 +90,15 @@ The table below explains the properties that can be set in the `backuplocation.y
   <td>spec.storage.s3.disableSSL</td>
   <td>boolean</td>
   <td>false</td>
-  <td>For development environments, set to true to disable SSL for S3 operations.
-      For production environments, set to false.</td>
+  <td>For development environments, set to <code>true</code> to disable SSL for S3 operations.<br>
+      For production environments, set to <code>false</code>.</td>
   <td><code>false</code></td>
   <td>No</td>
 </tr>
   <td>spec.storage.s3.secret.name</td>
   <td>String</td>
   <td>None</td>
-  <td>Name of the Kubernetes secret that contains the credentials for connecting to S3.</td>
+  <td>The name of the Kubernetes secret that contains the credentials for connecting to S3.</td>
   <td><code>backuplocation-sample-creds</code></td>
   <td>Yes</tr>
 </tr>    
@@ -110,7 +108,7 @@ The table below explains the properties that can be set in the `backuplocation.y
 
 ##<a name="secret"></a> Properties for the Secret
 
-The table below explains the properties that can be set in the `secret`.
+The table below explains the properties that can be set in the `secret` for the TanzuMySQLBackupLocation resource.
 
 <table style="width:1000px" class="nice">
 <col width="10%">
@@ -131,8 +129,8 @@ The table below explains the properties that can be set in the `secret`.
   <td>metadata.name</td>
   <td>String</td>
   <td>None</td>
-  <td>The name of the Secret. Must match <code>spec.storage.s3.secret.name</code> in a BackupLocation,
-      and must be unique within a namespace.</td>
+  <td>The name of the Secret. Must match <code>spec.storage.s3.secret.name</code> in a BackupLocation.
+      Must be unique within a namespace.</td>
   <td><code>backuplocation-sample-creds</code></td>
   <td>Yes</td>
 </tr>
@@ -140,26 +138,25 @@ The table below explains the properties that can be set in the `secret`.
   <td>stringData.accessKeyId</td>
   <td> String</td>
   <td> None</td>
-  <td> The Access Key ID for an AWS IAM user that has permissions to read/write from the s3 bucket.</td>
-  <td> <code>"AKIAIOSFODNN7EXAMPLE"</code></td>
+  <td> The Access Key ID for an AWS IAM user that has permissions to read/write from the S3 bucket.</td>
+  <td> <code>AKIAIOSFODNN7EXAMPLE</code></td>
   <td> Yes</td>
 </tr>
 <tr>
   <td>stringData.secretAccessKey</td>
   <td>String</td>
   <td>None</td>
-  <td>The Secret Access Key for an AWS IAM user that has permissions to read/write from the s3 bucket</td>
-  <td><code>"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"</code></td>
+  <td>The Secret Access Key for an AWS IAM user that has permissions to read/write from the S3 bucket</td>
+  <td><code>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</code></td>
   <td>Yes</td>
 </tr>
 </table>
 
-ARE THE QUOTES TYPED for THE LAST TWO EXAMPLES? 
 
 ##<a name="backupschedule"></a> Properties for the TanzuMySQLBackupSchedule Resource
 
 The table below explains the properties that can be set in the `backupschedule.yaml` file
-for TanzuMySQLBackupSchedule.
+for TanzuMySQLBackupSchedule resource.
 <table style="width:1000px" class="nice">
 <col width="10%">
 <col width="15%">
@@ -195,15 +192,16 @@ for TanzuMySQLBackupSchedule.
    <td>spec.backupTemplate.spec.cluster.name</td>
    <td>String</td>
    <td>None</td>
-   <td>The name of the TanzuMySQL instance on which you want to perform scheduled backups. Must be in the same namespace as the TanzuMySQLBackupSchedule.</td>
+   <td>The name of the TanzuMySQL instance on which you want scheduled backups for.
+       Must be in the same namespace as the TanzuMySQLBackupSchedule.</td>
    <td><code>tanzumysql-sample</td>
    <td>Yes</td>
 <tr>
 </tr>
 <td>spec.schedule</td>
-   <td>String (Cron schedule)</td>
+   <td>String (cron schedule)</td>
    <td>None</td>
-   <td>The cron schedule on which backups will be performed. Must be a valid cron schedule.</td>
+   <td>The cron schedule for backups. Must be a valid cron schedule.</td>
    <td><code>"0 23 * * 6" (every Saturday at 11PM)</td>
    <td>Yes</td>
 </tr>
@@ -213,9 +211,9 @@ for TanzuMySQLBackupSchedule.
 ##<a name="on-demand-backup"></a> Properties for the TanzuMySQLBackup Resource
 
 The table below explains the properties that can be set in the `backup.yaml` file
-for TanzuMySQLBackup.
+for the TanzuMySQLBackup resource.
 
-MISSING EXAMPLES
+[//]: # ( MISSING EXAMPLES)
 
 <table style="width:1000px" class="nice">
 <col width="10%">
@@ -292,7 +290,7 @@ for the TanzuMySQLRestore resource.
   <td>Yes</td>
 </tr>
 <tr> 
-   <td>spec.tanzuMysqlBackup.name</td>
+   <td>spec.tanzuMySQLBackup.name</td>
    <td>String</td>
    <td>None</td>
    <td>The name of the TanzuMySQLBackup that represents the backup artifact to restore.
@@ -305,8 +303,8 @@ for the TanzuMySQLRestore resource.
    <td> </td>
    <td> </td>
    <td>The configuration for the TanzuMySQL instance that the backup artifact will be restored to.
-       This TanzuMySQL instance will be created automatically as part of the restore,
-       so the name must not already exist in the namespace.
+       This TanzuMySQL instance is created automatically as part of the restore,
+       so the name must not already exist in the namespace.<br>
        For descriptions of each value in the configuration template,
       see <a href="create-delete-mysql.html#create-instance">Create a TanzuMySQL Instance</a>.</td>
    <td> </td>
