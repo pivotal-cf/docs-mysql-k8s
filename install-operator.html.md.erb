@@ -158,8 +158,10 @@ To create the namespace and secret:
     ```
     Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
 
-    <br>This will download a directory named `tanzu-mysql-operator/` which contains the <%= vars.product_short %> Helm chart and other files into
-    your current working directory.
+    <br>This downloads a directory named `tanzu-mysql-operator/` into your current working directory that contains:
+    * The <%= vars.product_short %> Helm chart
+    * Custom Resource Definitions (CRDs)
+    * Role-Based Access Control (RBAC) definitions required to install the operator with Helm
 
     <br>For example:
     <pre class="terminal">$ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:0.1.0
@@ -235,16 +237,14 @@ To edit your Helm chart:
 ### <a id="install-operator"></a> Use Helm CLI to Install the Operator
 To install the Operator using the Helm CLI:
 
+1. Verify that you are in the same working directory as where you downloaded the Helm chart in Step 4 of
+[Create Namespace and Secret](#create-namespace-secret) above.
+
 1. Install the <%= vars.product_short %> Operator by running:
 
     ```
     helm install tanzu-mysql-operator ./tanzu-mysql-operator/
     ```
-
-    <p class="note">
-      <strong>Note:</strong> You must be in the same working directory as where you downloaded the Helm
-      chart in Step 4 of <a href="#create-namespace-secret">Create Namespace and Secret</a> above.
-    </p>
 
 1. See that your Operator has installed successfully by running:
 
