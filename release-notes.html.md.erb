@@ -7,39 +7,33 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-## <a id="0-1-0"></a> v0.1.0
+## <a id="1-0-0"></a> v1.0.0
 
-**Release Date: December 16, 2020**
+**Release Date: MMMM DD, YYYY**
 
 ### Features
 New features and changes in this release:
 
-* **MySQL for Kubernetes Operator:** <%= vars.product_full %> implements the Kubernetes Operator Pattern
-  to provision and manage on-demand TanzuMySQL instances. <%= vars.product_short %> supports single node
-  MySQL database instances, which provides basic high availability (HA) by using Kubernetes StatefulSets.
-  <br><br>For more information about <%= vars.product_short %> features and compatibility, see [Overview](/index.html).
-  For information about <%= vars.product_short %> architecture, see [Architecture](architecture.html).
-  For more information about the Kubernetes Operator Pattern,
-  see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
+* **FEATURE:** FEATURE DESCRIPTION. For more information, see TOPIC PAGE TOPIC URL.
 
-* **Installation using Helm:** Kubernetes Admins can use Helm to install the <%= vars.product_short %> Operator.
-  This simplifies the installation process while maintaining flexibility in configuration.
-  For information about how to install the <%= vars.product_short %> Operator,
-  see [Installing the Operator](install-operator.html).
 
-* **Backup and Restore:** <%= vars.product_short %> automates on-demand and scheduled full physical backups
-  using the [Percona XtraBackup](https://www.percona.com/software/mysql-database/percona-xtrabackup) tool.
-  It also automates restoring and managing backups. For more information,
-  see [Backup and Restore in Tanzu MySQL for Kubernetes](backup-restore.html).
+### Known Issues
+This release has the following issues:
 
-* **Sane and Secure Server Defaults:** <%= vars.product_short %> configures MySQL server settings to optimize
-  for security and performance. Certain server settings, like `max-connections`, are autotuned based on
-  the compute resources and persistent storage provisioned for the <%= vars.product_short %> instance.
-  <br><br>To see all MySQL server settings configured, follow the procedure in
-  [(Optional) Verify MySQL Server Settings](accessing.html#verify-settings).
+*
 
-* **MySQL credential management:** <%= vars.product_short %> uses Kubernetes automation to simplify rotating
-  MySQL user credentials. For more information, see [Rotating MySQL Credentials](rotating-credentials.html).
+
+### Resolved Issues
+This release has the following fixes:
+
+*
+
+
+### Known Issues
+This release has the following issues:
+
+*
+
 
 ### Compatibility
 The following components are compatible with this release:
@@ -51,7 +45,7 @@ The following components are compatible with this release:
     <th>Version</th>
   </tr>
 
-  <tr><td>Percona Server</td><td>8.0.21&ndash;12</td></tr>
-  <tr><td>Percona XtraBackup</td><td>8.0.14</td></tr>
+  <tr><td>Percona Server</td><td>VERSION-NUMBER</td></tr>
+  <tr><td>Percona XtraBackup</td><td>VERSION-NUMBER</td></tr>
 
 </table>
