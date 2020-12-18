@@ -10,7 +10,7 @@ Docs for VMware Tanzu™ SQL with MySQL for Kubernetes
 | Branch name | Use for… |
 |-------------| -------|
 | main      | the development branch for the doc, publishes to https://docs-pcf-staging.cfapps.io/tanzu-mysql-kubernetes/1-n |
-
+| 0.1      | v0.1.x beta, publishes to http://docs-pcf-staging.cfapps.io//tanzu-mysql-kubernetes/0-1/|
 
 
 ## Where is the book repository?
@@ -46,4 +46,4 @@ We want to use placeholders consistently througout the doc.
 | DOCKER-USERNAME |sample-username |  credentials used to pull images from the registry | create-delete.html |
 | INSTANCE-NAME |tanzumysql-sample and another-sample |   is the value that you configured for metadata.name in the tanzumysql.yaml file | create-delete.html |
 | REGISTRY-SERVER-URL |https://registry.pivotal.io/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
-| 
+|
