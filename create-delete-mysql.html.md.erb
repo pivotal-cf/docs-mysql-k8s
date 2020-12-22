@@ -79,6 +79,11 @@ To create a TanzuMySQL instance:
     #### Set the storage class name to change storage class of the PVC associated with this resource
     #  storageClassName: standard
 
+    #### Set the name of the Secret used for TLS
+    #  tls:
+    #    secret:
+    #      name: mysql-tls-secret
+
     #### Examples to set resource limit/request for mysql/backups containers.
 
     #  resources:
