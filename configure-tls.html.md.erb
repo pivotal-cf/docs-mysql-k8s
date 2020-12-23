@@ -1,0 +1,123 @@
+---
+title: Configure TLS for TanzuMySQL Instance
+owner: MySQL
+---
+
+<%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
+
+<strong><%= modified_date %></strong>
+
+This topic describes how to configure TLS for a <%= vars.product_full %> instance.
+
+## <a id='prereq'></a>Prerequisites
+
+Before you update the <%= vars.product_short %> instance, you must have:
+
+* **Access and permissions to the <%= vars.product_short %> instance.**
+
+* **The Kubernetes Command Line Interface (kubectl) installed:**
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+
+<p class="note">
+  <strong>Note:</strong> MySQL is configured to always require an encrypted connection, even if TanzuMySQL is not
+  configured with a Secret. Client connections cannot fall back to use an unencrypted connection.
+</p>
+
+In order to configure a <%= vars.product_short %> instance for TLS, a [TLS Secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets)
+must first be created in the namespace. There are several ways to create the Secret. The documentation below shows 2 methods:
+- using the `kubectl` CLI
+- using Cert Manager
+
+## <a id='create-tls-secret'></a>Create TLS Secret manually
+
+1. Generate a certificate and private key using a certificate manager (i.e. OpenSSL, certstrap, Let's Encrypt, etc...).
+Keep in mind the ServiceType of the <%= vars.product_short %> instance for the server hostname.
+
+1. Create the Secret and reference the values generated in the previous step:
+
+    ```
+      kubectl -n DEVELOPMENT-NAMESPACE create secret tls SECRET-NAME \
+        --cert=PATH_TO_CERTIFICATE \
+        --key=PATH_TO_PRIVATE_KEY
+    ```
+    + `DEVELOPMENT-NAMESPACE` is the namespace for the TanzuMySQL instance
+    + `SECRET-NAME` is the name for the Secret
+    + `PATH_TO_CERTIFICATE` is the file path to the certificate
+    + `PATH_TO_PRIVATE_KEY` is the file path to the private key
+
+    For example:
+
+    <pre class="terminal">
+      $ kubectl -n my-namespace create secret tls mysql-tls-secret \
+        --cert=tls.crt \
+        --key=tls.key
+    </pre>
+
+## <a id='using-cert-manager'></a>Create TLS Secret with Cert Manager
+
+Before you install Cert Manager, you must have:
+
+* The Helm command line tool installed. For more information, see [Installing
+Helm](https://helm.sh/docs/intro/install/) from the Helm documentation.
+
+1. Install [Cert Manager](https://cert-manager.io/docs/) on your Kubernetes cluster with the following steps:
+
+    <pre class="terminal">
+      $ kubectl create namespace cert-manager
+      $ helm repo add jetstack https://charts.jetstack.io
+      $ helm repo update
+      $ helm install cert-manager jetstack/cert-manager --namespace cert-manager  --version v1.0.2 --set installCRDs=true
+    </pre>
+
+1. Create an Issuer in the `cert-manager` namespace. Follow the [documentation](https://cert-manager.io/docs/configuration/)
+to see the different Issuer types.
+
+1. Create a Certificate in the same namespace as the TanzuMySQL instance. Follow the [documentation](https://cert-manager.io/docs/usage/certificate/)
+to see how to specify the necessary configuration. Take note of the `spec.secretName` value that is chosen.
+The Secret will be provisioned after the Certificate is created.
+
+1. Ensure the Secret has been provisioned
+
+    ```
+      kubectl -n DEVELOPMENT-NAMESPACE get secrets
+    ```
+    + `DEVELOPMENT-NAMESPACE` is the namespace for the TanzuMySQL instance
+
+    For example:
+
+    <pre class="terminal">
+      $ kubectl -n my-namespace get secrets
+    </pre>
+
+
+## <a id='use-tls'></a>Configure TanzuMySQL for TLS
+
+1. In the `tanzumysql.yaml` for the TanzuMySQL instance, specify `spec.tls.secret.name` as the name of the
+Secret created in the namespace.
+
+Create or update the <%= vars.product_short %> instance with `kubectl apply -f tanzumysql.yaml`
+
+
+## <a id='use-tls'></a>Connecting to TanzuMySQL over TLS
+
+1. To allow client connections to verify the MySQL server certificate, you must provide the CA certificate to
+the application. Find the CA certificate that was used in the certificate generation in the earlier step.
+
+1. Try connecting to your <%= vars.product_short %> instance by following instructions in
+      [Connect to the MySQL Server with the Kubernetes API Server](./accessing.html#port-forward).
+
+    <pre class="terminal">
+      $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_CA --ssl-ca=ca.crt
+    </pre>
+
+   To validate the hostname of the MySQL server certificate,
+
+   <pre class="terminal">
+     $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_IDENTITY --ssl-ca=ca.crt
+   </pre>
+
+<p class="note">
+  <strong>Note:</strong>If TanzuMySQL is not configured with a Secret, clients cannot perform verification
+  against the MySQL server CA certificate because the MySQL server is using default certificates that are self-signed.
+</p>
+

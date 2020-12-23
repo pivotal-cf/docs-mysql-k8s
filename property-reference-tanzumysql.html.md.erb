@@ -79,6 +79,15 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
   <td>No</td>
 </tr>
 <tr>
+  <td><code>spec.tls.secret.name</code></td>
+  <td>String</td>
+  <td><em>N/A</em></td>
+  <td>The name of the Kubernetes secret that contains the TLS certificate and private key to support encrypted connections by clients.
+  </td>
+  <td><code>mysql-tls-secret</code></td>
+  <td>No</td>
+</tr>
+<tr>
   <td><code>spec.resources.mysql</code></td>
   <td>
     <ul>
