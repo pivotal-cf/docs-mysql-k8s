@@ -68,14 +68,25 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
 <tr>
   <td><code>spec.storageClassName</code></td>
   <td>String</td>
-  <td>Standard
+  <td>Standard</td>
   <td>Specifies the StorageClass for the PVCs for the <%= vars.product_short %> Pods.
       For the types of StorageClasses available, contact your Kubernetes admin.
       For more information about the Kubernetes StorageClass concept, see the
       <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">
       Kubernetes documentation</a>.</td>
-  <td><code>standard</code>
-  </td>
+  <td><code>standard</code></td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><code>spec.serviceType</code></td>
+  <td>String</td>
+  <td>ClusterIP</td>
+  <td>Specifies the type of Service used to provide access to the MySQL database.
+      Only <code>ClusterIP</code> and <code>LoadBalancer</code> are supported.
+      For more information about the Kubernetes ServiceTypes, see the
+      <a href="https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types">
+      Kubernetes documentation</a>.</td>
+  <td><code>LoadBalancer</code></td>
   <td>No</td>
 </tr>
 <tr>

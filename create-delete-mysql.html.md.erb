@@ -79,6 +79,9 @@ To create a TanzuMySQL instance:
     #### Set the storage class name to change storage class of the PVC associated with this resource
     #  storageClassName: standard
 
+    #### Set the type of Service used to provide access to the MySQL database.
+    #  serviceType: LoadBalancer
+
     #### Set the name of the Secret used for TLS
     #  tls:
     #    secret:
