@@ -41,9 +41,9 @@ To see all MySQL server settings configured:
 
 1. Review the configuration files named `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
 
-## <a id='server-login'></a> Log in to the MySQL Server
+## <a id='server-login'></a> Connect to the MySQL Server from Within the Container
 
-To log in to the MySQL server:
+To connect to the MySQL server:
 
 1. Log in to the Kubernetes namespace by running:
 
@@ -187,11 +187,17 @@ the MySQL client:
     $ kill %1
     </pre>
 
-## <a id='app-connect'></a> Connect an In-Cluster App to the MySQL Server
+## <a id='app-connect'></a> Connect an App to the MySQL Server
 
 <%= vars.product_short %> creates a Kubernetes Service that is used to connect
-apps to the database from within the Kubernetes cluster.
-The name of the Service is the same as the name of the <%= vars.product_short %> instance.
+apps to the database. The name of the Service is the same as the name of the <%= vars.product_short %> instance.
+
+If the application is deployed on the Kubernetes cluster, it can access the MySQL server
+using the DNS name of the TanzuMySQL service. This DNS name will only be resolvable within the Kubernetes cluster.
+
+If the application is deployed external to the Kubernetes cluster, see
+[Connect to the MySQL Server with an External IP](#off-platform-access) to allow the TanzuMySQL service
+to be externally routable via a load balancer.
 
 1. Log in to the MySQL server. See [Log in to the MySQL Server](#server-login) above.
 
