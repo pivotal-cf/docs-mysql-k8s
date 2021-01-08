@@ -13,15 +13,13 @@ This topic describes how to configure TLS for a TanzuMySQL instance.
 
 <%= vars.product_short %> is configured to require an encrypted connection and
 client connections cannot fall back to use an unencrypted connection. By default,
-the MySQL server uses a self-signed certificate. Clients will be able to connect to the MySQL server,
-but they will not be able to verify the connection.
+the MySQL server uses a self-signed certificate. Clients can connect to the MySQL server,
+but they cannot verify the connection.
 
-In order to verify the connection to the MySQL server, the TanzuMySQL instance can be configured
-with a TLS certificate and private key.
+To verify the connection to the MySQL server, the TanzuMySQL instance can be configured with a TLS certificate and private key.
 
-To configure a TanzuMySQL instance for TLS,
-a TLS Secret must first be created in the namespace.
-There are several ways to create the Secret.
+To configure a TanzuMySQL instance for TLS, a TLS secret must first be created in the namespace.
+There are several ways to create the secret.
 This topic describes two methods:
 
 * Using the Kubernetes Command Line Interface (kubectl).
@@ -29,10 +27,11 @@ This topic describes two methods:
 * Using cert-manager.
   See [Create TLS Secret with cert-manager](#using-cert-manager) below.
 
-After creating the Secret, you add the name of the Secret to the `tanzumysql.yaml` file,
-and configure the instance with the updated file, as described in [Configure TanzuMySQL for TLS](#use-tls) below.
+After creating the secret, you add the name of the secret to the `tanzumysql.yaml` file,
+and configure the instance with the updated file, as described in
+[Configure TanzuMySQL for TLS](#use-tls) below.
 
-For general information about TLS Secrets,
+For general information about TLS secrets,
 see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets).
 
 
@@ -49,7 +48,7 @@ Before you configure TLS for a TanzuMySQL Instance, you must have:
 
 ## <a id='create-tls-secret'></a>Create the TLS Secret Manually
 
-This procedure describes how to create the TLS Secret using kubectl. 
+This procedure describes how to create the TLS Secret using kubectl.
 To create the TLS Secret using cert-manager instead,
 see [Create TLS Secret with cert-manager](#using-cert-manager) below.
 
@@ -59,7 +58,7 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
     When creating the certificate, supply the server hostname for the
     subject alternative names (SANs).
     If the Tanzu MySQL ServiceType is ClusterIP, the hostnames
-    are localhost and 127.0.0.1. 
+    are localhost and 127.0.0.1.
     If the ServiceType is LoadBalancer, hostname is the external DNS name of the load balancer.
 
 1. Create the TLS Secret by running:
@@ -91,7 +90,8 @@ To create the TLS Secret through the kubectl instead,
 see [Create the TLS Secret Manually](#create-tls-secret) above.
 
 **Prerequisite:** Before you install cert-manager, you must have the Helm command line tool installed.
-For information about installing Helm, see the [Helm documentation](https://helm.sh/docs/intro/install/).
+For information about installing Helm, see the
+[Helm documentation](https://helm.sh/docs/intro/install/).
 
 
 1. Install the cert-manager on your Kubernetes cluster by running:
@@ -108,12 +108,12 @@ For information about installing Helm, see the [Helm documentation](https://helm
    For information about the Issuer types,
    see the [cert-manager documentation](https://cert-manager.io/docs/configuration/).
 
-3. Create a Certificate in the same namespace as the TanzuMySQL instance.
+3. Create a certificate in the same namespace as the TanzuMySQL instance.
    Then, cert-manager creates the TLS Secret.
 
    When creating the certificate, supply the server hostname for the
-   subject alternative names (SANs) using the `spec.dnsNames` and/or `spec.ipAddresses`
-   configuration for the Certificate.
+   subject alternative names (SANs) using the `spec.dnsNames` or `spec.ipAddresses` configuration for
+   the certificate.
 
    If the Tanzu MySQL ServiceType is ClusterIP, the DNS is localhost and IP address is 127.0.0.1.
    If the ServiceType is LoadBalancer, the DNS is the external DNS name of the load balancer.
@@ -138,7 +138,6 @@ For information about installing Helm, see the [Helm documentation](https://helm
     <pre class="terminal">
       $ kubectl -n my-namespace get secrets mysql-tls-secret
     </pre>
- 
     For information about troubleshooting certificate creation,
     see the [cert-manager documentation](https://cert-manager.io/docs/faq/troubleshooting/).
 
@@ -147,8 +146,8 @@ For information about installing Helm, see the [Helm documentation](https://helm
 
 To configure TLS for the TanzuMySQL instance:
 
-1. In the `tanzumysql.yaml` for the TanzuMySQL instance, specify `spec.tls.secret.name` as the name of the
-TLS Secret created in the namespace.
+1. In the `tanzumysql.yaml` for the TanzuMySQL instance, specify `spec.tls.secret.name` as the name
+of the TLS Secret created in the namespace.
 
 2. Create or update the TanzuMySQL instance by running:
 
@@ -160,29 +159,30 @@ TLS Secret created in the namespace.
 ## <a id='use-tls'></a>Connect to TanzuMySQL over TLS
 
 To allow client connections to verify the MySQL server certificate,
-you provide the CA certificate to the app. 
+you provide the CA certificate to the app.
 
 To connect an app or other client to the TanzuMySQL instance over TLS:
 
 
 1. Find certificate authority that signed the TLS certificate.
 
-
 1. Try connecting to your TanzuMySQL instance using an app or through the proxy port:
     + To connect an app to a TanzuMySQL instance,
     see [Connecting an App to the TanzuMySQL Instance](.//bind-app.html).<br><br>
     + To connect to the MySQL server through the proxy port:
 
-      1. Follow steps 1 and 2 of
-       [Connect to the MySQL Server with the Kubernetes API Server](accessing.html#port-forward).
- 
-      2. Validate the CA certificate by running a command such as:
-    <pre class="terminal">
-      $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_CA --ssl-ca=ca.crt
-    </pre>
+        1. Follow steps 1 and 2 of
+        [Connect to the MySQL Server with the Kubernetes API Server](accessing.html#port-forward).
 
-      3. Validate the hostname of the MySQL server certificate by running by running a command such as:
-    <pre class="terminal">
-     $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_IDENTITY --ssl-ca=ca.crt
-    </pre>
+        2. Validate the CA certificate by running a command such as:
 
+        ```
+        mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_CA --ssl-ca=ca.crt
+        ```
+
+        3. Validate the hostname of the MySQL server certificate by running by running a command such
+        as:
+
+        ```
+        mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_IDENTITY --ssl-ca=ca.crt
+        ```
