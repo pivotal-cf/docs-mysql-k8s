@@ -176,7 +176,7 @@ To connect an app or other client to the TanzuMySQL instance over TLS:
             mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_CA --ssl-ca=ca.crt
             ```
 
-      1. Validate the CA certificate by running a command such as:
+      1. Validate the hostname of the MySQL server certificate by running a command such as:
 
             ```
             mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_IDENTITY --ssl-ca=ca.crt
