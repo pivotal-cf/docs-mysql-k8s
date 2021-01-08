@@ -170,29 +170,14 @@ To connect an app or other client to the TanzuMySQL instance over TLS:
     + To connect to the MySQL server through the proxy port:
         1. Follow steps 1 and 2 of
         [Connect to the MySQL Server with the Kubernetes API Server](accessing.html#port-forward).
-        2. Validate the CA certificate by running a command such as:
+        1. Validate the CA certificate by running a command such as:
 
-<<<<<<< HEAD
-      1. Follow steps 1 and 2 of
-       [Connect to the MySQL Server with the Kubernetes API Server](accessing.html#port-forward).
-=======
             ```
             mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_CA --ssl-ca=ca.crt
             ```
->>>>>>> [#176388599] Further indentation change
 
-      2. Validate the CA certificate by running a command such as:
-    <pre class="terminal">
-      $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_CA --ssl-ca=ca.crt
-    </pre>
+      1. Validate the CA certificate by running a command such as:
 
-<<<<<<< HEAD
-      3. Validate the hostname of the MySQL server certificate by running by running a command such as:
-    <pre class="terminal">
-     $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_IDENTITY --ssl-ca=ca.crt
-    </pre>
-=======
             ```
             mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD} --ssl-mode=VERIFY_IDENTITY --ssl-ca=ca.crt
             ```
->>>>>>> [#176388599] Further indentation change
