@@ -79,6 +79,8 @@ To connect to the MySQL server:
   <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">Kubernetes documentation</a>.
 </p>
 
+To connect to the MySQL server with an external IP:
+
 1. Before you can connect to a <%= vars.product_short %> instance off-platform, you must ensure the
 <%= vars.product_short %> instance is using a LoadBalancer ServiceType.<br><br>
 See the [Property Reference for tanzumysql.yml](property-reference-tanzumysql.html) for how to
@@ -193,6 +195,8 @@ The name of the Service is the same as the name of the <%= vars.product_short %>
 If the app is deployed on the Kubernetes cluster, it can access the MySQL server using the DNS name
 of the TanzuMySQL service.
 This DNS name is only resolvable within the Kubernetes cluster.
+
+To connect an app to the MySQL server:
 
 1. If the app is deployed outside the Kubernetes cluster, enable the TanzuMySQL service to be
 externally routable through a load balancer by following the
