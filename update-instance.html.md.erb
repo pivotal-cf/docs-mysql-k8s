@@ -76,14 +76,18 @@ To scale `storageSize`:
       For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims).
 
 1. Edit the PVC `spec.resources.requests.storage` field to increase the volume size by running:
+
     ```
-    kubectl patch pvc mysql-data-MYSQL-POD-NAME -p '{"spec": {"resources": {"requests": {"storage": "NEW_REQUESTED_SIZE"}}}}'
+    kubectl patch pvc mysql-data-MYSQL-POD-NAME -p \
+    '{"spec": {"resources": {"requests": {"storage": "NEW_REQUESTED_SIZE"}}}}'
     ```
-    + WHERE `MYSQL-POD-NAME` is the name of the TanzuMySQL Pod you are targeting.
-    + AND `NEW_REQUESTED_SIZE` is the increased volume size
+    Where:
+    * `MYSQL-POD-NAME` is the name of the TanzuMySQL Pod that you are targeting.
+    + `NEW-REQUESTED-SIZE` is the increased volume size.
 
     For example:
-    <pre class="terminal">$ kubectl patch pvc mysql-data-my-pod -p '{"spec": {"resources": {"requests": {"storage": "50Gi"}}}}'</pre>
+    <pre class="terminal">$ kubectl patch pvc mysql-data-my-pod -p \
+    '{"spec": {"resources": {"requests": {"storage": "50Gi"}}}}'</pre>
 
 1. Do one of the following:
     * **If the storageClass supports online expansion:**
@@ -117,25 +121,31 @@ PVC is being resized.
 
 ## <a id='scale-resources'></a>Scale CPU and Memory Resources
 
-To scale CPU or memory resources:
+To scale CPU or memory resources, update the TanzuMySQL configuration `spec.resources` field to change the CPU
+or memory requirements for the `mysql` or `backups` containers.
 
-1. Update the Tanzu MySQL configuration's `spec.resources` field to change the CPU
-or memory requirements for the `mysql` or `backups` containers. Here are some methods to update the configuration:
-    * Patch the existing API object in place
+You can use one of these methods to update the configuration:
+
+* Patch the existing API object in place by running:
+
     ```
-    kubectl patch tanzumysql MYSQL-INSTANCE-NAME -p '{"spec": {"resources": {"mysql": MYSQL_RESOURCES, "backups": BACKUP_RESOURCES}}}' --type merge
+kubectl patch tanzumysql MYSQL-INSTANCE-NAME -p \
+'{"spec": {"resources": {"mysql": MYSQL_RESOURCES, "backups": BACKUP_RESOURCES}}}' \
+--type merge
     ```
-    + WHERE `MYSQL-INSTANCE-NAME` is the name of the TanzuMySQL instance
-    + AND `MYSQL_RESOURCES` is a collection of `cpu` and `memory` limits and requests for the MySQL container
-    + AND  `BACKUP_RESOURCES` is a collection of `cpu` and `memory` limits and requests for the sidecar backups container
 
-    For example:
-    <pre class="terminal">$ kubectl patch tanzumysql my-sample-instance --type merge -p \
-    '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "backups": {"limits": {"memory": "64Mi"}}}}}'
-    </pre>
+     Where:
+     +  `MYSQL-INSTANCE-NAME` is the name of the TanzuMySQL instance.
+     +  `MYSQL_RESOURCES` is a collection of `cpu` and `memory` limits and requests for the MySQL container.
+     +  `BACKUP_RESOURCES` is a collection of `cpu` and `memory` limits and requests for the sidecar backups container.
 
-    * If you manage TanzuMySQL resources with a set of configuration files in source control, you can also
-    change the appropriate fields in the file and apply the changes.
+        For example:
+        <pre class="terminal">$ kubectl patch tanzumysql my-sample-instance --type merge -p \
+        '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "backups": {"limits": {"memory": "64Mi"}}}}}'
+        </pre>
+
+* If you manage TanzuMySQL resources with a set of configuration files in source control, you can also
+    change the fields in the file and apply the changes.
 
     For example:
     <pre class="terminal">$ kubectl apply -f tanzumysql.yaml</pre>
@@ -157,21 +167,23 @@ running TanzuMySQL instance.
 If a TanzuMySQL instance is not running due to errors in these fields, you can change them.
 The changes are propagated into the StatefulSet to correct the error.
 
-To change `storageClassName` or `imagePullSecret`:
+To change `storageClassName` or `imagePullSecret`,
+update the TanzuMySQL configuration by one of the methods below:
 
-1. Update the Tanzu MySQL configuration with either method below:
-    * Patch the existing API object in place
+* Patch the existing API object in place:
+
     ```
     kubectl patch tanzumysql MYSQL-INSTANCE-NAME -p '{"spec": {"PROPERTY": "VALUE"}}'
-    ```
-    + WHERE `PROPERTY` is the property name
-    + AND `VALUE` is the new property value
+     ```
+     Where:
+     + `PROPERTY` is the property name.
+     + `VALUE` is the new property value.
 
     For example:
     <pre class="terminal">$ kubectl patch tanzumysql my-sample-instance -p '{"spec": {"imagePullSecret": "new-secret-name"}}'</pre>
 
-    * If you manage TanzuMySQL resources with a set of configuration files in source control, you can also
-    change the appropriate fields in the file and apply the changes.
+* If you manage TanzuMySQL resources with a set of configuration files in source control, you can
+    change the fields in the file and apply the changes.
 
     For example:
     <pre class="terminal">$ kubectl apply -f tanzumysql.yaml</pre>
