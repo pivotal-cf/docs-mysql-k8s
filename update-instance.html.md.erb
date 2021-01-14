@@ -129,9 +129,8 @@ You can use one of these methods to update the configuration:
 * Patch the existing API object in place by running:
 
     ```
-kubectl patch tanzumysql MYSQL-INSTANCE-NAME -p \
+kubectl patch tanzumysql MYSQL-INSTANCE-NAME --type merge -p \
 '{"spec": {"resources": {"mysql": MYSQL_RESOURCES, "backups": BACKUP_RESOURCES}}}' \
---type merge
     ```
 
      Where:
