@@ -72,23 +72,23 @@ To connect to the MySQL server:
     $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     </pre>
 
-## <a id='off-platform-access'></a> Connect to the MySQL Server with an External IP
+## <a id='off-platform-access'></a> Connect to the MySQL Server with an External IP Address
 
 <p class="note">
   <strong>Note:</strong> Ensure the cloud provider supports external load balancers. For more information about the LoadBalancer ServiceTypes, see the
   <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">Kubernetes documentation</a>.
 </p>
 
-1. Before you can connect to a <%= vars.product_short %> instance off-platform, you must ensure the
-<%= vars.product_short %> instance is using a LoadBalancer ServiceType.<br><br>
-See the [Property Reference for tanzumysql.yml](property-reference-tanzumysql.html) for how to
-specify the property to create the correct Service.
-Create or update the <%= vars.product_short %> instance and verify the Service has Type LoadBalancer instead of the default ClusterIP.
+1. Verify that your <%= vars.product_short %> instance is using a LoadBalancer ServiceType.
+You must do this before you can connect to a <%= vars.product_short %> instance off-platform.
+For more information about how to specify the property to create the correct service, see [Property Reference for tanzumysql.yml](./property-reference-tanzumysql.html).
+
+1. Create or update the <%= vars.product_short %> instance and verify the Service has Type LoadBalancer instead of the default ClusterIP:
 
     ```
     $ kubectl get service INSTANCE-NAME -o jsonpath={.spec.type}
     ```
-    Where `INSTANCE-NAME` is the name of your instance.
+    Where `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
 
     For example:
 
@@ -97,12 +97,12 @@ Create or update the <%= vars.product_short %> instance and verify the Service h
     LoadBalancer
     </pre>
 
-1. Find the external IP allocated for the Service.
+1. Find the external IP address allocated for the service.
 
     ```
     $ kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
     ```
-    Where `INSTANCE-NAME` is the name of your instance.
+    Where `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
 
     For example:
 
@@ -117,14 +117,14 @@ Create or update the <%= vars.product_short %> instance and verify the Service h
     ```
     MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
     ```
-    Where `INSTANCE-NAME` is the name of your instance.
+    Where `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
 
 1. Log in to the MySQL server by running:
 
     ```
     mysql -uroot -p$MYSQL_ROOT_PASSWORD -P 3306 -h EXTERNAL-IP
     ```
-    Where `EXTERNAL-IP` is the external IP found in the above step.
+    Where `EXTERNAL-IP` is the external IP address allocated for the service found in the above step.
 
     For example:
 
