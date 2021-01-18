@@ -27,21 +27,16 @@ To see all MySQL server settings configured:
 1. Log in to the Kubernetes namespace by running:
 
     ```
-    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-N -- /bin/bash
+    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -- /bin/bash
     ```
     Where:
     * `YOUR-NAMESPACE` is the namespace you are logging in to.
     * `INSTANCE-NAME` is the name of the instance you are targeting.
-    + `N` is the index of the Pod in the TanzuMySQL instance.
-    <p class="note">
-       <strong>Note:</strong>
-    Currently only one Pod is allowed per instance, so <code>N</code> is always <code>0</code>.
-    </p>
 
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/tanzumysql-sample-0 -- /bin/bash
+    $ kubectl -n my-namespace exec --stdin --tty pod/my-instance-0 -- /bin/bash
     </pre>
 
 1. Review the configuration files named `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
@@ -53,21 +48,16 @@ To log in to the MySQL server:
 1. Log in to the Kubernetes namespace by running:
 
     ```
-    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-N -- /bin/bash
+    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -- /bin/bash
     ```
     Where:
     * `YOUR-NAMESPACE` is the namespace you are logging in to.
     * `INSTANCE-NAME` is the name of the instance you are targeting.
-    + `N` is the index of the Pod in the TanzuMySQL instance.
-    <p class="note">
-       <strong>Note:</strong>
-    Currently only one Pod is allowed per instance, so <code>N</code> is always <code>0</code>.
-    </p>
 
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/tanzumysql-sample-0 -- /bin/bash
+    $ kubectl -n my-namespace exec --stdin --tty pod/my-instance-0 -- /bin/bash
     </pre>
 
 1. Log in to the MySQL server by running:
