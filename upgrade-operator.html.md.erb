@@ -1,0 +1,85 @@
+---
+title: Upgrading the Tanzu MySQL for Kubernetes Operator
+owner: MySQL
+---
+
+<%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
+
+
+<strong><%= modified_date %></strong>
+
+This topic describes how operators upgrade
+the <%= vars.product_full %> Operator.
+
+## <a id="overview"></a> Overview
+
+To upgrade <%= vars.product_short %>, you must download resources and upgrade
+the <%= vars.product_short %> Operator using Helm.
+
+To upgrade the Operator:
+
+
+ 1. [Use Helm CLI to Upgrade the Operator](#upgrade-operator)
+
+
+
+### <a id="upgrade-operator"></a> Use Helm CLI to Upgrade the Operator
+To upgrade the Operator using the Helm CLI:
+
+1. Verify that you have a running <%= vars.product_short %> Operator::
+
+<pre class="terminal">$helm -n mysql-for-kubernetes-system ls
+NAME                	NAMESPACE                        	REVISION	UPDATED                             	STATUS  	CHART                     	APP VERSION
+tanzu-mysql-operator	tanzu-mysql-for-kubernetes-system	1       	2021-01-19 15:52:10.473565 -0700 MST	deployed	tanzu-mysql-operator-0.1.0	0.1.0
+1. Download the Helm chart to your current working directory on your local machine by running:
+
+    ```
+    helm chart pull REGISTRY-URL
+    helm chart export REGISTRY-URL
+    ```
+    Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart.
+
+    <br>The value of `REGISTRY-URL` has the following pattern:
+
+    ```
+    registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
+    ```
+    Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
+
+    <br>This downloads a directory named `tanzu-mysql-operator/` into your current working directory
+1. Go to where the new release has been downloaded and apply the new CRDs as below:
+
+
+    <pre class="terminal">$kubectl apply -f ./tanzu-mysql-operator/crds/mysql.tanzuvmware.com_crds.yaml
+    Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+    customresourcedefinition.apiextensions.k8s.io/tanzumysqlbackuplocations.mysql.tanzu.vmware.com configured
+    Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+    customresourcedefinition.apiextensions.k8s.io/tanzumysqlbackups.mysql.tanzu.vmware.com configured
+    Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+    customresourcedefinition.apiextensions.k8s.io/tanzumysqlbackupschedules.mysql.tanzu.vmware.com configured
+    Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+    customresourcedefinition.apiextensions.k8s.io/tanzumysqlrestores.mysql.tanzu.vmware.com configured
+    Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply
+    customresourcedefinition.apiextensions.k8s.io/tanzumysqls.mysql.tanzu.vmware.com configured
+
+
+    <p class="note">
+      <strong>Note:</strong> The warnings above can be safely ignored.
+    </p>
+
+1. Upgrade the operator using command:
+
+    ```
+    helm upgrade tanzu-mysql-operator ./tanzu-mysql-operator
+
+    ```
+
+    The <%= vars.product_short %> Helm chart has finished upgrading when you see the value of the `STATUS` column for the
+    <%= vars.product_short %> Helm chart is `deployed`. See example output:
+
+
+<pre class="terminal">$helm -n mysql-for-kubernetes-system history tanzu-mysql-operator
+REVISION    UPDATED                     STATUS        CHART                              APP VERSION    DESCRIPTION
+1           Thu Jan 14 17:47:53 2021    superseded    tanzu-mysql-operator-0.1.0         0.1.0          Install complete
+2           Thu Jan 14 18:09:05 2021    deployed      tanzu-mysql-operator-0.2.0         0.2.0          Upgrade complete
+
