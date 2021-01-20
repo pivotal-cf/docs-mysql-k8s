@@ -17,17 +17,28 @@ the <%= vars.product_short %> Operator using Helm.
 
 To upgrade the Operator using the Helm CLI:
 
+1. Log in to Helm from the command line by running:
+
+    ```
+    echo "$MY_PASSWORD" | helm registry login registry.pivotal.io \
+    --username=USER-EMAIL --password-stdin
+    ```
+
+    Where:
+    + `MY_PASSWORD` is an environment variable containing the password for the registry account.
+    + `USER-EMAIL` is the email address associated with the registry account.
+
 1. Verify that you have a running <%= vars.product_short %> Operator by running:
 
     ```
-    helm -n mysql-for-kubernetes-system ls
+    helm -n tanzu-mysql-for-kubernetes-system ls
     ```
     For example:
 
     <pre class="terminal">
-    $ helm -n mysql-for-kubernetes-system ls
+    $ helm -n tanzu-mysql-for-kubernetes-system ls
     NAME                  NAMESPACE                          REVISION  UPDATED                               STATUS    CHART                       APP VERSION
-    tanzu-mysql-operator  tanzu-mysql-for-kubernetes-system  1         2021-01-19 15:52:10.473565 -0700 MST  deployed  tanzu-mysql-operator-0.1.0  0.1.0
+    tanzu-mysql-operator  tanzu-tanzu-mysql-for-kubernetes-system  1         2021-01-19 15:52:10.473565 -0700 MST  deployed  tanzu-mysql-operator-0.1.0  0.1.0
     </pre>
 
 1. Download the Helm chart to your current working directory on your local machine by running these commands:
@@ -67,7 +78,7 @@ The value of `REGISTRY-URL` has the following pattern:
     When you see `deployed` in the `STATUS` column, the <%= vars.product_short %>
     Helm chart has upgraded:
 
-    <pre class="terminal">$ helm -n mysql-for-kubernetes-system history tanzu-mysql-operator
+    <pre class="terminal">$ helm -n tanzu-mysql-for-kubernetes-system history tanzu-mysql-operator
     REVISION    UPDATED                     STATUS        CHART                              APP VERSION   DESCRIPTION
     1           Thu Jan 14 17:47:53 2021    superseded    tanzu-mysql-operator-0.1.0         0.1.0          Install complete
     2           Thu Jan 14 18:09:05 2021    deployed      tanzu-mysql-operator-0.2.0         0.2.0          Upgrade complete
