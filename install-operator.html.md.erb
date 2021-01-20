@@ -137,7 +137,10 @@ To create the namespace and secret:
     ```
     kubectl config set-context --current --namespace tanzu-mysql-for-kubernetes-system
     ```
-
+1. Login to docker registry
+   ```
+   docker login -u DOCKER-USERNAME -p DOCKER-PASSWORD registry.pivotal.io
+   ```
 1. Create a Kubernetes secret for accessing registry containing the <%= vars.product_short %> images by running:
 
     ```
@@ -147,6 +150,7 @@ To create the namespace and secret:
 1. Download the Helm chart to your current working directory on your local machine by running:
 
     ```
+    helm chart pull REGISTRY-URL
     helm chart export REGISTRY-URL
     ```
     Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart.
