@@ -137,10 +137,12 @@ To create the namespace and secret:
     ```
     kubectl config set-context --current --namespace tanzu-mysql-for-kubernetes-system
     ```
-1. Login to docker registry
-   ```
-   docker login -u DOCKER-USERNAME -p DOCKER-PASSWORD registry.pivotal.io
-   ```
+1. If you want to deploy the <%= vars.product_short %> images from a registry
+other than registry.pivotal.io, log in to the docker registry:
+
+    ```
+    docker login -u DOCKER-USERNAME -p DOCKER-PASSWORD registry.pivotal.io
+    ```
 1. Create a Kubernetes secret for accessing registry containing the <%= vars.product_short %> images by running:
 
     ```
