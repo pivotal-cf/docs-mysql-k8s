@@ -81,17 +81,28 @@ To connect to the MySQL server:
 
 To connect to the MySQL server with an external IP address:
 
-1. Verify that your <%= vars.product_short %> instance is using a LoadBalancer ServiceType.
-You must do this before you can connect to a <%= vars.product_short %> instance off-platform.
-For more information about how to specify the property to create the correct service, see [Property Reference for tanzumysql.yml](./property-reference-tanzumysql.html).
+1. Create or update the <%= vars.product_short %> instance using the <code>LoadBalancer</code> ServiceType.
+    <br><br>
+    For more information about how to create the <%= vars.product_short %> instance, see
+    [Create a TanzuMySQL Instance](./create-delete-mysql.html#create-instance).
+    For more information about how to update the <%= vars.product_short %> instance, see
+    [Updating a TanzuMySQL Instance](./update-instance.html).
+    For more information about changing the ServiceType for a <%= vars.product_short %> instance, see
+    [Change Other Configurations](./update-instance.html#other-config).
 
-1. Create or update the <%= vars.product_short %> instance and verify the Service has Type LoadBalancer instead of the default ClusterIP:
+    <p class="note">
+      <strong>Note:</strong> You must do this before you can connect to a <%= vars.product_short %> instance off-    platform.
+      For more information about how to specify the property to create the correct service, see
+      <a href="./property-reference-tanzumysql.html">Property Reference for tanzumysql.yml</a>.
+    </p>
+
+1. Verify the ServiceType is `LoadBalancer` instead of the default ClusterIP:
 
     ```
     $ kubectl get service INSTANCE-NAME -o jsonpath={.spec.type}
     ```
     Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in the `tanzumysql.yaml` file.
-
+    <br><br>
     For example:
 
     <pre class="terminal">
@@ -105,7 +116,7 @@ For more information about how to specify the property to create the correct ser
     $ kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
     ```
     Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in the `tanzumysql.yaml` file.
-
+    <br><br>
     For example:
 
     <pre class="terminal">
@@ -134,8 +145,17 @@ For more information about how to specify the property to create the correct ser
     $ mysql -uroot -p$MYSQL_ROOT_PASSWORD -P 3306 -h a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     </pre>
 
-1. To disable off-platform connections, change the <%= vars.product_short %> instance to specify
-ClusterIP and update the instance. The cloud provider might automatically delete the load balancer.
+### <a id='remove-off-platform-access'></a> Turn Off External Access
+
+To disable off-platform connections:
+
+1. Change the <%= vars.product_short %> instance to specify `ClusterIP`.
+    For more information about how to change a property, see [Change Other Configurations](./update-instance.html#other-config).
+
+<p class="note">
+  <strong>Note:</strong> The cloud provider might automatically delete the load balancer.
+</p>
+
 
 ## <a id='port-forward'></a> Connect to the MySQL Server with the Kubernetes API Server
 
