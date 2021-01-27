@@ -91,12 +91,13 @@ To connect to the MySQL server with an external IP address:
     [Change Other Configurations](./update-instance.html#other-config).
 
     <p class="note">
-      <strong>Note:</strong> You must do this before you can connect to a <%= vars.product_short %> instance off-    platform.
+      <strong>Note:</strong> You must do this before you can connect to a
+      <%= vars.product_short %> instance off-platform.
       For more information about how to specify the property to create the correct service, see
       <a href="./property-reference-tanzumysql.html">Property Reference for tanzumysql.yml</a>.
     </p>
 
-1. Verify the ServiceType is `LoadBalancer` instead of the default ClusterIP:
+1. Verify the ServiceType is `LoadBalancer` instead of the default `ClusterIP`:
 
     ```
     $ kubectl get service INSTANCE-NAME -o jsonpath={.spec.type}
