@@ -3,6 +3,13 @@ title: Property Reference for Backup and Restore
 owner: MySQL
 ---
 
+**In this topic**<br>
+[Properties for the TanzuMySQLBackupLocation Resource](#backuplocation)<br>
+[Properties for the Secret](#secret)<br>
+[Properties for the TanzuMySQLBackupSchedule Resource](#backupschedule)<br>
+[Properties for the TanzuMySQLBackup Resource](#on-demand-backup)<br>
+[Properties for the TanzuMySQLRestore Resource](#restore)
+
 <%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
 
 <strong><%= modified_date %></strong>
@@ -34,7 +41,7 @@ The table below explains the properties that can be set in the `backuplocation.y
 <tr>
   <td>metadata.name</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The name of the TanzuMySQLBackupLocation. Must be unique within a namespace.</td>
   <td><code>backuplocation-sample</code></td>
   <td>Yes</td>
@@ -42,7 +49,7 @@ The table below explains the properties that can be set in the `backuplocation.y
 <tr>
   <td>spec.storage.s3.bucket</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>
       The name of an existing S3-compatible bucket for this backup location.
   </td>
@@ -52,7 +59,7 @@ The table below explains the properties that can be set in the `backuplocation.y
 <tr>
   <td>spec.storage.s3.bucketPath</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The name of the path where backup artifacts will be uploaded.
       If a folder in the path does not already exist, it is created automatically.</td>
   <td><code>s3-sample-path/sample-subpath/</code></td>
@@ -97,7 +104,7 @@ The table below explains the properties that can be set in the `backuplocation.y
 </tr>
   <td>spec.storage.s3.secret.name</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The name of the Kubernetes secret that contains the credentials for connecting to S3.</td>
   <td><code>backuplocation-sample-creds</code></td>
   <td>Yes</tr>
@@ -128,7 +135,7 @@ The table below explains the properties that can be set in the `secret` for the 
 <tr>
   <td>metadata.name</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The name of the Secret. Must match <code>spec.storage.s3.secret.name</code> in a BackupLocation.
       Must be unique within a namespace.</td>
   <td><code>backuplocation-sample-creds</code></td>
@@ -137,7 +144,7 @@ The table below explains the properties that can be set in the `secret` for the 
 <tr>
   <td>stringData.accessKeyId</td>
   <td> String</td>
-  <td> None</td>
+  <td> <em>n/a</em></td>
   <td> The Access Key ID for an AWS IAM user that has permissions to read/write from the S3 bucket.</td>
   <td> <code>AKIAIOSFODNN7EXAMPLE</code></td>
   <td> Yes</td>
@@ -145,7 +152,7 @@ The table below explains the properties that can be set in the `secret` for the 
 <tr>
   <td>stringData.secretAccessKey</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The Secret Access Key for an AWS IAM user that has permissions to read/write from the S3 bucket</td>
   <td><code>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</code></td>
   <td>Yes</td>
@@ -175,7 +182,7 @@ for TanzuMySQLBackupSchedule resource.
 <tr>
    <td>metadata.name</td>
    <td>String</td>
-   <td>None</td>
+   <td><em>n/a</em></td>
    <td>The name of the TanzuMySQLBackupSchedule. Must be unique within a namespace.</td>
    <td><code>backupschedule-sample</code></td>
    <td>Yes</td>
@@ -183,7 +190,7 @@ for TanzuMySQLBackupSchedule resource.
 <tr>
 <td>spec.backupTemplate.spec.location.name</td>
    <td>String</td>
-   <td>None</td>
+   <td><em>n/a</em></td>
    <td>The name of the TanzuMySQLBackupLocation that represents the blobstore where backups will be uploaded. Must be in the same namespace as the TanzuMySQLBackupSchedule.</td>
    <td><code>backuplocation-sample</td>
    <td>Yes</td>
@@ -191,7 +198,7 @@ for TanzuMySQLBackupSchedule resource.
 </tr>
    <td>spec.backupTemplate.spec.cluster.name</td>
    <td>String</td>
-   <td>None</td>
+   <td><em>n/a</em></td>
    <td>The name of the TanzuMySQL instance on which you want scheduled backups for.
        Must be in the same namespace as the TanzuMySQLBackupSchedule.</td>
    <td><code>tanzumysql-sample</td>
@@ -200,7 +207,7 @@ for TanzuMySQLBackupSchedule resource.
 </tr>
 <td>spec.schedule</td>
    <td>String (cron schedule)</td>
-   <td>None</td>
+   <td><em>n/a</em></td>
    <td>The cron schedule for backups. Must be a valid cron schedule.</td>
    <td><code>"0 23 * * 6" (every Saturday at 11PM)</td>
    <td>Yes</td>
@@ -233,7 +240,7 @@ for the TanzuMySQLBackup resource.
 <tr>
   <td>metadata.name</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The name of the TanzuMySQLBackup.
       Must be unique within a namespace.</td>
   <td><code>backup-sample</code></td>
@@ -242,7 +249,7 @@ for the TanzuMySQLBackup resource.
 <tr>
   <td>spec.location.name</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The name of the TanzuMySQLBackupLocation that represents the blobstore where the backup will be uploaded.
       Must be in the same namespace as the TanzuMySQL instance.</td>
   <td></td>
@@ -251,7 +258,7 @@ for the TanzuMySQLBackup resource.
 <tr>
   <td>spec.cluster.name</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The name of the TanzuMySQL instance on which you want to perform the on-demand backup.</td>
   <td></td>
   <td>Yes</td>
@@ -284,7 +291,7 @@ for the TanzuMySQLRestore resource.
 <tr>
   <td>metadata.name</td>
   <td>String</td>
-  <td>None</td>
+  <td><em>n/a</em></td>
   <td>The name of the TanzuMySQLRestore. Must be unique within a namespace.</td>
   <td><code>tanzumysqlrestore-sample</code></td>
   <td>Yes</td>
@@ -292,7 +299,7 @@ for the TanzuMySQLRestore resource.
 <tr>
    <td>spec.tanzuMySQLBackup.name</td>
    <td>String</td>
-   <td>None</td>
+   <td><em>n/a</em></td>
    <td>The name of the TanzuMySQLBackup that represents the backup artifact to restore.
        Must be in the same namespace as the TanzuMySQLRestore.</td>
    <td> </td>
