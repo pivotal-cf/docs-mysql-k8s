@@ -252,7 +252,7 @@ for the TanzuMySQLBackup resource.
   <td><em>n/a</em></td>
   <td>The name of the TanzuMySQLBackupLocation that represents the blobstore where the backup will be uploaded.
       Must be in the same namespace as the TanzuMySQL instance.</td>
-  <td></td>
+  <td><code>backuplocation-sample</code></td>
   <td>Yes</td>
 </tr>
 <tr>
@@ -260,7 +260,7 @@ for the TanzuMySQLBackup resource.
   <td>String</td>
   <td><em>n/a</em></td>
   <td>The name of the TanzuMySQL instance on which you want to perform the on-demand backup.</td>
-  <td></td>
+  <td><code>my-instance</code></td>
   <td>Yes</td>
 </tr>
 </table>
@@ -302,19 +302,31 @@ for the TanzuMySQLRestore resource.
    <td><em>n/a</em></td>
    <td>The name of the TanzuMySQLBackup that represents the backup artifact to restore.
        Must be in the same namespace as the TanzuMySQLRestore.</td>
-   <td> </td>
+   <td><code>backup-sample</code></td>
    <td>Yes</td>
 </tr>
 <tr>
-   <td>spec.MysqlTemplate</td>
-   <td> </td>
-   <td> </td>
+   <td>spec.tanzuMysqlTemplate</td>
+   <td>TanzuMySQL</td>
+   <td><em>n/a</em></td>
    <td>The configuration for the TanzuMySQL instance that the backup artifact will be restored to.
        This TanzuMySQL instance is created automatically as part of the restore,
        so the name must not already exist in the namespace.<br>
        For descriptions of each value in the configuration template,
       see <a href="create-delete-mysql.html#create-instance">Create a TanzuMySQL Instance</a>.</td>
-   <td> </td>
+   <td>See example below.*</td>
    <td>Yes</td>
 </tr>
 </table>
+
+<br>
+* The type TanzuMySQL is a nested YAML object.
+For example:
+<pre>
+metadata:
+  name: tanzumysql-sample
+spec:
+  storageSize: 1Gi
+  imagePullSecret: tanzu-mysql-image-registry
+</pre>
+
