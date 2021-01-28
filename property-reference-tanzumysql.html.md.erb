@@ -30,7 +30,7 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
 <tr>
   <td><code>metadata.name</code></td>
   <td>String</td>
-  <td><em>N/A</em></td>
+  <td><em>n/a</em></td>
   <td>The name of your TanzuMySQL instance:<br><br>
       <ul>
          <li>Must be unique within a namespace</li>
@@ -47,7 +47,7 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
 <tr>
   <td><code>spec.storageSize</code></td>
   <td></td>
-  <td><em>N/A</em></td>
+  <td><em>n/a</em></td>
   <td>StorageSize specifies the size of the persistent volume claims (PVCs) for the <%= vars.product_short %> Pods.
       For information about the units allowed for these PVC sizes, see about resource quantities in
       <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities">
@@ -59,7 +59,7 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
 <tr>
   <td><code>spec.imagePullSecret</code></td>
   <td>String</td>
-  <td><em>N/A</em></td>
+  <td><em>n/a</em></td>
   <td>Refers to an existing Kubernetes docker-registry secret that can access the
     registry that contains the TanzuMySQL image.</td>
   <td><code>tanzu-mysql-image-registry</code></td>
@@ -92,7 +92,7 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
 <tr>
   <td><code>spec.tls.secret.name</code></td>
   <td>String</td>
-  <td><em>N/A</em></td>
+  <td><em>n/a</em></td>
   <td>The name of the Kubernetes secret that contains the TLS certificate and private key to support encrypted connections by clients.
   </td>
   <td><code>mysql-tls-secret</code></td>
