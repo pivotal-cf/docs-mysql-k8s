@@ -44,6 +44,7 @@ We want to use placeholders consistently througout the doc.
 | REGISTRY-SERVER-URL |https://registry.pivotal.io/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
 | DOCKER-PASSWORD | sample-password | credentials used to pull images from the registry | create-delete.html |
 | DOCKER-USERNAME |sample-username |  credentials used to pull images from the registry | create-delete.html |
-| INSTANCE-NAME |tanzumysql-sample and another-sample |   is the value that you configured for metadata.name in the tanzumysql.yaml file | create-delete.html |
+| INSTANCE-NAME | tanzumysql-sample and another-sample |   is the value that you configured for metadata.name in the tanzumysql.yaml file | create-delete.html, accessing.html |
+| INSTANCE-NAME-N (use instead of POD-NAME)| tanzumysql-sample-0 | "Where: + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file. + `N` is the index of the Pod in the TanzuMySQL instance." | create-delete-mysql.html, update-instance.html |
 | REGISTRY-SERVER-URL |https://registry.pivotal.io/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
 |

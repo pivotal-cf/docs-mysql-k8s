@@ -42,15 +42,21 @@ To scale `storageSize`:
 1. Look up the storage class associated with the TanzuMySQL Pod’s Persistent Volume Claim (PVC):
 
     ```
-    kubectl get pvc mysql-data-MYSQL-POD-NAME -o jsonpath={.spec.storageClassName}
+    kubectl get pvc mysql-data-INSTANCE-NAME-N -o jsonpath={.spec.storageClassName}
     ```
-    Where `MYSQL-POD-NAME` is the name of the TanzuMySQL Pod you are targeting.
+    Where:
+    + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
+    + `N` is the index of the Pod in the TanzuMySQL instance.
 
     For example:
 
-    <pre class="terminal">$ kubectl get pvc mysql-data-my-pod -o jsonpath={.spec.storageClassName}
+    <pre class="terminal">$ kubectl get pvc mysql-data-tanzumysql-sample-0 -o jsonpath={.spec.storageClassName}
       standard
     </pre>
+    <p class="note">
+       <strong>Note:</strong>
+    Currently only one TanzuMySQL Pod is allowed per instance, so <code>N</code> is always <code>0</code>.
+    </p>
 
 1. Check if the storage class allows volume expansion. Look for the `ALLOWVOLUMEEXPANSION` column by running:
 
@@ -77,11 +83,17 @@ To scale `storageSize`:
 
 <%# Is running this command all you need to do to increase the volume size? %>
 1. Edit the PVC `spec.resources.requests.storage` field to increase the volume size by running:
-    <pre><code>kubectl edit pvc mysql-data-MYSQL-POD-NAME</code>
-    </pre>
+
+    ```
+    kubectl edit pvc mysql-data-INSTANCE-NAME-N
+    ```
+    Where:
+    + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
+    + `N` is the index of the Pod in the TanzuMySQL instance.
+
     For example:
-    <pre class="terminal">$ kubectl edit pvc mysql-data-MYSQL-POD-NAME
-    persistentvolumeclaim/mysql-data-MYSQL-POD-NAME edited
+    <pre class="terminal">$ kubectl edit pvc mysql-data-tanzumysql-sample-0
+    persistentvolumeclaim/mysql-data-tanzumysql-sample-0 edited
     </pre>
 
 1. Do one of the following:
@@ -90,21 +102,28 @@ To scale `storageSize`:
       [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#resizing-an-in-use-persistentvolumeclaim).<br><br>
     * **Otherwise:** Wait for the PVC to have the `FileSystemResizePending` condition.
     Delete the TanzuMySQL Pod to unmount the PVC and allow it to resize.
-    <pre><code>kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-MYSQL-POD-NAME</code></pre>
+    <pre><code>kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-INSTANCE-NAME-N</code></pre>
     <pre><code>kubectl rollout restart statefulset MYSQL-INSTANCE-NAME</code></pre>
     For example:
-    <pre class="terminal">$ kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-MYSQL-POD-NAME
+    <pre class="terminal">$ kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-tanzumysql-sample-0
     persistentvolumeclaim/mysql-data-tanzumysql-sample-0 condition met <br>
-    $ kubectl rollout restart statefulset MYSQL-INSTANCE-NAME
+    $ kubectl rollout restart statefulset tanzumysql-sample
     statefulset.apps/tanzumysql-sample restarted</pre>
 
 1. After the StatefulSet controller has automatically re-created the TanzuMySQL Pod, and the TanzuMySQL Pod
 has successfully restarted, verify that the storage has been resized.
-<pre><code>kubectl exec MYSQL-POD-NAME -c mysql -- df -h /var/lib/mysql</code></pre>
-For example:
-<pre class="terminal">$ kubectl exec MYSQL-POD-NAME -c mysql -- df -h /var/lib/mysql
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sdb        3.0G  346M  2.6G  12% /var/lib/mysql</pre>
+
+    ```
+    kubectl exec INSTANCE-NAME-N -c mysql -- df -h /var/lib/mysql
+    ```
+    Where:
+    + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
+    + `N` is the index of the Pod in the TanzuMySQL instance.
+
+    For example:
+    <pre class="terminal">$ kubectl exec tanzumysql-sample-0 -c mysql -- df -h /var/lib/mysql
+    Filesystem      Size  Used Avail Use% Mounted on
+    /dev/sdb        3.0G  346M  2.6G  12% /var/lib/mysql</pre>
 
 ### <a id='scale-storage-downtime'></a>Expected Downtime When Scaling storageSize
 
@@ -123,10 +142,11 @@ Does this command just apply an edit you have made somewhere else?
 It seems to be the same command as the one for changing imagePullSecret. %>
 1. Edit the Tanzu MySQL configuration's `spec.resources` field to increase the CPU
 or memory requirements for the `mysql` or `backups` containers.
-  <pre><code>kubectl edit tanzumysql MYSQL-INSTANCE-NAME</code></pre>
+  <pre><code>kubectl edit tanzumysql INSTANCE-NAME</code></pre>
   For example:
-  <pre class="terminal">$ kubectl edit tanzumysql MYSQL-INSTANCE-NAME
-  tanzumysql.mysql.tanzu.vmware.com/MYSQL-INSTANCE-NAME edited</pre>
+  <pre class="terminal">$ kubectl edit tanzumysql tanzumysql-sample
+  tanzumysql.mysql.tanzu.vmware.com/tanzumysql-sample edited</pre>
+
 
 ### <a id='scale-resources-downtime'></a>Expected Downtime When Scaling CPU and Memory Resources
 
@@ -147,7 +167,7 @@ To change `storageClassName` or `imagePullSecret`:
 
 <%# Is running this command all you need to do? %>
 1. Edit the Tanzu MySQL configuration `spec`.
-<pre><code>kubectl edit tanzumysql MYSQL-INSTANCE-NAME</code></pre>
+<pre><code>kubectl edit tanzumysql INSTANCE-NAME</code></pre>
 For example:
-<pre class="terminal">$ kubectl edit tanzumysql MYSQL-INSTANCE-NAME
-tanzumysql.mysql.tanzu.vmware.com/MYSQL-INSTANCE-NAME edited</pre>
+<pre class="terminal">$ kubectl edit tanzumysql tanzumysql-sample
+tanzumysql.mysql.tanzu.vmware.com/tanzumysql-sample edited</pre>
