@@ -10,6 +10,7 @@ Docs for VMware Tanzu™ SQL with MySQL for Kubernetes
 | Branch name | Use for… |
 |-------------| -------|
 | main      | the development branch for the doc, publishes to https://docs-pcf-staging.cfapps.io/tanzu-mysql-kubernetes/1-n |
+| 0.2      | v0.2.x beta, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/0-2/|
 | 0.1      | v0.1.x beta, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/0-1/|
 
 
