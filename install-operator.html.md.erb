@@ -177,14 +177,15 @@ To create the namespace and secret:
     Exported chart to tanzu-mysql-operator/
     </pre>
 
+### <a id="install-operator"></a> Use Helm CLI to Install the Operator
+To install the Operator using the Helm CLI:
 
-### <a id="edit-chart"></a> (Optional) Edit the Helm Chart
-You might want to edit the values in your <%= vars.product_short %> Operator Helm chart before you install.
+1. (Optional) Configure the Tanzu MySQL Operator for your environment
 
-To edit your Helm chart:
+    A `values-override.yaml` may be provided to set appropriate values for your environment, for instance if you wish to
+    relocate the Tanzu MySQL images to a private registry.
 
-1. Open the `values.yaml` file inside your local `tanzu-mysql-operator` directory.
-    You can edit the following values:
+    You can set the following values:
 
     <table>
       <thead>
@@ -223,7 +224,7 @@ To edit your Helm chart:
         </tr>
       </tbody>
     </table>
-    <br>See the following example `values.yaml` file:
+    <br>See the following example `values-override.yaml` file:
     <pre><code>---
     imagePullSecret: tanzu-mysql-image-registry
     <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.2.0
@@ -231,20 +232,25 @@ To edit your Helm chart:
     <br>resources:
       limits:
         cpu: 100m
-        memory: 30Mi
+        memory: 128Mi
       requests:
         cpu: 100m
-        memory: 20Mi
+        memory: 128Mi
     </code></pre>
 
-
-### <a id="install-operator"></a> Use Helm CLI to Install the Operator
-To install the Operator using the Helm CLI:
 
 1. Verify that you are in the same working directory as where you downloaded the Helm chart in Step 4 of
 [Create Namespace and Secret](#create-namespace-secret) above.
 
 1. Install the <%= vars.product_short %> Operator by running:
+
+    If you created a custom `values-override.yaml` in the previous step, run the following helm command:
+
+    ```
+    helm install --values=/your/values-override.yaml tanzu-mysql-operator ./tanzu-mysql-operator/
+    ```
+
+    If you did not create a `values-override.yaml` run the following helm command:
 
     ```
     helm install tanzu-mysql-operator ./tanzu-mysql-operator/
