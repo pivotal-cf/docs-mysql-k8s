@@ -21,7 +21,7 @@ To download resources and install the Operator:
 1. [Download the Resources](#download)
 1. [Install the Operator](#install)
  1. [Create Namespace and Secret](#create-namespace-secret)
- 1. [(Optional) Edit the Helm Chart](#edit-chart)
+ 2. [Review values.yaml and Create Overrides If Needed](#create-overrides)
  1. [Use Helm CLI to Install the Operator](#install-operator)
 
 ## <a id='prereq'></a>Prerequisites
@@ -147,6 +147,7 @@ To create the namespace and secret:
     kubectl create secret docker-registry tanzu-mysql-image-registry --docker-server=https://registry.pivotal.io/ \
     --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
     ```
+
 1. Download the Helm chart to your current working directory on your local machine by running:
 
     ```
@@ -177,16 +178,41 @@ To create the namespace and secret:
     Exported chart to tanzu-mysql-operator/
     </pre>
 
-### <a id="install-operator"></a> Use Helm CLI to Install the Operator
-To install the Operator using the Helm CLI:
+### <a id="create-overrides"></a> Review values.yaml and Create Overrides If Needed
 
-1. (Optional) Configure the Tanzu MySQL Operator for your environment
+In most situtations, the default values supplied in the `values.yaml` file do not need to be changed.
 
-    A `values-override.yaml` may be provided to set appropriate values for your environment, for instance if you wish to
-    relocate the Tanzu MySQL images to a private registry.
+However, if any of the following are true, you need to follow the steps below to override the defaults:
 
-    You can set the following values:
++ You deployed the Tanzu MySQL for Kubernetes images from a registry other than registry.pivotal.io.
++ You did not use the default `tanzu-mysql-image-registry` for the secret name in Step 4 above.
++ You want to allocate different CPU or memory resources for your Operator.
 
+<p class="note">
+<strong>Note:</strong>
+Do not edit <code>values.yaml</code> directly. Create a <code>values-override.yaml</code>.
+</p>
+
+Confirm and configure the Tanzu MySQL Operator for your environment:
+
+1. Review the `values.yaml` file.
+
+    For example:
+    <pre><code>---
+    imagePullSecret: tanzu-mysql-image-registry
+    <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.1.0
+    <br>tanzuMySQLImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.1.0
+    <br>resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    </code></pre>
+
+2. Determine which values in the `values.yaml` file need to be changed for your environment.
+       Use the table below as a guide.
     <table>
       <thead>
         <tr>
@@ -200,7 +226,7 @@ To install the Operator using the Helm CLI:
           <td><code>imagePullSecret</code></td>
           <td>String</td>
           <td>Name of image secret. This value must match the name of the Kubernetes
-            secret you create in <a href="#install">Install the Operator</a> below.</td>
+            secret you create in <a href="#install">Install the Operator</a> above.</td>
         </tr>
         <tr>
           <td><code>operatorImage</code></td>
@@ -214,7 +240,7 @@ To install the Operator using the Helm CLI:
           <td>URI</td>
           <td>Reference to the <%= vars.product_short %> image.
             If you have uploaded the <%= vars.product_short %> image to a private registry,
-            you must change this reference to pull the <%= vars.product_short %> image from your registry.</td>
+            you change this reference to pull the <%= vars.product_short %> image from your registry.</td>
         </tr>
         <tr>
           <td><code>resources</code></td>
@@ -224,34 +250,28 @@ To install the Operator using the Helm CLI:
         </tr>
       </tbody>
     </table>
-    <br>See the following example `values-override.yaml` file:
-    <pre><code>---
-    imagePullSecret: tanzu-mysql-image-registry
-    <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:0.2.0
-    <br>tanzuMySQLImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:0.2.0
-    <br>resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
-    </code></pre>
 
+3. Create a copy of `values.yaml` and name the new file`values-override.yaml`.
+
+4. Edit the values that you want to change.
+5. Delete the sections of the file that you do not change.
+6. Save the `values-override.yaml` file in the same directory as the `values.yaml` file.
+
+### <a id="install-operator"></a> Use Helm CLI to Install the Operator
+
+To install the Operator using the Helm CLI:
 
 1. Verify that you are in the same working directory as where you downloaded the Helm chart in Step 4 of
 [Create Namespace and Secret](#create-namespace-secret) above.
 
-1. Install the <%= vars.product_short %> Operator by running:
-
-    If you created a custom `values-override.yaml` in the previous step, run the following helm command:
-
+1. Install the <%= vars.product_short %> Operator by running one of the following:
+  + If you created a custom `values-override.yaml` in [Review values.yaml and
+    Create Overrides If Needed](#create-overrides) above,
+    then run the following helm command:
     ```
     helm install --values=/your/values-override.yaml tanzu-mysql-operator ./tanzu-mysql-operator/
-    ```
-
-    If you did not create a `values-override.yaml` run the following helm command:
-
+    ```<br><br>
+  + If you did not create a `values-override.yaml`, then run the following helm command:
     ```
     helm install tanzu-mysql-operator ./tanzu-mysql-operator/
     ```
