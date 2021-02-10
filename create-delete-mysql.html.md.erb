@@ -64,60 +64,18 @@ To create a TanzuMySQL instance:
     secret/tanzu-mysql-image-registry created
     </pre>
 
-3. Create a `tanzumysql.yaml` file.
-   You can use the template below:
+3. Create a new YAML file to configure a TanzuMySQL instance.
 
-    ```
-    apiVersion: mysql.tanzu.vmware.com/v1alpha1
-    kind: TanzuMySQL
-    metadata:
-      name: tanzumysql-sample
-    spec:
-      storageSize: 1Gi
-      imagePullSecret: tanzu-mysql-image-registry
-
-    #### Set the storage class name to change storage class of the PVC associated with this resource
-    #  storageClassName: standard
-
-    #### Set the type of Service used to provide access to the MySQL database.
-    #  serviceType: LoadBalancer
-
-    #### Set the name of the Secret used for TLS
-    #  tls:
-    #    secret:
-    #      name: mysql-tls-secret
-
-    #### Examples to set resource limit/request for mysql/backups containers.
-
-    #  resources:
-
-    #### This is the container running the mysql server.
-    #    mysql:
-    #      limits:
-    #        cpu: 3
-    #        memory: 800Mi
-    #      requests:
-    #        cpu: 2
-    #        memory: 500Mi
-    #### This is the sidecar container that takes a backup and streams to the storage backend.
-    #    backups:
-    #      limits:
-    #        cpu: 2
-    #        memory: 500Mi
-    #      requests:
-    #        cpu: 1
-    #        memory: 200Mi
-    ```
-
-4. Edit the `tanzumysql.yaml` file.
+4. Edit your file. You can use the deployment template `tanzumysql.yaml` downloaded from TanzuNet as a reference.
    For an explanation of the properties that you can set in this file,
    see [Property Reference for tanzumysql.yml](property-reference-tanzumysql.html).
 
 5. Deploy a TanzuMySQL instance to Kubernetes by running:
 
     ```
-    kubectl -n DEVELOPMENT-NAMESPACE apply -f tanzumysql.yaml
+    kubectl -n DEVELOPMENT-NAMESPACE apply -f FILENAME
     ```
+    WHERE `FILENAME` is your file with the specific TanzuMySQL configuration
 
     For example:
 
@@ -131,7 +89,7 @@ To create a TanzuMySQL instance:
     ```
     kubectl get tanzumysql INSTANCE-NAME
     ```
-    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in the `tanzumysql.yaml` file.
+    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in your file
     <br><br>
     For example:
 
