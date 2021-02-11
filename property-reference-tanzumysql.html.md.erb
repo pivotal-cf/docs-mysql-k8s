@@ -135,7 +135,7 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
   <td>No</td>
 </tr>
 <tr>
-  <td><code>spec.resources.backups</code></td>
+  <td><code>spec.resources.sidecar</code></td>
   <td>
     <ul>
       <li>limits.cpu</li>
@@ -143,9 +143,9 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
     </ul>
   </td>
   <td>Best effort</td>
-  <td>Describes the maximum CPU and memory allowed for the backups container.
+  <td>Describes the maximum CPU and memory allowed for the sidecar container.
       If left blank, Kubernetes does its best effort to allocate the necessary compute resources
-      for the backups container.
+      for the sidecar container.
       For more information about CPU and memory resources,
       see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
       Kubernetes documentation</a>.
@@ -154,7 +154,7 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
   <td>No</td>
 </tr>
 <tr>
-  <td><code>spec.resources.backups</code></td>
+  <td><code>spec.resources.sidecar</code></td>
   <td>
     <ul>
       <li>requests.cpu</li>
@@ -162,13 +162,53 @@ The table below explains the properties that you can set in the `tanzumysql.yml`
     </ul>
   </td>
   <td>Best effort</td>
-  <td>Describes the minimum CPU and memory allowed for the backups container.
+  <td>Describes the minimum CPU and memory allowed for the sidecar container.
       If left blank, it defaults to limits if limits have been explicitly specified.
       For more information about limits, see the
       <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
       Kubernetes documentation</a>.
   </td>
   <td><code>requests.cpu:&nbsp;1&nbsp;, requests.memory:&nbsp;200Mi</code>
+  </td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><code>spec.resources.router</code></td>
+  <td>
+    <ul>
+      <li>limits.cpu</li>
+      <li>limits.memory</li>
+    </ul>
+  </td>
+  <td>Best effort</td>
+  <td>Describes the maximum CPU and memory allowed for the router container. This container is only created when
+      <code>spec.highAvailability.enabled</code> is specified as <code>true</code>.
+      If left blank, Kubernetes does its best effort to allocate the necessary compute resources
+      for the router container.
+      For more information about CPU and memory resources,
+      see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
+      Kubernetes documentation</a>.
+  </td>
+  <td><code>limits.cpu: 1000m, limits.memory: 256Mi</code></td>
+  <td>No</td>
+</tr>
+<tr>
+  <td><code>spec.resources.router</code></td>
+  <td>
+    <ul>
+      <li>requests.cpu</li>
+      <li>requests.memory</li>
+    </ul>
+  </td>
+  <td>Best effort</td>
+  <td>Describes the minimum CPU and memory allowed for the sidecar container. This container is only created when
+      <code>spec.highAvailability.enabled</code> is specified as <code>true</code>.
+      If left blank, it defaults to limits if limits have been explicitly specified.
+      For more information about limits, see the
+      <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
+      Kubernetes documentation</a>.
+  </td>
+  <td><code>requests.cpu: 200m;, requests.memory: 48Mi</code>
   </td>
   <td>No</td>
 </tr>
