@@ -136,7 +136,7 @@ PVC is being resized.
 ## <a id='scale-resources'></a>Scale CPU and Memory Resources
 
 To scale CPU or memory resources, update the TanzuMySQL configuration `spec.resources` field to change the CPU
-or memory requirements for the `mysql` or `backups` containers.
+or memory requirements for the `mysql` or `sidecar` containers.
 
 You can use one of these methods to update the configuration:
 
@@ -144,17 +144,17 @@ You can use one of these methods to update the configuration:
 
     ```
     kubectl patch tanzumysql INSTANCE-NAME --type merge -p \
-    '{"spec": {"resources": {"mysql": MYSQL-RESOURCES, "backups": BACKUP-RESOURCES}}}' \
+    '{"spec": {"resources": {"mysql": MYSQL-RESOURCES, "sidecar": BACKUP-RESOURCES}}}' \
     ```
 
     Where:
     + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
     + `MYSQL-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the MySQL container.
-    + `BACKUP-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the sidecar backups container.
+    + `BACKUP-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the sidecar container.
 
     For example:
     <pre class="terminal">$ kubectl patch tanzumysql tanzumysql-sample --type merge -p \
-    '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "backups": {"limits": {"memory": "64Mi"}}}}}'
+    '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "sidecar": {"limits": {"memory": "64Mi"}}}}}'
     </pre>
 
 * If you manage TanzuMySQL resources with a set of configuration files in source control, you can also
