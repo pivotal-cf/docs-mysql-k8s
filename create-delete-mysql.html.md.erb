@@ -64,10 +64,20 @@ To create a TanzuMySQL instance:
     secret/tanzu-mysql-image-registry created
     </pre>
 
-3. Create a new YAML file to configure a TanzuMySQL instance.
+3. Find the `tanzumysql.yaml` deployment template that you downloaded
+   in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
+   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
+   in _Installing the Tanzu MySQL for Kubernetes Operator_.
 
-4. Edit your file. You can use the deployment template `tanzumysql.yaml` downloaded from TanzuNet as a reference.
-   For an explanation of the properties that you can set in this file,
+4. Create a copy of the `tanzumysql.yaml` file and give it a unique name.
+
+    For example:
+
+    <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/tanzumysql.yaml testdb.yaml</pre>
+
+
+5. Edit the file.
+   For information about the properties that you can set in this file,
    see [Property Reference for tanzumysql.yml](property-reference-tanzumysql.html).
 
 5. Deploy a TanzuMySQL instance to Kubernetes by running:
@@ -75,11 +85,11 @@ To create a TanzuMySQL instance:
     ```
     kubectl -n DEVELOPMENT-NAMESPACE apply -f FILENAME
     ```
-    WHERE `FILENAME` is your file with the specific TanzuMySQL configuration
+    Where `FILENAME` is the name of the configuration file you created in Step 4 above.
 
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace apply -f tanzumysql.yaml
+    <pre class="terminal">$ kubectl -n my-namespace apply -f testdb.yaml
     tanzumysql.mysql.tanzu.vmware.com/tanzumysql-sample created
     </pre>
 
