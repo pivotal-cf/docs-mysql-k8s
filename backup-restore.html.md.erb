@@ -61,38 +61,18 @@ with the location of the blobstore and the credentials to access it.
 
 To create a TanzuMySQLBackupLocation resource:
 
-1. Create a `backuplocation.yaml` file. You can use the template below:
+1. Find the `backuplocation.yaml` deployment template that you downloaded
+   in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
+   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
+   in _Installing the Tanzu MySQL for Kubernetes Operator_.
 
-    ```
-    ---
-    apiVersion: mysql.tanzu.vmware.com/v1alpha1
-    kind: TanzuMySQLBackupLocation
-    metadata:
-      name: backuplocation-sample
-    spec:
-      storage:
-        # For S3 or Minio:
-        s3:
-          bucket: "name-of-bucket"
-          bucketPath: "my-backups-prefix/"
-          # region: "us-east-1"
-          endpoint:  "" # optional, default to AWS
-          forcePathStyle: false
-          disableSSL: false
-          secret:
-            name: backuplocation-sample-creds
-    ---
-    apiVersion: v1
-    kind: Secret
-    metadata:
-      name: backuplocation-sample-creds
-    stringData:
-      # S3 Credentials
-      accessKeyId: "my-access-key-id"
-      secretAccessKey: "my-secret-access-key"
-    ```
+2. Create a copy of the `backuplocation.yaml` file and give it a unique name.
 
-2. Edit the `backuplocation.yaml` file with the configuration for your external blobstore.
+    For example:
+
+    <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backuplocation.yaml testbackuplocation.yaml</pre>
+
+2. Edit the file with the configuration for your external blobstore.
    For an explanation of the properties that you can set in this file,
    see [Properties for the TanzuMySQLBackupLocation Resource](property-reference-backup-restore.html#backuplocation)
    and [Properties for the Secret](property-reference-backup-restore.html#secret).
@@ -101,13 +81,14 @@ To create a TanzuMySQLBackupLocation resource:
    you want to back up by running:
 
     ```
-    kubectl apply -f backuplocation.yaml -n DEVELOPMENT-NAMESPACE
+    kubectl apply -f FILENAME -n DEVELOPMENT-NAMESPACE
     ```
-    Where is `DEVELOPMENT-NAMESPACE` is the namespace for the TanzuMySQL instance.
+    + Where is `DEVELOPMENT-NAMESPACE` is the namespace for the TanzuMySQL instance.
+    + Where `FILENAME` is the name of the configuration file you created in Step 2 above.
 
     For example:
 
-    <pre class="terminal">$ kubectl apply -f backuplocation.yaml -n my-namespace
+    <pre class="terminal">$ kubectl apply -f testbackuplocation.yaml -n my-namespace
     tanzumysqlbackuplocation.mysql.tanzu.vmware.com/backuplocation-sample created
     secret/backuplocation-sample-creds configured
     </pre>
@@ -142,43 +123,37 @@ To create a TanzuMySQLBackupLocation resource:
 
 To set a schedule for automatic backups, create a TanzuMySQLBackupSchedule resource:
 
-1. Create a `backupschedule.yaml` file. You can use the template below:
+1. Find the `backupschedule.yaml` deployment template that you downloaded
+   in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
+   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
+   in _Installing the Tanzu MySQL for Kubernetes Operator_.
 
-    ```
-    ---
-    apiVersion: mysql.tanzu.vmware.com/v1alpha1
-    kind: TanzuMySQLBackupSchedule
-    metadata:
-      name: tanzumysqlbackupschedule-sample
-    spec:
-      backupTemplate:
-        spec:
-          location:
-            name: backuplocation-sample
-          cluster:
-            name: tanzumysql-sample
-      schedule: "@daily"
-    ```
+2. Create a copy of the `backupschedule.yaml` file and give it a unique name.
 
-2. Edit the `backupschedule.yaml` file with the name of the TanzuMySQLBackupLocation resource
+    For example:
+
+    <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backupschedule.yaml testbackupschedule.yaml</pre>
+
+2. Edit the file with the name of the TanzuMySQLBackupLocation resource
    that you created in [Create a TanzuMySQLBackupLocation Resource](backup-restore.html#create-backuplocation)
    and the name of the TanzuMySQL instance you want scheduled backups of.
    For an explanation of the properties that you can set in this file,
    see [Properties for the TanzuMySQLBackupSchedule Resource](property-reference-backup-restore.html#backupschedule).
 
-2. Create the TanzuMySQLBackupSchedule resource in the same namespace as the TanzuMySQLBackupLocation and TanzuMySQL instance that
+3. Create the TanzuMySQLBackupSchedule resource in the same namespace as the TanzuMySQLBackupLocation and TanzuMySQL instance that
    you referenced in the TanzuMySQLBackupSchedule YAML file.
 
     ```
-    kubectl apply -f backupschedule.yaml -n DEVELOPMENT-NAMESPACE
+    kubectl apply -f FILENAME -n DEVELOPMENT-NAMESPACE
     ```
+    Where `FILENAME` is the name of the configuration file you created in Step 2 above.
 
     For example:
-    <pre class="terminal">$ kubectl apply -f backupschedule.yaml -n my-namespace
+    <pre class="terminal">$ kubectl apply -f testbackupschedule.yaml -n my-namespace
     tanzumysqlbackupschedule.mysql.tanzu.vmware.com/backupschedule-sample created
     </pre>
 
-3. Verify that the TanzuMySQLBackupSchedule has been created by running:
+4. Verify that the TanzuMySQLBackupSchedule has been created by running:
 
     ```
     kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o jsonpath={.spec} -n DEVELOPMENT-NAMESPACE
@@ -237,36 +212,34 @@ see [Create a TanzuMySQLBackupLocation Resource](#create-backuplocation) above.
 
 To take a backup:
 
-1. Create a `backup.yaml` file. You can use the template below:
+1. Find the `backup.yaml` deployment template that you downloaded
+   in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
+   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
+   in _Installing the Tanzu MySQL for Kubernetes Operator_.
 
-    ```
-    ---
-    apiVersion: mysql.tanzu.vmware.com/v1alpha1
-    kind: TanzuMySQLBackup
-    metadata:
-      name: backup-sample
-    spec:
-      location:
-        name: backuplocation-sample
-      cluster:
-        name: tanzumysql-sample
-    ```
-
-     For an explanation of the properties that you can set in this file,
-     see [Properties for the TanzuMySQLBackup Resource](property-reference-backup-restore.html#on-demand-backup).
-
-2. Trigger the backup by creating the TanzuMySQLBackup resource in the same namespace as the instance by running:
-
-    ```
-    kubectl apply -f tanzumysqlbackup.yaml -n DEVELOPMENT-NAMESPACE
-    ```
+2. Create a copy of the `backup.yaml` file and give it a unique name.
 
     For example:
-    <pre class="terminal">$ kubectl apply -f tanzumysqlbackup.yaml -n my-namespace
+
+    <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backup.yaml testbackup.yaml</pre>
+
+3. Edit the file.
+   For an explanation of the properties that you can set for the TanzuMySQLBackup resource,
+   see [Properties for the TanzuMySQLBackup Resource](property-reference-backup-restore.html#on-demand-backup).
+
+4. Trigger the backup by creating the TanzuMySQLBackup resource in the same namespace as the instance by running:
+
+    ```
+    kubectl apply -f FILENAME -n DEVELOPMENT-NAMESPACE
+    ```
+    Where `FILENAME` is the name of the configuration file you created in Step 2 above.
+
+    For example:
+    <pre class="terminal">$ kubectl apply -f testbackup.yaml -n my-namespace
     tanzumysqlbackup.mysql.tanzu.vmware.com/backup-sample created
     </pre>
 
-3. Verify that a backup has been generated and track its progress by running:
+5. Verify that a backup has been generated and track its progress by running:
 
     ```
     kubectl get tanzumysqlbackup backup-sample -n DEVELOPMENT-NAMESPACE
@@ -363,7 +336,7 @@ To delete a backup:
 2. On your Kubernetes cluster, delete the TanzuMySQLBackup resource by running:
 
     ```
-    kubectl delete tanzumysqlbackup BACKUP-NAME -n DEVELOPER-NAMESPACE
+    kubectl delete tanzumysqlbackup BACKUP-NAME -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
@@ -404,42 +377,37 @@ Before you restore from a backup, you must have:
 
 To restore from a backup:
 
-1. Create a `tanzumysqlrestore.yaml` file. You can use the template below:
+1. Find the `restore.yaml` deployment template that you downloaded
+   in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
+   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
+   in _Installing the Tanzu MySQL for Kubernetes Operator_.
 
-    ```
-    ---
-    apiVersion: mysql.tanzu.vmware.com/v1alpha1
-    kind: TanzuMySQLRestore
-    metadata:
-      name: tanzumysqlrestore-sample
-    spec:
-      tanzuMysqlBackup:
-        name: backup-sample
-      tanzuMysqlTemplate:
-        metadata:
-          name: tanzumysql-sample
-        spec:
-          storageSize: 1Gi
-          imagePullSecret: tanzu-mysql-image-registry
-    ```
+2. Create a copy of the `restore.yaml` file and give it a unique name.
 
-    For an explanation of the properties that you can set in this file,
-    see [Properties for the TanzuMySQLRestore Resource](property-reference-backup-restore.html#restore).
+    For example:
 
-2. Trigger the restore by creating the TanzuMySQLRestore resource in the same namespace
+    <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/restore.yaml testrestore.yaml</pre>
+
+
+3. Edit the file.
+   For information about the properties that you can set for the TanzuMySQLRestore resource,
+   see [Property Reference for Backup and Restore](property-reference-backup-restore.html#restore).
+
+4. Trigger the restore by creating the TanzuMySQLRestore resource in the same namespace
    as the TanzuMySQLBackup and TanzuMySQLBackupLocation by running:
 
     ```
-    kubectl apply -f tanzumysqlrestore.yaml -n DEVELOPMENT-NAMESPACE
+    kubectl apply -f FILENAME -n DEVELOPMENT-NAMESPACE
     ```
+    Where `FILENAME` is the name of the configuration file you created in Step 2 above.
 
     For example:
     <pre  class="terminal">
-    $ kubectl apply -f tanzumysqlrestore.yaml -n my-namespace
+    $ kubectl apply -f testrestore.yaml -n my-namespace
     tanzumysqlrestore.mysql.tanzu.vmware.com/tanzumysqlrestore-sample created
     </pre>
 
-3. Verify that a restore has been triggered and track the progress of your restore by running:
+5. Verify that a restore has been triggered and track the progress of your restore by running:
 
     ```
     kubectl get tanzumysqlrestore tanzumysqlrestore-sample -n DEVELOPMENT-NAMESPACE
@@ -452,7 +420,7 @@ To restore from a backup:
     tanzumysqlrestore-sample   Succeeded   2020-12-01T21:52:30.000000Z   2020-12-01T21:53:09.163336Z   13m
    </pre>
 
-4. To understand the output, see the table below:
+6. To understand the output, see the table below:
     <table class="nice">
     <col width="20%">
     <col width="80%">
