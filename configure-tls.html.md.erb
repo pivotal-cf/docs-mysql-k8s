@@ -28,7 +28,7 @@ This topic describes two methods:
 * Using cert-manager.
   See [Create TLS Secret with cert-manager](#using-cert-manager) below.
 
-After creating the secret, you add the name of the secret to the `tanzumysql.yaml` file,
+After creating the secret, you add the name of the secret to your copy of the `mysql.yaml` file,
 and configure the instance with the updated file, as described in
 [Configure TanzuMySQL for TLS](#use-tls) below.
 
@@ -144,14 +144,18 @@ For information about installing Helm, see the
 
 To configure TLS for the TanzuMySQL instance:
 
-1. In the `tanzumysql.yaml` for the TanzuMySQL instance, specify `spec.tls.secret.name` as the name
+1. In your copy of the `mysql.yaml` for the TanzuMySQL instance, specify `spec.tls.secret.name` as the name
 of the TLS Secret created in the namespace.
 
 2. Create or update the TanzuMySQL instance by running:
 
     ```
-    kubectl apply -f tanzumysql.yaml
+    kubectl apply -f FILENAME -n DEVELOPMENT_NAMESPACE
     ```
+    Where:
+    +  `FILENAME` is the name of the configuration file for your TanzuMySQL resource.
+    +  `DEVELOPMENT-NAMESPACE` is the namespace for the TanzuMySQL instance.
+
 
 
 ## <a id='use-tls'></a>Connect to TanzuMySQL over TLS

@@ -45,7 +45,7 @@ To scale `storageSize`:
     kubectl get pvc mysql-data-INSTANCE-NAME-N -o jsonpath={.spec.storageClassName}
     ```
     Where:
-    + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
+    + `INSTANCE-NAME` is the value that you configured for metadata.name for your TanzuMySQL resource.
     + `N` is the index of the Pod in the TanzuMySQL instance.
 
     For example:
@@ -88,7 +88,7 @@ To scale `storageSize`:
     '{"spec": {"resources": {"requests": {"storage": "NEW-REQUESTED-SIZE"}}}}'
     ```
     Where:
-    + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
+    + `INSTANCE-NAME` is the value that you configured for metadata.name for your TanzuMySQL resource.
     + `N` is the index of the Pod in the TanzuMySQL instance.
     + `NEW-REQUESTED-SIZE` is the increased volume size.
 
@@ -117,7 +117,7 @@ has successfully restarted, verify that the storage has been resized.
     kubectl exec INSTANCE-NAME-N -c mysql -- df -h /var/lib/mysql
     ```
     Where:
-    + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
+    + `INSTANCE-NAME` is the value that you configured for metadata.name for your TanzuMySQL resource.
     + `N` is the index of the Pod in the TanzuMySQL instance.
 
     For example:
@@ -148,7 +148,7 @@ You can use one of these methods to update the configuration:
     ```
 
     Where:
-    + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
+    + `INSTANCE-NAME` is the value that you configured for metadata.name for your TanzuMySQL resource.
     + `MYSQL-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the MySQL container.
     + `BACKUP-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the sidecar container.
 
@@ -161,7 +161,7 @@ You can use one of these methods to update the configuration:
     change the fields in the file and apply the changes.
 
     For example:
-    <pre class="terminal">$ kubectl apply -f tanzumysql.yaml</pre>
+    <pre class="terminal">$ kubectl apply -f mysql.yaml</pre>
 
 For more information on managing CPU and Memory resources, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
@@ -189,7 +189,7 @@ update the TanzuMySQL configuration by one of the methods below:
     kubectl patch tanzumysql INSTANCE-NAME -p '{"spec": {"PROPERTY": "VALUE"}}'
     ```
     Where:
-    + `INSTANCE-NAME` is the value that you configured for metadata.name in the tanzumysql.yaml file.
+    + `INSTANCE-NAME` is the value that you configured for metadata.name for your TanzuMySQL resource.
     + `PROPERTY` is the property name.
     + `VALUE` is the new property value.
 
@@ -200,4 +200,4 @@ update the TanzuMySQL configuration by one of the methods below:
     change the fields in the file and apply the changes.
 
     For example:
-    <pre class="terminal">$ kubectl apply -f tanzumysql.yaml</pre>
+    <pre class="terminal">$ kubectl apply -f mysql.yaml</pre>
