@@ -33,6 +33,7 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 | persistent volume claim (PVC)  | Spell out on first use on page.|
 | TanzuMySQL instance  | Use this phrase consistently. Okay to shorten it to "instance". Not okay to use "MySQL instance" or "Tanzu instance" or "database instance". "TanzuMySQL" is a _kind_ in Kubernetes so that it the precise term. Decided: JD, Kim Bassett, and David Sharp 2020.12.09.|
 | TanzuMySQL Pod | Usually use this instead of just Pod. Decided: 2020.12.10 Judy and Jane |
+| `.yaml` | Instead of `.yml` |
 
 ## Placeholder Table
 
