@@ -17,16 +17,23 @@ the <%= vars.product_short %> Operator using Helm.
 
 To upgrade the Operator using the Helm CLI:
 
-1. Log in to Helm from the command line by running:
+
+0. Set the environment variable to enable OCI support in the Helm 3 client by running:
 
     ```
-    echo "$MY_PASSWORD" | helm registry login registry.pivotal.io \
-    --username=USER-EMAIL --password-stdin
+    export HELM_EXPERIMENTAL_OCI=1
     ```
 
-    Where:
-    + `MY_PASSWORD` is an environment variable containing the password for the registry account.
-    + `USER-EMAIL` is the email address associated with the registry account.
+    If you skip this step, the following error message might appear:
+    <pre class="terminal">Error: this feature has been marked as experimental and is not enabled by default.</pre>
+
+1. Use Helm to log in to the Tanzu Registry Network by running:
+
+    ```
+    helm registry login registry.pivotal.io
+    ```
+
+    Follow the prompts to enter the email address and password for your <%= vars.product_network %> account.
 
 1. Verify that you have a running <%= vars.product_short %> Operator by running:
 
