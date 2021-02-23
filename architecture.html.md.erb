@@ -12,7 +12,7 @@ This topic provides some architectural information about <%= vars.product_full %
 ## <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture Diagram
 
 The diagram below shows the architecture of <%= vars.product_short %>:
-<img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the operator deployment and app namespace">
+<img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the Operator deployment and app namespace">
 
 <a href="./images/architecture-diagram.png" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 <%# It would be valuable to have some text describing this diagram. %>
@@ -36,7 +36,7 @@ One container runs the MySQL database software, and the other runs components to
 
 The TanzuMySQL Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
 
-When a TanzuMySQL instance is created, the Tanzu MySQL operator automatically creates a Kubernetes service
+When a TanzuMySQL instance is created, the Tanzu MySQL Operator automatically creates a Kubernetes service
 with a service type of `ClusterIP` which routes connections to the TanzuMySQL Pod.
 
   ```
@@ -54,7 +54,7 @@ with a service type of `ClusterIP` which routes connections to the TanzuMySQL Po
     imagePullSecret: tanzu-mysql-image-registry
   ```
 
-After applying this resource, the operator creates
+After applying this resource, the Operator creates
 the low-level Kubernetes resources to run this TanzuMySQL instance.
 
 You can see the status of the instance by running:
@@ -84,7 +84,7 @@ tanzumysql-sample   true    Running   27s
 This resource describes metadata and credentials for storing backups in an S3-compatible object store.
 
 TanzuMySQLBackup resources reference this backup location to know where to save backup artifacts.
-The operator creates or maintains a TanzuMySQLBackup resource for every artifact found in the backup location.
+The Operator creates or maintains a TanzuMySQLBackup resource for every artifact found in the backup location.
 Consequently, creating a TanzuMySQLBackupLocation that contains existing artifacts generates new, corresponding TanzuMySQLBackup resources.
 
   ```
@@ -192,7 +192,7 @@ tanzumysqlbackupschedule-sample   8s
 
 ###<a id="mysqlrestore"></a> TanzuMySQLRestore
 
-This resource instructs the operator to create a new PVC and a new TanzuMySQL instance
+This resource instructs the Operator to create a new PVC and a new TanzuMySQL instance
 from an existing TanzuMySQLBackup resource.
 The backup artifact for the TanzuMySQLBackup resource is loaded into the new PVC
 before the MySQL database is started.
