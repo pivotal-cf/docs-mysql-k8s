@@ -8,10 +8,12 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic describes how Kubernetes administrators install, configure,
+This topic describes how Kubernetes admins install, configure,
 and deploy the <%= vars.product_full %> Operator.
 
 ## <a id="overview"></a> Overview
+
+[//]: # (Rewrite or replace by a process after this page has been reworked.)
 
 To install and configure <%= vars.product_short %>, you must download resources and install
 the <%= vars.product_short %> Operator using Helm.
@@ -33,14 +35,21 @@ Before you deploy the <%= vars.product_short %> Operator, you need:
   You can use the same credentials for both sites.
 
 * The Helm command line tool installed. For more information, see [Installing
-Helm](https://helm.sh/docs/intro/install/) from the Helm documentation.
+  Helm](https://helm.sh/docs/intro/install/) from the Helm documentation.
 
 * The Kubernetes Command Line Interface (kubectl) installed.
-For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+  For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
 * Docker running and configured on your local computer, to access the Kubernetes cluster and Docker registry.
+  For information, see the [Docker documentation](https://www.docker.com/products/container-runtime).
 
-* An existing Kubernetes environment.
+* A running Kubernetes cluster and the kubectl command-line tool,
+  configured and authenticated to communicate with your Kubernetes cluster.
+  Examples of Kubernetes platforms are [Google Kubernetes Engine (GKE)](https://postgres-kubernetes.docs.pivotal.io/1-0/prepare-gke.html),
+  [VMware Enterprise (TKGi)](https://postgres-kubernetes.docs.pivotal.io/1-0/prepare-pks.html),
+  and [Minikube](https://postgres-kubernetes.docs.pivotal.io/1-0/minikube.html).
+  If you are using GKE, install the gcloud command-line tool on your local client.
+
 
 * `cluster-admin` ClusterRole access to the Kubernetes cluster.
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
