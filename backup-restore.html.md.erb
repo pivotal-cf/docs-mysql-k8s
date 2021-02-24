@@ -8,7 +8,7 @@ This topic describes how to back up and restore <%= vars.product_full %>.
 ## <a id="overview"></a> Overview
 
 <%= vars.product_short %> allows you to generate on-demand backups,
-configure schedules for automated backups, and restore backups to new TanzuMySQL instances.
+configure schedules for automated backups, and restore backups to new MySQL instances.
 
 For uploading and retrieving backup artifacts,
 <%= vars.product_short %> currently supports S3, Minio, and other S3-compatible storage.
@@ -16,18 +16,18 @@ For uploading and retrieving backup artifacts,
 For backing up and restoring,
 <%= vars.product_short %> uses four of the five Custom Resource Definitions (CRDs):
 
-  * **TanzuMySQLBackup:** References a TanzuMySQL backup artifact that exists in an
-    external blobstore such as S3 or Minio. A new TanzuMySQLBackup resource is created
+  * **MySQLBackup:** References a MySQL backup artifact that exists in an
+    external blobstore such as S3 or Minio. A new MySQLBackup resource is created
     every time an on-demand or scheduled backup is generated.
 
-  * **TanzuMySQLBackupLocation:** References an external blobstore and credentials
+  * **MySQLBackupLocation:** References an external blobstore and credentials
     necessary to access the blobstore.
 
-  * **TanzuMySQLBackupSchedule:** Represents a CronJob schedule on which to perform
+  * **MySQLBackupSchedule:** Represents a CronJob schedule on which to perform
     backups.
 
-  * **TanzuMySQLRestore:** References an instance of a restore that was performed.
-    A new TanzuMySQLRestore resource is created every time a restore is performed.
+  * **MySQLRestore:** References an instance of a restore that was performed.
+    A new MySQLRestore resource is created every time a restore is performed.
 
 For detailed information about the CRDs,
 see [Controllers and Custom Resource Definitions (CRDs)](architecture.html#controllers-crds)
@@ -35,31 +35,31 @@ in _Tanzu MySQL for Kubernetes Architecture_.
 
 ##<a id="sync-of-backups"></a> About Synchronization of Backups with the External Blobstore
 
-<%= vars.product_short %> syncs TanzuMySQLBackup resources in a Kubernetes cluster with the
+<%= vars.product_short %> syncs MySQLBackup resources in a Kubernetes cluster with the
 contents of the external blobstore.
 The external blobstore is treated as the source of truth.
-This means that, if a `TanzuMySQLBackup` resource is deleted on the Kubernetes cluster, but the
+This means that, if a `MySQLBackup` resource is deleted on the Kubernetes cluster, but the
 associated backup artifact still exists in the external blobstore, <%= vars.product_short %>
-re-creates the `TanzuMySQLBackup` resource to match the contents of the external
+re-creates the `MySQLBackup` resource to match the contents of the external
 blobstore.
 
 ##<a id="backup"></a> Back Up <%= vars.product_short %> Data
 
-Performing backups for <%= vars.product_short %> requires creating a TanzuMySQLBackupLocation resource
+Performing backups for <%= vars.product_short %> requires creating a MySQLBackupLocation resource
 that references an external blobstore.
-Both on-demand backups and scheduled backups use the TanzuMySQLBackupLocation to upload
+Both on-demand backups and scheduled backups use the MySQLBackupLocation to upload
 backup artifacts to the external blobstore.
 
 Before starting the procedures for backing up a <%= vars.product_short %> instance,
 ensure that you know the configuration details of your external blobstore and how often
 you want to perform scheduled backups.
 
-###<a id="create-backuplocation"></a> Create a TanzuMySQLBackupLocation Resource
+###<a id="create-backuplocation"></a> Create a MySQLBackupLocation Resource
 
-The purpose of creating this TanzuMySQLBackupLocation Resource is to configure the namespace
+The purpose of creating this MySQLBackupLocation Resource is to configure the namespace
 with the location of the blobstore and the credentials to access it.
 
-To create a TanzuMySQLBackupLocation resource:
+To create a MySQLBackupLocation resource:
 
 1. Find the `backuplocation.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
@@ -74,36 +74,36 @@ To create a TanzuMySQLBackupLocation resource:
 
 2. Edit the file with the configuration for your external blobstore.
    For an explanation of the properties that you can set in this file,
-   see [Properties for the TanzuMySQLBackupLocation Resource](property-reference-backup-restore.html#backuplocation)
+   see [Properties for the MySQLBackupLocation Resource](property-reference-backup-restore.html#backuplocation)
    and [Properties for the Secret](property-reference-backup-restore.html#secret).
 
-3. Create the TanzuMySQLBackupLocation resource in the same namespace as the TanzuMySQL instances that
+3. Create the MySQLBackupLocation resource in the same namespace as the MySQL instances that
    you want to back up by running:
 
     ```
     kubectl apply -f FILENAME -n DEVELOPMENT-NAMESPACE
     ```
-    + Where is `DEVELOPMENT-NAMESPACE` is the namespace for the TanzuMySQL instance.
+    + Where is `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance.
     + Where `FILENAME` is the name of the configuration file you created in Step 2 above.
 
     For example:
 
     <pre class="terminal">$ kubectl apply -f testbackuplocation.yaml -n my-namespace
-    tanzumysqlbackuplocation.mysql.tanzu.vmware.com/backuplocation-sample created
+    mysqlbackuplocation.sql.tanzu.vmware.com/backuplocation-sample created
     secret/backuplocation-sample-creds configured
     </pre>
 
-3. Verify that the TanzuMySQLBackupLocation has been created by running:
+3. Verify that the MySQLBackupLocation has been created by running:
 
     ```
-    kubectl get tanzumysqlbackuplocation backuplocation-sample \
+    kubectl get mysqlbackuplocation backuplocation-sample \
     -o jsonpath={.spec} -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
 
     <pre class="terminal">
-    $ kubectl get tanzumysqlbackuplocation backuplocation-sample -o jsonpath={.spec} -n my-namespace
+    $ kubectl get mysqlbackuplocation backuplocation-sample -o jsonpath={.spec} -n my-namespace
     {
       "storage": {
         "s3": {
@@ -119,9 +119,9 @@ To create a TanzuMySQLBackupLocation resource:
     }
     </pre>
 
-###<a id="create-backupschedule"></a> Create a TanzuMySQLBackupSchedule Resource
+###<a id="create-backupschedule"></a> Create a MySQLBackupSchedule Resource
 
-To set a schedule for automatic backups, create a TanzuMySQLBackupSchedule resource:
+To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
 1. Find the `backupschedule.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
@@ -134,14 +134,14 @@ To set a schedule for automatic backups, create a TanzuMySQLBackupSchedule resou
 
     <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backupschedule.yaml testbackupschedule.yaml</pre>
 
-2. Edit the file with the name of the TanzuMySQLBackupLocation resource
-   that you created in [Create a TanzuMySQLBackupLocation Resource](backup-restore.html#create-backuplocation)
-   and the name of the TanzuMySQL instance you want scheduled backups of.
+2. Edit the file with the name of the MySQLBackupLocation resource
+   that you created in [Create a MySQLBackupLocation Resource](backup-restore.html#create-backuplocation)
+   and the name of the MySQL instance you want scheduled backups of.
    For an explanation of the properties that you can set in this file,
-   see [Properties for the TanzuMySQLBackupSchedule Resource](property-reference-backup-restore.html#backupschedule).
+   see [Properties for the MySQLBackupSchedule Resource](property-reference-backup-restore.html#backupschedule).
 
-3. Create the TanzuMySQLBackupSchedule resource in the same namespace as the TanzuMySQLBackupLocation and TanzuMySQL instance that
-   you referenced in the TanzuMySQLBackupSchedule YAML file.
+3. Create the MySQLBackupSchedule resource in the same namespace as the MySQLBackupLocation and MySQL instance that
+   you referenced in the MySQLBackupSchedule YAML file.
 
     ```
     kubectl apply -f FILENAME -n DEVELOPMENT-NAMESPACE
@@ -150,18 +150,18 @@ To set a schedule for automatic backups, create a TanzuMySQLBackupSchedule resou
 
     For example:
     <pre class="terminal">$ kubectl apply -f testbackupschedule.yaml -n my-namespace
-    tanzumysqlbackupschedule.mysql.tanzu.vmware.com/backupschedule-sample created
+    mysqlbackupschedule.sql.tanzu.vmware.com/backupschedule-sample created
     </pre>
 
-4. Verify that the TanzuMySQLBackupSchedule has been created by running:
+4. Verify that the MySQLBackupSchedule has been created by running:
 
     ```
-    kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o jsonpath={.spec} -n DEVELOPMENT-NAMESPACE
+    kubectl get mysqlbackupschedule mysqlbackupschedule-sample -o jsonpath={.spec} -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
     <pre class="terminal">
-    $ kubectl get tanzumysqlbackupschedule tanzumysqlbackupschedule-sample -o jsonpath={.spec} -n my-namespace
+    $ kubectl get mysqlbackupschedule mysqlbackupschedule-sample -o jsonpath={.spec} -n my-namespace
     {
       "backupTemplate": {
         "spec": {
@@ -177,14 +177,14 @@ To set a schedule for automatic backups, create a TanzuMySQLBackupSchedule resou
     }
     </pre>
 
-    If you correctly configured both a `TanzuMySQLBackupLocation` resource and
-    `TanzuMySQLBackupSchedule` resource for an existing TanzuMySQL instance,
+    If you correctly configured both a `MySQLBackupLocation` resource and
+    `MySQLBackupSchedule` resource for an existing MySQL instance,
     you see backups being generated and uploaded to the external blobstore.
 
 ###<a id="name-and-location"></a> Name and Location for Backup Artifacts
 
 
-TanzuMySQLBackup resources that are automatically generated as a result of a TanzuMySQLBackupSchedule are named
+MySQLBackup resources that are automatically generated as a result of a MySQLBackupSchedule are named
 `SCHEDULE-NAME-TIMESTAMP`.
 
 By default, <%= vars.product_short %> stores backup artifacts under the subfolder structure `yyyy > mm > dd`.
@@ -193,11 +193,11 @@ structure `CUSTOM-PATH > yyyy > mm > dd`.
 
 Backup artifacts stored in the external blobstore are named `DATETIME-RANDOM_STRING-backup.xb`.
 
-For example, if a TanzuMySQLBackupSchedule name is `tanzumysqlbackupschedule-sample`, the custom backup
+For example, if a MySQLBackupSchedule name is `mysqlbackupschedule-sample`, the custom backup
 path is `my-backups/`, and a backup was taken on Thursday, December 10, 2020 at 8:51:03 PM GMT
 (timestamp `1607633463`), then:
 
-* The TanzuMySQLBackup resource on the Kubernetes cluster is named `tanzumysqlbackupschedule-sample-1607633463`
+* The MySQLBackup resource on the Kubernetes cluster is named `mysqlbackupschedule-sample-1607633463`
 * The backup artifact in the external blobstore is named `20201210T205103-kzw54l-backup.xb`
 * The path to the artifact is `my-backups/2020/12/10/`.
 
@@ -205,10 +205,10 @@ path is `my-backups/`, and a backup was taken on Thursday, December 10, 2020 at 
 
 In addition to scheduled backups, you can take individual backups whenever you want.
 
-**Prerequisite:** A TanzuMySQLBackupLocation resource that represents the external blobstore
+**Prerequisite:** A MySQLBackupLocation resource that represents the external blobstore
 to which you upload the generated backup artifact.
-To configure the TanzuMySQLBackupLocation resource,
-see [Create a TanzuMySQLBackupLocation Resource](#create-backuplocation) above.
+To configure the MySQLBackupLocation resource,
+see [Create a MySQLBackupLocation Resource](#create-backuplocation) above.
 
 To take a backup:
 
@@ -224,10 +224,10 @@ To take a backup:
     <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backup.yaml testbackup.yaml</pre>
 
 3. Edit the file.
-   For an explanation of the properties that you can set for the TanzuMySQLBackup resource,
-   see [Properties for the TanzuMySQLBackup Resource](property-reference-backup-restore.html#on-demand-backup).
+   For an explanation of the properties that you can set for the MySQLBackup resource,
+   see [Properties for the MySQLBackup Resource](property-reference-backup-restore.html#on-demand-backup).
 
-4. Trigger the backup by creating the TanzuMySQLBackup resource in the same namespace as the instance by running:
+4. Trigger the backup by creating the MySQLBackup resource in the same namespace as the instance by running:
 
     ```
     kubectl apply -f FILENAME -n DEVELOPMENT-NAMESPACE
@@ -236,27 +236,27 @@ To take a backup:
 
     For example:
     <pre class="terminal">$ kubectl apply -f testbackup.yaml -n my-namespace
-    tanzumysqlbackup.mysql.tanzu.vmware.com/backup-sample created
+    mysqlbackup.sql.tanzu.vmware.com/backup-sample created
     </pre>
 
 5. Verify that a backup has been generated and track its progress by running:
 
     ```
-    kubectl get tanzumysqlbackup backup-sample -n DEVELOPMENT-NAMESPACE
+    kubectl get mysqlbackup backup-sample -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
-    <pre  class="terminal">$ kubectl get tanzumysqlbackup backup-sample -n my-namespace
+    <pre  class="terminal">$ kubectl get mysqlbackup backup-sample -n my-namespace
 NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
 backup-sample   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.148835Z   2020-12-01T21:49:30.609250Z   16m
     </pre>
 
     For an explanation of what each column means,
-    see [List Existing TanzuMySQLBackup Resources](#list-resources) below.
+    see [List Existing MySQLBackup Resources](#list-resources) below.
 
-##<a id="list-resources"></a> List Existing TanzuMySQLBackup Resources
+##<a id="list-resources"></a> List Existing MySQLBackup Resources
 
-You might want to list existing TanzuMySQLBackup resources for various reasons, for example:
+You might want to list existing MySQLBackup resources for various reasons, for example:
 
 * To select a backup to restore.
   For steps to restore a backup, see [Restore](backup-restore.html#restore).
@@ -265,17 +265,17 @@ You might want to list existing TanzuMySQLBackup resources for various reasons, 
 * To find old backups that need to be cleaned up. For steps to delete backups,
   see [Delete Old Backup Artifacts](backup-restore.html#delete-backups).
 
-To see a list of existing TanzuMySQLBackup resources:
+To see a list of existing MySQLBackup resources:
 
-1. List existing TanzuMySQLBackup resources by running:
+1. List existing MySQLBackup resources by running:
 
     ```
-    kubectl get tanzumysqlbackup
+    kubectl get mysqlbackup
     ```
 
     For example:
     <pre  class="terminal">
-    $ kubectl get tanzumysqlbackup
+    $ kubectl get mysqlbackup
     NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
     backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   23h
     </pre>
@@ -294,8 +294,8 @@ To see a list of existing TanzuMySQLBackup resources:
                     <td> Represents the current status of the backup.
                         Allowed values are:
                         <ul>
-                           <li>Pending: The backup has been received but not scheduled on a TanzuMySQL Pod.</li>
-                           <li>Scheduled: The backup has been scheduled on a selected TanzuMySQL Pod but has not started.</li>
+                           <li>Pending: The backup has been received but not scheduled on a MySQL Pod.</li>
+                           <li>Scheduled: The backup has been scheduled on a selected MySQL Pod but has not started.</li>
                            <li>Running: The backup is being generated and streamed to the external blobstore.</li>
                            <li>Succeeded: The backup has completed successfully.</li>
                            <li>Failed: The backup has failed to complete.
@@ -306,7 +306,7 @@ To see a list of existing TanzuMySQLBackup resources:
               </tr>
              <tr>
                    <td><code>TIME SCHEDULED</code></td>
-                   <td> The time at which the backup was scheduled on a selected TanzuMySQL Pod.</td>
+                   <td> The time at which the backup was scheduled on a selected MySQL Pod.</td>
              </tr>
              <tr>
                    <td><code>TIME STARTED</code></td><td> The time that the backup process started.
@@ -326,22 +326,22 @@ To see a list of existing TanzuMySQLBackup resources:
 
 Tanzu MySQL for Kubernetes does not natively support retention policies for backup artifacts.
 You can configure retention policies on your external blobstore.
-If you do, you must also delete the associated TanzuMySQLBackup resources in the Kubernetes cluster,
+If you do, you must also delete the associated MySQLBackup resources in the Kubernetes cluster,
 because those are not automatically deleted by Tanzu MySQL for Kubernetes.
 
 To delete a backup:
 
 1. Delete the backup in the external blobstore.
 
-2. On your Kubernetes cluster, delete the TanzuMySQLBackup resource by running:
+2. On your Kubernetes cluster, delete the MySQLBackup resource by running:
 
     ```
-    kubectl delete tanzumysqlbackup BACKUP-NAME -n DEVELOPMENT-NAMESPACE
+    kubectl delete mysqlbackup BACKUP-NAME -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
 
-    <pre class="terminal">kubectl delete tanzumysqlbackup backup-sample -n my-namespace
+    <pre class="terminal">kubectl delete mysqlbackup backup-sample -n my-namespace
     </pre>
 
 
@@ -354,24 +354,24 @@ This section discusses two kinds of restoring:
 
 ###<a id="restore-from-backup"></a> Restore from a Backup
 
-TanzuMySQLRestores always restores to a new TanzuMySQL instance to avoid overwriting any data
-on an existing TanzuMySQL instance.
-The TanzuMySQL instance is created automatically when the restore is triggered.
+MySQLRestores always restores to a new MySQL instance to avoid overwriting any data
+on an existing MySQL instance.
+The MySQL instance is created automatically when the restore is triggered.
 
-<%= vars.product_short %> does not allow you to restore a backup to an existing TanzuMySQL instance.
+<%= vars.product_short %> does not allow you to restore a backup to an existing MySQL instance.
 Although you can perform this manually by copying the MySQL data from the backup artifact
-onto an existing TanzuMySQL instance,
+onto an existing MySQL instance,
 VMware strongly discourages you from doing this because
-you might overwrite existing data on the TanzuMySQL instance.
+you might overwrite existing data on the MySQL instance.
 
 #### Prerequisites
 
 Before you restore from a backup, you must have:
 
-*  An existing TanzuMySQLBackup in your current namespace. To select an existing TanzuMySQLBackup to
-   restore, see [List Existing TanzuMySQLBackup Resources](backup-restore.html#list-resources).
-*  A TanzuMySQLBackupLocation that represents the bucket where the existing backup artifact is stored.
-   See [Create a TanzuMySQLBackupLocation Resource](#create-backuplocation) above.
+*  An existing MySQLBackup in your current namespace. To select an existing MySQLBackup to
+   restore, see [List Existing MySQLBackup Resources](backup-restore.html#list-resources).
+*  A MySQLBackupLocation that represents the bucket where the existing backup artifact is stored.
+   See [Create a MySQLBackupLocation Resource](#create-backuplocation) above.
 
 #### Procedure
 
@@ -390,11 +390,11 @@ To restore from a backup:
 
 
 3. Edit the file.
-   For information about the properties that you can set for the TanzuMySQLRestore resource,
+   For information about the properties that you can set for the MySQLRestore resource,
    see [Property Reference for Backup and Restore](property-reference-backup-restore.html#restore).
 
-4. Trigger the restore by creating the TanzuMySQLRestore resource in the same namespace
-   as the TanzuMySQLBackup and TanzuMySQLBackupLocation by running:
+4. Trigger the restore by creating the MySQLRestore resource in the same namespace
+   as the MySQLBackup and MySQLBackupLocation by running:
 
     ```
     kubectl apply -f FILENAME -n DEVELOPMENT-NAMESPACE
@@ -404,20 +404,20 @@ To restore from a backup:
     For example:
     <pre  class="terminal">
     $ kubectl apply -f testrestore.yaml -n my-namespace
-    tanzumysqlrestore.mysql.tanzu.vmware.com/tanzumysqlrestore-sample created
+    mysqlrestore.sql.tanzu.vmware.com/mysqlrestore-sample created
     </pre>
 
 5. Verify that a restore has been triggered and track the progress of your restore by running:
 
     ```
-    kubectl get tanzumysqlrestore tanzumysqlrestore-sample -n DEVELOPMENT-NAMESPACE
+    kubectl get mysqlrestore mysqlrestore-sample -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
     <pre  class="terminal">
-    $ kubectl get tanzumysqlrestore tanzumysqlrestore-sample -n my-namespace
-    NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
-    tanzumysqlrestore-sample   Succeeded   2020-12-01T21:52:30.000000Z   2020-12-01T21:53:09.163336Z   13m
+    $ kubectl get mysqlrestore mysqlrestore-sample -n my-namespace
+    NAME                  STATUS      TIME STARTED                  TIME COMPLETED                AGE
+    mysqlrestore-sample   Succeeded   2020-12-01T21:52:30.000000Z   2020-12-01T21:53:09.163336Z   13m
    </pre>
 
 6. To understand the output, see the table below:
@@ -434,7 +434,7 @@ To restore from a backup:
                         Allowed values are:
                         <ul>
                            <li>Pending: The restore has been received but not yet scheduled
-                               on a TanzuMySQL Pod.</li>
+                               on a MySQL Pod.</li>
                            <li>Scheduled: The restore has been scheduled but has not started.</li>
                            <li>Running: The restore is in progress.</li>
                            <li>Succeeded: The restore has completed successfully.</li>
@@ -461,8 +461,8 @@ To restore from a backup:
 ###<a id="restore-to-different"></a> Restoring a Backup to a Different Namespace or Kubernetes Cluster
 
 If you want to restore a backup to a different namespace or a different Kubernetes cluster,
-create a `TanzuMySQLBackupLocation` in the target namespace or Kubernetes cluster.
-Then, <%= vars.product_short %> automatically creates `TanzuMySQLBackup` resources
+create a `MySQLBackupLocation` in the target namespace or Kubernetes cluster.
+Then, <%= vars.product_short %> automatically creates `MySQLBackup` resources
 for the backup artifacts in the external blobstore.
 
 To restore to a different namespace or Kubernetes cluster, you create a
@@ -470,17 +470,17 @@ BackupLocation in the target namespace:
 
 1. Target the destination cluster or namespace.
 
-1. Create a TanzuMySQLBackupLocation resource that contains the backup artifact to restore.
-   For how to do this, see [Create a TanzuMySQLBackupLocation Resource](#create-backuplocation).
+1. Create a MySQLBackupLocation resource that contains the backup artifact to restore.
+   For how to do this, see [Create a MySQLBackupLocation Resource](#create-backuplocation).
 
-1. Confirm that the TanzuMySQLBackup artifact to restore is included in the list by running:
+1. Confirm that the MySQLBackup artifact to restore is included in the list by running:
 
     ```
-    kubectl get tanzumysqlbackup
+    kubectl get mysqlbackup
     ```
    For example:
    <pre class='terminal'>
-   $ kubectl get tanzumysqlbackup
+   $ kubectl get mysqlbackup
      NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
      sample-backup   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.148835Z   2020-12-01T21:49:30.609250Z   5d17h
    </pre>
@@ -494,17 +494,17 @@ reading the messages associated with the resource events.
 
 To troubleshoot problems with backup and restore:
 
-1. Detect issues by monitoring the `STATUS` column of any Tanzu MySQL custom resource.
+1. Detect issues by monitoring the `STATUS` column of any MySQL custom resource.
    If the status is `Failed` or is stuck in `Pending`, `Scheduled`, or `Running`,
     then one of the following might be the problem:
     + Misconfiguration
     + Problem with the external blobstore
-    + Issues with the TanzuMySQL Operator
+    + Issues with the Tanzu MySQL Operator
 
     In this example, the `kubectl get` command outputs a `Failed` status:
 
     <pre class="terminal">
-    $ kubectl get tanzumysqlbackup backup-sample
+    $ kubectl get mysqlbackup backup-sample
     NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
     backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   2m44s
    </pre>
@@ -512,8 +512,8 @@ To troubleshoot problems with backup and restore:
 2. Diagnose the issue by inspecting the Kubernetes events for the resource, for example:
     <pre class="terminal">
     $ kubectl get events --field-selector involvedObject.name=backup-sample
-    LAST SEEN   TYPE      REASON   OBJECT                           MESSAGE
-    2m43s       Warning   Failed   tanzumysqlbackup/backup-sample   Secret "backuplocation-sample-creds" not found
+    LAST SEEN   TYPE      REASON   OBJECT                      MESSAGE
+    2m43s       Warning   Failed   mysqlbackup/backup-sample   Secret "backuplocation-sample-creds" not found
     </pre>
 
 3. Read the message in the `MESSAGE` column to understand why the failure occurred.<br><br>

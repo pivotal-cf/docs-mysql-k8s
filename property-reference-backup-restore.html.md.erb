@@ -4,11 +4,11 @@ owner: MySQL
 ---
 
 **In this topic**<br>
-[Properties for the TanzuMySQLBackupLocation Resource](#backuplocation)<br>
+[Properties for the MySQLBackupLocation Resource](#backuplocation)<br>
 [Properties for the Secret](#secret)<br>
-[Properties for the TanzuMySQLBackupSchedule Resource](#backupschedule)<br>
-[Properties for the TanzuMySQLBackup Resource](#on-demand-backup)<br>
-[Properties for the TanzuMySQLRestore Resource](#restore)
+[Properties for the MySQLBackupSchedule Resource](#backupschedule)<br>
+[Properties for the MySQLBackup Resource](#on-demand-backup)<br>
+[Properties for the MySQLRestore Resource](#restore)
 
 <%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
 
@@ -19,9 +19,9 @@ backup and restore.
 For information about backup and restore,
 see [Backing Up and Restoring in Tanzu MySQL for Kubernetes](backup-restore.html).
 
-##<a name="backuplocation"></a> Properties for the TanzuMySQLBackupLocation Resource
+##<a name="backuplocation"></a> Properties for the MySQLBackupLocation Resource
 
-The table below explains the properties that can be set for the TanzuMySQLBackupLocation resource.
+The table below explains the properties that can be set for the MySQLBackupLocation resource.
 
 <table style="width:1000px" class="nice">
 <col width="10%">
@@ -42,7 +42,7 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
   <td>metadata.name</td>
   <td>String</td>
   <td><em>n/a</em></td>
-  <td>The name of the TanzuMySQLBackupLocation. Must be unique within a namespace.</td>
+  <td>The name of the MySQLBackupLocation. Must be unique within a namespace.</td>
   <td><code>backuplocation-sample</code></td>
   <td>Yes</td>
 </tr>
@@ -115,7 +115,7 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
 
 ##<a name="secret"></a> Properties for the Secret
 
-The table below explains the properties that can be set in the `secret` for the TanzuMySQLBackupLocation resource.
+The table below explains the properties that can be set in the `secret` for the MySQLBackupLocation resource.
 
 <table style="width:1000px" class="nice">
 <col width="10%">
@@ -160,9 +160,9 @@ The table below explains the properties that can be set in the `secret` for the 
 </table>
 
 
-##<a name="backupschedule"></a> Properties for the TanzuMySQLBackupSchedule Resource
+##<a name="backupschedule"></a> Properties for the MySQLBackupSchedule Resource
 
-The table below explains the properties that can be set for the TanzuMySQLBackupSchedule resource.
+The table below explains the properties that can be set for the MySQLBackupSchedule resource.
 <table style="width:1000px" class="nice">
 <col width="10%">
 <col width="15%">
@@ -182,7 +182,7 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
    <td>metadata.name</td>
    <td>String</td>
    <td><em>n/a</em></td>
-   <td>The name of the TanzuMySQLBackupSchedule. Must be unique within a namespace.</td>
+   <td>The name of the MySQLBackupSchedule. Must be unique within a namespace.</td>
    <td><code>backupschedule-sample</code></td>
    <td>Yes</td>
 </tr>
@@ -190,7 +190,7 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
 <td>spec.backupTemplate.spec.location.name</td>
    <td>String</td>
    <td><em>n/a</em></td>
-   <td>The name of the TanzuMySQLBackupLocation that represents the blobstore where backups will be uploaded. Must be in the same namespace as the TanzuMySQLBackupSchedule.</td>
+   <td>The name of the MySQLBackupLocation that represents the blobstore where backups will be uploaded. Must be in the same namespace as the MySQLBackupSchedule.</td>
    <td><code>backuplocation-sample</td>
    <td>Yes</td>
 <tr>
@@ -198,9 +198,9 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
    <td>spec.backupTemplate.spec.cluster.name</td>
    <td>String</td>
    <td><em>n/a</em></td>
-   <td>The name of the TanzuMySQL instance on which you want scheduled backups for.
-       Must be in the same namespace as the TanzuMySQLBackupSchedule.</td>
-   <td><code>tanzumysql-sample</td>
+   <td>The name of the MySQL instance on which you want scheduled backups for.
+       Must be in the same namespace as the MySQLBackupSchedule.</td>
+   <td><code>mysql-sample</td>
    <td>Yes</td>
 <tr>
 </tr>
@@ -214,9 +214,9 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
 </table>
 
 
-##<a name="on-demand-backup"></a> Properties for the TanzuMySQLBackup Resource
+##<a name="on-demand-backup"></a> Properties for the MySQLBackup Resource
 
-The table below explains the properties that can be set for the TanzuMySQLBackup resource.
+The table below explains the properties that can be set for the MySQLBackup resource.
 
 [//]: # ( MISSING EXAMPLES)
 
@@ -239,7 +239,7 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
   <td>metadata.name</td>
   <td>String</td>
   <td><em>n/a</em></td>
-  <td>The name of the TanzuMySQLBackup.
+  <td>The name of the MySQLBackup.
       Must be unique within a namespace.</td>
   <td><code>backup-sample</code></td>
   <td>Yes</td>
@@ -248,8 +248,8 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
   <td>spec.location.name</td>
   <td>String</td>
   <td><em>n/a</em></td>
-  <td>The name of the TanzuMySQLBackupLocation that represents the blobstore where the backup will be uploaded.
-      Must be in the same namespace as the TanzuMySQL instance.</td>
+  <td>The name of the MySQLBackupLocation that represents the blobstore where the backup will be uploaded.
+      Must be in the same namespace as the MySQL instance.</td>
   <td><code>backuplocation-sample</code></td>
   <td>Yes</td>
 </tr>
@@ -257,7 +257,7 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
   <td>spec.cluster.name</td>
   <td>String</td>
   <td><em>n/a</em></td>
-  <td>The name of the TanzuMySQL instance on which you want to perform the on-demand backup.</td>
+  <td>The name of the MySQL instance on which you want to perform the on-demand backup.</td>
   <td><code>my-instance</code></td>
   <td>Yes</td>
 </tr>
@@ -265,9 +265,9 @@ The table below explains the properties that can be set for the TanzuMySQLBackup
 
 
 
-##<a name="restore"></a> Properties for the TanzuMySQLRestore Resource
+##<a name="restore"></a> Properties for the MySQLRestore Resource
 
-The table below explains the properties that can be set for the TanzuMySQLRestore resource.
+The table below explains the properties that can be set for the MySQLRestore resource.
 
 
 <table style="width:1000px" class="nice">
@@ -289,39 +289,39 @@ The table below explains the properties that can be set for the TanzuMySQLRestor
   <td>metadata.name</td>
   <td>String</td>
   <td><em>n/a</em></td>
-  <td>The name of the TanzuMySQLRestore. Must be unique within a namespace.</td>
-  <td><code>tanzumysqlrestore-sample</code></td>
+  <td>The name of the MySQLRestore. Must be unique within a namespace.</td>
+  <td><code>mysqlrestore-sample</code></td>
   <td>Yes</td>
 </tr>
 <tr>
-   <td>spec.tanzuMySQLBackup.name</td>
+   <td>spec.mysqlBackup.name</td>
    <td>String</td>
    <td><em>n/a</em></td>
-   <td>The name of the TanzuMySQLBackup that represents the backup artifact to restore.
-       Must be in the same namespace as the TanzuMySQLRestore.</td>
+   <td>The name of the MySQLBackup that represents the backup artifact to restore.
+       Must be in the same namespace as the MySQLRestore.</td>
    <td><code>backup-sample</code></td>
    <td>Yes</td>
 </tr>
 <tr>
-   <td>spec.tanzuMysqlTemplate</td>
-   <td>TanzuMySQL</td>
+   <td>spec.mysqlTemplate</td>
+   <td>MySQL</td>
    <td><em>n/a</em></td>
-   <td>The configuration for the TanzuMySQL instance that the backup artifact will be restored to.
-       This TanzuMySQL instance is created automatically as part of the restore,
+   <td>The configuration for the MySQL instance that the backup artifact will be restored to.
+       This MySQL instance is created automatically as part of the restore,
        so the name must not already exist in the namespace.<br>
        For descriptions of each value in the configuration template,
-      see <a href="create-delete-mysql.html#create-instance">Create a TanzuMySQL Instance</a>.</td>
+      see <a href="create-delete-mysql.html#create-instance">Create a MySQL Instance</a>.</td>
    <td>See example below.*</td>
    <td>Yes</td>
 </tr>
 </table>
 
 <br>
-* The type TanzuMySQL is a nested YAML object.
+* The type MySQL is a nested YAML object.
 For example:
 <pre>
 metadata:
-  name: tanzumysql-sample
+  name: mysql-sample
 spec:
   storageSize: 1Gi
   imagePullSecret: tanzu-mysql-image-registry

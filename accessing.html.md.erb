@@ -1,5 +1,5 @@
 ---
-title: Accessing a TanzuMySQL Instance
+title: Accessing a MySQL Instance
 owner: MySQL
 ---
 <% current_page.data.title = "Accessing a " + vars.product_short + " Instance" %>
@@ -36,7 +36,7 @@ To see all MySQL server settings configured:
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/tanzumysql-sample-0 -- /bin/bash
+    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -- /bin/bash
     </pre>
 
 1. Review the configuration files named `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
@@ -57,7 +57,7 @@ To connect to the MySQL server:
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/tanzumysql-sample-0 -- /bin/bash
+    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -- /bin/bash
     </pre>
 
 1. Log in to the MySQL server by running:
@@ -84,15 +84,15 @@ To connect to the MySQL server with an external IP address:
 1. Create or update the <%= vars.product_short %> instance using the <code>LoadBalancer</code> ServiceType.
     <br><br>
     For more information about how to create the <%= vars.product_short %> instance, see
-    [Create a TanzuMySQL Instance](./create-delete-mysql.html#create-instance).
+    [Create a MySQL Instance](./create-delete-mysql.html#create-instance).
     For more information about how to update the <%= vars.product_short %> instance or change the ServiceType,
-    see [Updating a TanzuMySQL Instance](./update-instance.html).
+    see [Updating a MySQL Instance](./update-instance.html).
 
     <p class="note">
       <strong>Note:</strong> You must do this before you can connect to a
       <%= vars.product_short %> instance off-platform.
       For more information about how to specify the property to create the correct service, see
-      <a href="./property-reference-tanzumysql.html">Property Reference for the TanzuMySQL Resource</a>.
+      <a href="./property-reference-mysql.html">Property Reference for the MySQL Resource</a>.
     </p>
 
 1. Verify the ServiceType is `LoadBalancer` instead of the default `ClusterIP`:
@@ -100,12 +100,12 @@ To connect to the MySQL server with an external IP address:
     ```
     $ kubectl get service INSTANCE-NAME -o jsonpath={.spec.type}
     ```
-    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` for your TanzuMySQL resource.
+    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` for your MySQL resource.
     <br><br>
     For example:
 
     <pre class="terminal">
-    $ kubectl get service tanzumysql-sample -o jsonpath={.spec.type}
+    $ kubectl get service mysql-sample -o jsonpath={.spec.type}
     LoadBalancer
     </pre>
 
@@ -114,22 +114,22 @@ To connect to the MySQL server with an external IP address:
     ```
     $ kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
     ```
-    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` for your TanzuMySQL resource.
+    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` for your MySQL resource.
     <br><br>
     For example:
 
     <pre class="terminal">
-    $ kubectl get service tanzumysql-sample -o jsonpath={.status.loadBalancer.ingress[].ip}
+    $ kubectl get service mysql-sample -o jsonpath={.status.loadBalancer.ingress[].ip}
     a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     </pre>
 
 1. Get the root password. The root user password is available in the Kubernetes Secret named after
-   the TanzuMySQL instance suffixed with `-credentials`:
+   the MySQL instance suffixed with `-credentials`:
 
     ```
     MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
     ```
-    Where `INSTANCE-NAME` is the value that you configured for metadata.name for your TanzuMySQL resource.
+    Where `INSTANCE-NAME` is the value that you configured for metadata.name for your MySQL resource.
 
 1. Log in to the MySQL server by running:
 
@@ -167,7 +167,7 @@ To disable off-platform connections:
 To connect to the MySQL server with the Kubernetes API server:
 
 1. Get the root password. The root user password is available in the Kubernetes Secret named after
-  the TanzuMySQL instance suffixed with `-credentials`.
+  the MySQL instance suffixed with `-credentials`.
 
     ```
     MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
@@ -184,7 +184,7 @@ about the command, see [Kubernetes documentation](https://kubernetes.io/docs/ref
     For example:
 
     <pre class="terminal">
-    $ kubectl port-forward service/tanzumysql-sample 3306 &
+    $ kubectl port-forward service/mysql-sample 3306 &
     <br>Forwarding from 127.0.0.1:3306 -> 3306
     Forwarding from [::1]:3306 -> 3306
     </pre>
@@ -202,7 +202,7 @@ the MySQL client:
 
     <pre class="terminal">
     $ jobs
-    [1]+  Running    kubectl port-forward service/tanzumysql-sample 3306 & <br>
+    [1]+  Running    kubectl port-forward service/mysql-sample 3306 & <br>
     $ kill %1
     </pre>
 
@@ -212,12 +212,12 @@ the MySQL client:
 The name of the Service is the same as the name of the <%= vars.product_short %> instance.
 
 If the app is deployed on the Kubernetes cluster, it can access the MySQL server using the DNS name
-of the TanzuMySQL service.
+of the MySQL service.
 This DNS name is only resolvable within the Kubernetes cluster.
 
 To connect an app to the MySQL server:
 
-1. If the app is deployed outside the Kubernetes cluster, enable the TanzuMySQL service to be
+1. If the app is deployed outside the Kubernetes cluster, enable the MySQL service to be
 externally routable through a load balancer by following the
 [Connect to the MySQL Server with an External IP Address](#off-platform-access) procedure above.
 
@@ -239,8 +239,8 @@ See the following example of setting up <%= vars.product_short %> with a databas
 can use with the Wordpress Helm chart:
 
 <pre class="terminal">
-$ kubectl exec -it tanzumysql-sample-0 -c mysql -- bash
-mysql@tanzumysql-sample-0:/$ mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
+$ kubectl exec -it mysql-sample-0 -c mysql -- bash
+mysql@mysql-sample-0:/$ mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
 mysql> CREATE DATABASE bitnami_wordpress;
 Query OK, 1 row affected (0.20 sec)
 
@@ -254,7 +254,7 @@ mysql> FLUSH PRIVILEGES;
 Query OK, 0 rows affected (0.10 sec)
 </pre>
 
-Next, the DNS name of the TanzuMySQL service is passed in to the chart as the value of
+Next, the DNS name of the MySQL service is passed in to the chart as the value of
 `externalDatabase.host`:
 
 <pre class="terminal">
@@ -262,7 +262,7 @@ $ helm repo add bitnami https://charts.bitnami.com/bitnami
 "bitnami" has been added to your repositories<br>
 $ helm install wp bitnami/wordpress \
     --set mariadb.enabled=false \
-    --set externalDatabase.host=tanzumysql-sample.default.svc.cluster.local \
+    --set externalDatabase.host=mysql-sample.default.svc.cluster.local \
     --set externalDatabase.password=hunter2
 NAME: wp
 LAST DEPLOYED: Tue Dec 8 14:32:08 2020

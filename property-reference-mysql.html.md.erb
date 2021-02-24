@@ -1,5 +1,5 @@
 ---
-title: Property Reference for the TanzuMySQL Resource
+title: Property Reference for the MySQL Resource
 owner: MySQL
 ---
 
@@ -7,12 +7,12 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic is a property reference table for the TanzuMySQL resource.
-Refer to this table when you are creating the YAML file for a TanzuMySQL instance.
-For more information, see [Create a TanzuMysql Instance](create-delete-mysql.html#create-instance) in
-_Creating and Deleting a TanzuMySQL Instance_.
+This topic is a property reference table for the MySQL resource.
+Refer to this table when you are creating the YAML file for a MySQL instance.
+For more information, see [Create a Mysql Instance](create-delete-mysql.html#create-instance) in
+_Creating and Deleting a MySQL Instance_.
 
-The table below explains the properties that you can set in your TanzuMySQL resource.
+The table below explains the properties that you can set in your MySQL resource.
 
 <table style="width:1000px" class="nice">
 <col width="15%">
@@ -31,7 +31,7 @@ The table below explains the properties that you can set in your TanzuMySQL reso
   <td><code>metadata.name</code></td>
   <td>String</td>
   <td><em>n/a</em></td>
-  <td>The name of your TanzuMySQL instance:<br><br>
+  <td>The name of your MySQL instance:<br><br>
       <ul>
          <li>Must be unique within a namespace</li>
          <li>Cannot be updated</li>
@@ -61,7 +61,7 @@ The table below explains the properties that you can set in your TanzuMySQL reso
   <td>String</td>
   <td><em>n/a</em></td>
   <td>Refers to an existing Kubernetes docker-registry secret that can access the
-    registry that contains the TanzuMySQL image.</td>
+    registry that contains the MySQL image.</td>
   <td><code>tanzu-mysql-image-registry</code></td>
   <td>Yes</td>
 </tr>
