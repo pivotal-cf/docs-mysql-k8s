@@ -22,29 +22,29 @@ The diagram below shows the architecture of <%= vars.product_short %>:
 <%= vars.product_short %> provides extensions to the Kubernetes API through custom resources.
 The product provides five separate custom resources:
 
-+ [TanzuMySQL](#mysql): A managed MySQL instance
-+ [TanzuMySQLBackupLocation](#mysqlbackuplocation): Defines an S3 storage bucket for backups
-+ [TanzuMySQLBackup](#mysqlbackup): Requests for a backup
-+ [TanzuMySQLBackupSchedule](#mysqlbackupschedule): Defines a backup schedule
-+ [TanzuMySQLRestore](#mysqlrestore): Requests to restore data
++ [MySQL](#mysql): A managed MySQL instance
++ [MySQLBackupLocation](#mysqlbackuplocation): Defines an S3 storage bucket for backups
++ [MySQLBackup](#mysqlbackup): Requests for a backup
++ [MySQLBackupSchedule](#mysqlbackupschedule): Defines a backup schedule
++ [MySQLRestore](#mysqlrestore): Requests to restore data
 
-###<a id="mysql"></a> TanzuMySQL
+###<a id="mysql"></a> MySQL
 
 Applying this resource causes the Kubernetes Operator to create a StatefulSet with a single Pod
 with two containers.
 One container runs the MySQL database software, and the other runs components to support backups.
 
-The TanzuMySQL Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
+The MySQL Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
 
-When a TanzuMySQL instance is created, the Tanzu MySQL Operator automatically creates a Kubernetes service
-with a service type of `ClusterIP` which routes connections to the TanzuMySQL Pod.
+When a MySQL instance is created, the Tanzu MySQL Operator automatically creates a Kubernetes service
+with a service type of `ClusterIP` which routes connections to the MySQL Pod.
 
   ```
   ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQL
+  apiVersion: sql.tanzu.vmware.com/v1alpha1
+  kind: MySQL
   metadata:
-    name: tanzumysql-sample
+    name: mysql-sample
   spec:
     resources:
       mysql:
@@ -55,37 +55,37 @@ with a service type of `ClusterIP` which routes connections to the TanzuMySQL Po
   ```
 
 After applying this resource, the Operator creates
-the low-level Kubernetes resources to run this TanzuMySQL instance.
+the low-level Kubernetes resources to run this MySQL instance.
 
 You can see the status of the instance by running:
 
 ```
-kubectl get tanzumysqls.mysql.tanzu.vmware.com
+kubectl get mysqls.sql.tanzu.vmware.com
 ```
 
 Initially, this instance is in a pending state:
 
 <pre class="terminal">
-$ kubectl get tanzumysqls.mysql.tanzu.vmware.com
-NAME                READY   STATUS    AGE
-tanzumysql-sample           Pending   2s
+$ kubectl get mysqls.sql.tanzu.vmware.com
+NAME           READY   STATUS    AGE
+mysql-sample           Pending   2s
 </pre>
 
 Later, the instance transitions to a running state:
 
 <pre class="terminal">
-$ kubectl get tanzumysqls.mysql.tanzu.vmware.com
-NAME                READY   STATUS    AGE
-tanzumysql-sample   true    Running   27s
+$ kubectl get mysqls.sql.tanzu.vmware.com
+NAME           READY   STATUS    AGE
+mysql-sample   true    Running   27s
 </pre>
 
-### <a id="mysqlbackuplocation"></a> TanzuMySQLBackupLocation
+### <a id="mysqlbackuplocation"></a> MySQLBackupLocation
 
 This resource describes metadata and credentials for storing backups in an S3-compatible object store.
 
-TanzuMySQLBackup resources reference this backup location to know where to save backup artifacts.
-The Operator creates or maintains a TanzuMySQLBackup resource for every artifact found in the backup location.
-Consequently, creating a TanzuMySQLBackupLocation that contains existing artifacts generates new, corresponding TanzuMySQLBackup resources.
+MySQLBackup resources reference this backup location to know where to save backup artifacts.
+The Operator creates or maintains a MySQLBackup resource for every artifact found in the backup location.
+Consequently, creating a MySQLBackupLocation that contains existing artifacts generates new, corresponding MySQLBackup resources.
 
   ```
   ---
@@ -98,8 +98,8 @@ Consequently, creating a TanzuMySQLBackupLocation that contains existing artifac
     accessKeyId: "my-s3-access-key-id"
     secretAccessKey: "my-s3-secret-access-key"
   ---
-  apiVersion: mysql.tanzu.vmware.com/v1alpha1
-  kind: TanzuMySQLBackupLocation
+  apiVersion: sql.tanzu.vmware.com/v1alpha1
+  kind: MySQLBackupLocation
   metadata:
     name: backuplocation-sample
   spec:
@@ -117,99 +117,99 @@ Consequently, creating a TanzuMySQLBackupLocation that contains existing artifac
   ```
 
 Credentials for S3 are stored in a Kubernetes secret with the keys `accessKeyId`, `secretAccessKey`.
-TanzuMySQLBackupLocation resources do not currently have any associated status,
+MySQLBackupLocation resources do not currently have any associated status,
 but you can list them using kubectl.
 For example:
 
 <pre class='terminal'>
-$ kubectl get tanzumysqlbackuplocations.mysql.tanzu.vmware.com
+$ kubectl get mysqlbackuplocations.sql.tanzu.vmware.com
 NAME                    AGE
 backuplocation-sample   2m38s
 </pre>
 
-### <a id='mysqlbackup'></a> TanzuMySQLBackup
+### <a id='mysqlbackup'></a> MySQLBackup
 
 This resource triggers the instance to run the Percona XtraBackup utility and
 upload a backup artifact to the blobstore.
-Blobstore artifacts are represented as TanzuMySQLBackup resources for subsequent restore.
+Blobstore artifacts are represented as MySQLBackup resources for subsequent restore.
 The resource requests for a backup to be taken as soon as possible.
 For a resource that requests a scheduled backup,
-see [TanzuMySQLBackupSchedule](#mysqlbackupschedule) below.
+see [MySQLBackupSchedule](#mysqlbackupschedule) below.
 For example:
 
 ```
 ---
-apiVersion: mysql.tanzu.vmware.com/v1alpha1
-kind: TanzuMySQLBackup
+apiVersion: sql.tanzu.vmware.com/v1alpha1
+kind: MySQLBackup
 metadata:
   name: backup-sample
 spec:
   location:
     name: backuplocation-sample
   cluster:
-    name: tanzumysql-sample
+    name: mysql-sample
 ```
 
 You can see the status of the backup using kubectl.
 For example:
 
 <pre class='terminal'>
-$ kubectl get tanzumysqlbackups.mysql.tanzu.vmware.com
+$ kubectl get mysqlbackups.sql.tanzu.vmware.com
 NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
 backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.279522Z   2020-12-07T15:52:16.041156Z   8s
 </pre>
 
-###<a id="mysqlbackupschedule"></a> TanzuMySQLBackupSchedule
+###<a id="mysqlbackupschedule"></a> MySQLBackupSchedule
 
-This resource defines a schedule to automatically create TanzuMySQLBackup resources.
+This resource defines a schedule to automatically create MySQLBackup resources.
 For example:
 
 ```
 ---
-apiVersion: mysql.tanzu.vmware.com/v1alpha1
-kind: TanzuMySQLBackupSchedule
+apiVersion: sql.tanzu.vmware.com/v1alpha1
+kind: MySQLBackupSchedule
 metadata:
-  name: tanzumysqlbackupschedule-sample
+  name: mysqlbackupschedule-sample
 spec:
   backupTemplate:
     spec:
       location:
         name: backuplocation-sample
       cluster:
-        name: tanzumysql-sample
+        name: mysql-sample
   schedule: "@daily"
 ```
 
-TanzuMySQLBackupSchedule resources do not currently have any associated status,
+MySQLBackupSchedule resources do not currently have any associated status,
 but you can list them using kubectl.
 For example:
 
 <pre class='terminal'>
-$ kubectl get tanzumysqlbackupschedules.mysql.tanzu.vmware.com
-NAME                              AGE
-tanzumysqlbackupschedule-sample   8s
+$ kubectl get mysqlbackupschedules.sql.tanzu.vmware.com
+NAME                         AGE
+mysqlbackupschedule-sample   8s
 </pre>
 
-###<a id="mysqlrestore"></a> TanzuMySQLRestore
+###<a id="mysqlrestore"></a> MySQLRestore
 
-This resource instructs the Operator to create a new PVC and a new TanzuMySQL instance
-from an existing TanzuMySQLBackup resource.
-The backup artifact for the TanzuMySQLBackup resource is loaded into the new PVC
+This resource instructs the Operator to create a new PVC and a new MySQL instance
+from an existing MySQLBackup resource.
+The backup artifact for the MySQLBackup resource is loaded into the new PVC
 before the MySQL database is started.
 For example:
 
 ```
 ---
-apiVersion: mysql.tanzu.vmware.com/v1alpha1
-kind: TanzuMySQLRestore
+apiVersion: sql.tanzu.vmware.com/v1alpha1
+kind: MySQLRestore
 metadata:
-  name: tanzumysqlrestore-sample
+  name: mysqlrestore-sample
 spec:
-  tanzuMysqlBackup:
+  mysqlBackup:
     name: backup-sample
-  tanzuMysqlTemplate:
+  mysqlTemplate:
     metadata:
-      name: tanzumysql-sample
+      name: mysql-sample
     spec:
       storageSize: 1Gi
       imagePullSecret: tanzu-mysql-image-registry
@@ -219,28 +219,28 @@ You can see the status of the restore using kubectl.
 For example:
 
 <pre class='terminal'>
-$ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
-NAME                       STATUS    TIME STARTED                  TIME COMPLETED   AGE
-tanzumysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
+$ kubectl get mysqlrestores.sql.tanzu.vmware.com
+NAME                  STATUS    TIME STARTED                  TIME COMPLETED   AGE
+mysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
 </pre>
 
-The restore retrieves and unpacks the backup artifact and creates the TanzuMySQL instance.
+The restore retrieves and unpacks the backup artifact and creates the MySQL instance.
 The restore time is proportional to the size of the backup artifact.
 For example:
 
 <pre class='terminal'>
-$ kubectl get tanzumysqlrestores.mysql.tanzu.vmware.com
-NAME                       STATUS      TIME STARTED                  TIME COMPLETED                AGE
-tanzumysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T15:56:41.765479Z   20s
+$ kubectl get mysqlrestores.sql.tanzu.vmware.com
+NAME                  STATUS      TIME STARTED                  TIME COMPLETED                AGE
+mysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T15:56:41.765479Z   20s
 </pre>
 
 
-At the end of the restore process, you have a TanzuMySQL instance with the `READY` state `true`
+At the end of the restore process, you have a MySQL instance with the `READY` state `true`
 and with `STATUS` `running`.
 For example:
 
 <pre class='terminal'>
-$ kubectl get tanzumysqls.mysql.tanzu.vmware.com
-NAME                READY   STATUS    AGE
-tanzumysql-sample   true    Running   30s
+$ kubectl get mysqls.sql.tanzu.vmware.com
+NAME           READY   STATUS    AGE
+mysql-sample   true    Running   30s
 </pre>

@@ -1,5 +1,5 @@
 ---
-title: Creating and Deleting a TanzuMySQL Instance
+title: Creating and Deleting a MySQL Instance
 owner: MySQL
 ---
 
@@ -7,11 +7,11 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic describes how you, as a developer, deploy and delete TanzuMySQL instances.
+This topic describes how you, as a developer, deploy and delete MySQL instances.
 
 ## <a id='prerequisites'></a> Prerequisites
 
-Before you can create or delete TanzuMySQL instances, you must have:
+Before you can create or delete MySQL instances, you must have:
 
 * **The Kubernetes Command Line Interface (kubectl) installed:**
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
@@ -26,11 +26,11 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
     If you do not have access to the registry credentials, contact your Kubernetes admin
     to have these set up for you in your namespace.
 
-## <a id='create-instance'></a>Create a TanzuMySQL Instance
+## <a id='create-instance'></a>Create a MySQL Instance
 
-To create a TanzuMySQL instance:
+To create a MySQL instance:
 
-1. Target the namespace where you want to create the TanzuMySQL instance:
+1. Target the namespace where you want to create the MySQL instance:
 
     ```
     kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
@@ -77,10 +77,10 @@ To create a TanzuMySQL instance:
 
 
 5. Edit the file.
-   For information about the properties that you can set for the TanzuMySQL resource,
-   see [Property Reference for the TanzuMySQL Resource](property-reference-tanzumysql.html).
+   For information about the properties that you can set for the MySQL resource,
+   see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
-6. Deploy a TanzuMySQL instance to Kubernetes by running:
+6. Deploy a MySQL instance to Kubernetes by running:
 
     ```
     kubectl -n DEVELOPMENT-NAMESPACE apply -f FILENAME
@@ -90,26 +90,26 @@ To create a TanzuMySQL instance:
     For example:
 
     <pre class="terminal">$ kubectl -n my-namespace apply -f testdb.yaml
-    tanzumysql.mysql.tanzu.vmware.com/tanzumysql-sample created
+    mysql.sql.tanzu.vmware.com/mysql-sample created
     </pre>
 
 
 7. Verify that the instance was created successfully by running:
 
     ```
-    kubectl -n DEVELOPMENT-NAMESPACE get tanzumysql INSTANCE-NAME
+    kubectl -n DEVELOPMENT-NAMESPACE get mysql INSTANCE-NAME
     ```
     Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in your file
     <br><br>
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace get tanzumysql tanzumysql-sample
-NAME                READY   STATUS    AGE
-tanzumysql-sample   true    Running   2m17s
+    <pre class="terminal">$ kubectl -n my-namespace get mysql mysql-sample
+NAME           READY   STATUS    AGE
+mysql-sample   true    Running   2m17s
     </pre>
 
 
-## <a id='delete-instance'></a>Delete a TanzuMySQL Instance
+## <a id='delete-instance'></a>Delete a MySQL Instance
 
 This section provides some conceptual information about persistent volume claims (PVCs)
 and deleting an instance.
@@ -117,21 +117,21 @@ It also provides the procedure for how to delete an instance.
 
 ###<a id="about-pvcs"></a> About PVCs
 
-When you create a TanzuMySQL instance, the Tanzu MySQL Operator also creates a persistent
+When you create a MySQL instance, the Tanzu MySQL Operator also creates a persistent
 volume claim (PVC).
 This PVC is attached to the instance and contains the data for the MySQL database.
 
-The PVC name contains the instance name and the TanzuMySQL Pod number.
+The PVC name contains the instance name and the MySQL Pod number.
 Currently only one Pod is allowed per instance, so the PVC name is of the form
 <code>mysql-data-INSTANCE-NAME-N</code>.
-For example, <code>mysql-data-tanzumysql-sample-0</code>
+For example, <code>mysql-data-mysql-sample-0</code>
 
 <p class="note">
    <strong>Note:</strong>
 Currently only one Pod is allowed per instance, so <code>N</code> is always <code>0</code>.
 </p>
 
-###<a id="about-deleting"></a> About Deleting a TanzuMySQL Instance
+###<a id="about-deleting"></a> About Deleting a MySQL Instance
 
 There are two steps to deleting an instance.
 The first step is to delete the instance itself, and the second step is to delete the PVC.
@@ -147,18 +147,18 @@ the old PVC automatically reattaches to the new instance and you have access to 
    <strong>Note:</strong> If you delete the Pod or the StatefulSet associated
    with the <%= vars.product_short %> resource,
    a <%= vars.product_short %> controller re-creates it for you.
-   To permanently delete the instance, you need to delete the <code>tanzumysql</code> resource,
+   To permanently delete the instance, you need to delete the MySQL resource,
    as described in step 1 below.
 </p>
 
 ###<a id="procedure"></a> Procedure
 
-To delete a TanzuMySQL instance:
+To delete a MySQL instance:
 
-1. Delete the TanzuMySQL instance by running:
+1. Delete the MySQL instance by running:
 
     ```
-    kubectl -n DEVELOPMENT-NAMESPACE delete tanzumysql INSTANCE-NAME
+    kubectl -n DEVELOPMENT-NAMESPACE delete mysql INSTANCE-NAME
     ```
 
     Where:
@@ -168,8 +168,8 @@ To delete a TanzuMySQL instance:
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace delete tanzumysql tanzumysql-sample
-    my-namespace "tanzumysql-sample" deleted
+    $ kubectl -n my-namespace delete mysql mysql-sample
+    my-namespace "mysql-sample" deleted
     </pre>
 
 2. (Optional) Delete the Persistent Volume Claim (PVC).
@@ -190,23 +190,23 @@ To delete a TanzuMySQL instance:
         <pre class="terminal">
        $ kubectl get pvc
 NAME                              STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-mysql-data-tanzumysql-sample-0    Bound    pvc-3262e841-c4aa-4aa4-b53a-68cd3078f806   1Gi        RWO            standard       7d1h
+mysql-data-mysql-sample-0         Bound    pvc-3262e841-c4aa-4aa4-b53a-68cd3078f806   1Gi        RWO            standard       7d1h
 mysql-data-another-sample-0       Bound    pvc-87c8a3a9-263b-46e6-8acb-ed474434fd24   1Gi        RWO            standard       6d21h</pre>
 
     2. Identify the names of the PVCs that correspond to the name of the instance you deleted above.
 
-    3. Delete the PVC associated with each TanzuMySQL Pod by running, for each Pod:
+    3. Delete the PVC associated with each MySQL Pod by running, for each Pod:
 
         ```
         kubectl delete pvc mysql-data-INSTANCE-NAME-N
         ```
 
         Where:
-        + `INSTANCE-NAME` is the name of the TanzuMySQL instance that you deleted above.
-        + `N` is the index of each Pod in the TanzuMySQL instance.
+        + `INSTANCE-NAME` is the name of the MySQL instance that you deleted above.
+        + `N` is the index of each Pod in the MySQL instance.
 
         For example:
 
         <pre class="terminal">
-       $ kubectl delete pvc mysql-data-tanzumysql-sample-0
-persistentvolumeclaim "mysql-data-tanzumysql-sample-0" deleted</pre>
+       $ kubectl delete pvc mysql-data-mysql-sample-0
+persistentvolumeclaim "mysql-data-mysql-sample-0" deleted</pre>
