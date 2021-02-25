@@ -34,7 +34,7 @@ Before you deploy the <%= vars.product_short %> Operator, you need:
   and [<%= vars.product_network %> Registry](https://registry.pivotal.io/).
   You can use the same credentials for both sites.
 
-* The Helm command-line tool installed. For more information, see [Installing
+* The Helm v3 command-line tool installed. For more information, see [Installing
   Helm](https://helm.sh/docs/intro/install/) from the Helm documentation.
 
 * Docker running and configured on your local computer, to access the Kubernetes cluster and Docker registry.
@@ -54,7 +54,7 @@ images, and deployment templates.
 
 To download the resources:
 
-0. Set the environment variable to enable OCI support in the Helm 3 client by running:
+0. Set the environment variable to enable OCI support in the Helm v3 client by running:
 
     ```
     export HELM_EXPERIMENTAL_OCI=1
