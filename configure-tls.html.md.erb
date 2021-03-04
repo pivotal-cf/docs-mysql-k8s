@@ -77,9 +77,7 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
     For example:
 
     <pre class="terminal">
-      $ kubectl -n my-namespace create secret tls mysql-tls-secret \
-        --cert=tls.crt \
-        --key=tls.key
+      $ kubectl -n my-namespace create secret tls mysql-tls-secret --cert=tls.crt --key=tls.key
     </pre>
 
 ## <a id='using-cert-manager'></a>Create TLS Secret with cert-manager

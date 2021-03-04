@@ -64,8 +64,7 @@ To retrieve connection parameters:
     For example:
 
     <pre class="terminal">
-    $ kubectl get secret mysql-sample-credentials \
-      -o jsonpath='{.data.rootPassword}' | base64 -D
+    $ kubectl get secret mysql-sample-credentials -o jsonpath='{.data.rootPassword}' | base64 -D
     examplepassword
     </pre>
 

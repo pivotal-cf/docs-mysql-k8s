@@ -93,8 +93,7 @@ To scale `storageSize`:
     + `NEW-REQUESTED-SIZE` is the increased volume size.
 
     For example:
-    <pre class="terminal">$ kubectl patch pvc mysql-data-mysql-sample-0 -p \
-    '{"spec": {"resources": {"requests": {"storage": "50Gi"}}}}'</pre>
+    <pre class="terminal">$ kubectl patch pvc mysql-data-mysql-sample-0 -p '{"spec": {"resources": {"requests": {"storage": "50Gi"}}}}'</pre>
 
 1. Do one of the following:
     * **If the storageClass supports online expansion:**
@@ -144,7 +143,7 @@ You can use one of these methods to update the configuration:
 
     ```
     kubectl patch mysql INSTANCE-NAME --type merge -p \
-    '{"spec": {"resources": {"mysql": MYSQL-RESOURCES, "sidecar": BACKUP-RESOURCES}}}' \
+    '{"spec": {"resources": {"mysql": MYSQL-RESOURCES, "sidecar": BACKUP-RESOURCES}}}'
     ```
 
     Where:
@@ -153,8 +152,7 @@ You can use one of these methods to update the configuration:
     + `BACKUP-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the sidecar container.
 
     For example:
-    <pre class="terminal">$ kubectl patch mysql mysql-sample --type merge -p \
-    '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "sidecar": {"limits": {"memory": "64Mi"}}}}}'
+    <pre class="terminal">$ kubectl patch mysql mysql-sample --type merge -p '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "sidecar": {"limits": {"memory": "64Mi"}}}}}'
     </pre>
 
 * If you manage MySQL resources with a set of configuration files in source control, you can also
