@@ -41,7 +41,7 @@ with a service type of `ClusterIP` which routes connections to the MySQL Pod.
 
   ```
   ---
-  apiVersion: sql.tanzu.vmware.com/v1alpha1
+  apiVersion: with.sql.tanzu.vmware.com/v1alpha1
   kind: MySQL
   metadata:
     name: mysql-sample
@@ -60,13 +60,13 @@ the low-level Kubernetes resources to run this MySQL instance.
 You can see the status of the instance by running:
 
 ```
-kubectl get mysqls.sql.tanzu.vmware.com
+kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 
 Initially, this instance is in a pending state:
 
 <pre class="terminal">
-$ kubectl get mysqls.sql.tanzu.vmware.com
+$ kubectl get mysqls.with.sql.tanzu.vmware.com
 NAME           READY   STATUS    AGE
 mysql-sample           Pending   2s
 </pre>
@@ -74,7 +74,7 @@ mysql-sample           Pending   2s
 Later, the instance transitions to a running state:
 
 <pre class="terminal">
-$ kubectl get mysqls.sql.tanzu.vmware.com
+$ kubectl get mysqls.with.sql.tanzu.vmware.com
 NAME           READY   STATUS    AGE
 mysql-sample   true    Running   27s
 </pre>
@@ -98,7 +98,7 @@ Consequently, creating a MySQLBackupLocation that contains existing artifacts ge
     accessKeyId: "my-s3-access-key-id"
     secretAccessKey: "my-s3-secret-access-key"
   ---
-  apiVersion: sql.tanzu.vmware.com/v1alpha1
+  apiVersion: with.sql.tanzu.vmware.com/v1alpha1
   kind: MySQLBackupLocation
   metadata:
     name: backuplocation-sample
@@ -122,7 +122,7 @@ but you can list them using kubectl.
 For example:
 
 <pre class='terminal'>
-$ kubectl get mysqlbackuplocations.sql.tanzu.vmware.com
+$ kubectl get mysqlbackuplocations.with.sql.tanzu.vmware.com
 NAME                    AGE
 backuplocation-sample   2m38s
 </pre>
@@ -139,7 +139,7 @@ For example:
 
 ```
 ---
-apiVersion: sql.tanzu.vmware.com/v1alpha1
+apiVersion: with.sql.tanzu.vmware.com/v1alpha1
 kind: MySQLBackup
 metadata:
   name: backup-sample
@@ -154,7 +154,7 @@ You can see the status of the backup using kubectl.
 For example:
 
 <pre class='terminal'>
-$ kubectl get mysqlbackups.sql.tanzu.vmware.com
+$ kubectl get mysqlbackups.with.sql.tanzu.vmware.com
 NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
 backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.279522Z   2020-12-07T15:52:16.041156Z   8s
 </pre>
@@ -166,7 +166,7 @@ For example:
 
 ```
 ---
-apiVersion: sql.tanzu.vmware.com/v1alpha1
+apiVersion: with.sql.tanzu.vmware.com/v1alpha1
 kind: MySQLBackupSchedule
 metadata:
   name: mysqlbackupschedule-sample
@@ -185,7 +185,7 @@ but you can list them using kubectl.
 For example:
 
 <pre class='terminal'>
-$ kubectl get mysqlbackupschedules.sql.tanzu.vmware.com
+$ kubectl get mysqlbackupschedules.with.sql.tanzu.vmware.com
 NAME                         AGE
 mysqlbackupschedule-sample   8s
 </pre>
@@ -200,7 +200,7 @@ For example:
 
 ```
 ---
-apiVersion: sql.tanzu.vmware.com/v1alpha1
+apiVersion: with.sql.tanzu.vmware.com/v1alpha1
 kind: MySQLRestore
 metadata:
   name: mysqlrestore-sample
@@ -219,7 +219,7 @@ You can see the status of the restore using kubectl.
 For example:
 
 <pre class='terminal'>
-$ kubectl get mysqlrestores.sql.tanzu.vmware.com
+$ kubectl get mysqlrestores.with.sql.tanzu.vmware.com
 NAME                  STATUS    TIME STARTED                  TIME COMPLETED   AGE
 mysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
 </pre>
@@ -229,7 +229,7 @@ The restore time is proportional to the size of the backup artifact.
 For example:
 
 <pre class='terminal'>
-$ kubectl get mysqlrestores.sql.tanzu.vmware.com
+$ kubectl get mysqlrestores.with.sql.tanzu.vmware.com
 NAME                  STATUS      TIME STARTED                  TIME COMPLETED                AGE
 mysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T15:56:41.765479Z   20s
 </pre>
@@ -240,7 +240,7 @@ and with `STATUS` `running`.
 For example:
 
 <pre class='terminal'>
-$ kubectl get mysqls.sql.tanzu.vmware.com
+$ kubectl get mysqls.with.sql.tanzu.vmware.com
 NAME           READY   STATUS    AGE
 mysql-sample   true    Running   30s
 </pre>
