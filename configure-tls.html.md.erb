@@ -124,19 +124,24 @@ For information about installing Helm, see the
     For how to specify the configuration of the Certificate resource,
    see the [cert-manager documentation](https://cert-manager.io/docs/usage/certificate/).
 
-   <p class="note">
-       <strong>Note:</strong> Some Issuer types (e.g. ACME) will not produce a TLS Secret that
-         includes the `ca.crt` key. Make sure to check the TLS secret created has the `ca.crt` key present.
-   </p>
+    <p class="note">
+       <strong>Note:</strong> Some Issuer types, for example ACME, does not produce a TLS Secret that
+         includes the <code>ca.crt</code> key.
+    </p>
 
-   Check for the `ca.crt` with this command:
-   ```
-   kubectl -n DEVELOPMENT-NAMESPACE get secret SECRET-NAME -o jsonpath="{.data['ca\.crt']}"
-   ```
-   Where:
-   + `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance.
-   + `SECRET-NAME` is the name you choose for the TLS Secret.
+1. Verify that the TLS secret created has the `ca.crt` key by running:
 
+    ```
+    kubectl -n DEVELOPMENT-NAMESPACE get secret SECRET-NAME -o jsonpath="{.data['ca\.crt']}"
+    ```
+
+    Where:
+    * `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance.
+    * `SECRET-NAME` is the name you choose for the TLS Secret.
+
+    For example:
+
+    <pre class="terminal">$kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre> 
 
 4.  Record the value of the `spec.secretName` that you chose when you created the Certificate resource.
 
@@ -148,7 +153,7 @@ For information about installing Helm, see the
     Where:
     +  `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance.
     +  `TLS-SECRET-NAME` is the value of the `spec.secretName` from the Certificate,
-        recorded in step 4 above.
+        recorded in step 5 above.
 
     For example:
 
