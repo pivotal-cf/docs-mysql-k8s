@@ -165,7 +165,7 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
     {
       "backupTemplate": {
         "spec": {
-          "cluster": {
+          "instance": {
             "name": "demo-db"
           },
           "location": {
@@ -468,7 +468,7 @@ for the backup artifacts in the external blobstore.
 To restore to a different namespace or Kubernetes cluster, you create a
 BackupLocation in the target namespace:
 
-1. Target the destination cluster or namespace.
+1. Target the destination Kubernetes cluster or namespace.
 
 1. Create a MySQLBackupLocation resource that contains the backup artifact to restore.
    For how to do this, see [Create a MySQLBackupLocation Resource](#create-backuplocation).
