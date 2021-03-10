@@ -49,4 +49,5 @@ We want to use placeholders consistently througout the doc.
 | INSTANCE-NAME | mysql-sample and another-sample |   is the value that you configured for metadata.name in the mysql.yaml deployment template | create-delete.html, accessing.html |
 | INSTANCE-NAME-N (use instead of POD-NAME)| mysql-sample-0 | "Where: + `INSTANCE-NAME` is the value that you configured for metadata.name in the mysql.yaml deployment template. + `N` is the index of the Pod in the MySQL instance." | create-delete-mysql.html, update-instance.html |
 | REGISTRY-SERVER-URL |https://registry.pivotal.io/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
+| TLS-SECRET-NAME |mysql-tls-secret |   | configure-tls.html|
 |

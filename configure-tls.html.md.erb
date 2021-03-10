@@ -11,7 +11,7 @@ This topic describes how to configure TLS for a MySQL instance.
 
 ## <a id='overview'></a>Overview
 
-<%= vars.product_short %> is configured to require an encrypted connection and
+<%= vars.product_short %> is configured to require an encrypted connection, and
 client connections cannot fall back to use an unencrypted connection. By default,
 the MySQL server uses a self-signed certificate. Clients can connect to the MySQL server,
 but they cannot verify the connection.
@@ -64,7 +64,7 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
 1. Create the TLS Secret by running:
 
     ```
-    kubectl -n DEVELOPMENT-NAMESPACE create secret generic SECRET-NAME \
+    kubectl -n DEVELOPMENT-NAMESPACE create secret generic TLS-SECRET-NAME \
       --type kubernetes.io/tls \
       --from-file=tls.crt=PATH-TO-CERTIFICATE \
       --from-file=tls.key=PATH-TO-PRIVATE-KEY \
@@ -72,7 +72,7 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
     ```
     Where:
     + `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance.
-    + `SECRET-NAME` is the name you choose for the TLS Secret.
+    + `TLS-SECRET-NAME` is the name you choose for the TLS Secret.
     + `PATH-TO-CERTIFICATE` is the file path to the certificate created in the step above.
     + `PATH-TO-PRIVATE-KEY` is the file path to the private key created in the step above.
     + `PATH-TO-CERTIFICATE-AUTHORITY` is the file path to the certificate authority that signed the certificate.
@@ -129,40 +129,24 @@ For information about installing Helm, see the
          includes the <code>ca.crt</code> key.
     </p>
 
-1. Verify that the TLS secret created has the `ca.crt` key by running:
+4. Verify that the TLS secret created has the `ca.crt` key by running:
 
     ```
-    kubectl -n DEVELOPMENT-NAMESPACE get secret SECRET-NAME -o jsonpath="{.data['ca\.crt']}"
+    kubectl -n DEVELOPMENT-NAMESPACE get secret TLS-SECRET-NAME -o jsonpath="{.data['ca\.crt']}"
     ```
 
     Where:
     * `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance.
-    * `SECRET-NAME` is the name you choose for the TLS Secret.
+    * `TLS-SECRET-NAME` is the name you choose for the TLS Secret.
 
     For example:
 
     <pre class="terminal">$kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre> 
 
-4.  Record the value of the `spec.secretName` that you chose when you created the Certificate resource.
+5.  Record the value of the `spec.secretName` that you chose when you created the Certificate resource.
 
-5.  Ensure the TLS Secret is provisioned by running:
-
-    ```
-    kubectl -n DEVELOPMENT-NAMESPACE get secrets TLS-SECRET-NAME
-    ```
-    Where:
-    +  `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance.
-    +  `TLS-SECRET-NAME` is the value of the `spec.secretName` from the Certificate,
-        recorded in step 5 above.
-
-    For example:
-
-    <pre class="terminal">
-      $ kubectl -n my-namespace get secrets mysql-tls-secret
-    </pre>
-    For information about troubleshooting certificate creation,
-    see the [cert-manager documentation](https://cert-manager.io/docs/faq/troubleshooting/).
-
+For information about troubleshooting certificate creation,
+see the [cert-manager documentation](https://cert-manager.io/docs/faq/troubleshooting/).
 
 ## <a id='use-tls'></a>Configure MySQL for TLS
 
