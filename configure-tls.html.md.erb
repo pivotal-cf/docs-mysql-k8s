@@ -112,6 +112,10 @@ For information about installing Helm, see the
    For information about the Issuer types,
    see the [cert-manager documentation](https://cert-manager.io/docs/configuration/).
 
+5.  Choose and record a name for the TLS secret name, for example, `mysql-tls-secret`.
+
+    Use this name as the `spec.secretName` when you create the Certificate resource below.
+
 3. Create a Certificate resource in the same namespace as the MySQL instance.
    Then, cert-manager creates the TLS Secret.
    <br><br>
@@ -129,6 +133,9 @@ For information about installing Helm, see the
          includes the <code>ca.crt</code> key.
     </p>
 
+    For information about troubleshooting certificate creation,
+    see the [cert-manager documentation](https://cert-manager.io/docs/faq/troubleshooting/).
+
 4. Verify that the TLS secret created has the `ca.crt` key by running:
 
     ```
@@ -143,10 +150,7 @@ For information about installing Helm, see the
 
     <pre class="terminal">$kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre> 
 
-5.  Record the value of the `spec.secretName` that you chose when you created the Certificate resource.
 
-For information about troubleshooting certificate creation,
-see the [cert-manager documentation](https://cert-manager.io/docs/faq/troubleshooting/).
 
 ## <a id='use-tls'></a>Configure MySQL for TLS
 
