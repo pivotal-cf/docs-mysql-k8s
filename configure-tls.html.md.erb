@@ -129,7 +129,7 @@ For information about installing Helm, see the
    see the [cert-manager documentation](https://cert-manager.io/docs/usage/certificate/).
 
     <p class="note">
-       <strong>Note:</strong> Some Issuer types, for example ACME, does not produce a TLS Secret that
+       <strong>Note:</strong> Some Issuer types, for example ACME, do not produce a TLS Secret that
          includes the <code>ca.crt</code> key.
     </p>
 
@@ -144,11 +144,11 @@ For information about installing Helm, see the
 
     Where:
     * `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance.
-    * `TLS-SECRET-NAME` is the name you choose for the TLS Secret.
+    * `TLS-SECRET-NAME` is the name you chose for the TLS Secret.
 
     For example:
 
-    <pre class="terminal">$kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre> 
+    <pre class="terminal">$ kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre> 
 
 
 
