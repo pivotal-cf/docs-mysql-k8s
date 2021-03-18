@@ -41,7 +41,7 @@ with a service type of `ClusterIP` which routes connections to the MySQL Pod.
 
   ```
   ---
-  apiVersion: with.sql.tanzu.vmware.com/v1alpha1
+  apiVersion: with.sql.tanzu.vmware.com/v1
   kind: MySQL
   metadata:
     name: mysql-sample
@@ -98,7 +98,7 @@ Consequently, creating a MySQLBackupLocation that contains existing artifacts ge
     accessKeyId: "my-s3-access-key-id"
     secretAccessKey: "my-s3-secret-access-key"
   ---
-  apiVersion: with.sql.tanzu.vmware.com/v1alpha1
+  apiVersion: with.sql.tanzu.vmware.com/v1
   kind: MySQLBackupLocation
   metadata:
     name: backuplocation-sample
@@ -138,7 +138,7 @@ For example:
 
 ```
 ---
-apiVersion: with.sql.tanzu.vmware.com/v1alpha1
+apiVersion: with.sql.tanzu.vmware.com/v1
 kind: MySQLBackup
 metadata:
   name: backup-sample
@@ -165,7 +165,7 @@ For example:
 
 ```
 ---
-apiVersion: with.sql.tanzu.vmware.com/v1alpha1
+apiVersion: with.sql.tanzu.vmware.com/v1
 kind: MySQLBackupSchedule
 metadata:
   name: mysqlbackupschedule-sample
@@ -199,7 +199,7 @@ For example:
 
 ```
 ---
-apiVersion: with.sql.tanzu.vmware.com/v1alpha1
+apiVersion: with.sql.tanzu.vmware.com/v1
 kind: MySQLRestore
 metadata:
   name: mysqlrestore-sample
