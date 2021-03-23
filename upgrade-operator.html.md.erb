@@ -3,9 +3,6 @@ title: Upgrading the Tanzu MySQL for Kubernetes Operator
 owner: MySQL
 ---
 
-<%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
-
-
 <strong><%= modified_date %></strong>
 
 This topic describes how operators upgrade the <%= vars.product_full %> Operator.
@@ -44,8 +41,8 @@ To upgrade the Operator using the Helm CLI:
 
     <pre class="terminal">
     $ helm -n tanzu-mysql-for-kubernetes-system ls
-    NAME                  NAMESPACE                          REVISION  UPDATED                               STATUS    CHART                       APP VERSION
-    tanzu-mysql-operator  tanzu-tanzu-mysql-for-kubernetes-system  1         2021-01-19 15:52:10.473565 -0700 MST  deployed  tanzu-mysql-operator-0.1.0  0.1.0
+    NAME                  NAMESPACE                                REVISION  UPDATED                               STATUS    CHART                       APP VERSION
+    tanzu-mysql-operator  tanzu-tanzu-mysql-for-kubernetes-system  1         2021-01-19 15:52:10.473565 -0700 MST  deployed  tanzu-mysql-operator-1.0.0  1.0.0
     </pre>
 
 1. Download the Helm chart to your current working directory on your local machine by running these commands:
@@ -87,6 +84,6 @@ The value of `REGISTRY-URL` has the following pattern:
 
     <pre class="terminal">$ helm -n tanzu-mysql-for-kubernetes-system history tanzu-mysql-operator
     REVISION    UPDATED                     STATUS        CHART                              APP VERSION   DESCRIPTION
-    1           Thu Jan 14 17:47:53 2021    superseded    tanzu-mysql-operator-0.1.0         0.1.0          Install complete
-    2           Thu Jan 14 18:09:05 2021    deployed      tanzu-mysql-operator-0.2.0         0.2.0          Upgrade complete
+    1           Thu Jan 14 17:47:53 2021    superseded    tanzu-mysql-operator-1.0.0         1.0.0          Install complete
+    2           Thu Jan 14 18:09:05 2021    deployed      tanzu-mysql-operator-1.0.1         1.0.1          Upgrade complete
     </pre>

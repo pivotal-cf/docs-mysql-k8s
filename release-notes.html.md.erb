@@ -3,8 +3,6 @@ title: Release Notes
 owner: MySQL
 ---
 
-<%= partial '../../mysql-k8s/partials/mysql-k8s/product-beta-warning' %>
-
 <strong><%= modified_date %></strong>
 
 ## <a id="1-0-0"></a> v1.0.0
@@ -12,17 +10,17 @@ owner: MySQL
 **Release Date: MMM DD, 2021**
 
 ### Features
-New features and changes in this release:
+New features in this release:
+* Create and update MySQL instances to configure CPU, memory, persistent volume storage sizes, TLS, and external access. See [Creating and Deleting an Instance](create-delete-mysql.html) and [Updating an Instance](update-instance.html) for more information.
 
-* **FEATURE TITLE:** FEATURE DESCRIPTION. For more information, see
+* Support for backing up the MySQL instances to an S3 compatible storage location. See [Backing Up and Restoring in Tanzu MySQL for Kubernetes](backup-restore.html).
 
-* **FEATURE TITLE:** FEATURE DESCRIPTION. For more information, see
-
+* Support for creating a High Availability cluster configuration with 3 members. See TBD.
 
 
 ### Known Issues
 
-There are no known issues for this release.
+* Upgrades from the Beta program releases to the <%= vars.product_full %> 1.0.0 release are not supported. Download and install the latest version.
 
 
 ### Compatibility
@@ -35,7 +33,7 @@ The following components are compatible with this release:
     <th>Version</th>
   </tr>
 
-  <tr><td>Percona Server</td><td>VERSION-NUMBER</td></tr>
-  <tr><td>Percona XtraBackup</td><td>VERSION-NUMBER</td></tr>
+  <tr><td>Percona Server</td><td>8.0.22-13</td></tr>
+  <tr><td>Percona XtraBackup</td><td>8.0.22-15</td></tr>
 
 </table>
