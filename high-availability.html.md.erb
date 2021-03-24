@@ -2,6 +2,7 @@
 title: Configuring A High Availability MySQL Instance
 ---
 
+<<<<<<< HEAD
 This topic describes how to enable high availability for <%=vars.product_name %>. High availability offers automatic failover, ensuring that any application requests operate continuously and without extended downtime.
 
 <%=vars.product_name %> uses InnoDB Cluster to provide a highly available <%=vars.product_name %> cluster on Kubernetes. For detailed information about InnoDB Cluster features, see the [MySQL InnoDB Cluster documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-introduction.html).
@@ -13,6 +14,19 @@ This topic describes how to enable high availability for <%=vars.product_name %>
 In the <%=vars.product_name %> high availability (HA) cluster configuration, the topology consists of five pods: one primary mysql, two secondary mysql failover pods, and two pods running mysql-router. InnoDB Cluster ensures that data is synchronously replicated from the primary to the secondary pods. If the primary pod becomes unresponsive, application requests are re-directed to a secondary pod, which gets promoted to primary. All application requests continue to that promoted primary, and a new secondary mysql pod is created to replace the failed pod.
 
 If a mysql-router pod fails, operations continue as normal; Kubernetes redirects traffic to the remaining mysql-router while the failed pod is recreated.
+=======
+This topic describes how to enable high availability for <%=vars.product_name %>. High availability offers automatic failover, ensuring that application requests operate continuously and without extended downtime.
+
+<%=vars.product_name %> uses InnoDB Cluster to provide a highly available MySQL instance on Kubernetes. For detailed information about InnoDB Cluster features, see the [MySQL InnoDB Cluster documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-introduction.html).
+
+<a href="images/postgres_ha.png" target="_blank">
+  ![MySQL HA cluster](images/MySQL4K8s_HA_Arch_Diagram.jpg)
+</a>
+
+In a <%=vars.product_name %> high availability (HA) instance, the topology consists of five pods: one primary mysql database pod, two secondary mysql database failover pods, and two mysql-router pods. InnoDB Cluster ensures that data is synchronously replicated from the primary to the secondary database pods. If the primary pod becomes unresponsive, application requests are re-directed to a secondary pod, which gets promoted to primary. All application requests continue to that promoted primary, and a new secondary mysql pod is created to replace the failed pod.
+
+If a mysql-router pod fails, Kubernetes directs traffic to the remaining mysql-router pod while recreating the failed pod in the background.
+>>>>>>> 6473823... Changes for high availability mysql instances
 
 ## <a id="ha_configuration"></a>Configuring High Availability
 
@@ -99,5 +113,25 @@ MEMBER_VERSION: 8.0.22
 MEMBER_VERSION: 8.0.22
 ```
 
-The above shows a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members.
+The above output shows a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members.
 
+## <a id="ha_considerations"></a>Other HA Considerations
+
+Other points to consider when working with MySQL high availabilty instances:
+
+- MySQL high availability instances are backed up and restored identically to single-node instances, as described in [Backing Up and Restoring](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/backup-restore.html).
+
+  - Backups from HA instances are created from the instance''s primary mysql pod.
+  - Backups from HA instances may be restored to a single-node MySQL or a high availability MySQL.
+  To specify a restore into a high availability MySQL, include the MySQL resource property
+  `spec.highAvailability.enabled: true` within the spec.instanceTemplate portion of the MySQLRestore resource (discussed in [Properties for the MySQLRestore Resource](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/property-reference-backup-restore.html#restore)).
+
+- You can convert an existing single-node MySQL instance to high availability. Edit the deployment''s original yaml file to add the `highAvailability.enabled: true` parameter shown above. Then re-deploy the yaml file via `kubectl apply -f modifiedDeploymentFile.yaml`.
+
+- You can not similarly scale down an existing high availability MySQL instance to a single-node instance. A deployment yaml with highAvailability.enabled set to `false` will error when applied to an existing HA instance.
+
+  To move from HA MySQL instance to a single-node MySQL instance, backup the HA instance and restore the backup to a newly-created single-node instance. See above and [Backing Up and Restoring in Tanzu MySQL for Kubernetes](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/backup-restore.html) for more information.
+
+- When creating a long-lived HA MySQL instance, you are advised to designate resource requests and limits as documented in the [Property Reference for the MySQL Resource](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/property-reference-mysql.html). Otherwise Kubernetes schedules pods onto node resources according to "best effort" policies, which can lead to premature pod eviction should resources become constrained.
+
+- MySQL does not support explicit node selection and anti-affinity for controlling pod assigment to kubernetes nodes. Kubernetes distributes pods per to its regular placement and scheduling policies including any resource requests.
