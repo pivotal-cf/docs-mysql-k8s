@@ -1,0 +1,103 @@
+---
+title: Configuring A High Availability MySQL Instance
+---
+
+This topic describes how to enable high availability for <%=vars.product_name %>. High availability offers automatic failover, ensuring that any application requests operate continuously and without extended downtime.
+
+<%=vars.product_name %> uses InnoDB Cluster to provide a highly available <%=vars.product_name %> cluster on Kubernetes. For detailed information about InnoDB Cluster features, see the [MySQL InnoDB Cluster documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-introduction.html).
+
+<a href="images/postgres_ha.png" target="_blank">
+  ![HA cluster](images/postgres_ha.png)
+</a>
+
+In the <%=vars.product_name %> high availability (HA) cluster configuration, the topology consists of five pods: one primary mysql, two secondary mysql failover pods, and two pods running mysql-router. InnoDB Cluster ensures that data is synchronously replicated from the primary to the secondary pods. If the primary pod becomes unresponsive, application requests are re-directed to a secondary pod, which gets promoted to primary. All application requests continue to that promoted primary, and a new secondary mysql pod is created to replace the failed pod.
+
+If a mysql-router pod fails, operations continue as normal; Kubernetes redirects traffic to the remaining mysql-router while the failed pod is recreated.
+
+## <a id="ha_configuration"></a>Configuring High Availability
+
+Ensure that you have completed the [Installing <%=vars.product_name %>](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/install-operator.html) procedure before proceeding. Also review [Creating and Deleting a MySQL Instance](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/create-delete-mysql.html).
+
+1. To enable <%=vars.product_name %> high availability, edit your copy of the instance `yaml` manifest file and alter the `highAvailability` field:
+
+    ```
+    ---
+    apiVersion: with.sql.tanzu.vmware.com/v1
+    kind: MySQL
+    metadata:
+      name: mysql-ha-sample
+    spec:
+      storageSize: 1Gi
+      imagePullSecret: tanzu-mysql-image-registry
+      highAvailability:
+        enabled: true
+    ```
+
+    `highAvailability` values can be `enabled: <true|false>`. If this field is left empty, the MySQL instance defaults to a non-HA single node configuration.
+
+2. Execute this command to deploy or redeploy the cluster with the new `highAvailability` setting:
+
+    ``` bash
+    $ kubectl apply -f mysql-ha.yaml
+    ```
+    where `mysql-ha.yaml`is the Kubernetes manifest created in Step 1.
+
+    The command output is similar to:
+
+    ``` bash
+    mysql.with.sql.tanzu.vmware.com/mysql-ha-sample created
+    ```
+    where _mysql-ha-sample_ is the MySQL instance `name` defined in the `yaml` manifest file in Step 1.
+
+    At this point, the MySQL operator deploys the five MySQL pods: three mysql engine pods, and two mysql-router pods directing traffic to the primary engine pod.
+
+## <a id="verify_configuration"></a>Verifying the HA Configuration
+
+To confirm your HA configuration is ready for access, use `kubectl get` to review the STATUS field and confirm that it shows "Running". Initially STATUS will show Created, until all artifacts are deployed. Use Ctr-C to escape the watch command.
+
+``` bash
+$ watch kubectl get mysql.with.sql.tanzu.vmware.com/mysql-ha-sample
+NAME              READY   STATUS    AGE
+mysql-ha-sample   true    Running   3m50s
+```
+
+You can now log into the primary pod mysql using `kubectl exec -it <pod-name> --container=mysql -- bash`. (Because MySQL pods run a sidecar container, you must specify `--container=mysql` to target the mysql engine container.) Execute mysql commands from your local shell by appending mysql commands to the bash command line via `bash -c "mysql ..."`. Here is a mysql command exposing the status of the cluster:
+
+You can now log onto mysql pods as described in [Accessing a Tanzu Mysql for Kubernetes Instance](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/accessing.html).
+You can run commands from your local shell via "kubectl exec"; here is a command exposing the
+status of the cluster:
+
+```bash
+$ kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash -c \
+    "mysql --user=root --password=\$(</etc/mysql/secrets/root-password) \
+    --execute 'SELECT * FROM performance_schema.replication_group_members\G'"
+
+mysql: [Warning] Using a password on the command line interface can be insecure.
+*************************** 1. row ***************************
+  CHANNEL_NAME: group_replication_applier
+     MEMBER_ID: 157baa2a-8c22-11eb-847c-0242ac110009
+   MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-headless.default.svc.cluster.local
+   MEMBER_PORT: 3306
+  MEMBER_STATE: ONLINE
+   MEMBER_ROLE: PRIMARY
+MEMBER_VERSION: 8.0.22
+*************************** 2. row ***************************
+  CHANNEL_NAME: group_replication_applier
+     MEMBER_ID: 281ad3c9-8c22-11eb-b3aa-0242ac11000a
+   MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-headless.default.svc.cluster.local
+   MEMBER_PORT: 3306
+  MEMBER_STATE: ONLINE
+   MEMBER_ROLE: SECONDARY
+MEMBER_VERSION: 8.0.22
+*************************** 3. row ***************************
+  CHANNEL_NAME: group_replication_applier
+     MEMBER_ID: 3c52bb9a-8c22-11eb-aade-0242ac11000b
+   MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-headless.default.svc.cluster.local
+   MEMBER_PORT: 3306
+  MEMBER_STATE: ONLINE
+   MEMBER_ROLE: SECONDARY
+MEMBER_VERSION: 8.0.22
+```
+
+The above shows a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members.
+
