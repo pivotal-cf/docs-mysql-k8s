@@ -11,19 +11,30 @@ owner: MySQL
 
 ### Features
 New features in this release:
-* Create and update MySQL instances to configure CPU, memory, persistent volume storage sizes, TLS, and external access. See [Creating and Deleting an Instance](create-delete-mysql.html) and [Updating an Instance](update-instance.html) for more information.
 
-* Support for backing up the MySQL instances to an S3 compatible storage location. See [Backing Up and Restoring in Tanzu MySQL for Kubernetes](backup-restore.html).
+* Create and update MySQL instances to configure CPU, memory, persistent volume storage sizes,
+  TLS, and external access.
+  For information, see [Creating and Deleting an Instance](create-delete-mysql.html) and 
+  [Updating an Instance](update-instance.html).
 
-* Support for creating a High Availability cluster configuration with 3 members. See TBD.
+* **Back up to S3-compatible storage:** Support for backing up MySQL instances to an S3-compatible storage location.
+  For information, see [Backing Up and Restoring in Tanzu MySQL for Kubernetes](backup-restore.html).
+
+* **High Availability:** Support for creating a High Availability cluster configuration with three members.
+  See TBD.
 
 
 ### Known Issues
 
-* Upgrades from the Beta program releases to the <%= vars.product_full %> 1.0.0 release are not supported. Download and install the latest version.
+This release has the following issue:
+
+* **Updgrades are not supported:** Upgrades from beta releases to the <%= vars.product_full %>
+  v1.0.0 release are not supported.
+  Download and install the latest version.
 
 
 ### Compatibility
+
 The following components are compatible with this release:
 
 <table border="1" class="nice">
@@ -33,7 +44,7 @@ The following components are compatible with this release:
     <th>Version</th>
   </tr>
 
-  <tr><td>Percona Server</td><td>8.0.22-13</td></tr>
-  <tr><td>Percona XtraBackup</td><td>8.0.22-15</td></tr>
+  <tr><td>Percona Server</td><td>8.0.22–13</td></tr>
+  <tr><td>Percona XtraBackup</td><td>8.0.22–15</td></tr>
 
 </table>
