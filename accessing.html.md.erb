@@ -22,10 +22,10 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
 To see all MySQL server settings configured:
 
-1. Log in to the Kubernetes namespace by running:
+1. Connect to a mysql container within your Kubernetes namespace by running:
 
     ```
-    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -- /bin/bash
+    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
     ```
     Where:
     * `YOUR-NAMESPACE` is the namespace you are logging in to.
@@ -34,7 +34,7 @@ To see all MySQL server settings configured:
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -- /bin/bash
+    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     </pre>
 
 1. Review the configuration files named `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
@@ -43,10 +43,10 @@ To see all MySQL server settings configured:
 
 To connect to the MySQL server:
 
-1. Log in to the Kubernetes namespace by running:
+1. Connect to a mysql container within your Kubernetes namespace by running:
 
     ```
-    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -- /bin/bash
+    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
     ```
     Where:
     * `YOUR-NAMESPACE` is the namespace you are logging in to.
@@ -55,7 +55,7 @@ To connect to the MySQL server:
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -- /bin/bash
+    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     </pre>
 
 1. Log in to the MySQL server by running:
