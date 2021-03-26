@@ -204,77 +204,15 @@ the MySQL client:
     $ kill %1
     </pre>
 
-## <a id='app-connect'></a> Connect an App to the MySQL Server
+## <a id='app-connect'></a> Accessing MySQL From Cluster-Hosted Applications
 
-<%= vars.product_short %> creates a Kubernetes Service that is used to connect apps to the database.
-The name of the Service is the same as the name of the <%= vars.product_short %> instance.
+Tanzu MySQL for Kubernetes creates a Kubernetes Service that is used to connect apps to the database.
+The name of the Service is the same as the name of the Tanzu MySQL for Kubernetes instance.
 
 If the app is deployed on the Kubernetes cluster, it can access the MySQL server using the DNS name
-of the MySQL service.
-This DNS name is only resolvable within the Kubernetes cluster.
+of the MySQL service. This DNS name is only resolvable within the Kubernetes cluster.
 
-To connect an app to the MySQL server:
-
-1. If the app is deployed outside the Kubernetes cluster, enable the MySQL service to be
-externally routable through a load balancer by following the
-[Connect to the MySQL Server with an External IP Address](#off-platform-access) procedure above.
-
-1. Log in to the MySQL server. See [Connect to the MySQL Server from within the Container](#server-login) above.
-
-1. Create a database and user for the app to use.
-
-1. Provide the DNS name of the <%= vars.product_short %> instance service to the app,
-  along with the username and password created for the app user.
-
-### <a id="example-bitnami-wordpress"></a> Example Deployment of Bitnami Wordpress with <%= vars.product_short %>
-
-You can configure the Bitnami Wordpress Helm chart to connect to an external database
-instead of deploying its own database. For more information about the Helm chart,
-see [charts/bitnami/wordpress](https://github.com/bitnami/charts/tree/master/bitnami/wordpress) in
-GitHub.
-
-See the following example of setting up <%= vars.product_short %> with a database and user that you
-can use with the Wordpress Helm chart:
-
-<pre class="terminal">
-$ kubectl exec -it mysql-sample-0 -c mysql -- bash
-mysql@mysql-sample-0:/$ mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
-mysql> CREATE DATABASE bitnami_wordpress;
-Query OK, 1 row affected (0.20 sec)
-
-mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED BY 'hunter2';
-Query OK, 0 rows affected (0.08 sec)
-
-mysql> GRANT ALL PRIVILEGES ON bitnami_wordpress.* TO 'bn_wordpress'@'%';
-Query OK, 0 rows affected (0.03 sec)
-
-mysql> FLUSH PRIVILEGES;
-Query OK, 0 rows affected (0.10 sec)
-</pre>
-
-Next, the DNS name of the MySQL service is passed in to the chart as the value of
-`externalDatabase.host`:
-
-<pre class="terminal">
-$ helm repo add bitnami https://charts.bitnami.com/bitnami
-"bitnami" has been added to your repositories<br>
-$ helm install wp bitnami/wordpress \
-    --set mariadb.enabled=false \
-    --set externalDatabase.host=mysql-sample.default.svc.cluster.local \
-    --set externalDatabase.password=hunter2
-NAME: wp
-LAST DEPLOYED: Tue Dec 8 14:32:08 2020
-NAMESPACE: default
-STATUS: deployed
-REVISION: 1
-TEST SUITE: None
-NOTES:
-** Please be patient while the chart is being deployed **
-...
-</pre>
-
-Retrieve the Wordpress user password by running:
-
-```
-kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
-```
+Apps should connect to the database using narrowly-priviged users created for the applications''
+specific requirements. The process of connecting a kubernetes application to the database via specific
+user and configuration info is covered in [Connecting an App to the MySQL
+Instance](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/bind-app.html).

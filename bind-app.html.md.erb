@@ -12,9 +12,8 @@ This topic explains how you, as a developer, connect an app to your MySQL instan
 After you have created a MySQL instance,
 the next task is to bind it to your app so that your app can access the database.
 
-You do this by obtaining the password for the root database user and the IP address for the
-MySQL instance and then adding these connection parameters to the app environment variables.
-
+You do this by creating a database and privileged mysql user for the application, and
+configuring your application with mysql user and connectivity information.
 
 ## <a id='prereq'></a>Prerequisites
 
@@ -23,16 +22,6 @@ Before you bind an app to a MySQL instance, you must have:
 * **The Kubernetes Command Line Interface (kubectl) installed:**
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-* **Permission to read Kubernetes secrets in your target namespace:**
-  For information about Roles and RoleBindings that your Kubernetes cluster admin needs to create
-  to grant permissions,
-  see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
-
-    <p class="note">
-        <strong>Note:</strong> To avoid Kubernetes permissions issues,
-       VMware recommends that developers have admin access to their target namespace.
-    </p>
-
 * **A MySQL instance running in the same Kubernetes cluster as the app:**
   This is required. The ServiceType is ClusterIP.
   However, instances can be in a different namespace from the app.<br>
@@ -40,58 +29,91 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
   For information about the ClusterIP ServiceType, see the
   [Kubernetes documentation](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types).
 
-## <a id='retrieve-creds'></a>Retrieve Connection Parameters for the MySQL Instance
+<p class="note">
+    <strong>Note:</strong> To avoid Kubernetes permissions issues,
+    VMware recommends that developers have admin access to their target namespace.
+</p>
 
-To connect the app to the database, you provide the app with:
+The below steps show creating a mysql database and privileged user, and deploying the
+Bitnami Wordpress Helm chart configured to use your database and user.
 
-*  The root username and password for the database
-*  The IP address for the MySQL instance
+## <a id='create-app-db'></a>Create a Database and Privileged MySQL User for the Application
 
-This procedure describes how to find these connection parameters.
+Use kubectl to exec into your mysql pod, connect to mysql as the database admin, and create
+the database and user.
 
-To retrieve connection parameters:
+For example, to connect to a single-node instance named "mysql-sample":
 
-1. Obtain the password for the root user of the database by running:
+<pre class="terminal">
+$ kubectl exec -it mysql-sample-0 -c mysql -- bash
+mysql@mysql-sample-0:/$
+</pre>
 
-    ```
-    kubectl get secret INSTANCE-NAME-credentials -o jsonpath='{.data.rootPassword}' | base64 -D
-    ```
+To connect to a high availability instance, you must identify which of
+its three pods is primary (writable). The below
+command returns the (kubernetes-internal) domain name
+of the desired primary node; the primary pod''s name is the first dot-separated component of this
+commands'' output:
 
-    Where `INSTANCE-NAME` is the name of the MySQL instance.
+<pre class="terminal">
+$ kubectl exec -it mysql-sample-0 -c mysql -- bash -c \
+      "mysql -B -s --user=root --password=\$(</etc/mysql/secrets/root-password) \
+      --execute 'SELECT MEMBER_HOST FROM performance_schema.replication_group_members \
+      WHERE (MEMBER_ROLE=\"PRIMARY\")'"
 
-    For example:
+mysql: [Warning] Using a password on the command line interface can be insecure.
+mysql-sample-1.mysql-sample-headless.default.svc.cluster.local
 
-    <pre class="terminal">
-    $ kubectl get secret mysql-sample-credentials -o jsonpath='{.data.rootPassword}' | base64 -D
-    examplepassword
-    </pre>
+$ kubectl exec -it mysql-sample-1 -c mysql -- bash
+mysql@mysql-sample-0:/$
+</pre>
 
-2. Record the password string, for example, `examplepassword`.
-   You need it to complete the [Connect your App to the MySQL Database](#connect-app) below.
+Once you are on the pod, create any mysql constructs your application requires,
+and the user privileged to access those constructs as needed by your application.
 
-3. Obtain the IP address of the MySQL instance by running:
+For example, here we create a database and user for our Bitnami Wordpress deployment:
 
-    ```
-    kubectl get service INSTANCE-NAME
-    ```
+<pre class="terminal">
+mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
+mysql> CREATE DATABASE bitnami_wordpress;
+Query OK, 1 row affected (0.20 sec)
 
-    For example:
+mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED BY 'hunter2';
+Query OK, 0 rows affected (0.08 sec)
 
-    <pre class="terminal">$ kubectl get service mysql-sample
+mysql> GRANT ALL PRIVILEGES ON bitnami_wordpress.* TO 'bn_wordpress'@'%';
+Query OK, 0 rows affected (0.03 sec)
 
-    → kubectl get service mysql-sample
-NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)              AGE
-mysql-sample   ClusterIP   10.110.144.49   <none>        3306/TCP,33060/TCP   5d22h
-    </pre>
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.10 sec)
+</pre>
 
-2. Record the value of the `CLUSTER-IP`, for example, `10.110.144.49`.
-   You need it to complete the [Connect your App to the MySQL Database](#connect-app) below.
+## <a id='config-app-db'></a>Configure Your Application with MySQL User and Connectivity Information
 
-## <a id='connect-app'></a>Connect your App to the MySQL Database
+Application configuration will be specific to the application being deployed. Here
+we show an example of a Bitnami Wordpress Helm chart, with (1) the user password (created
+above) and (2) the cluster-internal domain name for the mysql service (passed in as `externalDatabase.host`):
 
-To connect your app to the MySQL database on the MySQL instance:
+<pre class="terminal">
+$ helm repo add bitnami https://charts.bitnami.com/bitnami
+"bitnami" has been added to your repositories<br>
+$ helm install wp bitnami/wordpress \
+    --set mariadb.enabled=false \
+    --set externalDatabase.host=mysql-sample.default.svc.cluster.local \
+    --set externalDatabase.password=hunter2
+NAME: wp
+LAST DEPLOYED: Tue Dec 8 14:32:08 2020
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+** Please be patient while the chart is being deployed **
+...
+</pre>
 
-1. Manually configure the app environment variables with the connection parameters
-   that you recorded above.
+Retrieve the Wordpress user password by running:
 
-2. Apply these changes to establish a connection to the database.
+```
+kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
+```
