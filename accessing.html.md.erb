@@ -22,13 +22,13 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
 To see all MySQL server settings configured:
 
-1. Connect to a mysql container within your Kubernetes namespace by running:
+1. Connect to a MySQL container within your Kubernetes namespace by running:
 
     ```
-    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
+    kubectl -n DEVELOPMENT-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
     ```
     Where:
-    * `YOUR-NAMESPACE` is the namespace you are logging in to.
+    * `DEVELOPMENT-NAMESPACE` is the namespace you are logging in to.
     * `INSTANCE-NAME` is the name of the instance you are targeting.
 
     For example:
@@ -43,13 +43,13 @@ To see all MySQL server settings configured:
 
 To connect to the MySQL server:
 
-1. Connect to a mysql container within your Kubernetes namespace by running:
+1. Connect to a MySQL container within your Kubernetes namespace by running:
 
     ```
-    kubectl -n YOUR-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
+    kubectl -n DEVELOPMENT-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
     ```
     Where:
-    * `YOUR-NAMESPACE` is the namespace you are logging in to.
+    * `DEVELOPMENT-NAMESPACE` is the namespace you are logging in to.
     * `INSTANCE-NAME` is the name of the instance you are targeting.
 
     For example:
