@@ -6,30 +6,8 @@ This topic describes how to enable high availability for <%= vars.product_short 
 High availability offers automatic failover, ensuring that app requests operate continuously
 and without extended downtime.
 
-<%= vars.product_short %> uses InnoDB Cluster to provide a highly available MySQL instance on Kubernetes.
-For detailed information about InnoDB Cluster features,
-see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-introduction.html).
-
-<img src="images/mysql4k8s-ha-arch-diagram.jpg" alt="MySQL HA cluster: A diagram showing the high-availability architecture.">
-
-<a href="./images/mysql4k8s-ha-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
-
-In a <%=vars.product_short %> high-availability (HA) instance,
-the topology consists of five pods:
-
-+ One primary MySQL database pod
-+ Two secondary MySQL database failover pods
-+ Two mysql-router[MySQL router?] pods
-
-InnoDB Cluster ensures that data is synchronously replicated
-from the primary to the secondary database pods.
-If the primary pod becomes unresponsive, app requests are redirected to a secondary pod,
-which gets promoted to primary.
-All appication requests continue to that promoted primary,
-and a new secondary mysql pod is created to replace the failed pod.
-
-If a mysql-router pod fails, Kubernetes directs traffic to the remaining mysql-router pod
-while recreating the failed pod in the background.
+For more information about high availability, see [Architecture of a MySQL HA Instance](architecture.html#ha-diagram)
+in _Architecture_.
 
 ## <a id='prerequisites'></a> Prerequisites
 

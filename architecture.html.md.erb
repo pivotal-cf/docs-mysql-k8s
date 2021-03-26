@@ -7,7 +7,12 @@ owner: MySQL
 
 This topic provides some architectural information about <%= vars.product_full %> (<%= vars.product_short %>).
 
-## <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture Diagram
+## <a id='mysql4k8s-architecture'></a><%= vars.product_short %> Architecture
+
+
+[//]: # (Introduce the two kinds of architecture, compare and contrast, discuss how HA is typically only used in a product environment, the general differences in how to set them.)
+
+### <a id='single-node'></a> Architecture of a MySQL Instance, Single Database
 
 The diagram below shows the architecture of <%= vars.product_short %>:
 <img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the Operator deployment and app namespace">
@@ -15,6 +20,37 @@ The diagram below shows the architecture of <%= vars.product_short %>:
 <a href="./images/architecture-diagram.png" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 <%# It would be valuable to have some text describing this diagram. %>
 
+### <a id='ha-diagram'></a> Architecture of a MySQL HA Instance
+
+High availability offers automatic failover, ensuring that app requests operate continuously
+and without extended downtime.
+
+<%= vars.product_short %> uses InnoDB Cluster to provide a highly available MySQL instance on Kubernetes.
+For detailed information about InnoDB Cluster features,
+see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-introduction.html).
+
+The diagram below shows the architecture of a MySQL HA instance:
+
+<img src="images/mysql4k8s-ha-arch-diagram.jpg" alt="MySQL HA cluster: A diagram showing the high-availability architecture.">
+
+<a href="./images/mysql4k8s-ha-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
+
+In a <%=vars.product_short %> high-availability (HA) instance,
+the topology consists of five pods:
+
++ One primary MySQL database pod
++ Two secondary MySQL database failover pods
++ Two MySQL router pods
+
+InnoDB Cluster ensures that data is synchronously replicated
+from the primary to the secondary database pods.
+If the primary pod becomes unresponsive, app requests are redirected to a secondary pod,
+which gets promoted to primary.
+All appication requests continue to that promoted primary,
+and a new secondary mysql pod is created to replace the failed pod.
+
+If a mysql-router pod fails, Kubernetes directs traffic to the remaining mysql-router pod
+while recreating the failed pod in the background.
 ## <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
 
 <%= vars.product_short %> provides extensions to the Kubernetes API through custom resources.
