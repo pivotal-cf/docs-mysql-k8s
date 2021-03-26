@@ -6,7 +6,7 @@ This topic describes how to enable high availability for <%= vars.product_short 
 High availability offers automatic failover, ensuring that app requests operate continuously
 and without extended downtime.
 
-For more information about high availability, see [Architecture of a MySQL HA Instance](architecture.html#ha-diagram)
+For more information about high availability, see [Architecture of an HA MySQL Instance](architecture.html#ha-diagram)
 in _Architecture_.
 
 ## <a id='prerequisites'></a> Prerequisites
@@ -14,13 +14,13 @@ in _Architecture_.
 Before you can configure high availability, you must have:
 
 * **Installed the Kubernetes Operator:** For instructions,
-  see [Installing <%=vars.product_short %>](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/install-operator.html).
+  see [Installing <%=vars.product_short %>](install-operator.html).
 [//]: # (Is this not required for Creating and Deleting an Instance? Are those pre-reqs not required for these procedures? Check for consistency.)
 
 * **Be familiar with how to create and delete a MySQL instance:**
-  See [Creating and Deleting a MySQL Instance](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/create-delete-mysql.html).
+  See [Creating and Deleting a MySQL Instance](create-delete-mysql.html).
 
-## <a id="ha_configuration"></a>Configuring High Availability
+## <a id="ha_configuration"></a>Configure High Availability
 
 [//]: # (Write a stem sentence that describes what I'm doing in this procedure. What am I configuring for HA?)
 
@@ -58,7 +58,7 @@ Before you can configure high availability, you must have:
 
     At this point, the MySQL operator deploys the five MySQL pods: three mysql engine pods, and two mysql-router pods directing traffic to the primary engine pod.
 
-## <a id="verify_configuration"></a>Verifying the HA Configuration
+## <a id="verify_configuration"></a>Verify the HA Configuration
 
 To confirm your HA configuration is ready for access, use `kubectl get` to review the STATUS field and confirm that it shows "Running".
 Initially STATUS will show Created, until all artifacts are deployed.
@@ -73,7 +73,8 @@ mysql-ha-sample   true    Running   3m50s
 You can now log into the primary pod mysql using `kubectl exec -it <pod-name> --container=mysql -- bash`. (Because MySQL pods run a sidecar container, you must specify `--container=mysql` to target the mysql engine container.) Execute mysql commands from your local shell by appending mysql commands to the bash command line via `bash -c "mysql ..."`.
  Here is a mysql command exposing the status of the cluster:
 
-You can now log onto mysql pods as described in [Accessing a Tanzu Mysql for Kubernetes Instance](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/accessing.html).
+You can now log onto mysql pods.
+For instructions, see [Accessing a Tanzu Mysql for Kubernetes Instance](accessing.html).
 You can run commands from your local shell via "kubectl exec"; here is a command exposing the
 status of the cluster:
 
@@ -115,25 +116,29 @@ The above output shows a healthy cluster with a single member designated `PRIMAR
 
 Other points to consider when working with high-availability MySQL instances:
 
-- High-availability MySQL instances are backed up and restored identically to single-node instances, as described in [Backing Up and Restoring](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/backup-restore.html).
+- High-availability MySQL instances are backed up and restored identically to single-node instances.
+  For information, see [Backing Up and Restoring](backup-restore.html).
 
-  - Backups from HA instances are created from the instance''s primary mysql pod.
+  - Backups from HA instances are created from the primary mysql pod.
   - Backups from HA instances may be restored to a single-node MySQL or a high-availability MySQL.
   To specify a restore into a high-availability MySQL, include the MySQL resource property
-  `spec.highAvailability.enabled: true` within the spec.instanceTemplate portion of the MySQLRestore resource (discussed in [Properties for the MySQLRestore Resource](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/property-reference-backup-restore.html#restore)).
+  `spec.highAvailability.enabled: true` within the spec.instanceTemplate portion of the MySQLRestore resource.
+   For information about resource properties,
+   see [Properties for the MySQLRestore Resource](property-reference-backup-restore.html#restore).
 
 - You can convert an existing single-node MySQL instance to high availability.
-  Edit the deployment''s original yaml file to add the `highAvailability.enabled: true` parameter shown above.
+  Edit the original yaml file for the deployment to add the `highAvailability.enabled: true` parameter shown above.
   Then re-deploy the yaml file via `kubectl apply -f modifiedDeploymentFile.yaml`.
 
 - You can not similarly scale down an existing high-availability MySQL instance to a single-node instance. 
   A deployment yaml with highAvailability.enabled set to `false` will error when applied to an existing HA instance.
 
   To move from HA MySQL instance to a single-node MySQL instance, backup the HA instance and restore the backup to a newly-created single-node instance.
-  See above and [Backing Up and Restoring in Tanzu MySQL for Kubernetes](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/backup-restore.html) for more information.
+  For more information, see above and [Backing Up and Restoring in Tanzu MySQL for Kubernetes](backup-restore.html).
 
-- When creating a long-lived HA MySQL instance, you are advised to designate resource requests and limits as documented in the [Property Reference for the MySQL Resource](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/property-reference-mysql.html).
+- When creating a long-lived HA MySQL instance, designate resource requests and limits.
   Otherwise Kubernetes schedules pods onto node resources according to "best effort" policies, which can lead to premature pod eviction should resources become constrained.
+ For information about the properties used to set limits, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
 - MySQL does not support explicit node selection and anti-affinity for controlling pod assigment to kubernetes nodes.
   Kubernetes distributes pods per to its regular placement and scheduling policies including any resource requests.
