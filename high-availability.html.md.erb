@@ -113,9 +113,9 @@ The above output shows a healthy cluster with a single member designated `PRIMAR
 
 ## <a id="ha_considerations"></a>Other HA Considerations
 
-Other points to consider when working with MySQL high-availabilty instances:
+Other points to consider when working with high-availability MySQL instances:
 
-- MySQL high-availability instances are backed up and restored identically to single-node instances, as described in [Backing Up and Restoring](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/backup-restore.html).
+- High-availability MySQL instances are backed up and restored identically to single-node instances, as described in [Backing Up and Restoring](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/backup-restore.html).
 
   - Backups from HA instances are created from the instance''s primary mysql pod.
   - Backups from HA instances may be restored to a single-node MySQL or a high-availability MySQL.
