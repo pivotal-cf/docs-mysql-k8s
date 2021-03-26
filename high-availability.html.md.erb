@@ -10,10 +10,9 @@ and without extended downtime.
 For detailed information about InnoDB Cluster features,
 see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-introduction.html).
 
-<a href="images/postgres_ha.png" target="_blank">
-  ![MySQL HA cluster](images/mysql4k8s-ha-arch-diagram.jpg)
-</a>
-<a href="../images/mysql4k8s-ha-arch-diagram.jpg" target="_blank">View a larger version of this image.</a>
+<img src="images/mysql4k8s-ha-arch-diagram.jpg" alt="MySQL HA cluster: A diagram showing the high-availability architecture.">
+
+<a href="./images/mysql4k8s-ha-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 
 In a <%=vars.product_short %> high-availability (HA) instance,
 the topology consists of five pods:
@@ -24,7 +23,7 @@ the topology consists of five pods:
 
 InnoDB Cluster ensures that data is synchronously replicated
 from the primary to the secondary database pods.
-If the primary pod becomes unresponsive, app requests are re-directed to a secondary pod,
+If the primary pod becomes unresponsive, app requests are redirected to a secondary pod,
 which gets promoted to primary.
 All appication requests continue to that promoted primary,
 and a new secondary mysql pod is created to replace the failed pod.
@@ -32,10 +31,20 @@ and a new secondary mysql pod is created to replace the failed pod.
 If a mysql-router pod fails, Kubernetes directs traffic to the remaining mysql-router pod
 while recreating the failed pod in the background.
 
+## <a id='prerequisites'></a> Prerequisites
+
+Before you can configure high availability, you must have:
+
+* **Installed the Kubernetes Operator:** For instructions,
+  see [Installing <%=vars.product_short %>](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/install-operator.html).
+[//]: # (Is this not required for Creating and Deleting an Instance? Are those pre-reqs not required for these procedures? Check for consistency.)
+
+* **Be familiar with how to create and delete a MySQL instance:**
+  See [Creating and Deleting a MySQL Instance](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/create-delete-mysql.html).
+
 ## <a id="ha_configuration"></a>Configuring High Availability
 
-Ensure that you have completed the [Installing <%=vars.product_short %>](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/install-operator.html) procedure before proceeding.
-Also review [Creating and Deleting a MySQL Instance](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/create-delete-mysql.html).
+[//]: # (Write a stem sentence that describes what I'm doing in this procedure. What am I configuring for HA?)
 
 1. To enable <%=vars.product_short %> high availability, edit your copy of the instance `yaml` manifest file and alter the `highAvailability` field:
 
