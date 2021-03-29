@@ -17,7 +17,7 @@ Before you can configure high availability, you must have:
   see [Installing <%=vars.product_short %>](install-operator.html).
 [//]: # (Is this not required for Creating and Deleting an Instance? Are those pre-reqs not required for these procedures? Check for consistency.)
 
-* **Be familiar with how to create and delete a MySQL instance:**
+* **Know how to create and delete MySQL instances:**
   See [Creating and Deleting MySQL Instances](create-delete-mysql.html).
 
 ## <a id="ha_configuration"></a>Configure High Availability
@@ -56,7 +56,7 @@ Before you can configure high availability, you must have:
     ```
     where _mysql-ha-sample_ is the MySQL instance `name` defined in the `yaml` manifest file in Step 1.
 
-    At this point, the MySQL operator deploys the five MySQL pods: three mysql engine pods, and two mysql-router pods directing traffic to the primary engine pod.
+    The MySQL Operator deploys five MySQL pods: three MySQL engine pods and two mysql-router pods directing traffic to the primary engine pod.
 
 ## <a id="verify_configuration"></a>Verify the HA Configuration
 

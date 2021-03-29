@@ -39,8 +39,11 @@ Bitnami Wordpress Helm chart configured to use your database and user.
 
 ## <a id='create-app-db'></a>Create a Database and Privileged MySQL User for the Application
 
-Use kubectl to exec into your mysql pod, connect to mysql as the database admin, and create
-the database and user.
+1.  Use kubectl to exec into your mysql pod.
+
+2. Connect to mysql as the database admin.
+
+3. Create the database and user.
 
 For example, to connect to a single-node instance named "mysql-sample":
 
@@ -52,12 +55,13 @@ mysql@mysql-sample-0:/$
 To connect to a high-availability instance, you must identify which of
 its three pods is primary (writable). The below
 command returns the (kubernetes-internal) domain name
-of the desired primary node; the primary pod''s name is the first dot-separated component of this
-commands'' output:
+of the desired primary node; the primary pod name is the first dot-separated component of this
+command output:
 
 <pre class="terminal">
+
 $ kubectl exec -it mysql-sample-0 -c mysql -- bash -c \
-      "mysql -B -s --user=root --password=\$(</etc/mysql/secrets/root-password) \
+      "mysql -B -s --user=root --password=\$(/etc/mysql/secrets/root-password) \
       --execute 'SELECT MEMBER_HOST FROM performance_schema.replication_group_members \
       WHERE (MEMBER_ROLE=\"PRIMARY\")'"
 
@@ -66,27 +70,13 @@ mysql-sample-1.mysql-sample-headless.default.svc.cluster.local
 
 $ kubectl exec -it mysql-sample-1 -c mysql -- bash
 mysql@mysql-sample-0:/$
+
 </pre>
+
+[//]: # ( We deleted an angle bracket from before the /etc in the above command.)
 
 Once you are on the pod, create any mysql constructs your application requires,
 and the user privileged to access those constructs as needed by your application.
-
-For example, here we create a database and user for our Bitnami Wordpress deployment:
-
-<pre class="terminal">
-mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
-mysql> CREATE DATABASE bitnami_wordpress;
-Query OK, 1 row affected (0.20 sec)
-
-mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED BY 'hunter2';
-Query OK, 0 rows affected (0.08 sec)
-
-mysql> GRANT ALL PRIVILEGES ON bitnami_wordpress.* TO 'bn_wordpress'@'%';
-Query OK, 0 rows affected (0.03 sec)
-
-mysql> FLUSH PRIVILEGES;
-Query OK, 0 rows affected (0.10 sec)
-</pre>
 
 ## <a id='config-app-db'></a>Configure Your Application with MySQL User and Connectivity Information
 
