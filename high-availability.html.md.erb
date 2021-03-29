@@ -1,5 +1,5 @@
 ---
-title: Configuring a High-Availability MySQL Instance
+title: Configuring High-Availability MySQL Instances
 ---
 
 This topic describes how to enable high availability for <%= vars.product_short %>.
@@ -18,7 +18,7 @@ Before you can configure high availability, you must have:
 [//]: # (Is this not required for Creating and Deleting an Instance? Are those pre-reqs not required for these procedures? Check for consistency.)
 
 * **Be familiar with how to create and delete a MySQL instance:**
-  See [Creating and Deleting a MySQL Instance](create-delete-mysql.html).
+  See [Creating and Deleting MySQL Instances](create-delete-mysql.html).
 
 ## <a id="ha_configuration"></a>Configure High Availability
 
@@ -117,7 +117,7 @@ The above output shows a healthy cluster with a single member designated `PRIMAR
 Other points to consider when working with high-availability MySQL instances:
 
 - High-availability MySQL instances are backed up and restored identically to single-node instances.
-  For information, see [Backing Up and Restoring](backup-restore.html).
+  For information, see [Backing Up and Restoring MySQL Instances](backup-restore.html).
 
   - Backups from HA instances are created from the primary mysql pod.
   - Backups from HA instances may be restored to a single-node MySQL or a high-availability MySQL.
@@ -134,7 +134,7 @@ Other points to consider when working with high-availability MySQL instances:
   A deployment yaml with highAvailability.enabled set to `false` will error when applied to an existing HA instance.
 
   To move from HA MySQL instance to a single-node MySQL instance, backup the HA instance and restore the backup to a newly-created single-node instance.
-  For more information, see above and [Backing Up and Restoring in Tanzu MySQL for Kubernetes](backup-restore.html).
+  For more information, see above and [Backing Up and Restoring MySQL Instances](backup-restore.html).
 
 - When creating a long-lived HA MySQL instance, designate resource requests and limits.
   Otherwise Kubernetes schedules pods onto node resources according to "best effort" policies, which can lead to premature pod eviction should resources become constrained.

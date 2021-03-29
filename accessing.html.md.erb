@@ -1,5 +1,5 @@
 ---
-title: Accessing a MySQL Instance
+title: Accessing MySQL Instances
 owner: MySQL
 ---
 <% current_page.data.title = "Accessing a " + vars.product_short + " Instance" %>
@@ -84,7 +84,7 @@ To connect to the MySQL server with an external IP address:
     For more information about how to create the <%= vars.product_short %> instance, see
     [Create a MySQL Instance](./create-delete-mysql.html#create-instance).
     For more information about how to update the <%= vars.product_short %> instance or change the ServiceType,
-    see [Updating a MySQL Instance](./update-instance.html).
+    see [Updating MySQL Instances](./update-instance.html).
 
     <p class="note">
       <strong>Note:</strong> You must do this before you can connect to a
@@ -214,5 +214,5 @@ of the MySQL service. This DNS name is only resolvable within the Kubernetes clu
 
 Apps should connect to the database using narrowly-priviged users created for the applications''
 specific requirements. The process of connecting a kubernetes application to the database via specific
-user and configuration info is covered in [Connecting an App to the MySQL
-Instance](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/bind-app.html).
+user and configuration info is covered in [Connecting Apps to MySQL
+Instances](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/bind-app.html).
