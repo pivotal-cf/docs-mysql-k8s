@@ -56,7 +56,8 @@ Before you can configure high availability, you must have:
     ```
     where _mysql-ha-sample_ is the MySQL instance `name` defined in the `yaml` manifest file in Step 1.
 
-    The MySQL Operator deploys five MySQL pods: three MySQL engine pods and two mysql-router pods directing traffic to the primary engine pod.
+    At this point, the MySQL operator deploys the five MySQL pods: three mysql engine pods, and two proxy pods directing traffic to the primary engine pod.
+
 
 ## <a id="verify_configuration"></a>Verify the HA Configuration
 

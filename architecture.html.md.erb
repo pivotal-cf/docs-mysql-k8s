@@ -40,7 +40,7 @@ the topology consists of five pods:
 
 + One primary MySQL database pod
 + Two secondary MySQL database failover pods
-+ Two MySQL router pods
++ Two proxy pods
 
 InnoDB Cluster ensures that data is synchronously replicated
 from the primary to the secondary database pods.
@@ -49,7 +49,7 @@ which gets promoted to primary.
 All appication requests continue to that promoted primary,
 and a new secondary mysql pod is created to replace the failed pod.
 
-If a mysql-router pod fails, Kubernetes directs traffic to the remaining mysql-router pod
+If a proxy pod fails, Kubernetes directs traffic to the remaining proxy pod
 while recreating the failed pod in the background.
 ## <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
 
