@@ -11,16 +11,16 @@ This topic describes how to access a <%= vars.product_full %> instance.
 
 ## <a id='prereq'></a>Prerequisites
 
-Before you access a <%= vars.product_short %> instance, you must have:
+Before you access a MySQL instance, you must have:
 
 * The Kubernetes Command Line Interface (kubectl) installed.
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
 * An existing <%= vars.product_short %> instance
 
-## <a id='verify-settings'></a> (Optional) Verify MySQL Server Settings
+## <a id='verify-settings'></a> (Optional) Verify MySQL Instance Settings
 
-To see all MySQL server settings configured:
+To see all MySQL instance settings configured:
 
 1. Connect to a MySQL container within your Kubernetes namespace by running:
 
@@ -39,9 +39,13 @@ To see all MySQL server settings configured:
 
 1. Review the configuration files named `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
 
-## <a id='server-login'></a> Connect to the MySQL Server from within the Container
+## <a id='server-login'></a> Root Access to a MySQL Instance
 
-To connect to the MySQL server:
+Database administrative operations (such as creating users and databases) require connecting
+to MySQL as the root database user.  <%= vars.product_short %> only allows root account
+connections from within the container running the database; off-container root connections are not permitted.
+
+To connect to the MySQL instance as the MySQL root user:
 
 1. Connect to a MySQL container within your Kubernetes namespace by running:
 
@@ -58,7 +62,7 @@ To connect to the MySQL server:
     $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     </pre>
 
-1. Log in to the MySQL server by running:
+1. Log in to the MySQL instance by running:
 
     ```
     mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
@@ -70,21 +74,26 @@ To connect to the MySQL server:
     $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     </pre>
 
-## <a id='off-platform-access'></a> Connect to the MySQL Server with an External IP Address
+## <a id='off-platform-access'></a> Connect to the MySQL Instance with an External IP Address
 
 <p class="note">
   <strong>Note:</strong> Ensure the cloud provider supports external load balancers. For more information about the LoadBalancer ServiceTypes, see the
   <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">Kubernetes documentation</a>.
 </p>
 
-To connect to the MySQL server with an external IP address:
+To connect to the MySQL instance with an external IP address:
 
-1. Create or update the <%= vars.product_short %> instance using the <code>LoadBalancer</code> ServiceType.
+1. Create a database user which you will use for your external connection. See the section [Create a Database
+and Privileged MySQL User for the Application](bind-app.html#create-app-db) for how to create a
+user for your external connection.
+
+1. Create or update the <%= vars.product_short %> instance to set the `Spec.ServiceType` property to
+ <code>LoadBalancer</code>.
     <br><br>
     For more information about how to create the <%= vars.product_short %> instance, see
-    [Create a MySQL Instance](./create-delete-mysql.html#create-instance).
+    [Create a MySQL Instance](create-delete-mysql.html#create-instance).
     For more information about how to update the <%= vars.product_short %> instance or change the ServiceType,
-    see [Updating MySQL Instances](./update-instance.html).
+    see [Updating MySQL Instances](update-instance.html).
 
     <p class="note">
       <strong>Note:</strong> You must do this before you can connect to a
@@ -117,29 +126,33 @@ To connect to the MySQL server with an external IP address:
     For example:
 
     <pre class="terminal">
-    $ kubectl get service mysql-sample -o jsonpath={.status.loadBalancer.ingress[].ip}
+    $ kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
+    192.168.64.200
+    </pre>
+
+    This command retrieves either an IP address or a resolvable DNS hostname which may be used in
+    place of the IP address in the below examples. For example, an AWS load balancer returns a domain
+    name instead of an IP address:
+
+    <pre class="terminal">
+    $ kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
     a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     </pre>
 
-1. Get the root password. The root user password is available in the Kubernetes Secret named after
-   the MySQL instance suffixed with `-credentials`:
+1. Log in to the MySQL instance by running:
 
     ```
-    MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
+    mysql -u USERNAME -pUSER-PASSWORD -P 3306 -h EXTERNAL-IP
     ```
-    Where `INSTANCE-NAME` is the value that you configured for metadata.name for your MySQL resource.
-
-1. Log in to the MySQL server by running:
-
-    ```
-    mysql -uroot -p$MYSQL_ROOT_PASSWORD -P 3306 -h EXTERNAL-IP
-    ```
-    Where `EXTERNAL-IP` is the external IP address allocated for the service found in the above step.
+    Where
+    - `USERNAME` is the name of the user you created in Step 1 for use in this external connection.
+    - `USER-PASSWORD` is the password you assigned to that user.
+    - `EXTERNAL-IP` is the external IP address allocated for the service found in the above step.
 
     For example:
 
     <pre class="terminal">
-    $ mysql -uroot -p$MYSQL_ROOT_PASSWORD -P 3306 -h a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
+    $ mysql -u report_admin -phunter2 -P 3306 -h a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     </pre>
 
 ### <a id='remove-off-platform-access'></a> Turn Off External Access
@@ -154,7 +167,7 @@ To disable off-platform connections:
 </p>
 
 
-## <a id='port-forward'></a> Connect to the MySQL Server with the Kubernetes API Server
+## <a id='port-forward'></a> Connect to the MySQL Instance with the Kubernetes API Server
 
 <p class="note">
   <strong>Note:</strong> Connecting with <code>kubectl port-forward</code> proxies
@@ -162,7 +175,7 @@ To disable off-platform connections:
   its performance is slower than a direct connection.
 </p>
 
-To connect to the MySQL server with the Kubernetes API server:
+To connect to the MySQL instance with the Kubernetes API server:
 
 1. Get the root password. The root user password is available in the Kubernetes Secret named after
   the MySQL instance suffixed with `-credentials`.
@@ -209,7 +222,7 @@ the MySQL client:
 Tanzu MySQL for Kubernetes creates a Kubernetes Service that is used to connect apps to the database.
 The name of the Service is the same as the name of the Tanzu MySQL for Kubernetes instance.
 
-If the app is deployed on the Kubernetes cluster, it can access the MySQL server using the DNS name
+If the app is deployed on the Kubernetes cluster, it can access the MySQL instance using the DNS name
 of the MySQL service. This DNS name is only resolvable within the Kubernetes cluster.
 
 Apps should connect to the database using narrowly-priviged users created for the applications''
