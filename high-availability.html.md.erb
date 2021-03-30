@@ -2,23 +2,109 @@
 title: Configuring High-Availability MySQL Instances
 ---
 
-This topic describes how to enable high availability for <%= vars.product_short %>.
-High availability offers automatic failover, ensuring that app requests operate continuously
+This topic describes how to create high availability for <%= vars.product_full %>.
+
+
+##<a id='overview'></a>Overview
+
+High availability (HA) MySQL instances offer automatic failover, ensuring that app requests operate continuously
 and without extended downtime.
 
-For more information about high availability, see [Architecture of an HA MySQL Instance](architecture.html#ha-diagram)
+For more information about high availability including an architecture diagram,
+see [Architecture of an HA MySQL Instance](architecture.html#ha-diagram)
 in _Architecture_.
+
+###<a id='planning'></a>About Planning for Long-Lived HA MySQL Instances
+
+HA MySQL instances are often the topology of choice in production enviroments.
+Before creating an HA MySQL instance that you intend to rely on for a long time,
+consider the resource requests and limits carefully.
+
+If you do not designate resource requests and limits, then Kubernetes (or is it the MySQL Operator?)
+schedules pods onto node resources according to “best effort” policies.
+If resources become constrained, [SOMETHING] evicts pods prematurely.
+For information about the properties used to set limits (what about resource requests?),
+see [Property Reference for the MySQL Resource](property-reference-mysql.html).
+
+###<a id='node-selectionr'></a>About Explicit Node Selection and Anti-Affinity
+
+
+[//]: # ( What does this mean? As a developer when do I need to know it and how does it affect my actions?)
+
+MySQL does not support explicit node selection and anti-affinity for controlling pod assigment to kubernetes nodes.
+Kubernetes distributes pods per to its regular placement and scheduling policies including any resource requests.
+
+###<a id='scale-up'></a>Scale Up Is Easy, Scale Down Is Hard
+
+You can convert a single-node MySQL instance to an HA MySQL instance with a single command.
+See XXX.
+However, it is not straightforward to convert an HA MySQL instance to a single-node MySQL instance.
+This conversion requires that you take a backup of the database and copy it to a new single-node instance.
+See []() for details.
+
+### <a id='about-backups'></a> About Backing Up
+
+HA MySQL instances are backed up and restored the same way as single-node instances. 
+Backups from HA MySQL instances are created from the primary MySQL pod.
+Backups from HA MySQL instances can be restored either to single-node or HA MySQL instances.
+
+For information about backup and restore,
+see [Backing Up and Restoring MySQL Instances](backup-restore.html).
+
+
 
 ## <a id='prerequisites'></a> Prerequisites
 
 Before you can configure high availability, you must have:
 
-* **Installed the Kubernetes Operator:** For instructions,
-  see [Installing <%=vars.product_short %>](install-operator.html).
-[//]: # (Is this not required for Creating and Deleting an Instance? Are those pre-reqs not required for these procedures? Check for consistency.)
-
-* **Know how to create and delete MySQL instances:**
+<%= partial '/prerequisites' %>
+* **Know how to create and delete single-node MySQL instances:**
   See [Creating and Deleting MySQL Instances](create-delete-mysql.html).
+
+## <a id="create-ha"></a>Create an HA MySQL Instance
+
+Follow the steps below to create a new HA MySQL Instance
+
+1. Follow the steps in “Create a MySQL Instance” but at step 4…. 
+
+2.  Set config by editing the YAML file.
+
+3. Create the cluster.
+
+4. Verify all is well.
+
+## <a id="convert-to-ha"></a>Convert a Single-Node MySQL Instance to an HA MySQL Instancee
+
+You cannot easily change an HA MySQL instance back to a single-node one.
+Be sure that you want an HA instance before following this procedure.
+
+Follow the steps below to change a single-node MySQL instance into an HA MySQL Instance:
+
+1. 
+
+## <a id="inspect-instance"></a>Inspect an HA MySQL Instance
+
+You can do this for troubleshooting or ....
+
+1. 
+
+2. 
+
+
+
+##<a id='ha-to-sn'></a>Move an HA MySQL Instance to a Single-Node MySQL Instance
+
+1.
+
+2.
+
+
+## <a id='delete'></a>Delete an HA MySQL Instance
+
+Same as deleting a single node instance, just more pods have to be deleted.
+
+See [Delete a MySQL Instance](create-delete-mysql.html#delete-instance)
+in _Creating and Deleting MySQL Instances_.
 
 ## <a id="ha_configuration"></a>Configure High Availability
 
@@ -56,7 +142,9 @@ Before you can configure high availability, you must have:
     ```
     where _mysql-ha-sample_ is the MySQL instance `name` defined in the `yaml` manifest file in Step 1.
 
-    At this point, the MySQL operator deploys the five MySQL pods: three mysql engine pods, and two proxy pods directing traffic to the primary engine pod.
+    The MySQL Operator deploys five MySQL pods: three MySQL engine pods and two mysql-router pods directing traffic to the primary engine pod.
+
+3. Verify that the HA MySQL instance was created successfully by running:
 
 
 ## <a id="verify_configuration"></a>Verify the HA Configuration
@@ -88,7 +176,7 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 *************************** 1. row ***************************
   CHANNEL_NAME: group_replication_applier
      MEMBER_ID: 157baa2a-8c22-11eb-847c-0242ac110009
-   MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-members.default.svc.cluster.local
+   MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-headless.default.svc.cluster.local
    MEMBER_PORT: 3306
   MEMBER_STATE: ONLINE
    MEMBER_ROLE: PRIMARY
@@ -96,7 +184,7 @@ MEMBER_VERSION: 8.0.22
 *************************** 2. row ***************************
   CHANNEL_NAME: group_replication_applier
      MEMBER_ID: 281ad3c9-8c22-11eb-b3aa-0242ac11000a
-   MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-members.default.svc.cluster.local
+   MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-headless.default.svc.cluster.local
    MEMBER_PORT: 3306
   MEMBER_STATE: ONLINE
    MEMBER_ROLE: SECONDARY
@@ -104,7 +192,7 @@ MEMBER_VERSION: 8.0.22
 *************************** 3. row ***************************
   CHANNEL_NAME: group_replication_applier
      MEMBER_ID: 3c52bb9a-8c22-11eb-aade-0242ac11000b
-   MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-members.default.svc.cluster.local
+   MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-headless.default.svc.cluster.local
    MEMBER_PORT: 3306
   MEMBER_STATE: ONLINE
    MEMBER_ROLE: SECONDARY
