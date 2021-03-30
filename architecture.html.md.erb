@@ -31,7 +31,8 @@ see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-inno
 
 The diagram below shows the architecture of an HA MySQL instance:
 
-<img src="images/mysql4k8s-ha-arch-diagram.jpg" alt="HA MySQL cluster: A diagram showing the high-availability architecture.">
+<img src="images/mysql4k8s-ha-arch-diagram.jpg" alt="HA MySQL cluster: A diagram showing the high-availability architecture.
+This diagram is described in the text below.">
 
 <a href="./images/mysql4k8s-ha-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 
@@ -42,11 +43,13 @@ the topology consists of five pods:
 + Two secondary MySQL database failover pods
 + Two proxy pods
 
+The primary database is a read-write database.
+The two secondary databases are read-only.
 InnoDB Cluster ensures that data is synchronously replicated
 from the primary to the secondary database pods.
 If the primary pod becomes unresponsive, app requests are redirected to a secondary pod,
 which gets promoted to primary.
-All appication requests continue to that promoted primary,
+All app requests continue to that promoted primary,
 and a new secondary mysql pod is created to replace the failed pod.
 
 If a proxy pod fails, Kubernetes directs traffic to the remaining proxy pod
