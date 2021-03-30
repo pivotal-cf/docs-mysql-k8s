@@ -209,7 +209,7 @@ Confirm and configure the Tanzu MySQL Operator for your environment:
     <pre><code>---
     imagePullSecret: tanzu-mysql-image-registry
     <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.0.0
-    <br>tanzuMySQLImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.0.0
+    <br>instanceImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.0.0
     <br>resources:
       limits:
         cpu: 100m
@@ -244,7 +244,7 @@ Confirm and configure the Tanzu MySQL Operator for your environment:
             change this reference to pull the Operator image from your registry.</td>
         </tr>
         <tr>
-          <td><code>tanzuMySQLImage</code></td>
+          <td><code>instanceImage</code></td>
           <td>URI</td>
           <td>Reference to the <%= vars.product_short %> image.
             If you have uploaded the <%= vars.product_short %> image to a private registry,
