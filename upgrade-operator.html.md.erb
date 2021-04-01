@@ -61,12 +61,12 @@ The value of `REGISTRY-URL` has the following pattern:
     ```
     Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
 
-    <br>This downloads a directory named `tanzu-sql-for-mysql-operator/` into your current working directory
+    <br>This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory
 
 1. Go to where the new release has been downloaded and apply the new CRDs by running:
 
     ```
-    kubectl apply -f ./tanzu-sql-for-mysql-operator/crds/
+    kubectl apply -f ./tanzu-sql-with-mysql-operator/crds/
     ```
 
     <p class="note">
@@ -76,14 +76,14 @@ The value of `REGISTRY-URL` has the following pattern:
 1. Upgrade the Operator by running:
 
     ```
-    helm upgrade tanzu-mysql-operator ./tanzu-sql-for-mysql-operator
+    helm upgrade tanzu-mysql-operator ./tanzu-sql-with-mysql-operator
     ```
 
     When you see `deployed` in the `STATUS` column, the <%= vars.product_short %>
     Helm chart has upgraded:
 
-    <pre class="terminal">$ helm -n tanzu-mysql-for-kubernetes-system history tanzu-sql-for-mysql-operator
+    <pre class="terminal">$ helm -n tanzu-mysql-for-kubernetes-system history tanzu-sql-with-mysql-operator
     REVISION    UPDATED                     STATUS        CHART                                  APP VERSION    DESCRIPTION
-    1           Thu Jan 14 17:47:53 2021    superseded    tanzu-sql-for-mysql-operator-1.0.0     1.0.0          Install complete
-    2           Thu Jan 14 18:09:05 2021    deployed      tanzu-sql-for-mysql-operator-1.0.1     1.0.1          Upgrade complete
+    1           Thu Jan 14 17:47:53 2021    superseded    tanzu-sql-with-mysql-operator-1.0.0     1.0.0          Install complete
+    2           Thu Jan 14 18:09:05 2021    deployed      tanzu-sql-with-mysql-operator-1.0.1     1.0.1          Upgrade complete
     </pre>

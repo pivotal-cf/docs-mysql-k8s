@@ -89,7 +89,7 @@ $ helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-ope
 ref:     <span style="color: #77bf00;">registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0</span>
 digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
 size:    4.2 KiB
-name:    tanzu-sql-for-mysql-operator
+name:    tanzu-sql-with-mysql-operator
 version: 1.0.0
 Status: Downloaded newer chart for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0</pre>
   1. **To download `tanzu-mysql-instance`:** Click the artifact from <%= vars.product_network %> and paste the
@@ -171,7 +171,7 @@ other than registry.pivotal.io, log in to the docker registry:
     ```
     Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
 
-    <br>This downloads a directory named `tanzu-sql-for-mysql-operator/` into your current working directory that contains:
+    <br>This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory that contains:
     * The <%= vars.product_short %> Helm chart
     * Custom Resource Definitions (CRDs)
     * Role-Based Access Control (RBAC) definitions required to install the Operator with Helm
@@ -181,9 +181,9 @@ other than registry.pivotal.io, log in to the docker registry:
     <br>ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0
     digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
     size:    4.2 KiB
-    name:    tanzu-sql-for-mysql-operator
+    name:    tanzu-sql-with-mysql-operator
     version: 1.0.0
-    Exported chart to tanzu-sql-for-mysql-operator/
+    Exported chart to tanzu-sql-with-mysql-operator/
     </pre>
 
 ### <a id="create-overrides"></a> Review values.yaml and Create Overrides If Needed
@@ -277,11 +277,11 @@ To install the Operator using the Helm CLI:
     Create Overrides If Needed](#create-overrides) above,
     then run the following helm command:
     ```
-    helm install --values=/your/values-override.yaml tanzu-sql-for-mysql-operator ./tanzu-sql-for-mysql-operator/
+    helm install --values=/your/values-override.yaml tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
     ```<br><br>
   + If you did not create a `values-override.yaml`, then run the following helm command:
     ```
-    helm install tanzu-sql-for-mysql-operator ./tanzu-sql-for-mysql-operator/
+    helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
     ```
 
 1. See that your Operator has installed successfully by running:
