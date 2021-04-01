@@ -191,8 +191,8 @@ For example:
 
 <pre class='terminal'>
 $ kubectl get mysqlbackups.with.sql.tanzu.vmware.com
-NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
-backup-sample   Succeeded   2020-12-07T15:52:12.065092Z   2020-12-07T15:52:12.279522Z   2020-12-07T15:52:16.041156Z   8s
+NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLETED
+backup-sample   Succeeded   mysql-sample      2020-12-07T15:52:12Z   2020-12-07T15:52:16Z
 </pre>
 
 ###<a id="mysqlbackupschedule"></a> MySQLBackupSchedule
@@ -239,7 +239,7 @@ For example:
 apiVersion: with.sql.tanzu.vmware.com/v1
 kind: MySQLRestore
 metadata:
-  name: mysqlrestore-sample
+  name: restore-sample
 spec:
   backup:
     name: backup-sample
@@ -256,8 +256,8 @@ For example:
 
 <pre class='terminal'>
 $ kubectl get mysqlrestores.with.sql.tanzu.vmware.com
-NAME                  STATUS    TIME STARTED                  TIME COMPLETED   AGE
-mysqlrestore-sample   Running   2020-12-07T15:56:26.000000Z                    10s
+NAME             STATUS    SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
+restore-sample   Running   backup-sample   mysql-sample      2020-12-07T15:56:26Z
 </pre>
 
 The restore retrieves and unpacks the backup artifact and creates the MySQL instance.
@@ -266,8 +266,8 @@ For example:
 
 <pre class='terminal'>
 $ kubectl get mysqlrestores.with.sql.tanzu.vmware.com
-NAME                  STATUS      TIME STARTED                  TIME COMPLETED                AGE
-mysqlrestore-sample   Succeeded   2020-12-07T15:56:26.000000Z   2020-12-07T15:56:41.765479Z   20s
+NAME             STATUS      SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
+restore-sample   Succeeded   backup-sample   mysql-sample      2020-12-07T15:56:26Z   2020-12-07T15:56:41Z
 </pre>
 
 

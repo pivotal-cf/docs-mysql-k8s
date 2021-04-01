@@ -246,8 +246,8 @@ To take a backup:
 
     For example:
     <pre  class="terminal">$ kubectl get mysqlbackup backup-sample -n my-namespace
-NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
-backup-sample   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.148835Z   2020-12-01T21:49:30.609250Z   16m
+NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLETED
+backup-sample   Succeeded   mysql-sample      2020-12-01T21:49:26Z   2020-12-01T21:49:30Z
     </pre>
 
     For an explanation of what each column means,
@@ -275,8 +275,8 @@ To see a list of existing MySQLBackup resources:
     For example:
     <pre  class="terminal">
     $ kubectl get mysqlbackup
-    NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
-    backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   23h
+    NAME            STATUS   SOURCE INSTANCE   TIME STARTED   TIME COMPLETED
+    backup-sample   Failed   mysql-sample
     </pre>
 
 2. To understand the output, see the table below:
@@ -294,7 +294,6 @@ To see a list of existing MySQLBackup resources:
                         Allowed values are:
                         <ul>
                            <li>Pending: The backup has been received but not scheduled on a MySQL Pod.</li>
-                           <li>Scheduled: The backup has been scheduled on a selected MySQL Pod but has not started.</li>
                            <li>Running: The backup is being generated and streamed to the external blobstore.</li>
                            <li>Succeeded: The backup has completed successfully.</li>
                            <li>Failed: The backup has failed to complete.
@@ -303,10 +302,10 @@ To see a list of existing MySQLBackup resources:
                         </ul>
                    </td>
               </tr>
-             <tr>
-                   <td><code>TIME SCHEDULED</code></td>
-                   <td> The time at which the backup was scheduled on a selected MySQL Pod.</td>
-             </tr>
+              <tr>
+                    <td><code>SOURCE INSTANCE</code></td>
+                    <td> The MySQL instance the backup was taken from.</td>
+              </tr>
              <tr>
                    <td><code>TIME STARTED</code></td><td> The time that the backup process started.
              </tr>
@@ -314,10 +313,6 @@ To see a list of existing MySQLBackup resources:
                    <td><code>TIME COMPLETED</code></td>
                    <td> The time that the backup process finished.
                         If the backup fails, this value is empty.</td>
-             </tr>
-             <tr>
-                   <td><code>AGE</code></td>
-                   <td>The time since the backup was requested.</td>
              </tr>
     </table>
 
@@ -403,20 +398,20 @@ To restore from a backup:
     For example:
     <pre  class="terminal">
     $ kubectl apply -f testrestore.yaml -n my-namespace
-    mysqlrestore.with.sql.tanzu.vmware.com/mysqlrestore-sample created
+    mysqlrestore.with.sql.tanzu.vmware.com/restore-sample created
     </pre>
 
 5. Verify that a restore has been triggered and track the progress of your restore by running:
 
     ```
-    kubectl get mysqlrestore mysqlrestore-sample -n DEVELOPMENT-NAMESPACE
+    kubectl get mysqlrestore restore-sample -n DEVELOPMENT-NAMESPACE
     ```
 
     For example:
     <pre  class="terminal">
-    $ kubectl get mysqlrestore mysqlrestore-sample -n my-namespace
-    NAME                  STATUS      TIME STARTED                  TIME COMPLETED                AGE
-    mysqlrestore-sample   Succeeded   2020-12-01T21:52:30.000000Z   2020-12-01T21:53:09.163336Z   13m
+    $ kubectl get mysqlrestore restore-sample -n my-namespace
+    NAME             STATUS      SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
+    restore-sample   Succeeded   backup-sample   mysql-sample      2020-12-01T21:52:30Z   2020-12-01T21:53:09Z
    </pre>
 
 6. To understand the output, see the table below:
@@ -434,27 +429,31 @@ To restore from a backup:
                         <ul>
                            <li>Pending: The restore has been received but not yet scheduled
                                on a MySQL Pod.</li>
-                           <li>Scheduled: The restore has been scheduled but has not started.</li>
                            <li>Running: The restore is in progress.</li>
                            <li>Succeeded: The restore has completed successfully.</li>
                            <li>Failed: The restore failed.
                                To troubleshoot, see <a href="#troubleshoot">Troubleshoot
                                Backup and Restore</a> below.</li>
                         </ul>
-                   </td>
-              </tr>
-             <tr>
-                   <td><code>TIME STARTED</code></td><td> The time that the restore process started.
-             </tr>
-             <tr>
-                   <td><code>TIME COMPLETED</code></td>
-                   <td> The time that the restore process finished.
-                        If the restore fails, this value is empty.</td>
-             </tr>
-             <tr>
-                   <td><code>AGE</code></td>
-                   <td>The time since the restore was requested.</td>
-             </tr>
+                    </td>
+            </tr>
+            <tr>
+                    <td><code>SOURCE BACKUP</code>
+                    <td> The name of the backup being restored.
+            </tr>
+            <tr>
+                    <td><code>TARGET INSTANCE</code>
+                    <td> The name of the new MySQL instance to be restored with the backup contents.
+            </tr>
+            <tr>
+                    <td><code>TIME STARTED</code>
+                    <td> The time that the restore process started.
+            </tr>
+            <tr>
+                    <td><code>TIME COMPLETED</code>
+                    <td> The time that the restore process finished.
+                        If the restore fails, this value is empty.
+            </tr>
     </table>
 
 ###<a id="restore-to-different"></a> Restoring a Backup to a Different Namespace or Kubernetes Cluster
@@ -480,8 +479,8 @@ BackupLocation in the target namespace:
    For example:
    <pre class='terminal'>
    $ kubectl get mysqlbackup
-     NAME            STATUS      TIME SCHEDULED                TIME STARTED                  TIME COMPLETED                AGE
-     sample-backup   Succeeded   2020-12-01T21:49:26.138676Z   2020-12-01T21:49:26.148835Z   2020-12-01T21:49:30.609250Z   5d17h
+     NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLETED
+     sample-backup   Succeeded   mysql-sample      2020-12-01T21:49:26Z   2020-12-01T21:49:30Z
    </pre>
 
 1. Trigger a restore by following steps in [Restore from a Backup](#restore-from-backup).
@@ -504,8 +503,8 @@ To troubleshoot problems with backup and restore:
 
     <pre class="terminal">
     $ kubectl get mysqlbackup backup-sample
-    NAME            STATUS   TIME SCHEDULED                TIME STARTED   TIME COMPLETED   AGE
-    backup-sample   Failed   2020-12-09T18:28:23.339156Z                                   2m44s
+    NAME            STATUS   SOURCE INSTANCE   TIME STARTED   TIME COMPLETED
+    backup-sample   Failed   mysql-sample
    </pre>
 
 2. Diagnose the issue by inspecting the Kubernetes events for the resource, for example:
