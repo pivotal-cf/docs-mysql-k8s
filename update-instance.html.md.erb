@@ -141,16 +141,16 @@ You can use one of these methods to update the configuration:
 
     ```
     kubectl patch mysql INSTANCE-NAME --type merge -p \
-    '{"spec": {"resources": {"mysql": MYSQL-RESOURCES, "sidecar": BACKUP-RESOURCES}}}'
+    '{"spec": {"resources": {"mysql": MYSQL-RESOURCES, " mysqlSidecar": SIDECAR-RESOURCES}}}'
     ```
 
     Where:
     + `INSTANCE-NAME` is the value that you configured for metadata.name for your MySQL resource.
-    + `MYSQL-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the MySQL container.
-    + `BACKUP-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the sidecar container.
+    + `MYSQL-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the `mysql` container.
+    + `SIDECAR-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the `mysql-sidecar` container.
 
     For example:
-    <pre class="terminal">$ kubectl patch mysql mysql-sample --type merge -p '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "sidecar": {"limits": {"memory": "64Mi"}}}}}'
+    <pre class="terminal">$ kubectl patch mysql mysql-sample --type merge -p '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "mysqlSidecar": {"limits": {"memory": "64Mi"}}}}}'
     </pre>
 
 * If you manage MySQL resources with a set of configuration files in source control, you can also

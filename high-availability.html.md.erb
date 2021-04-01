@@ -142,7 +142,7 @@ in _Creating and Deleting MySQL Instances_.
     ```
     where _mysql-ha-sample_ is the MySQL instance `name` defined in the `yaml` manifest file in Step 1.
 
-    The MySQL Operator deploys five MySQL pods: three MySQL engine pods and two mysql-router pods directing traffic to the primary engine pod.
+    The MySQL Operator creates five pods: three MySQL pods and two proxy pods directing traffic to the primary MySQL pod.
 
 3. Verify that the HA MySQL instance was created successfully by running:
 
@@ -159,11 +159,11 @@ NAME              READY   STATUS    AGE
 mysql-ha-sample   true    Running   3m50s
 ```
 
-You can now log into the primary pod mysql using `kubectl exec -it <pod-name> --container=mysql -- bash`. (Because MySQL pods run a sidecar container, you must specify `--container=mysql` to target the mysql engine container.) Execute mysql commands from your local shell by appending mysql commands to the bash command line via `bash -c "mysql ..."`.
- Here is a mysql command exposing the status of the cluster:
-
-You can now log onto mysql pods.
+You can now connect to the primary pod mysql using `kubectl exec -it <pod-name> --container=mysql -- bash`.
+(Because MySQL pods run multiple containers, you must specify `--container=mysql` to target the mysql container.)
+Execute mysql commands from your local shell by appending mysql commands to the bash command line via `bash -c "mysql ..."`.
 For instructions, see [Accessing a Tanzu Mysql for Kubernetes Instance](accessing.html).
+
 You can run commands from your local shell via "kubectl exec"; here is a command exposing the
 status of the cluster:
 
