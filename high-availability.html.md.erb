@@ -20,10 +20,11 @@ HA MySQL instances are often used in production environments.
 Before creating an HA MySQL instance that you intend to rely on for a long time,
 carefully consider the resource requests and limits.
 
-If you do not designate resource requests and limits, then Kubernetes (or is it the MySQL Operator?)
+If you do not designate resource requests and limits, then Kubernetes
 schedules pods onto node resources according to “best effort” policies.
-If resources become constrained, [SOMETHING] evicts pods prematurely.
-For information about the properties used to set limits (what about resource requests?),
+If resources become constrained, your Pods running MySQL risk eviction
+as Kubernetes manages resources allocation among its Pods.
+For information about the properties used to set limits and requests,
 see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
 ###<a id='node-selectionr'></a>About Explicit Node Selection and Anti-Affinity
@@ -31,22 +32,24 @@ see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
 [//]: # ( What does this mean? As a developer when do I need to know it and how does it affect my actions?)
 
-MySQL does not support explicit node selection and anti-affinity for controlling pod assigment to kubernetes nodes.
-Kubernetes distributes pods per to its regular placement and scheduling policies including any resource requests.
+<%= vars.product_full %> does not support explicit node selection and anti-affinity for controlling Pod assignment
+to Kubernetes nodes.
+Kubernetes distributes Pods per to its regular placement and scheduling policies including any resource requests.
 
 ###<a id='scale-up'></a>Scale Up Is Easy, Scale Down Is Hard
 
 You can convert a single-node MySQL instance to an HA MySQL instance with a single command.
-See XXX.
+See [Convert a Single-Node MySQL Instance to an HA MySQL Instance](#convert-to-ha) below.
+
 However, it is not straightforward to convert an HA MySQL instance to a single-node MySQL instance.
 To move from an HA MySQL instance to a single-node instance,
-you must take a backup of the database and copy it to a new single-node instance.
-See [XXX]() for details.
+you must take a backup of the database and restore it to a new single-node instance.
+See [Move an HA MySQL Instance to a Single-Node MySQL Instance](#ha-to-sn) below.
 
 ### <a id='about-backups'></a> About Backing Up
 
 HA MySQL instances are backed up and restored the same way as single-node instances. 
-Backups from HA MySQL instances are created from the primary MySQL pod.
+Backups from HA MySQL instances are created from the primary MySQL Pod.
 Backups from HA MySQL instances can be restored either to single-node or HA MySQL instances.
 For information about backup and restore,
 see [Backing Up and Restoring MySQL Instances](backup-restore.html).
@@ -101,38 +104,36 @@ For HA MySQL instances, configure high availability to be true as described belo
 
 <p class="note">
    <strong>Note:</strong>
+Be sure that you want an HA instance before following this procedure.
 You cannot easily change an HA MySQL instance back to a single-node one.
 </p>
 
-Be sure that you want an HA instance before following this procedure.
+To change a single-node MySQL instance into an HA MySQL Instance:
 
-Follow the steps below to change a single-node MySQL instance into an HA MySQL Instance:
-
-1. 
+1.  See [Updating MySQL Instances](update-instance.html).
 
 ## <a id="inspect-instance"></a>Inspect an HA MySQL Instance
 
-After you have created your HA MySQL instance, you can learn more about it and
-confirm that all the Pods are running by inspecting it.
+After you have created your HA MySQL instance, you can inspect the instance to 
+confirm that all the Pods are running.
 
 This inspection procedure can be also be used for troubleshooting. 
 
 
-1. Determine the primary Pod. (how?)
-
-1. Connect to the primary Pod, by running: 
+1. Connect to a Pod, by running: 
 
     ```
     kubectl exec -it POD-NAME --container=mysql -- bash
     ```
-    Where is `POD-NAME` is the name of the primary pod identified in Step 1 above.
-    When the Pod is first created, the index for the Pod is `-0`.
+    Where is `POD-NAME` is the name of the primary Pod or one of the secondary Pods.
+    The Pod name is the instance name defined in the copy of the `mysql.yaml` file appended with an index, 0–2.
+    When the Pod is first created, the index for the primary Pod is `-0`.
 
     For example:
 
     <pre class="terminal">$ kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash</pre>
 
-2. On the primary Pod, log in to the MySQL database by running:
+2. On the Pod, log in to the MySQL database by running:
 
     ```
     mysql --user=USER --password=PASSWORD
@@ -195,18 +196,10 @@ and restore the backup to a single-node instance:
 1. Back up the HA MySQL instance.
    See [Back Up Tanzu SQL for Kubernetes Data](backup-restore.html#backup) in _Backing Up and Restoring MySQL Instances_.
 
-2. Restore the backup created in step 1.
-   See [Restoring a Backup to a Different Namespace or Kubernetes Cluster](backup-restore.html#restore-to-different) in _Backing Up and Restoring MySQL Instances_.
-
-OR 
-
-2. Create a single-node MySQL instance.
-   See [Create a MySQL Instance](create-delete-mysql.html#create-instance) in _Creating and Deleting MySQL Instances_.
-
-    (This might not work because: "MySQLRestores always restores to a new MySQL instance to avoid overwriting any data on an existing MySQL instance. The MySQL instance is created automatically when the restore is triggered.")
-
-3. Restore the backup from step 1 to the instance created in step 2.
-
+2. Restore the backup to a single-instance node.
+   See [Restore from a Backup](backup-restore.html#backup-restore.html#restore-from-backup)
+   in _Backing Up and Restoring MySQL Instances_.
+   When you edit the `restore.yaml` copy, set `highAvailability.enabled` to `false`.
 
 <p class="note">
    <strong>Note:</strong>
@@ -224,138 +217,3 @@ To delete an HA MySQL instance:
 
 1. See [Delete a MySQL Instance](create-delete-mysql.html#delete-instance)
 in _Creating and Deleting MySQL Instances_.
-
-<hr>
-END OF PAGE
-<hr>
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-##Configure High Availability
-
-[//]: # (Write a stem sentence that describes what I'm doing in this procedure. What am I configuring for HA?)
-1. To enable <%=vars.product_short %> high availability, edit your copy of the instance `yaml` manifest file and alter the `highAvailability` field:
-
-    ```
-    ---
-    apiVersion: with.sql.tanzu.vmware.com/v1
-    kind: MySQL
-    metadata:
-      name: mysql-ha-sample
-    spec:
-      storageSize: 1Gi
-      imagePullSecret: tanzu-mysql-image-registry
-      highAvailability:
-        enabled: true
-    ```
-
-    `highAvailability` values can be `enabled: <true|false>`.
-    If this field is left empty, the MySQL instance defaults to a non-HA single node configuration.
-
-2. Execute this command to deploy or redeploy the cluster with the new `highAvailability` setting:
-
-    ``` bash
-    $ kubectl apply -f mysql-ha.yaml
-    ```
-    where `mysql-ha.yaml`is the Kubernetes manifest created in Step 1.
-
-    The command output is similar to:
-
-    ``` bash
-    mysql.with.sql.tanzu.vmware.com/mysql-ha-sample created
-    ```
-    where _mysql-ha-sample_ is the MySQL instance `name` defined in the `yaml` manifest file in Step 1.
-
-    The MySQL Operator creates five pods: three MySQL pods and two proxy pods directing traffic to the primary MySQL pod.
-
-3. Verify that the HA MySQL instance was created successfully by running:
-
-
-##Verify the HA Configuration
-
-To confirm your HA configuration is ready for access, use `kubectl get` to review the STATUS field and confirm that it shows "Running".
-Initially STATUS will show Created, until all artifacts are deployed.
-Use Ctr-C to escape the watch command.
-
-``` bash
-$ watch kubectl get mysql.with.sql.tanzu.vmware.com/mysql-ha-sample
-NAME              READY   STATUS    AGE
-mysql-ha-sample   true    Running   3m50s
-```
-
-You can now connect to the primary pod mysql using `kubectl exec -it <pod-name> --container=mysql -- bash`.
-(Because MySQL pods run multiple containers, you must specify `--container=mysql` to target the mysql container.)
-Execute mysql commands from your local shell by appending mysql commands to the bash command line via `bash -c "mysql ..."`.
-For instructions, see [Accessing MySQL Instances](accessing.html).
-
-You can run commands from your local shell via "kubectl exec"; here is a command exposing the
-status of the cluster:
-
-```bash
-$ kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash -c \
-    "mysql --user=root --password=\$(</etc/mysql/secrets/root-password) \
-    --execute 'SELECT * FROM performance_schema.replication_group_members\G'"
-
-mysql: [Warning] Using a password on the command line interface can be insecure.
-*************************** 1. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 157baa2a-8c22-11eb-847c-0242ac110009
-   MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: PRIMARY
-MEMBER_VERSION: 8.0.22
-*************************** 2. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 281ad3c9-8c22-11eb-b3aa-0242ac11000a
-   MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: SECONDARY
-MEMBER_VERSION: 8.0.22
-*************************** 3. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 3c52bb9a-8c22-11eb-aade-0242ac11000b
-   MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: SECONDARY
-MEMBER_VERSION: 8.0.22
-```
-
-The above output shows a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members.
-
-##Other HA Considerations
-
-Other points to consider when working with high-availability MySQL instances:
-
-- High-availability MySQL instances are backed up and restored identically to single-node instances.
-  For information, see [Backing Up and Restoring MySQL Instances](backup-restore.html).
-
-  - Backups from HA instances are created from the primary mysql pod.
-  - Backups from HA instances may be restored to a single-node MySQL or a high-availability MySQL.
-  To specify a restore into a high-availability MySQL, include the MySQL resource property
-  `spec.highAvailability.enabled: true` within the spec.instanceTemplate portion of the MySQLRestore resource.
-   For information about resource properties,
-   see [Properties for the MySQLRestore Resource](property-reference-backup-restore.html#restore).
-
-- You can convert an existing single-node MySQL instance to high availability.
-  Edit the original yaml file for the deployment to add the `highAvailability.enabled: true` parameter shown above.
-  Then re-deploy the yaml file via `kubectl apply -f modifiedDeploymentFile.yaml`.
-
-- You can not similarly scale down an existing high-availability MySQL instance to a single-node instance. 
-  A deployment yaml with highAvailability.enabled set to `false` will error when applied to an existing HA instance.
-
-  To move from HA MySQL instance to a single-node MySQL instance, backup the HA instance and restore the backup to a newly-created single-node instance.
-  For more information, see above and [Backing Up and Restoring MySQL Instances](backup-restore.html).
-
-- When creating a long-lived HA MySQL instance, designate resource requests and limits.
-  Otherwise Kubernetes schedules pods onto node resources according to "best effort" policies, which can lead to premature pod eviction should resources become constrained.
- For information about the properties used to set limits, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
-
-- MySQL does not support explicit node selection and anti-affinity for controlling pod assigment to kubernetes nodes.
-  Kubernetes distributes pods per to its regular placement and scheduling policies including any resource requests.
