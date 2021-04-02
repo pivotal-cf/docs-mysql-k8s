@@ -11,18 +11,9 @@ This topic describes how you, as a developer, deploy and delete MySQL instances.
 
 Before you can create or delete MySQL instances, you must have:
 
-* **The Kubernetes Command Line Interface (kubectl) installed:**
-For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+[//]: # (This partial contains a standard set of prereqs. Also used in high-availability topic.)
+<%= partial '/prerequisites' %>
 
-* **Full admin access to all Kubernetes resources in your developer namespace.**
-
-    For information about Roles and RoleBindings that your Kubernetes cluster admin needs to create,
-    see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/).
-
-* **The URL and credentials to access the registry that stores the <%= vars.product_short %> images.**
-  This can be the <%= vars.product_network %> registry or the private registry configured for your environment.
-    If you do not have access to the registry credentials, contact your Kubernetes admin
-    to have these set up for you in your namespace.
 
 ## <a id='create-instance'></a>Create a MySQL Instance
 
