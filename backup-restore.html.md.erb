@@ -31,7 +31,7 @@ For backing up and restoring,
 
 For detailed information about the CRDs,
 see [Controllers and Custom Resource Definitions (CRDs)](architecture.html#controllers-crds)
-in _Tanzu MySQL for Kubernetes Architecture_.
+in _Architecture_.
 
 ##<a id="sync-of-backups"></a> About Synchronization of Backups with the External Blobstore
 
@@ -64,7 +64,7 @@ To create a MySQLBackupLocation resource:
 1. Find the `backuplocation.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
    For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu MySQL for Kubernetes Operator_.
+   in _Installing the Tanzu SQL for Kubernetes Operator_.
 
 2. Create a copy of the `backuplocation.yaml` file and give it a unique name.
 
@@ -125,7 +125,7 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 1. Find the `backupschedule.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
    For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu MySQL for Kubernetes Operator_.
+   in _Installing the Tanzu SQL for Kubernetes Operator_.
 
 2. Create a copy of the `backupschedule.yaml` file and give it a unique name.
 
@@ -214,7 +214,7 @@ To take a backup:
 1. Find the `backup.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
    For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu MySQL for Kubernetes Operator_.
+   in _Installing the Tanzu SQL for Kubernetes Operator_.
 
 2. Create a copy of the `backup.yaml` file and give it a unique name.
 
@@ -318,10 +318,10 @@ To see a list of existing MySQLBackup resources:
 
 ##<a id="delete-backups"></a> Delete Old Backup Artifacts
 
-Tanzu MySQL for Kubernetes does not natively support retention policies for backup artifacts.
+Tanzu SQL for Kubernetes does not natively support retention policies for backup artifacts.
 You can configure retention policies on your external blobstore.
 If you do, you must also delete the associated MySQLBackup resources in the Kubernetes cluster,
-because those are not automatically deleted by Tanzu MySQL for Kubernetes.
+because those are not automatically deleted by Tanzu SQL for Kubernetes.
 
 To delete a backup:
 
@@ -374,7 +374,7 @@ To restore from a backup:
 1. Find the `restore.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
    For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu MySQL for Kubernetes Operator_.
+   in _Installing the Tanzu SQL for Kubernetes Operator_.
 
 2. Create a copy of the `restore.yaml` file and give it a unique name.
 
@@ -497,7 +497,7 @@ To troubleshoot problems with backup and restore:
     then one of the following might be the problem:
     + Misconfiguration
     + Problem with the external blobstore
-    + Issues with the Tanzu MySQL Operator
+    + Issues with the MySQL Operator
 
     In this example, the `kubectl get` command outputs a `Failed` status:
 

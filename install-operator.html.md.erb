@@ -1,5 +1,5 @@
 ---
-title: Installing the Tanzu MySQL for Kubernetes Operator
+title: Installing the Tanzu SQL for Kubernetes Operator
 owner: MySQL
 ---
 
@@ -192,7 +192,7 @@ In most situtations, the default values supplied in the `values.yaml` file do no
 
 However, if any of the following are true, you need to follow the steps below to override the defaults:
 
-+ You deployed the Tanzu MySQL for Kubernetes images from a registry other than registry.pivotal.io.
++ You deployed the Tanzu SQL for Kubernetes images from a registry other than registry.pivotal.io.
 + You did not use the default `tanzu-mysql-image-registry` for the secret name in Step 4 above.
 + You want to allocate different CPU or memory resources for your Operator.
 
@@ -201,7 +201,7 @@ However, if any of the following are true, you need to follow the steps below to
 Do not edit <code>values.yaml</code> directly. Create a <code>values-override.yaml</code>.
 </p>
 
-Confirm and configure the Tanzu MySQL Operator for your environment:
+Confirm and configure the Tanzu SQL Operator for your environment:
 
 1. Review the `values.yaml` file.
 

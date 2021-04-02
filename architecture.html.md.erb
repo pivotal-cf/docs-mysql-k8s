@@ -15,7 +15,7 @@ This topic provides some architectural information about <%= vars.product_full %
 ### <a id='single-node'></a> Architecture of a MySQL Instance, Single Database
 
 The diagram below shows the architecture of <%= vars.product_short %>:
-<img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the Operator deployment and app namespace">
+<img src="images/architecture-diagram.png" alt="A diagram showing the architecture of <%= vars.product_short %> with the MySQL Operator deployment and app namespace">
 
 <a href="./images/architecture-diagram.png" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 <%# It would be valuable to have some text describing this diagram. %>
@@ -73,7 +73,7 @@ One container runs the MySQL database software, and the other runs components to
 
 The MySQL Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
 
-When a MySQL instance is created, the Tanzu MySQL Operator automatically creates a Kubernetes service
+When a MySQL instance is created, the MySQL Operator automatically creates a Kubernetes service
 with a service type of `ClusterIP` which routes connections to the MySQL Pod.
 
   ```

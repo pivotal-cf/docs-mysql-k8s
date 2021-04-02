@@ -65,7 +65,7 @@ To create a MySQL instance:
 3. Find the `mysql.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
    For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu MySQL for Kubernetes Operator_.
+   in _Installing the Tanzu SQL for Kubernetes Operator_.
 
 4. Create a copy of the `mysql.yaml` file and give it a unique name.
 
@@ -115,7 +115,7 @@ It also provides the procedure for how to delete an instance.
 
 ###<a id="about-pvcs"></a> About PVCs
 
-When you create a MySQL instance, the Tanzu MySQL Operator also creates a persistent
+When you create a MySQL instance, the MySQL Operator also creates a persistent
 volume claim (PVC).
 This PVC is attached to the instance and contains the data for the MySQL database.
 

@@ -162,7 +162,7 @@ mysql-ha-sample   true    Running   3m50s
 You can now connect to the primary pod mysql using `kubectl exec -it <pod-name> --container=mysql -- bash`.
 (Because MySQL pods run multiple containers, you must specify `--container=mysql` to target the mysql container.)
 Execute mysql commands from your local shell by appending mysql commands to the bash command line via `bash -c "mysql ..."`.
-For instructions, see [Accessing a Tanzu Mysql for Kubernetes Instance](accessing.html).
+For instructions, see [Accessing MySQL Instances](accessing.html).
 
 You can run commands from your local shell via "kubectl exec"; here is a command exposing the
 status of the cluster:
