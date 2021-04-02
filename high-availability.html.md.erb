@@ -16,9 +16,9 @@ in _Architecture_.
 
 ###<a id='planning'></a>About Planning for Long-Lived HA MySQL Instances
 
-HA MySQL instances are often the topology of choice in production enviroments.
+HA MySQL instances are often used in production environments.
 Before creating an HA MySQL instance that you intend to rely on for a long time,
-consider the resource requests and limits carefully.
+carefully consider the resource requests and limits.
 
 If you do not designate resource requests and limits, then Kubernetes (or is it the MySQL Operator?)
 schedules pods onto node resources according to “best effort” policies.
@@ -39,15 +39,15 @@ Kubernetes distributes pods per to its regular placement and scheduling policies
 You can convert a single-node MySQL instance to an HA MySQL instance with a single command.
 See XXX.
 However, it is not straightforward to convert an HA MySQL instance to a single-node MySQL instance.
-This conversion requires that you take a backup of the database and copy it to a new single-node instance.
-See []() for details.
+To move from an HA MySQL instance to a single-node instance,
+you must take a backup of the database and copy it to a new single-node instance.
+See [XXX]() for details.
 
 ### <a id='about-backups'></a> About Backing Up
 
 HA MySQL instances are backed up and restored the same way as single-node instances. 
 Backups from HA MySQL instances are created from the primary MySQL pod.
 Backups from HA MySQL instances can be restored either to single-node or HA MySQL instances.
-
 For information about backup and restore,
 see [Backing Up and Restoring MySQL Instances](backup-restore.html).
 
@@ -58,24 +58,52 @@ see [Backing Up and Restoring MySQL Instances](backup-restore.html).
 Before you can configure high availability, you must have:
 
 <%= partial '/prerequisites' %>
+
 * **Know how to create and delete single-node MySQL instances:**
   See [Creating and Deleting MySQL Instances](create-delete-mysql.html).
 
 ## <a id="create-ha"></a>Create an HA MySQL Instance
 
-Follow the steps below to create a new HA MySQL Instance
+Creating an HA MySQL instance is very similar to creating a single-node MySQL instance. 
+By default, MySQL instances are single node. 
 
-1. Follow the steps in “Create a MySQL Instance” but at step 4…. 
+For HA MySQL instances, configure high availability to be true as described below:
+ 
 
-2.  Set config by editing the YAML file.
+1. Follow the steps 1–4 in [Create a MySQL Instance](create-delete-mysql.html#create-instance).
 
-3. Create the cluster.
+2. Edit your uniquely named copy of `mysql.yaml`:
 
-4. Verify all is well.
+    1. Set the value of `highAvailability.enabled` to `true`:
 
-## <a id="convert-to-ha"></a>Convert a Single-Node MySQL Instance to an HA MySQL Instancee
+        ```
+        ---
+        apiVersion: with.sql.tanzu.vmware.com/v1
+        kind: MySQL
+        metadata:
+          name: mysql-ha-sample
+        spec:
+          storageSize: 1Gi
+          imagePullSecret: tanzu-mysql-image-registry
+          highAvailability:
+            enabled: true
+        ```
 
+    2. Edit the other properties for the instance as needed.
+         For information about the properties that you can set for the MySQL resource,
+         see [Property Reference for the MySQL Resource](property-reference-mysql.html).
+
+1. Create and verify the instance by following steps 6 and 7
+   in [Create a MySQL Instance](create-delete-mysql.html#create-instance).
+
+
+## <a id="convert-to-ha"></a>Convert a Single-Node MySQL Instance to an HA MySQL Instance
+
+<p class="note">
+   <strong>Note:</strong>
 You cannot easily change an HA MySQL instance back to a single-node one.
+</p>
+
 Be sure that you want an HA instance before following this procedure.
 
 Follow the steps below to change a single-node MySQL instance into an HA MySQL Instance:
@@ -84,32 +112,132 @@ Follow the steps below to change a single-node MySQL instance into an HA MySQL I
 
 ## <a id="inspect-instance"></a>Inspect an HA MySQL Instance
 
-You can do this for troubleshooting or ....
+After you have created your HA MySQL instance, you can learn more about it and
+confirm that all the Pods are running by inspecting it.
 
-1. 
+This inspection procedure can be also be used for troubleshooting. 
 
-2. 
+
+1. Determine the primary Pod. (how?)
+
+1. Connect to the primary Pod, by running: 
+
+    ```
+    kubectl exec -it POD-NAME --container=mysql -- bash
+    ```
+    Where is `POD-NAME` is the name of the primary pod identified in Step 1 above.
+    When the Pod is first created, the index for the Pod is `-0`.
+
+    For example:
+
+    <pre class="terminal">$ kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash</pre>
+
+2. On the primary Pod, log in to the MySQL database by running:
+
+    ```
+    mysql --user=USER --password=PASSWORD
+    ```
+    Where:
+    * `USER` is a user name on the database. When the database is first created, only the root user exists.
+    * `PASSWORD` is the password for the database user.
+
+    For example:
+
+    <pre class="terminal">mysql@mysql-sample-0:/$ mysql --user=root --password=$(&lt;etc/mysql/secrets/root-password)</pre>
+
+3. Query the database by running:
+
+    ```
+    mysql>SELECT * FROM performance_schema.replication_group_members\G;
+    ```
+    The following example is from
+    a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members:
+
+    <pre class="terminal">
+mysql>SELECT * FROM performance_schema.replication_group_members\G;
+*************************** 1. row ***************************
+  CHANNEL_NAME: group_replication_applier
+     MEMBER_ID: 157baa2a-8c22-11eb-847c-0242ac110009
+   MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-members.default.svc.cluster.local
+   MEMBER_PORT: 3306
+  MEMBER_STATE: ONLINE
+   MEMBER_ROLE: PRIMARY
+MEMBER_VERSION: 8.0.22
+*************************** 2. row ***************************
+  CHANNEL_NAME: group_replication_applier
+     MEMBER_ID: 281ad3c9-8c22-11eb-b3aa-0242ac11000a
+   MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-members.default.svc.cluster.local
+   MEMBER_PORT: 3306
+  MEMBER_STATE: ONLINE
+   MEMBER_ROLE: SECONDARY
+MEMBER_VERSION: 8.0.22
+*************************** 3. row ***************************
+  CHANNEL_NAME: group_replication_applier
+     MEMBER_ID: 3c52bb9a-8c22-11eb-aade-0242ac11000b
+   MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-members.default.svc.cluster.local
+   MEMBER_PORT: 3306
+  MEMBER_STATE: ONLINE
+   MEMBER_ROLE: SECONDARY
+MEMBER_VERSION: 8.0.22
+</pre>
+
+
 
 
 
 ##<a id='ha-to-sn'></a>Move an HA MySQL Instance to a Single-Node MySQL Instance
 
-1.
 
-2.
+To move from HA MySQL instance to a single-node MySQL instance, you need to backup the HA instance
+and restore the backup to a single-node instance:
 
+
+1. Back up the HA MySQL instance.
+   See [Back Up Tanzu SQL for Kubernetes Data](backup-restore.html#backup) in _Backing Up and Restoring MySQL Instances_.
+
+2. Restore the backup created in step 1.
+   See [Restoring a Backup to a Different Namespace or Kubernetes Cluster](backup-restore.html#restore-to-different) in _Backing Up and Restoring MySQL Instances_.
+
+OR 
+
+2. Create a single-node MySQL instance.
+   See [Create a MySQL Instance](create-delete-mysql.html#create-instance) in _Creating and Deleting MySQL Instances_.
+
+    (This might not work because: "MySQLRestores always restores to a new MySQL instance to avoid overwriting any data on an existing MySQL instance. The MySQL instance is created automatically when the restore is triggered.")
+
+3. Restore the backup from step 1 to the instance created in step 2.
+
+
+<p class="note">
+   <strong>Note:</strong>
+You cannot scale down an existing HA MySQL instance to a single-node instance
+by applying <code>highAvailablity.enabled: false</code> to an HA instance.
+The apply command will error.
+</p>
 
 ## <a id='delete'></a>Delete an HA MySQL Instance
 
-Same as deleting a single node instance, just more pods have to be deleted.
+Deleting an HA MySQL instance is the same as deleting a single-node instance
+except that for HA you delete multiple Pods.
 
-See [Delete a MySQL Instance](create-delete-mysql.html#delete-instance)
+To delete an HA MySQL instance:
+
+1. See [Delete a MySQL Instance](create-delete-mysql.html#delete-instance)
 in _Creating and Deleting MySQL Instances_.
 
-## <a id="ha_configuration"></a>Configure High Availability
+<hr>
+END OF PAGE
+<hr>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+##Configure High Availability
 
 [//]: # (Write a stem sentence that describes what I'm doing in this procedure. What am I configuring for HA?)
-
 1. To enable <%=vars.product_short %> high availability, edit your copy of the instance `yaml` manifest file and alter the `highAvailability` field:
 
     ```
@@ -147,7 +275,7 @@ in _Creating and Deleting MySQL Instances_.
 3. Verify that the HA MySQL instance was created successfully by running:
 
 
-## <a id="verify_configuration"></a>Verify the HA Configuration
+##Verify the HA Configuration
 
 To confirm your HA configuration is ready for access, use `kubectl get` to review the STATUS field and confirm that it shows "Running".
 Initially STATUS will show Created, until all artifacts are deployed.
@@ -201,7 +329,7 @@ MEMBER_VERSION: 8.0.22
 
 The above output shows a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members.
 
-## <a id="ha_considerations"></a>Other HA Considerations
+##Other HA Considerations
 
 Other points to consider when working with high-availability MySQL instances:
 
