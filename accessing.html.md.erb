@@ -8,38 +8,35 @@ owner: MySQL
 
 This topic describes how to access a <%= vars.product_full %> instance.
 
-
 ## <a id='prereq'></a>Prerequisites
 
-Before you access a MySQL instance, you must have:
+Before accessing a MySQL instance, you must have:
 
 * The Kubernetes Command Line Interface (kubectl) installed.
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
-
-* An existing <%= vars.product_short %> instance
 
 ## <a id='verify-settings'></a> (Optional) Verify MySQL Instance Settings
 
 To see all MySQL instance settings configured:
 
-1. Connect to a MySQL container within your Kubernetes namespace by running:
+1. Access the MySQL container.
 
     ```
     kubectl -n DEVELOPMENT-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
     ```
-    Where:
-    * `DEVELOPMENT-NAMESPACE` is the namespace you are logging in to.
-    * `INSTANCE-NAME` is the name of the instance you are targeting.
+    In this command, replace:
+    * `DEVELOPMENT-NAMESPACE` with the namespace of the <%= vars.product_short %> instance
+    * `INSTANCE-NAME` with the name of the instance
 
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     </pre>
 
-1. Review the configuration files named `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
+1. Review the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
 
-## <a id='server-login'></a> Root Access to a MySQL Instance
+## <a id='server-login'></a> Root Access to the MySQL Server
 
 Database administrative operations (such as creating users and databases) require connecting
 to MySQL as the root database user.  <%= vars.product_short %> only allows root account
@@ -47,22 +44,22 @@ connections from within the container running the database; off-container root c
 
 To connect to the MySQL instance as the MySQL root user:
 
-1. Connect to a MySQL container within your Kubernetes namespace by running:
+1. Access the MySQL container.
 
     ```
     kubectl -n DEVELOPMENT-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
     ```
-    Where:
-    * `DEVELOPMENT-NAMESPACE` is the namespace you are logging in to.
-    * `INSTANCE-NAME` is the name of the instance you are targeting.
+    In this command, replace:
+    * `DEVELOPMENT-NAMESPACE` with the namespace of the <%= vars.product_short %> instance
+    * `INSTANCE-NAME` with the name of the instance
 
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     </pre>
 
-1. Log in to the MySQL instance by running:
+1. Log in to the MySQL server.
 
     ```
     mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
@@ -74,55 +71,45 @@ To connect to the MySQL instance as the MySQL root user:
     $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     </pre>
 
-## <a id='off-platform-access'></a> Connect to the MySQL Instance with an External IP Address
+## <a id='off-platform-access'></a> Access the MySQL Server from an External IP Address
 
 <p class="note">
-  <strong>Note:</strong> Ensure the cloud provider supports external load balancers. For more information about the LoadBalancer ServiceTypes, see the
+<strong>Note:</strong> This procedure requires that your cloud provider supports external load balancers. For more information about the <code>LoadBalancer</code> service type, see the
   <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">Kubernetes documentation</a>.
 </p>
 
-To connect to the MySQL instance with an external IP address:
+In order to connect to a <%= vars.product_short %> instance from outside of your Kubernetes cluster, you must configure the Kubernetes service for the instance to be of type `LoadBalancer` rather than the default `ClusterIP`.
 
-1. Create a database user which you will use for your external connection. See the section [Create a Database
-and Privileged MySQL User for the Application](bind-app.html#create-app-db) for how to create a
-user for your external connection.
+To access the MySQL server from an external IP address:
 
-1. Create or update the <%= vars.product_short %> instance to set the `Spec.ServiceType` property to
- <code>LoadBalancer</code>.
-    <br><br>
-    For more information about how to create the <%= vars.product_short %> instance, see
-    [Create a MySQL Instance](create-delete-mysql.html#create-instance).
-    For more information about how to update the <%= vars.product_short %> instance or change the ServiceType,
-    see [Updating MySQL Instances](update-instance.html).
+1. Create a database user to use for the external connection. For more information, see [Create a Database
+and Privileged MySQL User for the Application](bind-app.html#create-app-db).
 
-    <p class="note">
-      <strong>Note:</strong> You must do this before you can connect to a
-      <%= vars.product_short %> instance off-platform.
-      For more information about how to specify the property to create the correct service, see
-      <a href="./property-reference-mysql.html">Property Reference for the MySQL Resource</a>.
-    </p>
+1. If the <%= vars.product_short %> instance does not have a `Spec.ServiceType` value of <code>LoadBalancer</code>:
 
-1. Verify the ServiceType is `LoadBalancer` instead of the default `ClusterIP`:
+    1. Update the instance and change the value of the `Spec.ServiceType` property to <code>LoadBalancer</code>. For more information about updating an instance, see [Updating MySQL Instances](update-instance.html). For more information about the properties used by a <%= vars.product_short %> instance, see <a href="./property-reference-mysql.html">Property Reference for the MySQL Resource</a>.
+    <p>&nbsp;</p>
+    1. Verify that the `ServiceType` is `LoadBalancer` instead of the default `ClusterIP`.
 
-    ```
-    $ kubectl get service INSTANCE-NAME -o jsonpath={.spec.type}
-    ```
-    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` for your MySQL resource.
-    <br><br>
-    For example:
+        ```
+        kubectl get service INSTANCE-NAME -o jsonpath={.spec.type}
+        ```
+        In this command, replace `INSTANCE-NAME` with the value of the `metadata.name` property for the MySQL instance.
+        <br /><br />
+        For example:
 
-    <pre class="terminal">
-    $ kubectl get service mysql-sample -o jsonpath={.spec.type}
-    LoadBalancer
-    </pre>
+        <pre class="terminal">
+        $ kubectl get service mysql-sample -o jsonpath={.spec.type}
+        LoadBalancer
+        </pre>
 
-1. Find the external IP address allocated for the service by running:
+1. Find the external IP address allocated for the service.
 
     ```
-    $ kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
+    kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
     ```
-    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` for your MySQL resource.
-    <br><br>
+    In this command, replace `INSTANCE-NAME` with the value of the `metadata.name` property for the MySQL instance.
+    <br /><br />
     For example:
 
     <pre class="terminal">
@@ -130,24 +117,25 @@ user for your external connection.
     192.168.64.200
     </pre>
 
-    This command retrieves either an IP address or a resolvable DNS hostname which may be used in
-    place of the IP address in the below examples. For example, an AWS load balancer returns a domain
-    name instead of an IP address:
+    This command retrieves either an IP address or a resolvable DNS hostname.
+    <br /><br />
+    If the command returns a DNS hostname, use the hostname in place of the IP address in the following examples.
+    For example, an AWS load balancer returns a domain name instead of an IP address.
 
     <pre class="terminal">
     $ kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
     a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     </pre>
 
-1. Log in to the MySQL instance by running:
+1. Log in to the MySQL server.
 
     ```
     mysql -u USERNAME -pUSER-PASSWORD -P 3306 -h EXTERNAL-IP
     ```
-    Where
-    - `USERNAME` is the name of the user you created in Step 1 for use in this external connection.
-    - `USER-PASSWORD` is the password you assigned to that user.
-    - `EXTERNAL-IP` is the external IP address allocated for the service found in the above step.
+    In this command, replace:
+    * `USERNAME` with the name of the MySQL user (created in Step 1)
+    * `USER-PASSWORD` with the password you assigned to the MySQL user (created in Step 1)
+    * `EXTERNAL-IP` with the external IP address allocated for the MySQL service (retrieved in Step 3)
 
     For example:
 
@@ -159,34 +147,30 @@ user for your external connection.
 
 To disable off-platform connections:
 
-1. Change the <%= vars.product_short %> instance to specify `ClusterIP`.
+1. Update the <%= vars.product_short %> instance and change the value of the `Spec.ServiceType` property to <code>ClusterIP</code>.
     For more information about how to change a property, see [Change Other Configurations](./update-instance.html#other-config).
 
 <p class="note">
-  <strong>Note:</strong> The cloud provider might automatically delete the load balancer.
+<strong>Note:</strong> When you change the <code>Spec.ServiceType</code> from <code>LoadBalancer</code> to <code>ClusterIP</code>, your cloud provider may automatically delete the associated load balancer for the MySQL instance.
 </p>
 
 
-## <a id='port-forward'></a> Connect to the MySQL Instance with the Kubernetes API Server
+## <a id='port-forward'></a> Access the MySQL Server from the Kubernetes API Server
 
-<p class="note">
-  <strong>Note:</strong> Connecting with <code>kubectl port-forward</code> proxies
-  the connection through the API server. It is intended for debugging access, and
-  its performance is slower than a direct connection.
-</p>
+<p class="note"> <strong>Note:</strong> This procedure proxies the connection to MySQL through the Kubernetes API server. It is intended for debugging access, and its performance is slower than that of a direct connection.  </p>
 
-To connect to the MySQL instance with the Kubernetes API server:
+To access the MySQL server from the Kubernetes API server:
 
-1. Get the root password. The root user password is available in the Kubernetes Secret named after
-  the MySQL instance suffixed with `-credentials`.
+1. Get the MySQL root user password. The root user password is available in the Kubernetes secret named after
+  the MySQL instance with a `-credentials` suffix.
 
     ```
     MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
     ```
-    Where `INSTANCE-NAME` is the name of your instance.
+    In this command, replace `INSTANCE-NAME` with the name of the MySQL instance.
 
-1. Start a port-forwarding proxy with `kubectl port-forward`. For more information
-about the command, see [Kubernetes documentation](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#port-forward).
+1. Start a port-forwarding proxy using the `kubectl port-forward` command. For more information
+about this command, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#port-forward).
 
     ```
     kubectl port-forward service/INSTANCE-NAME 3306 &
@@ -196,36 +180,35 @@ about the command, see [Kubernetes documentation](https://kubernetes.io/docs/ref
 
     <pre class="terminal">
     $ kubectl port-forward service/mysql-sample 3306 &
-    <br>Forwarding from 127.0.0.1:3306 -> 3306
+    <br />Forwarding from 127.0.0.1:3306 -> 3306
     Forwarding from [::1]:3306 -> 3306
     </pre>
 
-1. Connect to the service through the poxy port. For example, to connect with
-the MySQL client:
+1. Connect to the service through the poxy port.
+    <br /><br />
+    For example, to connect using the MySQL client:
 
     <pre class="terminal">
     $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD}
     </pre>
 
-1. When you have finished with the connection, stop the proxy by stopping the kubectl process.
-
+1. When finished, stop the proxy by stopping the kubectl process.
+    <br /><br />
     For example:
 
     <pre class="terminal">
     $ jobs
-    [1]+  Running    kubectl port-forward service/mysql-sample 3306 & <br>
+    [1]+  Running    kubectl port-forward service/mysql-sample 3306 & <br />
     $ kill %1
     </pre>
 
-## <a id='app-connect'></a> Accessing MySQL From Cluster-Hosted Applications
+## <a id='app-connect'></a> Access MySQL From Cluster-Hosted Applications
 
-<%= vars.product_short %> creates a Kubernetes Service that is used to connect apps to the database.
-The name of the Service is the same as the name of the Tanzu SQL for Kubernetes instance.
+For each instance, <%= vars.product_short %> creates a Kubernetes service, which is used to connect an app to its MySQL database.
+The service is named after the Tanzu SQL for Kubernetes instance.
 
-If the app is deployed on the Kubernetes cluster, it can access the MySQL instance using the DNS name
+If an app is deployed on the Kubernetes cluster, the app can access the MySQL instance using the DNS name
 of the MySQL service. This DNS name is only resolvable within the Kubernetes cluster.
 
-Apps should connect to the database using narrowly-priviged users created for the applications''
-specific requirements. The process of connecting a kubernetes application to the database via specific
-user and configuration info is covered in [Connecting Apps to MySQL
-Instances](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/bind-app.html).
+An app should connect to the database using a narrowly-privileged database user created for the specific requirements of the app.
+For information about creating a user for an app and connecting the app to a database using specific user and configuration information, see [Connecting Apps to MySQL Instances](./bind-app.html).
