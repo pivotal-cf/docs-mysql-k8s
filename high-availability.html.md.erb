@@ -17,43 +17,40 @@ in _Architecture_.
 ###<a id='planning'></a>About Planning for Long-Lived HA MySQL Instances
 
 HA MySQL instances are often used in production environments.
-Before creating an HA MySQL instance that you intend to rely on for a long time,
+Before creating an HA instance that you intend to rely on for a long time,
 carefully consider the resource requests and limits.
 
 If you do not designate resource requests and limits, then Kubernetes
-schedules pods onto node resources according to “best effort” policies.
+schedules Pods onto node resources according to best effort policies.
 If resources become constrained, your Pods running MySQL risk eviction
 as Kubernetes manages resources allocation among its Pods.
 For information about the properties used to set limits and requests,
 see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
-###<a id='node-selectionr'></a>About Explicit Node Selection and Anti-Affinity
+###<a id='node-selection'></a>About Explicit Node Selection and Anti-Affinity
 
+<%= vars.product_full %> does not support explicit node selection or anti-affinity
+for controlling Pod assignment to Kubernetes nodes.
+Kubernetes distributes Pods per to its regular placement and scheduling policies
+including any resource requests.
 
-[//]: # ( What does this mean? As a developer when do I need to know it and how does it affect my actions?)
-
-<%= vars.product_full %> does not support explicit node selection and anti-affinity for controlling Pod assignment
-to Kubernetes nodes.
-Kubernetes distributes Pods per to its regular placement and scheduling policies including any resource requests.
-
-###<a id='scale-up'></a>Scale Up Is Easy, Scale Down Is Hard
+###<a id='scale-up'></a>Scale Up to HA Is Easy, Scale Down to Single-Node Is Hard
 
 You can convert a single-node MySQL instance to an HA MySQL instance with a single command.
 See [Convert a Single-Node MySQL Instance to an HA MySQL Instance](#convert-to-ha) below.
 
-However, it is not straightforward to convert an HA MySQL instance to a single-node MySQL instance.
-To move from an HA MySQL instance to a single-node instance,
+However, it is not straightforward to convert an HA instance to a single-node instance.
+To move from an HA instance to a single-node instance,
 you must take a backup of the database and restore it to a new single-node instance.
 See [Move an HA MySQL Instance to a Single-Node MySQL Instance](#ha-to-sn) below.
 
 ### <a id='about-backups'></a> About Backing Up
 
-HA MySQL instances are backed up and restored the same way as single-node instances. 
-Backups from HA MySQL instances are created from the primary MySQL Pod.
-Backups from HA MySQL instances can be restored either to single-node or HA MySQL instances.
+HA MySQL instances are backed up and restored the same way as single-node MySQL instances.
+Backups from HA instances are created from the primary MySQL Pod.
+Backups from HA instances can be restored either to single-node or HA instances.
 For information about backup and restore,
 see [Backing Up and Restoring MySQL Instances](backup-restore.html).
-
 
 
 ## <a id='prerequisites'></a> Prerequisites
@@ -67,10 +64,10 @@ Before you can configure high availability, you must have:
 
 ## <a id="create-ha"></a>Create an HA MySQL Instance
 
-Creating an HA MySQL instance is very similar to creating a single-node MySQL instance. 
-By default, MySQL instances are single node. 
+Creating an HA MySQL instance is very similar to creating a single-node MySQL instance.
+By default, MySQL instances are single node.
 
-For HA MySQL instances, configure high availability to be true as described below:
+For HA instances, configure high availability to be true as described below:
  
 
 1. Follow the steps 1–4 in [Create a MySQL Instance](create-delete-mysql.html#create-instance).
@@ -102,13 +99,16 @@ For HA MySQL instances, configure high availability to be true as described belo
 
 ## <a id="convert-to-ha"></a>Convert a Single-Node MySQL Instance to an HA MySQL Instance
 
+If a single-node MySQL instance already exists, you can edit its YAML to set high-availability
+and then redeploy the instance.
+ 
 <p class="note">
    <strong>Note:</strong>
 Be sure that you want an HA instance before following this procedure.
-You cannot easily change an HA MySQL instance back to a single-node one.
+You cannot easily change an HA instance back to a single-node one.
 </p>
 
-To change a single-node MySQL instance into an HA MySQL Instance:
+To change a single-node instance into an HA Instance:
 
 1.  See [Updating MySQL Instances](update-instance.html).
 
@@ -125,7 +125,7 @@ This inspection procedure can be also be used for troubleshooting.
     ```
     kubectl exec -it POD-NAME --container=mysql -- bash
     ```
-    Where is `POD-NAME` is the name of the primary Pod or one of the secondary Pods.
+    Where `POD-NAME` is the name of the primary Pod or one of the secondary Pods.
     The Pod name is the instance name defined in the copy of the `mysql.yaml` file appended with an index, 0–2.
     When the Pod is first created, the index for the primary Pod is `-0`.
 
@@ -183,17 +183,12 @@ MEMBER_VERSION: 8.0.22
 </pre>
 
 
-
-
-
 ##<a id='ha-to-sn'></a>Move an HA MySQL Instance to a Single-Node MySQL Instance
-
 
 To move from HA MySQL instance to a single-node MySQL instance, you need to backup the HA instance
 and restore the backup to a single-node instance:
 
-
-1. Back up the HA MySQL instance.
+1. Back up the HA instance.
    See [Back Up Tanzu SQL for Kubernetes Data](backup-restore.html#backup) in _Backing Up and Restoring MySQL Instances_.
 
 2. Restore the backup to a single-instance node.
@@ -203,7 +198,7 @@ and restore the backup to a single-node instance:
 
 <p class="note">
    <strong>Note:</strong>
-You cannot scale down an existing HA MySQL instance to a single-node instance
+You cannot scale down an existing HA instance to a single-node instance
 by applying <code>highAvailablity.enabled: false</code> to an HA instance.
 The apply command will error.
 </p>
@@ -213,7 +208,7 @@ The apply command will error.
 Deleting an HA MySQL instance is the same as deleting a single-node instance
 except that for HA you delete multiple Pods.
 
-To delete an HA MySQL instance:
+To delete an HA instance:
 
 1. See [Delete a MySQL Instance](create-delete-mysql.html#delete-instance)
 in _Creating and Deleting MySQL Instances_.
