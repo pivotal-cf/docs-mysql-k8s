@@ -27,7 +27,7 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 | Word | Explanation |
 |------|-------------|
 | admin | Use as a person's job description instead of operator. Decided: JD, Kim Bassett, and David Sharp 2020.12.09 and changed to admin because that's our house style. If this specifically refers to the Kubernetes admin, use "Kubernetes admin" in first use on the page. |
-| high-availability MySQL instance | Rather than "MySQL high-availability instance".|
+| high-availability MySQL instance | Rather than "MySQL high-availability instance". Shorten to HA MySQL instance after first used. Also okay to shorten to HA instance if using the term a lot on a page.|
 | Kubernetes admin | See "admin" above. |
 | MySQL instance | Not MySQL cluster. From [A. Garner](https://github.com/pivotal-cf/docs-mysql-k8s/pull/28): "To avoid overloading "cluster" further, we now always reference the deployed MySQL as an "instance" rather than "cluster" within our config samples. Updated docs that reference the Tanzu MySQL configuration to replace "cluster" with "instance". Remaining usage of the word cluster are now reference a "Kubernetes cluster" or the default Kubernetes system domain("svc.cluster.local")." _Also see below._|
 | MySQL instance  | Use this phrase consistently. Okay to shorten it to "instance". Not okay to use "Tanzu instance" or "database instance". "MySQL" is a _kind_ in Kubernetes so that is the precise term. Decided: JD, Kim Bassett, and David Sharp 2020.12.09. Changed TanzuMySQL -> MySQL (Shaan 2021.02.24)|
@@ -35,6 +35,7 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 | Operator | Don't use as a job description for a person. Use as the "MySQL Operator" or "Kubernetes Operator". Decided: 2020.12.10 Judy explained that the Tanzu MySQL Operator is a more precise term than the Kubernetes operator. The Tanzu MySQL Operator is a type of Kubernetes Operator. Use the capital "O" and in the first use on the page, preface with "Kubernetes" or something similar to show that it's a pattern and not a person. 2021.04.02  ~~Tanzu MySQL~~ Tanzu SQL.|
 | Pod  | From the [word list](https://docs.google.com/spreadsheets/d/1hkadtxR1hY57kK7h5HN4ITHLJleZixCDH_RJPUpNq_A/edit?usp=sharing) See "MySQL Pod" below. |
 | persistent volume claim (PVC)  | Spell out on first use on page.|
+| single-node MySQL instance | Rather than "MySQL single-node instance". Okay to shorten to single-node instance if using the term a lot on a page.|
 | `.yaml` | Instead of `.yml` |
 
 ## Placeholder Table
