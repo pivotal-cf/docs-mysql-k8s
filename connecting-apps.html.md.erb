@@ -78,6 +78,24 @@ mysql@mysql-sample-1:/$
 Once you are on the pod, create any mysql constructs your application requires,
 and the user privileged to access those constructs as needed by your application.
 
+For example, here we create a database and user for our Bitnami Wordpress deployment:
+
+<pre class="terminal">
+# KB: Why was this previously $ mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root ?
+$ mysql -p$(cat /etc/mysql/secrets/root-password) -u root
+mysql> CREATE DATABASE bitnami_wordpress;
+Query OK, 1 row affected (0.20 sec)
+
+mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED BY 'hunter2';
+Query OK, 0 rows affected (0.08 sec)
+
+mysql> GRANT ALL PRIVILEGES ON bitnami_wordpress.* TO 'bn_wordpress'@'%';
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> FLUSH PRIVILEGES;
+Query OK, 0 rows affected (0.10 sec)
+</pre>
+
 ## <a id='config-app-db'></a>Configure Your Application with MySQL User and Connectivity Information
 
 Application configuration will be specific to the application being deployed. Here
