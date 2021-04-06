@@ -184,6 +184,13 @@ To connect an app or other client to the MySQL instance over TLS:
     + To connect to the MySQL server through the proxy port:
         1. Follow steps 1 and 2 of
         [Connect to the MySQL Server with the Kubernetes API Server](accessing.html#port-forward).
+
+       <p class="note">
+          <strong>Note:</strong> Do not use the root user for application connectivity. 
+      Please create a new user with only the privileges required to work with the desired DB schema, see
+      <a href="./connecting-apps.html">Connecting Apps to MySQL Instances</a>
+       </p>           
+
         1. Validate the CA certificate by running a command such as:
 
             ```
