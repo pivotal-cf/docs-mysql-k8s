@@ -113,50 +113,50 @@ requirements.
     first Issuer `selfsigned-issuer` generates a certificate `ca-certificate`  for the second Issuer `tls-issuer`.
     That second Issuer generates the actual `tls-certificate` which MySQL will present:
 
-    ```
-cat <<EOF | kubectl apply -f -
----
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: selfsigned-issuer
-spec:
-  selfSigned: {}
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: ca-certificate
-spec:
-  isCA: true
-  issuerRef:
-    name: selfsigned-issuer
-  secretName: ca-secret
-  commonName: ca-cert
----
-apiVersion: cert-manager.io/v1
-kind: Issuer
-metadata:
-  name: tls-issuer
-spec:
-  ca:
-    secretName: ca-secret
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: tls-certificate
-spec:
-  isCA: false
-  dnsNames:
-    - localhost
-  ipAddresses:
-    - 127.0.0.1
-  secretName: tls-secret
-  issuerRef:
-    name: tls-issuer
-EOF
-```
+    <pre class="terminal">
+    cat &lt;&lt;EOF | kubectl apply -f -
+    ---
+    apiVersion: cert-manager.io/v1
+    kind: Issuer
+    metadata:
+      name: selfsigned-issuer
+    spec:
+      selfSigned: {}
+    ---
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: ca-certificate
+    spec:
+      isCA: true
+      issuerRef:
+        name: selfsigned-issuer
+      secretName: ca-secret
+      commonName: ca-cert
+    ---
+    apiVersion: cert-manager.io/v1
+    kind: Issuer
+    metadata:
+      name: tls-issuer
+    spec:
+      ca:
+        secretName: ca-secret
+    ---
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: tls-certificate
+    spec:
+      isCA: false
+      dnsNames:
+        - localhost
+      ipAddresses:
+        - 127.0.0.1
+      secretName: tls-secret
+      issuerRef:
+        name: tls-issuer
+    EOF
+    </pre>
 
 3. Re-deploy mysql to present the above-created `tls-certificate` when receiving a client
 connection request.
@@ -167,24 +167,24 @@ connection request.
     and edit in place:
 
     ```
-spec:
-  ...
-  tls:
-    secret:
-      name: tls-secret
-  ...
-```
-    You may validate a successful deployment by inspecting the startup output:
+    spec:
+      ...
+      tls:
+        secret:
+          name: tls-secret
+      ...
     ```
-$ kubectl logs pod/mysql-sample-0 -c mysql
-Initialization complete, now exiting!
-2021-04-06T02:07:02.667789Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.22-13) starting as process 1
-2021-04-06T02:07:02.675491Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-2021-04-06T02:07:02.907693Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-2021-04-06T02:07:03.055031Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
-2021-04-06T02:07:03.157475Z 0 [Warning] [MY-010068] [Server] CA certificate /etc/mysql/certs/ca.pem is self signed.
-2021-04-06T02:07:03.161660Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
-```
+    You may validate a successful deployment by inspecting the startup output:
+    <pre class="terminal">
+    $ kubectl logs pod/mysql-sample-0 -c mysql
+    Initialization complete, now exiting!
+    2021-04-06T02:07:02.667789Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.22-13) starting as process 1
+    2021-04-06T02:07:02.675491Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+    2021-04-06T02:07:02.907693Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+    2021-04-06T02:07:03.055031Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+    2021-04-06T02:07:03.157475Z 0 [Warning] [MY-010068] [Server] CA certificate /etc/mysql/certs/ca.pem is self signed.
+    2021-04-06T02:07:03.161660Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+    </pre>
 
     Additional information is in
     [Configuring TLS for MySQL Instances](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/configure-tls.html#using-cert-manager).
@@ -243,6 +243,6 @@ Initialization complete, now exiting!
     On successful installation, helm will display wordpress instructions to connect as a user and admin
     to the running wordpress server. You can also retrieve the Wordpress user password by running:
 
-    ```
-kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
-```
+    <pre class="terminal">
+    $ kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
+    </pre>
