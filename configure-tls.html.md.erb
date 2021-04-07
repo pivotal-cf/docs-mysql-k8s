@@ -54,10 +54,15 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
 1. Generate a certificate and private key using a certificate manager,
    such as OpenSSL, certstrap, or Let's Encrypt.
    <br><br>
-   When creating the certificate, supply the server hostname for the
-   subject alternative names (SANs).
-   - If the MySQL ServiceType is ClusterIP, the hostnames are localhost and 127.0.0.1.
-   - If the MySQL ServiceType is LoadBalancer, hostname is the external DNS name of the load balancer.
+   When creating the certificate, supply the server hostname for the subject alternative names (SANs).  The server
+   hostname will be the DNS name you use when connecting your app to the MySQL instance.
+
+   If your applications are deployed within the same Kubernetes cluster as your instance, the hostname will be
+   MYSQL-INSTANCE-NAME.MYSQL-INSTANCE-NAMESPACE.
+
+   If your application are deployed outside of the Kubernetes cluster and you have configured the MySQL spec.serviceType
+   as LoadBalancer, then the hostname is the external DNS name of the load balancer.  See the docs for
+   <a href="accessing.html#off-platform-access">configuring off-platform access.</a>
 
 1. Create the TLS Secret by running:
 
@@ -106,9 +111,10 @@ For information about installing Helm, see the
     --namespace cert-manager --version v1.0.2 --set installCRDs=true
     ```
 
-2. Create an Issuer resource in the `cert-manager` namespace.
-   For information about the Issuer types,
-   see the [cert-manager documentation](https://cert-manager.io/docs/configuration/).
+2. Create an Issuer resource in the same namespace as the MySQL instance or use a ClusterIssuer resource.
+
+   For information about the Issuer types, see the [cert-manager
+   documentation](https://cert-manager.io/docs/configuration/).
 
 5.  Choose and record a name for the TLS secret name, for example, `mysql-tls-secret`.
 
@@ -117,11 +123,19 @@ For information about installing Helm, see the
 3. Create a Certificate resource in the same namespace as the MySQL instance.
    Then, cert-manager creates the TLS Secret.
    <br><br>
+
    When creating the Certificate resource, supply the server hostname for the
    subject alternative names (SANs) using the `spec.dnsNames` and `spec.ipAddresses`
    configuration in the resource.
-   - If the MySQL ServiceType is ClusterIP, the DNS is localhost and IP address is 127.0.0.1.
-   - If the MySQL ServiceType is LoadBalancer, the DNS is the external DNS name of the load balancer.
+
+   The server hostname will be the DNS name you use when connecting your app to the MySQL instance.
+
+   If your applications are deployed within the same Kubernetes cluster as your instance, the hostname will be
+   MYSQL-INSTANCE-NAME.MYSQL-INSTANCE-NAMESPACE.
+
+   If your application are deployed outside of the Kubernetes cluster and you have configured the MySQL spec.serviceType
+   as LoadBalancer, then the hostname is the external DNS name of the load balancer.  See the docs for
+   <a href="accessing.html#off-platform-access">configuring off-platform access.</a>
 
     For how to specify the configuration of the Certificate resource,
    see the [cert-manager documentation](https://cert-manager.io/docs/usage/certificate/).
