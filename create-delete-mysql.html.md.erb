@@ -27,7 +27,7 @@ To create a MySQL instance:
     kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
     ```
     Where `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance.
-
+    <br><br>
     For example:
     <pre class="terminal">$ kubectl config set-context --current --namespace=my-namespace
     </pre>
@@ -61,7 +61,7 @@ To create a MySQL instance:
    in _Installing the Tanzu SQL for Kubernetes Operator_.
 
 4. Create a copy of the `mysql.yaml` file and give it a unique name.
-
+    <br><br>
     For example:
 
     <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml</pre>
@@ -77,7 +77,7 @@ To create a MySQL instance:
     kubectl -n DEVELOPMENT-NAMESPACE apply -f FILENAME
     ```
     Where `FILENAME` is the name of the configuration file you created in Step 4 above.
-
+    <br><br>
     For example:
 
     <pre class="terminal">$ kubectl -n my-namespace apply -f testdb.yaml
@@ -170,34 +170,21 @@ To delete a MySQL instance:
        If you destroy your PVC, you delete all data associated with your <%= vars.product_short %> database.
     </p>
 
-    1. Review your PVCs by running:
+    We can delete the associated PVC(s) with the label `app.kubernetes.io/instance`.
 
-        ```
-        kubectl get pvc
-        ```
+    ```
+    kubectl delete pvc -l app.kubernetes.io/instance=INSTANCE-NAME
+    ```
 
-        For example:
+    Where `INSTANCE-NAME` is the name of the MySQL instance that you deleted above.
+    <br><br>
+    For example:
 
-        <pre class="terminal">
-       $ kubectl get pvc
-NAME                              STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-mysql-data-mysql-sample-0         Bound    pvc-3262e841-c4aa-4aa4-b53a-68cd3078f806   1Gi        RWO            standard       7d1h
-mysql-data-another-sample-0       Bound    pvc-87c8a3a9-263b-46e6-8acb-ed474434fd24   1Gi        RWO            standard       6d21h</pre>
-
-    2. Identify the names of the PVCs that correspond to the name of the instance you deleted above.
-
-    3. Delete the PVC associated with each MySQL Pod by running, for each Pod:
-
-        ```
-        kubectl delete pvc mysql-data-INSTANCE-NAME-N
-        ```
-
-        Where:
-        + `INSTANCE-NAME` is the name of the MySQL instance that you deleted above.
-        + `N` is the index of each Pod in the MySQL instance.
-
-        For example:
-
-        <pre class="terminal">
-       $ kubectl delete pvc mysql-data-mysql-sample-0
+    <pre class="terminal">
+   $ kubectl delete pvc -l app.kubernetes.io/instance=mysql-sample
 persistentvolumeclaim "mysql-data-mysql-sample-0" deleted</pre>
+
+    <p class="note">
+        <strong> Note:</strong> For High availability (HA) MySQL instances, this will delete all 3 PVCs
+        associated with the MySQL instance.
+    </p>
