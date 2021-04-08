@@ -1,13 +1,13 @@
 ---
-title: Configuring High-Availability MySQL Instances
+title: Configuring MySQL Instances for High Availability
 ---
 
-This topic describes how to create high availability for <%= vars.product_full %>.
+This topic describes how to use <%= vars.product_full %> to create high-availability (HA) MySQL instances.
 
 
 ##<a id='overview'></a>Overview
 
-High availability (HA) MySQL instances offer automatic failover, ensuring that app requests operate continuously
+High-availability (HA) MySQL instances offer automatic failover, ensuring that app requests operate continuously
 and without extended downtime.
 
 For more information about high availability including an architecture diagram,
@@ -31,20 +31,22 @@ see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
 <%= vars.product_full %> does not support explicit node selection or anti-affinity
 for controlling Pod assignment to Kubernetes nodes.
-Kubernetes distributes Pods per to its regular placement and scheduling policies
+Kubernetes distributes Pods according to its regular placement and scheduling policies
 including any resource requests.
 
-###<a id='scale-up'></a>Scale Up to HA Is Easy, Scale Down to Single-Node Is Hard
+###<a id='scale-up'></a>Scaling Single Node to HA
 
 You can convert a single-node MySQL instance to an HA MySQL instance with a single command.
 See [Convert a Single-Node MySQL Instance to an HA MySQL Instance](#convert-to-ha) below.
 
-However, it is not straightforward to convert an HA instance to a single-node instance.
+###<a id='scale-down'></a>Scaling HA to Single Node
+
+It is not straightforward to convert an HA instance to a single-node instance.
 To move from an HA instance to a single-node instance,
-you must take a backup of the database and restore it to a new single-node instance.
+you must take a backup of the HA instance and restore it to a new single-node instance.
 See [Move an HA MySQL Instance to a Single-Node MySQL Instance](#ha-to-sn) below.
 
-### <a id='about-backups'></a> About Backing Up
+### <a id='about-backups'></a> About Backing Up HA Instances
 
 HA MySQL instances are backed up and restored the same way as single-node MySQL instances.
 Backups from HA instances are created from the primary MySQL Pod.
@@ -59,7 +61,7 @@ Before you can configure high availability, you must have:
 
 <%= partial '/prerequisites' %>
 
-* **Know how to create and delete single-node MySQL instances:**
+* Reviewed how to create and delete single-node MySQL instances.
   See [Creating and Deleting MySQL Instances](create-delete-mysql.html).
 
 ## <a id="create-ha"></a>Create an HA MySQL Instance
@@ -67,9 +69,8 @@ Before you can configure high availability, you must have:
 Creating an HA MySQL instance is very similar to creating a single-node MySQL instance.
 By default, MySQL instances are single node.
 
-For HA instances, configure high availability to be true as described below:
+To create an HA instance:
  
-
 1. Follow the steps 1–4 in [Create a MySQL Instance](create-delete-mysql.html#create-instance).
 
 2. Edit your uniquely named copy of `mysql.yaml`:
@@ -99,7 +100,7 @@ For HA instances, configure high availability to be true as described below:
 
 ## <a id="convert-to-ha"></a>Convert a Single-Node MySQL Instance to an HA MySQL Instance
 
-If a single-node MySQL instance already exists, you can edit its YAML to set high-availability
+If a single-node MySQL instance already exists, you can edit its YAML file to set high-availability
 and then redeploy the instance.
  
 <p class="note">
@@ -120,7 +121,7 @@ To change a single-node instance into an HA instance:
 After you have created your HA MySQL instance, you can inspect the instance to 
 confirm that all the Pods are running.
 
-This inspection procedure can be also be used for troubleshooting. 
+This inspection procedure can also be used for troubleshooting.
 
 
 1. Connect to a Pod, by running: 
