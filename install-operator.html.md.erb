@@ -273,16 +273,18 @@ To install the Operator using the Helm CLI:
 [Create Namespace and Secret](#create-namespace-secret) above.
 
 1. Install the <%= vars.product_short %> Operator by running one of the following:
-  + If you created a custom `values-override.yaml` in [Review values.yaml and
+    + If you created a custom `values-override.yaml` in [Review values.yaml and
     Create Overrides If Needed](#create-overrides) above,
     then run the following helm command:
-    ```
-    helm install --values=/your/values-override.yaml tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
-    ```<br><br>
-  + If you did not create a `values-override.yaml`, then run the following helm command:
-    ```
-    helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
-    ```
+
+        ```
+        helm install --values=/your/values-override.yaml tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
+        ```
+    + If you did not create a `values-override.yaml`, then run the following helm command:
+
+        ```
+        helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
+        ```
 
 1. See that your Operator has installed successfully by running:
 
