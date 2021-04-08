@@ -34,12 +34,12 @@ for controlling Pod assignment to Kubernetes nodes.
 Kubernetes distributes Pods according to its regular placement and scheduling policies
 including any resource requests.
 
-###<a id='scale-up'></a>Scaling Single Node to HA
+###<a id='scale-up'></a>About Scaling Single Node to HA
 
 You can convert a single-node MySQL instance to an HA MySQL instance with a single command.
 See [Convert a Single-Node MySQL Instance to an HA MySQL Instance](#convert-to-ha) below.
 
-###<a id='scale-down'></a>Scaling HA to Single Node
+###<a id='scale-down'></a>About Scaling HA to Single Node
 
 It is not straightforward to convert an HA instance to a single-node instance.
 To move from an HA instance to a single-node instance,
@@ -50,7 +50,7 @@ See [Move an HA MySQL Instance to a Single-Node MySQL Instance](#ha-to-sn) below
 
 HA MySQL instances are backed up and restored the same way as single-node MySQL instances.
 Backups from HA instances are created from the primary MySQL Pod.
-Backups from HA instances can be restored either to single-node or HA instances.
+You can restore the backups from HA instances to either single-node or HA instances.
 For information about backup and restore,
 see [Backing Up and Restoring MySQL Instances](backup-restore.html).
 
@@ -105,7 +105,7 @@ and then redeploy the instance.
  
 <p class="note">
    <strong>Note:</strong>
-Be sure that you want an HA instance before following this procedure.
+Ensure that you want an HA instance before following this procedure.
 You cannot easily change an HA instance back to a single-node one.
 </p>
 
@@ -123,15 +123,14 @@ confirm that all the Pods are running.
 
 This inspection procedure can also be used for troubleshooting.
 
-
-1. Connect to a Pod, by running: 
+1. Connect to one of the instance Pods, by running:
 
     ```
     kubectl exec -it POD-NAME --container=mysql -- bash
     ```
     Where `POD-NAME` is the name of the primary Pod or one of the secondary Pods.
-    The Pod name is the instance name defined in the copy of the `mysql.yaml` file appended with an index, 0–2.
-    When the Pod is first created, the index for the primary Pod is `-0`.
+    The Pod name is the instance name appended with an index of 0–2.
+    When the instance is first created, the index for the primary Pod is 0.
 
     For example:
 
@@ -143,7 +142,7 @@ This inspection procedure can also be used for troubleshooting.
     mysql --user=USER --password=PASSWORD
     ```
     Where:
-    * `USER` is a user name on the database. When the database is first created, only the root user exists.
+    * `USER` is a username on the database. When the database is first created, only the root user exists.
     * `PASSWORD` is the password for the database user.
 
     For example:
@@ -193,8 +192,8 @@ MEMBER_VERSION: 8.0.22
 
 ##<a id='ha-to-sn'></a>Move an HA MySQL Instance to a Single-Node MySQL Instance
 
-To move from HA MySQL instance to a single-node MySQL instance, you need to backup the HA instance
-and restore the backup to a single-node instance:
+To move from an HA MySQL instance to a single-node MySQL instance, you need to back up the HA instance
+and restore the backup to a single-node instance.
 
 1. Back up the HA instance.
    See [Back Up Tanzu SQL for Kubernetes Data](backup-restore.html#backup) in _Backing Up and Restoring MySQL Instances_.
@@ -208,13 +207,12 @@ and restore the backup to a single-node instance:
    <strong>Note:</strong>
 You cannot scale down an existing HA instance to a single-node instance
 by applying <code>highAvailablity.enabled: false</code> to an HA instance.
-The apply command will error.
+The <code>apply</code> command fails.
 </p>
 
 ## <a id='delete'></a>Delete an HA MySQL Instance
 
-Deleting an HA MySQL instance is the same as deleting a single-node instance
-except that for HA you delete multiple Pods.
+Deleting an HA MySQL instance is the same as deleting a single-node instance.
 
 To delete an HA instance:
 
