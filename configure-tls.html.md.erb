@@ -131,7 +131,7 @@ For information about installing Helm, see the
          request.
    
       2. Supply server hostname for the subject alternative names (SANs) using the
-         `spec.dnsNames` and `spec.ipAddresses` parameters in your request.  (TODO: Clarify how to specifying SAN's within cert-manager, rf https://cert-manager.io/docs/usage/certificate/ . )
+         `spec.dnsNames` and `spec.ipAddresses` parameters in your request.
 
       3. For `spec.dnsNames` and `spec.ipAddresses` specify the DNS name(s) or IP address(es) you use when connecting your app to the MySQL instance.
          
@@ -152,9 +152,10 @@ For information about installing Helm, see the
    <a href="accessing.html#off-platform-access">Accessing the MySQL Server
             from an External IP Address.</a>
            
-         - Include any additional DNS names or IP addresses you have configured to
-           access to your MySQL instance and which may be used by client desiring a
-           TLS connection to the instance.
+         - Include any additional DNS names, IP addresses, URIs or subject alternative names
+           you may have configured to
+           access your MySQL instance and which may be used by a client desiring a
+           TLS connection to the instance. <a href="https://cert-manager.io/docs/usage/certificate">Certificate Resources
            
 
     For information about troubleshooting certificate creation,
