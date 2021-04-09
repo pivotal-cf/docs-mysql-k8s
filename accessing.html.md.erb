@@ -36,11 +36,12 @@ To see all MySQL instance settings configured:
 
 1. Review the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
 
-## <a id='server-login'></a> Root Access to the MySQL Server
+## <a id='server-login'></a> Get Root Access to the MySQL Server
 
-Database administrative operations (such as creating users and databases) require connecting
-to MySQL as the root database user.  <%= vars.product_short %> only allows root account
-connections from within the container running the database; off-container root connections are not permitted.
+Database administrative operations, such as creating users and databases, require connecting
+to MySQL as the root database user.
+<%= vars.product_full %> only allows root account connections from within the container running the database.
+Off-container root connections are not permitted.
 
 To connect to the MySQL instance as the MySQL root user:
 
