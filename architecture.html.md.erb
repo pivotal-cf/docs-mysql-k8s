@@ -25,9 +25,12 @@ The diagram below shows the architecture of <%= vars.product_short %>:
 High availability offers automatic failover, ensuring that app requests operate continuously
 and without extended downtime.
 
-<%= vars.product_short %> uses InnoDB Cluster to provide a highly-available MySQL instance on Kubernetes.
-InnoDB Cluster utilizes [Group Replication](https://dev.mysql.com/doc/refman/8.0/en/group-replication.html) as well as other MySQL technologies. For detailed information about InnoDB Cluster features,
+<%= vars.product_full %> uses InnoDB Cluster to provide a highly-available MySQL instance on Kubernetes.
+For information about InnoDB Cluster features,
 see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-innodb-cluster-introduction.html).
+
+InnoDB Cluster uses Group Replication and other MySQL technologies.
+For information about Group Replication, see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/group-replication.html).
 
 The diagram below shows the architecture of an HA MySQL instance:
 
@@ -44,14 +47,15 @@ the topology consists of five pods:
 + Two proxy pods
 
 The primary database is a read-write database.
-All external connections (for example applications) are directed by the proxy to the primary read-write database.
+All external connections, such as from apps, are directed by the proxy to the primary read-write database.
 The two secondary databases are read-only and are updated as replicas of the primary.
+
 Group Replication ensures that data is synchronously replicated
 from the primary to the secondary database pods.
 If the primary pod becomes unresponsive, app requests are redirected to a secondary pod,
 which gets promoted to primary.
 All app requests continue to that promoted primary,
-and a new secondary mysql pod is created to replace the failed pod.
+and a new secondary MySQL pod is created to replace the failed pod.
 
 If a proxy pod fails, Kubernetes directs traffic to the remaining proxy pod
 while recreating the failed pod in the background.
