@@ -233,11 +233,11 @@ an example of creating a database, user and password for connection testing.
   - IP_ADDRESS: the external IP address from the previous step
   - CA_CERTPATH: the pathname to the certificate file created in step 2 above (example: `./ca.crt`)
 ```
-mysql -u USERNAME -pPASSWORD -h IP_ADDRESS --ssl-mode=VERIFY_CA --ssl-cert=CA_CERTPATH
+mysql -u USERNAME -pPASSWORD -h IP_ADDRESS --ssl-mode=VERIFY_CA --ssl-ca=CA_CERTPATH
 ```
    For example:
 ```
-$ mysql -u bn_wordpress -phunter2 -h 192.168.64.200 --ssl-mode=VERIFY_CA --ssl-cert=./ca.crt
+$ mysql -u bn_wordpress -phunter2 -h 192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt
 
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Welcome to the MySQL monitor.  Commands end with ; or \g.
