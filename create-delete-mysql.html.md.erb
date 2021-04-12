@@ -113,14 +113,9 @@ volume claim (PVC).
 This PVC is attached to the instance and contains the data for the MySQL database.
 
 The PVC name contains the instance name and the MySQL Pod number.
-Currently only one Pod is allowed per instance, so the PVC name is of the form
-<code>mysql-data-INSTANCE-NAME-N</code>.
-For example, <code>mysql-data-mysql-sample-0</code>
+The PVC name is of the form <code>mysql-data-INSTANCE-NAME-N</code>,
+for example, `mysql-data-mysql-sample-0`.
 
-<p class="note">
-   <strong>Note:</strong>
-Currently only one Pod is allowed per instance, so <code>N</code> is always <code>0</code>.
-</p>
 
 ###<a id="about-deleting"></a> About Deleting a MySQL Instance
 
