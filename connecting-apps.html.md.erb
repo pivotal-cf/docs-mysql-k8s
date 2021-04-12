@@ -149,15 +149,21 @@ requirements.
     spec:
       isCA: false
       dnsNames:
-        - localhost
+        - SEE NOTE AT END
       ipAddresses:
-        - 127.0.0.1
+        - SEE NOTE AT END
       secretName: tls-secret
       issuerRef:
         name: tls-issuer
     EOF
     </pre>
-
+<p class="note">
+    <strong>Note:</strong> If Wordpress is deployed <b>within the same Kubernetes cluster</b> as your instance,
+         specify MYSQL-INSTANCE-NAME.MYSQL-INSTANCE-NAMESPACE for spec.dnsNames.
+<br>If Wordpress is deployed <b>outside of the Kubernetes cluster</b> and you have
+            configured the MySQL instance's serviceType as `LoadBalancer`, then
+           `spec.ipAddresses` is the external IP address of the load balancer.
+</p>
 3. Re-deploy mysql to present the above-created `tls-certificate` when receiving a client
 connection request.
 
