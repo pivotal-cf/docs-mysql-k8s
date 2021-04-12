@@ -70,7 +70,7 @@ Creating an HA MySQL instance is very similar to creating a single-node MySQL in
 By default, MySQL instances are single node.
 
 To create an HA instance:
- 
+
 1. Follow the steps 1–4 in [Create a MySQL Instance](create-delete-mysql.html#create-instance).
 
 2. Edit your uniquely named copy of `mysql.yaml`:
@@ -102,7 +102,7 @@ To create an HA instance:
 
 If a single-node MySQL instance already exists, you can edit its YAML file to set high-availability
 and then redeploy the instance.
- 
+
 <p class="note">
    <strong>Note:</strong>
 Ensure that you want an HA instance before following this procedure.
@@ -118,7 +118,7 @@ To change a single-node instance into an HA instance:
 
 ## <a id="inspect-instance"></a>Inspect an HA MySQL Instance
 
-After you have created your HA MySQL instance, you can inspect the instance to 
+After you have created your HA MySQL instance, you can inspect the instance to
 confirm that all the Pods are running.
 
 This inspection procedure can also be used for troubleshooting.
@@ -199,9 +199,9 @@ and restore the backup to a single-node instance.
    See [Back Up Tanzu SQL for Kubernetes Data](backup-restore.html#backup) in _Backing Up and Restoring MySQL Instances_.
 
 2. Restore the backup to a single-instance node.
-   See [Restore from a Backup](backup-restore.html#backup-restore.html#restore-from-backup)
+   See [Restore from a Backup](backup-restore.html#restore-from-backup)
    in _Backing Up and Restoring MySQL Instances_.
-   When you edit the `restore.yaml` copy, set `highAvailability.enabled` to `false`.
+   When you edit your copy of the `restore.yaml` file, set `highAvailability.enabled` to `false`.
 
 <p class="note">
    <strong>Note:</strong>
