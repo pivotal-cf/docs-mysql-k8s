@@ -27,6 +27,7 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 | Word | Explanation |
 |------|-------------|
 | admin | Use as a person's job description instead of operator. Decided: JD, Kim Bassett, and David Sharp 2020.12.09 and changed to admin because that's our house style. If this specifically refers to the Kubernetes admin, use "Kubernetes admin" in first use on the page. |
+| connect (an app to a service instance) | Do not use "bind" unless you are referring to creating a [ServiceBinding](https://kubernetes.io/docs/concepts/extend-kubernetes/service-catalog/#binding-to-a-managed-service) resource.  |
 | high-availability MySQL instance | Rather than "MySQL high-availability instance". Shorten to HA MySQL instance after first used. Also okay to shorten to HA instance if using the term a lot on a page.|
 | Kubernetes admin | See "admin" above. |
 | MySQL instance | Not MySQL cluster. From [A. Garner](https://github.com/pivotal-cf/docs-mysql-k8s/pull/28): "To avoid overloading "cluster" further, we now always reference the deployed MySQL as an "instance" rather than "cluster" within our config samples. Updated docs that reference the Tanzu MySQL configuration to replace "cluster" with "instance". Remaining usage of the word cluster are now reference a "Kubernetes cluster" or the default Kubernetes system domain("svc.cluster.local")." _Also see below._|
