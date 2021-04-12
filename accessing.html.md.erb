@@ -31,7 +31,7 @@ To see all MySQL instance settings configured:
     For example:
 
     <pre class="terminal">
-    kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     </pre>
 
 1. Review the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
@@ -57,7 +57,7 @@ To connect to the MySQL instance as the MySQL root user:
     For example:
 
     <pre class="terminal">
-    kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     </pre>
 
 1. Log in to the MySQL server.
