@@ -197,6 +197,9 @@ of the TLS Secret created in the namespace.
 
 ## <a id='use-tls'></a>Connect to a Load Balanced MySQL Instance over TLS
 
+
+[//]: # (section needs rewrite. JD only edited for markdown formatting)
+
 Here we illustrate connecting to a MySQL Instance configured with a load
 balancing service (`spec.serviceType.LoadBalancer`) from an off-cluster machine
 running the mysql CLI client.
@@ -209,41 +212,53 @@ To connect mysql client to the MySQL instance over TLS:
 
 1. Obtain the certificate of the CA which signed the MySQL Server's TLS certificate.
 
-  The CA's certificate is
+    The CA's certificate is
   stored in the TLS secret's `ca.crt` field, base64 encoded. You can save that
   certificate out to a local file ca.crt by running:
 
-> kubectl -n DEVELOPMENT-NAMESPACE get secret TLS-SECRET-NAME -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
+    ```
+    kubectl -n DEVELOPMENT-NAMESPACE get secret TLS-SECRET-NAME -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
+
+    ```
+
+    For example:
+
+    <pre class="terminal">
+    $ kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
+    </pre>
 
 1. Create a MySQL username and password to test your connection with.
    MySQL instances prohibit root connection from remote machines; you will need a
    non-root user to connect as.
    
-   See the [Connecting Apps to MySQL Instances](https://docs-pcf-staging.sc2-04-pcf1-apps.oc.vmware.com/tanzu-mysql-kubernetes/1-n/connecting-apps.html#create-app-db) page for
-an example of creating a database, user and password for connection testing.
+    For an example of creating a database, user, and password for connection testing,
+    see [Connecting Apps to MySQL Instances](connecting-apps.html#create-app-db).
    
 1. Obtain the IP address which your MySQL Instance is listening on for connections.
   Load balanced instances expose their IP via their `status.loadBalancer.ingress` property:
    
-> kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
+    ```
+    kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
+    ```
 
 1. Connect your local mysql client to your MySQL instance, providing:
   - USERNAME : the username you created above. (example: `bn_wordpress`)
   - PASSWORD : the password for the user you created above. (example: `hunter2`)
   - IP_ADDRESS: the external IP address from the previous step
   - CA_CERTPATH: the pathname to the certificate file created in step 2 above (example: `./ca.crt`)
-```
-mysql -u USERNAME -pPASSWORD -h IP_ADDRESS --ssl-mode=VERIFY_CA --ssl-ca=CA_CERTPATH
-```
-   For example:
-```
-$ mysql -u bn_wordpress -phunter2 -h 192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt
 
+    ```
+mysql -u USERNAME -pPASSWORD -h IP_ADDRESS --ssl-mode=VERIFY_CA --ssl-ca=CA_CERTPATH
+    ```
+
+    For example:
+
+    <pre class="terminal">
+$ mysql -u bn_wordpress -phunter2 -h 192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt <br>
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 7
 ...
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.<br>
 mysql>
-```
+    </pre>
