@@ -10,9 +10,9 @@ This topic describes how to scale or change configurations on a
 
 ## <a id='prereq'></a>Prerequisites
 
-Before you update the <%= vars.product_short %> instance, you must have:
+Before you update the MySQL instance, you must have:
 
-* **Access and permissions to the <%= vars.product_short %> instance.**
+* **Access and permissions to the MySQL instance.**
 
 * **The Kubernetes Command Line Interface (kubectl) installed:**
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
@@ -51,10 +51,6 @@ To scale `storageSize`:
     <pre class="terminal">$ kubectl get pvc mysql-data-mysql-sample-0 -o jsonpath={.spec.storageClassName}
       standard
     </pre>
-    <p class="note">
-       <strong>Note:</strong>
-    Currently only one MySQL Pod is allowed per instance, so <code>N</code> is always <code>0</code>.
-    </p>
 
 1. Check if the storage class allows volume expansion. Look for the `ALLOWVOLUMEEXPANSION` column by running:
 
@@ -124,10 +120,12 @@ has successfully restarted, verify that the storage has been resized.
 
 ### <a id='scale-storage-downtime'></a>Expected Downtime When Scaling storageSize
 
-The expected downtime when expanding storage is as follows:
+For HA instances, no downtime is expected.
 
-- **With online expansion:** There is no downtime expected in most cases.
-- **With offline expansion:** There is downtime while the MySQL Pod is re-created and the
+For single-node instances, the expected downtime when expanding storage is as follows:
+
+- With online expansion: There is no downtime expected in most cases.
+- With offline expansion: There is downtime while the MySQL Pod is re-created and the
 PVC is being resized.
 
 ## <a id='scale-resources'></a>Scale CPU and Memory Resources
@@ -163,7 +161,9 @@ For more information on managing CPU and Memory resources, see the [Kubernetes d
 
 ### <a id='scale-resources-downtime'></a>Expected Downtime When Scaling CPU and Memory Resources
 
-The expected downtime when changing resource reservations is as follows:
+For HA instances, no downtime is expected.
+
+For single-node instances, the expected downtime when changing resource reservations is as follows:
 
 - Brief downtime while Kubernetes re-creates the MySQL Pods.
 - Risk of longer downtime if the new requested values exceed the available capacity
@@ -171,12 +171,16 @@ of the Kubernetes cluster.
 
 ## <a id='other-config'></a>Change Other Configurations
 
-Changing `storageClassName` or `imagePullSecret` does not have any effect on a
-running MySQL instance.
-If a MySQL instance is not running due to errors in these fields, you can change them.
+Changing the following properties does not affect a running MySQL instance:
+
++ `storageClassName`
++ `imagePullSecret`
++  `highAvailability.enabled`
+
+If a MySQL instance is not running due to errors in these properties, you can change them.
 The changes are propagated into the StatefulSet to correct the error.
 
-To change `storageClassName` or `imagePullSecret`,
+To change any of the properties list above,
 update the MySQL configuration by one of the methods below:
 
 * Patch the existing API object in place:
@@ -197,3 +201,6 @@ update the MySQL configuration by one of the methods below:
 
     For example:
     <pre class="terminal">$ kubectl apply -f mysql.yaml</pre>
+
+For information about the properties,
+see [Property Reference for the MySQL Resource](property-reference-mysql.html).
