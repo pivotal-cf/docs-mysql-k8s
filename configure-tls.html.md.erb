@@ -53,15 +53,14 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
 1. Generate a certificate and private key using a certificate manager,
    such as OpenSSL, certstrap, or Let's Encrypt.
    <br><br>
-   When creating the certificate, supply the server hostname for the subject alternative names (SANs).  The server
-   hostname will be the DNS name you use when connecting your app to the MySQL instance.
-
-   If your applications are deployed within the same Kubernetes cluster as your instance, the hostname will be
-   MYSQL-INSTANCE-NAME.MYSQL-INSTANCE-NAMESPACE.
-
-   If your application is deployed outside of the Kubernetes cluster and you have configured the MySQL spec.serviceType
-   as LoadBalancer, then the hostname is the external DNS name of the load balancer.  See the docs for
-   <a href="accessing.html#off-platform-access">Access the MySQL Server from an External IP Address.</a>
+   When creating the certificate, supply the server hostname for the subject alternative names (SANs).
+   The server hostname is the DNS name that you use when connecting your app to the MySQL instance:
+   + If your apps are deployed in the same Kubernetes cluster as your instancer: The hostname is
+   `INSTANCE-NAME.DEVELOPMENT-NAMESPACE`, for example, `mysql-sample.default`.
+   + If your app is deployed outside the Kubernetes cluster and you have configured the MySQL spec.serviceType
+   as LoadBalancer: The hostname is the external DNS name of the load balancer.
+   See <a href="accessing.html#off-platform-access">Access the MySQL Server from an External IP Address</a>
+   in _Accessing MySQL Instances_.
 
 1. Create the TLS Secret by running:
 
