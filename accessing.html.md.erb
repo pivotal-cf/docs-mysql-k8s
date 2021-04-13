@@ -156,53 +156,6 @@ To disable off-platform connections:
 </p>
 
 
-## <a id='port-forward'></a> Access the MySQL Server from the Kubernetes API Server
-
-<p class="note"> <strong>Note:</strong> This procedure proxies the connection to MySQL through the Kubernetes API server. It is intended for debugging access, and its performance is slower than that of a direct connection.  </p>
-
-To access the MySQL server from the Kubernetes API server:
-
-1. Get the MySQL root user password. The root user password is available in the Kubernetes secret named after
-  the MySQL instance with a `-credentials` suffix.
-
-    ```
-    MYSQL_ROOT_PASSWORD=$(kubectl get secret INSTANCE-NAME-credentials -o go-template='{{.data.rootPassword | base64decode}}')
-    ```
-    In this command, replace `INSTANCE-NAME` with the name of the MySQL instance.
-
-1. Start a port-forwarding proxy using the `kubectl port-forward` command. For more information
-about this command, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#port-forward).
-
-    ```
-    kubectl port-forward service/INSTANCE-NAME 3306 &
-    ```
-
-    For example:
-
-    <pre class="terminal">
-    $ kubectl port-forward service/mysql-sample 3306 &
-    <br />Forwarding from 127.0.0.1:3306 -> 3306
-    Forwarding from [::1]:3306 -> 3306
-    </pre>
-
-1. Connect to the service through the poxy port.
-    <br /><br />
-    For example, to connect using the MySQL client:
-
-    <pre class="terminal">
-    $ mysql -h 127.0.0.1 -u root -P 3306 -p${MYSQL_ROOT_PASSWORD}
-    </pre>
-
-1. When finished, stop the proxy by stopping the kubectl process.
-    <br /><br />
-    For example:
-
-    <pre class="terminal">
-    $ jobs
-    [1]+  Running    kubectl port-forward service/mysql-sample 3306 & <br />
-    $ kill %1
-    </pre>
-
 ## <a id='app-connect'></a> Access MySQL From Cluster-Hosted Applications
 
 For each instance, <%= vars.product_short %> creates a Kubernetes service, which is used to connect an app to its MySQL database.
