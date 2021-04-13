@@ -171,16 +171,12 @@ of the Kubernetes cluster.
 
 ## <a id='other-config'></a>Change Other Configurations
 
-Changing the following properties does not affect a running MySQL instance:
-
-+ `storageClassName`
-+ `imagePullSecret`
-+  `highAvailability.enabled`
-
-If a MySQL instance is not running due to errors in these properties, you can change them.
+Changing `storageClassName` or `imagePullSecret` does not have any effect on a
+running MySQL instance.
+If a MySQL instance is not running due to errors in these fields, you can change them.
 The changes are propagated into the StatefulSet to correct the error.
 
-To change any of the properties list above,
+To change `storageClassName` or `imagePullSecret`,
 update the MySQL configuration by one of the methods below:
 
 * Patch the existing API object in place:
