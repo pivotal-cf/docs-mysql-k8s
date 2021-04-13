@@ -109,8 +109,9 @@ It also provides the procedure for how to delete an instance.
 ###<a id="about-pvcs"></a> About PVCs
 
 When you create a MySQL instance, the MySQL Operator also creates a persistent
-volume claim (PVC).
-This PVC is attached to the instance and contains the data for the MySQL database.
+volume claims (PVCs).
+The PVCs are attached to the instance and contains the data for the MySQL database.
+Single-node instance have one PVCis, and a high-availability (HA) instances have three.
 
 The PVC name contains the instance name and the MySQL Pod number.
 The PVC name is of the form <code>mysql-data-INSTANCE-NAME-N</code>,
@@ -120,14 +121,13 @@ for example, `mysql-data-mysql-sample-0`.
 ###<a id="about-deleting"></a> About Deleting a MySQL Instance
 
 There are two steps to deleting an instance.
-The first step is to delete the instance itself, and the second step is to delete the PVC.
+The first step is to delete the instance itself, and the second step is to delete the PVCs
 
 There are situations where you want to delete the instance but not delete the PVC.
 For example, in a test environment, you might delete the instance to save costs
 but keep the PVC storing the data.
-
 If you later create a new instance with the same name as the deleted instance,
-the old PVC automatically reattaches to the new instance and you have access to your data again.
+the old PVCs automatically reattach to the new instance and you have access to your data again.
 
 <p class="note">
    <strong>Note:</strong> If you delete the Pod or the StatefulSet associated
@@ -158,14 +158,12 @@ To delete a MySQL instance:
     my-namespace "mysql-sample" deleted
     </pre>
 
-2. (Optional) Delete the Persistent Volume Claim (PVC).
+2. (Optional) Delete the Persistent Volume Claims (PVCs) by running the command below:
 
     <p class="note warning">
-       <strong> Warning:</strong> This is a destructive action.
-       If you destroy your PVC, you delete all data associated with your <%= vars.product_short %> database.
+       <strong> Warning:</strong> This command is destructive.
+       When you destroy your PVCs, you delete all data associated with your <%= vars.product_short %> database.
     </p>
-
-    We can delete the associated PVC(s) with the label `app.kubernetes.io/instance`.
 
     ```
     kubectl delete pvc -l app.kubernetes.io/instance=INSTANCE-NAME
@@ -180,6 +178,6 @@ To delete a MySQL instance:
 persistentvolumeclaim "mysql-data-mysql-sample-0" deleted</pre>
 
     <p class="note">
-        <strong> Note:</strong> For High availability (HA) MySQL instances, this will delete all 3 PVCs
-        associated with the MySQL instance.
+        <strong> Note:</strong> For HA MySQL instances, the command deletes
+        all three PVCs associated with the MySQL instance.
     </p>
