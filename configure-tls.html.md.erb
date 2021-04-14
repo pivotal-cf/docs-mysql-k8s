@@ -55,10 +55,10 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
    <br><br>
    When creating the certificate, supply the server hostname for the subject alternative names (SANs).
    The server hostname is the DNS name that you use when connecting your app to the MySQL instance:
-   + If your apps are deployed in the same Kubernetes cluster as your instancer: The hostname is
+   + If your apps are deployed in the same Kubernetes cluster as your instance:<br>The hostname is
    `INSTANCE-NAME.DEVELOPMENT-NAMESPACE`, for example, `mysql-sample.default`.
-   + If your app is deployed outside the Kubernetes cluster and you have configured the MySQL spec.serviceType
-   as LoadBalancer: The hostname is the external DNS name of the load balancer.
+   + If your app is deployed outside the Kubernetes cluster and you have configured the MySQL `spec.serviceType`
+   as LoadBalancer:<br>The hostname is the external DNS name of the load balancer.
    See <a href="accessing.html#off-platform-access">Access the MySQL Server from an External IP Address</a>
    in _Accessing MySQL Instances_.
 
@@ -109,53 +109,55 @@ For information about installing Helm, see the
     --namespace cert-manager --version v1.0.2 --set installCRDs=true
     ```
 
-1. Use cert-manager to create either a (cluster-wide) ClusterIssuer resource, or an (namespace-local) Issuer resource in the same namespace as your MySQL instance.
+2. Use cert-manager to create either a cluster-wide ClusterIssuer resource or a namespace-local Issuer resource
+   in the same namespace as your MySQL instance.
 
-   For information about the Issuer types, see the [cert-manager
-   documentation](https://cert-manager.io/docs/configuration/).
+    For information about the Issuer types, see the [cert-manager
+    documentation](https://cert-manager.io/docs/configuration/).
 
     <p class="note">
        <strong>Note:</strong> Some Issuer types, for example ACME, do not produce a TLS Secret that
          includes the <code>ca.crt</code> key.
     </p>
 
-1.  Choose and record a name for the TLS secret name, for example, `mysql-tls-secret`.
+3.  Choose and record a name for the TLS secret name, for example, `mysql-tls-secret`.
     Use this name as the `spec.secretName` when you create the Certificate resource below.
     
-1.  Use the above-created cert-manager ClusterIssuer or Issuer to create a Certificate resource in the same namespace as the MySQL instance. For information about creating cert-manager certificates, see the [cert-manager documentation](https://cert-manager.io/docs/usage/certificate/).
+1.  Use the cert-manager ClusterIssuer or Issuer from step 2 above to create a Certificate resource
+    in the same namespace as the MySQL instance:
 
-      1. Specify your above-chosen TLS secret name in the `spec.secretName` parameter of your request yaml.
+      1. Specify your TLS secret name from step 3 in the `spec.secretName` parameter of your request YAML.
          
-      1. Specify your above (Cluster)Issuer name in the`spec.issuerRef.name` parameter of your
-         request.
+      1. Specify the name of your ClusterIssuer or Issuer in the`spec.issuerRef.name` parameter of your
+         request YAML.
    
       2. Supply server hostname for the subject alternative names (SANs) using the
-         `spec.dnsNames` and `spec.ipAddresses` parameters in your request.
+         `spec.dnsNames` and `spec.ipAddresses` parameters in your request YAML.
 
-      3. For `spec.dnsNames` and `spec.ipAddresses` specify the DNS name(s) or IP address(es) you use when connecting your app to the MySQL instance.
-         
-         - For applications deployed *within the same Kubernetes cluster* as your instance,
+      3. For `spec.dnsNames` and `spec.ipAddresses` specify the DNS names or IP addresses
+         that you use when connecting your app to the MySQL instance.
+         - For apps deployed *within the same Kubernetes cluster* as your instance,
          specify MYSQL-INSTANCE-NAME.MYSQL-INSTANCE-NAMESPACE for `spec.dnsNames`.
          (You may optionally fully-qualify that
    hostname as MYSQL-INSTANCE-NAME.MYSQL-INSTANCE-NAMESPACE.svc.CLUSTER_DOMAIN. Kubernetes
            defaults to the value `cluster.local` for CLUSTER_DOMAIN, e.g.
    `mysql-sample.default.svc.cluster.local`.)
-
-         - For applications deployed *outside of the Kubernetes cluster*, if you have
+         - For apps deployed *outside of the Kubernetes cluster*, if you have
             configured the MySQL instance's serviceType as `LoadBalancer`, then
            `spec.ipAddresses` is the external IP address of the load balancer. That
            address is visible by running:
-            
             `kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}`.<br>
            See the docs for
    <a href="accessing.html#off-platform-access">Accessing the MySQL Server
             from an External IP Address.</a>
-           
          - Include any additional DNS names, IP addresses, URIs or subject alternative names
            you may have configured to
            access your MySQL instance and which may be used by a client desiring a
-           TLS connection to the instance. <a href="https://cert-manager.io/docs/usage/certificate">Certificate Resources
+           TLS connection to the instance. <a href="https://cert-manager.io/docs/usage/certificate">Certificate Resources</a>.
            
+
+    For information about creating cert-manager certificates,
+    see the [cert-manager documentation](https://cert-manager.io/docs/usage/certificate/).
 
     For information about troubleshooting certificate creation,
     see the [cert-manager documentation](https://cert-manager.io/docs/faq/troubleshooting/).
@@ -199,25 +201,24 @@ of the TLS Secret created in the namespace.
 
 [//]: # (section needs rewrite. JD only edited for markdown formatting)
 
-Here we illustrate connecting to a MySQL Instance configured with a load
+This section shows how to connect to a MySQL Instance configured with a load
 balancing service (`spec.serviceType.LoadBalancer`) from an off-cluster machine
 running the mysql CLI client.
 
-To allow the client connection which verifies the MySQL server certificate, we furnish the
-client with the certificate of the CA which signed the MySQL TLS certificate. The
-client will use this CA to authenticate the MySQL server-provided TLS certificate.
+To allow the client connection which verifies the MySQL server certificate, give the
+client the certificate of the CA which signed the MySQL TLS certificate. The
+client uses this CA to authenticate the MySQL server-provided TLS certificate.
 
 To connect mysql client to the MySQL instance over TLS:
 
 1. Obtain the certificate of the CA which signed the MySQL Server's TLS certificate.
 
-    The CA's certificate is
-  stored in the TLS secret's `ca.crt` field, base64 encoded. You can save that
+    The CA certificate is
+  stored in the TLS secrets `ca.crt` field, base64 encoded. You can save that
   certificate out to a local file ca.crt by running:
 
     ```
     kubectl -n DEVELOPMENT-NAMESPACE get secret TLS-SECRET-NAME -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
-
     ```
 
     For example:
@@ -227,13 +228,12 @@ To connect mysql client to the MySQL instance over TLS:
     </pre>
 
 1. Create a MySQL username and password to test your connection with.
-   MySQL instances prohibit root connection from remote machines; you will need a
-   non-root user to connect as.
+   You need to connect as a non-root user because MySQL instances prohibit root connection from remote machines.
    
     For an example of creating a database, user, and password for connection testing,
     see [Connecting Apps to MySQL Instances](connecting-apps.html#create-app-db).
    
-1. Obtain the IP address which your MySQL Instance is listening on for connections.
+1. Obtain the IP address that your MySQL Instance is listening on for connections.
   Load balanced instances expose their IP via their `status.loadBalancer.ingress` property:
    
     ```
