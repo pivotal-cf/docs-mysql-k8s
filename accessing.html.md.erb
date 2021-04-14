@@ -60,6 +60,25 @@ To connect to the MySQL instance as the MySQL root user:
     $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     </pre>
 
+    To connect to a high-availability instance, you must identify which of its three pods is primary (writable). The following command returns the Kubernetes-internal domain name of the primary node:
+
+    <pre class="terminal">
+    $ kubectl exec -it mysql-sample-0 -c mysql -- bash -c \
+          "mysql -B -s --user=root --password=\$(&lt;/etc/mysql/secrets/root-password) \
+          --execute 'SELECT MEMBER_HOST FROM performance_schema.replication_group_members \
+          WHERE (MEMBER_ROLE=\"PRIMARY\")'"
+
+    mysql: [Warning] Using a password on the command line interface can be insecure.
+    mysql-sample-1.mysql-sample-members.default.svc.cluster.local
+    </pre>
+
+    The primary pod name is the first dot-separated component of the command output. In this example, the primary pod name is `mysql-sample-1`, and you can access the container by running the following command:
+
+    <pre class="terminal">
+    $ kubectl exec -it mysql-sample-1 -c mysql -- bash
+    mysql@mysql-sample-1:/$
+    </pre>
+
 1. Log in to the MySQL server.
 
     ```
