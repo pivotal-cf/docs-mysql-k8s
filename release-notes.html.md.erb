@@ -22,14 +22,27 @@ New feature in this release:
   For information, see [Architecture](architecture.html) and 
   [Configuring MySQL Instances for High Availability](high-availability.html).
 
-
 ### Known Issues
 
 This release has the following issue:
 
-* **Upgrades are not supported:** Upgrades from beta releases to the <%= vars.product_full %>
+* **Upgrades from beta releases are not supported:** Upgrades from beta releases to the <%= vars.product_full %>
   v1.0.0 release are not supported.
   Download and install the latest version.
+* **Scaling down a HA instance is unsupported**: Creating a HA instance and scaling back to a single pod is not supported and may incur data loss. The operator does not prevent changing the property, and changing the property will result in unknown behavior.
+  If the pods for the HA instance crash while the cluster and its metadata are still being created, the cluster may not recover automatically.
+* **Pods may restart when creating a HA instance**: Proxy pods may spuriously restart while the cluster is being initialized.
+
+### Limitations
+* There is no ability to configure anti-affinity for a HA instance so the pods of a HA instance may be scheduled to the same Kubernetes node.
+* Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
+* Changing `spec.storageSize` in a MySQL object to scale the Persistent Volume is not supported. See [here](update-instance.html#scale-storage) for a workaround to expand the Persistent Volume.
+* Rotating MySQL system account passwords requires a manual restart of pods. For details, see [here](rotating-credentials.html) on rotating MySQL credentials.
+* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
+   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
+   * Configuring schemas and users for an application.
+* Backups are unencrypted. Enable S3 server side encryption and ensure the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` begins with `https://`). For more on server side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
 
 
 ### Compatibility
