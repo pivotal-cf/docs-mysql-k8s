@@ -19,10 +19,14 @@ This section illustrates the two topologies of MySQL instances:
 ### <a id='single-node'></a> Architecture of a Single-Node MySQL Instance
 
 The diagram below shows the architecture of a single-node MySQL instance:
-<img src="images/mysql4k8s-sn-arch-diagram.jpg" alt="A diagram showing the architecture of a single-node instance" width="350">
+
+<img src="images/mysql4k8s-sn-arch-diagram.jpg" alt="A diagram showing the architecture of a single-node instance, described below" width="350">
 
 <a href="./images/mysql4k8s-sn-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
-<%# It would be valuable to have some text describing this diagram. %>
+
+In a single-node MySQL instance, the app or client makes a request to the MySQL service.
+The service communicates with the single database Pod, named mysql-0.
+The database Pod stores data in a persistent volume claim (PVC).
 
 ### <a id='ha-diagram'></a> Architecture of an HA MySQL Instance
 
@@ -44,25 +48,25 @@ This diagram is described in the text below.">
 <a href="./images/mysql4k8s-ha-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 
 In a high-availability (HA) MySQL instance,
-the topology consists of five pods:
+the topology consists of five Pods:
 
-+ One primary MySQL database pod
-+ Two secondary MySQL database failover pods
-+ Two proxy pods
++ One primary MySQL database Pod
++ Two secondary MySQL database failover Pods
++ Two proxy Pods
 
 The primary database is a read-write database.
 All external connections, such as from apps, are directed by the proxy to the primary read-write database.
 The two secondary databases are read-only and are updated as replicas of the primary.
 
 Group Replication ensures that data is synchronously replicated
-from the primary to the secondary database pods.
-If the primary pod becomes unresponsive, app requests are redirected to a secondary pod,
+from the primary to the secondary database Pods.
+If the primary Pod becomes unresponsive, app requests are redirected to a secondary Pod,
 which gets promoted to primary.
 All app requests continue to that promoted primary,
-and a new secondary MySQL pod is created to replace the failed pod.
+and a new secondary MySQL Pod is created to replace the failed Pod.
 
-If a proxy pod fails, Kubernetes directs traffic to the remaining proxy pod
-while recreating the failed pod in the background.
+If a proxy Pod fails, Kubernetes directs traffic to the remaining proxy Pod
+while re-creating the failed Pod in the background.
 ## <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
 
 <%= vars.product_full %> provides extensions to the Kubernetes API through custom resources.
@@ -80,7 +84,7 @@ Applying this resource causes the Kubernetes Operator to create a StatefulSet wi
 with two containers.
 One container runs the MySQL database software, and the other runs components to support backups.
 
-The MySQL Pod mounts a Persistent Volume Claim (PVC) which holds the MySQL data.
+The MySQL Pod mounts a persistent volume claim (PVC) which holds the MySQL data.
 
 When a MySQL instance is created, the MySQL Operator automatically creates a Kubernetes service
 with a service type of `ClusterIP` which routes connections to the MySQL Pod.
