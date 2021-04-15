@@ -108,10 +108,9 @@ It also provides the procedure for how to delete an instance.
 
 ###<a id="about-pvcs"></a> About PVCs
 
-When you create a MySQL instance, the MySQL Operator also creates a persistent
-volume claims (PVCs).
-The PVCs are attached to the instance and contains the data for the MySQL database.
-Single-node instance have one PVCis, and a high-availability (HA) instances have three.
+When you create a MySQL instance, the MySQL Operator also creates PVCs.
+The PVCs are attached to the instance and contain the data for the MySQL database.
+Single-node instances have one PVC, and high-availability (HA) instances have three.
 
 The PVC name contains the instance name and the MySQL Pod number.
 The PVC name is of the form <code>mysql-data-INSTANCE-NAME-N</code>,
@@ -121,7 +120,7 @@ for example, `mysql-data-mysql-sample-0`.
 ###<a id="about-deleting"></a> About Deleting a MySQL Instance
 
 There are two steps to deleting an instance.
-The first step is to delete the instance itself, and the second step is to delete the PVCs
+The first step is to delete the instance itself, and the second step is to delete the PVCs.
 
 There are situations where you want to delete the instance but not delete the PVC.
 For example, in a test environment, you might delete the instance to save costs
@@ -131,8 +130,7 @@ the old PVCs automatically reattach to the new instance and you have access to y
 
 <p class="note">
    <strong>Note:</strong> If you delete the Pod or the StatefulSet associated
-   with the MySQL resource,
-   the Operator re-creates it for you.
+   with the MySQL resource, the Operator re-creates it for you.
    To permanently delete the instance, you need to delete the MySQL resource,
    as described in step 1 below.
 </p>
@@ -158,7 +156,7 @@ To delete a MySQL instance:
     my-namespace "mysql-sample" deleted
     </pre>
 
-2. (Optional) Delete the Persistent Volume Claims (PVCs) by running the command below:
+2. (Optional) Delete the PVCs by running:
 
     <p class="note warning">
        <strong> Warning:</strong> This command is destructive.
