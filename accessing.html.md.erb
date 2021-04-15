@@ -64,7 +64,7 @@ To connect to the MySQL instance as the MySQL root user:
 
     <pre class="terminal">
     $ kubectl exec -it mysql-sample-0 -c mysql -- bash -c \
-          "mysql -B -s --user=root --password=\$(&lt;/etc/mysql/secrets/root-password) \
+          "mysql -B -s --user=root --password=\$(cat $MYSQL_ROOT_PASSWORD_FILE) \
           --execute 'SELECT MEMBER_HOST FROM performance_schema.replication_group_members \
           WHERE (MEMBER_ROLE=\"PRIMARY\")'"
 

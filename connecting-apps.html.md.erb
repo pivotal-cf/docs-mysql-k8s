@@ -37,7 +37,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
     For example, the following commands create a `bitnami_wordpress` database and `bn_wordpress` user for the Bitnami WordPress Stack deployment:
 
     <pre class="terminal">
-    $ mysql -p$(&lt;/etc/mysql/secrets/root-password) -u root
+    $ mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
     mysql> CREATE DATABASE bitnami_wordpress;
     Query OK, 1 row affected (0.20 sec)
 
