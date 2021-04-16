@@ -45,22 +45,17 @@ Off-container root connections are not permitted.
 
 To connect to the MySQL instance as the MySQL root user:
 
-1. Access the MySQL container.
+1. (If the MySQL instance is configured for high availability) Identify the primary (writable) pod of the MySQL instance by running:
 
     ```
-    kubectl -n DEVELOPMENT-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
+    kubectl exec -it INSTANCE-NAME-0 -c mysql -- bash -c \
+          "mysql -B -s --user=root --password=\$(cat $MYSQL_ROOT_PASSWORD_FILE) \
+          --execute 'SELECT MEMBER_HOST FROM performance_schema.replication_group_members \
+          WHERE (MEMBER_ROLE=\"PRIMARY\")'"
     ```
-    In this command, replace:
-    * `DEVELOPMENT-NAMESPACE` with the namespace of the <%= vars.product_short %> instance
-    * `INSTANCE-NAME` with the name of the instance
-
+    Where `INSTANCE-NAME` is the name of the instance.
+    <br /><br />
     For example:
-
-    <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
-    </pre>
-
-    To connect to a high-availability instance, you must identify which of its three pods is primary (writable). The following command returns the Kubernetes-internal domain name of the primary node:
 
     <pre class="terminal">
     $ kubectl exec -it mysql-sample-0 -c mysql -- bash -c \
@@ -72,24 +67,27 @@ To connect to the MySQL instance as the MySQL root user:
     mysql-sample-1.mysql-sample-members.default.svc.cluster.local
     </pre>
 
-    The primary pod name is the first dot-separated component of the command output. In this example, the primary pod name is `mysql-sample-1`, and you can access the container by running the following command:
+    This command returns the Kubernetes-internal domain name of the primary node. The primary Pod name is the first dot-separated component of the command output. In the example above, the primary Pod name is `mysql-sample-1`.
+
+1. Access the MySQL container by running:
+
+    ```
+    kubectl exec --stdin --tty pod/POD-NAME -c mysql -- /bin/bash
+    ```
+    Where `POD-NAME` is the name of the pod: the MySQL instance name appended with an index of 0-2. If the MySQL instance is single-node, the index is 0.
+    <br /><br />
+    For example:
 
     <pre class="terminal">
-    $ kubectl exec -it mysql-sample-1 -c mysql -- bash
-    mysql@mysql-sample-1:/$
+    $ kubectl exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    mysql@mysql-sample-0:/$
     </pre>
 
-1. Log in to the MySQL server.
+1. Log in to the MySQL server by running:
 
     ```
     mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     ```
-
-    For example:
-
-    <pre class="terminal">
-    $ mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
-    </pre>
 
 ## <a id='off-platform-access'></a> Access the MySQL Server from an External IP Address
 
