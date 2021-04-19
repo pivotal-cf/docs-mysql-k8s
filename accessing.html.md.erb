@@ -45,7 +45,8 @@ Off-container root connections are not permitted.
 
 To connect to the MySQL instance as the MySQL root user:
 
-1. (If the MySQL instance is configured for high availability) Identify the primary (writable) pod of the MySQL instance by running:
+1. If the MySQL instance is configured for high availability, identify the primary
+(writable) Pod of the MySQL instance by running:
 
     ```
     kubectl exec -it INSTANCE-NAME-0 -c mysql -- bash -c \
@@ -67,14 +68,17 @@ To connect to the MySQL instance as the MySQL root user:
     mysql-sample-1.mysql-sample-members.default.svc.cluster.local
     </pre>
 
-    This command returns the Kubernetes-internal domain name of the primary node. The primary Pod name is the first dot-separated component of the command output. In the example above, the primary Pod name is `mysql-sample-1`.
+    This command returns the Kubernetes-internal domain name of the primary node.
+    The primary Pod name is the first dot-separated component of the command output.
+    In the example above, the primary Pod name is `mysql-sample-1`.
 
 1. Access the MySQL container by running:
 
     ```
     kubectl exec --stdin --tty pod/POD-NAME -c mysql -- /bin/bash
     ```
-    Where `POD-NAME` is the name of the pod: the MySQL instance name appended with an index of 0-2. If the MySQL instance is single-node, the index is 0.
+    Where `POD-NAME` is the name of the Pod: the MySQL instance name appended with an index of 0&ndash;2.
+    If the MySQL instance is single-node, the index is 0.
     <br /><br />
     For example:
 
