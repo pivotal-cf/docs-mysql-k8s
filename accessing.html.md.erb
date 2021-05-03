@@ -5,7 +5,7 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to access a <%= vars.product_full %> instance.
+This topic describes how to access an instance of <%= vars.product_full %>.
 
 ## <a id='prereq'></a>Prerequisites
 
@@ -24,7 +24,7 @@ To see all MySQL instance settings configured:
     kubectl -n DEVELOPMENT-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
     ```
     In this command, replace:
-    * `DEVELOPMENT-NAMESPACE` with the namespace of the <%= vars.product_short %> instance
+    * `DEVELOPMENT-NAMESPACE` with the namespace of the MySQL instance
     * `INSTANCE-NAME` with the name of the instance
 
     For example:
@@ -39,7 +39,7 @@ To see all MySQL instance settings configured:
 
 Database administrative operations, such as creating users and databases, require connecting
 to MySQL as the root database user.
-<%= vars.product_full %> only allows root account connections from within the container running the database.
+Root account connections are only allowed from within the container running the database.
 Off-container root connections are not permitted.
 
 To connect to the MySQL instance as the MySQL root user:
@@ -99,30 +99,34 @@ To connect to the MySQL instance as the MySQL root user:
   <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">Kubernetes documentation</a>.
 </p>
 
-In order to connect to a <%= vars.product_short %> instance from outside of your Kubernetes cluster, you must configure the Kubernetes service for the instance to be of type `LoadBalancer` rather than the default `ClusterIP`.
+To connect to a MySQL instance from outside of your Kubernetes cluster,
+you must configure the Kubernetes service for the instance to be of type `LoadBalancer`.
 
 To access the MySQL server from an external IP address:
 
-1. Create a database user to use for the external connection. For more information, see [Create a Database
-and Privileged MySQL User for the Application](connecting-apps.html#create-app-db).
+1. Create a database user to use for the external connection.
+   For more information, see [Create a Database and Privileged MySQL User for the App](connecting-apps.html#create-app-db) 
+   in _Connecting Apps to MySQL Instances_.
 
-1. If the <%= vars.product_short %> instance does not have a `Spec.ServiceType` value of <code>LoadBalancer</code>:
+1. Determine if the `ServiceType` is `LoadBalancer` or the default `ClusterIP`:
 
-    1. Update the instance and change the value of the `Spec.ServiceType` property to <code>LoadBalancer</code>. For more information about updating an instance, see [Updating MySQL Instances](update-instance.html). For more information about the properties used by a <%= vars.product_short %> instance, see <a href="./property-reference-mysql.html">Property Reference for the MySQL Resource</a>.
-    <p>&nbsp;</p>
-    1. Verify that the `ServiceType` is `LoadBalancer` instead of the default `ClusterIP`.
+    ```
+    kubectl get service INSTANCE-NAME -o jsonpath={.spec.type}
+    ```
+    In this command, replace `INSTANCE-NAME` with the value of the `metadata.name` property for the MySQL instance.
+    <br /><br />
+    For example:
 
-        ```
-        kubectl get service INSTANCE-NAME -o jsonpath={.spec.type}
-        ```
-        In this command, replace `INSTANCE-NAME` with the value of the `metadata.name` property for the MySQL instance.
-        <br /><br />
-        For example:
+    <pre class="terminal">
+    $ kubectl get service mysql-sample -o jsonpath={.spec.type}
+    LoadBalancer
+    </pre>
 
-        <pre class="terminal">
-        $ kubectl get service mysql-sample -o jsonpath={.spec.type}
-        LoadBalancer
-        </pre>
+1. If the `ServiceType` is not `LoadBalancer`, change the value of the `Spec.ServiceType` property
+   to <code>LoadBalancer</code>.<br>
+       For information about updating an instance, see [Updating MySQL Instances](update-instance.html).
+       For information about the property,
+       see <a href="./property-reference-mysql.html">Property Reference for the MySQL Resource</a>.
 
 1. Find the external IP address allocated for the service.
 
@@ -168,18 +172,21 @@ and Privileged MySQL User for the Application](connecting-apps.html#create-app-d
 
 To disable off-platform connections:
 
-1. Update the <%= vars.product_short %> instance and change the value of the `Spec.ServiceType` property to <code>ClusterIP</code>.
-    For more information about how to change a property, see [Change Other Configurations](./update-instance.html#other-config).
+1. In the YAML file for the instance, change the value of the `Spec.ServiceType` property
+   to <code>ClusterIP</code> and update the MySQL instance.
+   For more information about how to change a property,
+   see [Change Other Configurations](./update-instance.html#other-config) in _Updating MySQL Instances_.
 
 <p class="note">
-<strong>Note:</strong> When you change the <code>Spec.ServiceType</code> from <code>LoadBalancer</code> to <code>ClusterIP</code>, your cloud provider may automatically delete the associated load balancer for the MySQL instance.
+<strong>Note:</strong> When you change the <code>Spec.ServiceType</code> from <code>LoadBalancer</code> to <code>ClusterIP</code>, your cloud provider might automatically delete the associated load balancer for the MySQL instance.
 </p>
 
 
 ## <a id='app-connect'></a> Access MySQL From Cluster-Hosted Applications
 
-For each instance, <%= vars.product_short %> creates a Kubernetes service, which is used to connect an app to its MySQL database.
-The service is named after the Tanzu SQL for Kubernetes instance.
+Each MySQL instance has a Kubernetes service named after the instance.
+The service is used to connect an app to its MySQL database.
+
 
 If an app is deployed on the Kubernetes cluster, the app can access the MySQL instance using the DNS name
 of the MySQL service. This DNS name is only resolvable within the Kubernetes cluster.
