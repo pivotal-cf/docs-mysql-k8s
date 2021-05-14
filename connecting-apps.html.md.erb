@@ -100,7 +100,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
       isCA: false
       dnsNames:
         - mysql-sample.default # See note after the code excerpt
-      secretName: tls-secret
+      secretName: mysql-tls-secret
       issuerRef:
         name: tls-issuer
     EOF
@@ -118,7 +118,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
       ...
       tls:
         secret:
-          name: tls-secret
+          name: mysql-tls-secret
       ...
     </pre>
 
@@ -142,7 +142,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     * Database username `bn_wordpress`
     * Database user password `hunter2`
     * Database name `bitnami_wordpress`
-    * Secret `tls-secret` (containing the MySQL signed certificate)
+    * Secret `mysql-tls-secret` (containing the MySQL signed certificate)
 
     The following commands mount a volume, which contains the CA secret, onto the Bitnami container, which reads the mount point into the `WORDPRESS_DATABASE_SSL_CA_FILE` environment variable:
 
@@ -167,7 +167,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     extraVolumes:
     - name: mysql-ca
       secret:
-        secretName: "tls-secret"
+        secretName: "mysql-tls-secret"
         items:
         - key: ca.crt
           path: ca.crt
