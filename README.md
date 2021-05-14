@@ -39,6 +39,7 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 | Pod  | From the [word list](https://docs.google.com/spreadsheets/d/1hkadtxR1hY57kK7h5HN4ITHLJleZixCDH_RJPUpNq_A/edit?usp=sharing) See "MySQL Pod" below. |
 | persistent volume claim (PVC)  | Spell out on first use on page.|
 | single-node MySQL instance | Rather than "MySQL single-node instance". Okay to shorten to single-node instance if using the term a lot on a page.|
+| NOT ~~`mysql.yaml`~~ | Maybe: "your copy of the mysql.yaml file"? [JD] We don't want users to edit the `mysql.yaml` file directly. Instead, they use it as a template and create their own copy with a different name. We haven't a good term for that file yet. |
 | `.yaml` | Instead of `.yml` |
 
 ## Placeholder Table
