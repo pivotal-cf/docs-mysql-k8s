@@ -106,7 +106,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     EOF
     </pre>
 
-    <p class="note"><strong>Note:</strong> If you are deploying WordPress in the same Kubernetes cluster as the MySQL instance, specify <code>MYSQL-INSTANCE-NAME.MYSQL-INSTANCE-NAMESPACE</code> for <code>spec.dnsNames</code> above.</p>
+    <p class="note"><strong>Note:</strong> If you are deploying WordPress in the same Kubernetes cluster as the MySQL instance, specify <code>INSTANCE-NAME.INSTANCE-NAMESPACE</code> for <code>spec.dnsNames</code> above.</p>
 
 1. Edit the YAML file for the MySQL instance so that the instance presents the `tls-certificate` when receiving a client connection request. Then apply the updated YAML file.
     <br /><br />
