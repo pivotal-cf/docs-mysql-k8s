@@ -96,7 +96,7 @@ To scale `storageSize`:
     * **Otherwise:** Wait for the PVC to have the `FileSystemResizePending` condition.
     Delete the MySQL Pod to unmount the PVC and allow it to resize.
     <pre><code>kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-INSTANCE-NAME-N</code></pre>
-    <pre><code>kubectl rollout restart statefulset MYSQL-INSTANCE-NAME</code></pre>
+    <pre><code>kubectl rollout restart statefulset INSTANCE-NAME</code></pre>
     For example:
     <pre class="terminal">$ kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-mysql-sample-0
     persistentvolumeclaim/mysql-data-mysql-sample-0 condition met <br>
