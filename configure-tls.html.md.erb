@@ -14,7 +14,8 @@ client connections cannot fall back to use an unencrypted connection. By default
 the MySQL server uses a self-signed certificate. Clients can connect to the MySQL server,
 but they cannot verify the connection.
 
-To verify the connection to the MySQL server, the MySQL instance can be configured with a TLS certificate and private key.
+To verify the connection to the MySQL server, the MySQL instance can be configured
+with a TLS certificate and private key.
 
 To configure a MySQL instance for TLS, you must first create
 a TLS Secret in the same namespace as the MySQL instance.
@@ -36,14 +37,14 @@ see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configura
 
 ## <a id='prereq'></a>Prerequisites
 
-Before you configure TLS for a MySQL Instance, you must have:
+Before you configure TLS for a MySQL instance, you must have:
 
 * **Access and permissions to the MySQL instance.**
 
 * **The Kubernetes Command Line Interface (kubectl) installed:**
   For more information,
   see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
-  
+
 ## <a id='create-tls-secret'></a>Create the TLS Secret Manually
 
 This procedure describes how to create the TLS Secret using kubectl.
@@ -122,64 +123,64 @@ For information about installing Helm, see the
 
 3.  Choose and record a name for the TLS secret name, for example, `mysql-tls-secret`.
     Use this name as the `spec.secretName` when you create the `Certificate` resource below.
-    
+
 1.  Create a certificate request YAML.
     For instructions, see the [cert-manager documentation](https://cert-manager.io/docs/usage/certificate/#creating-certificate-resources).
     The following table suggests values for the YAML parameters.
     <table class="nice">
     <col width="70%">
     <col width="30%">
-	    <th>Enter:</th>
-	    <th>As this parameter in the YAML:</th>
-	    <tr>
-		    <td>your TLS secret name from step 3 above for example <code>mysql-tls-secret</code></td>
-		    <td><code>spec.secretName</code></td>
-	    </tr>
-	    <tr>
-		    <td>the name of your <code>ClusterIssuer</code> or <code>Issuer</code>
+      <th>Enter:</th>
+      <th>As this parameter in the YAML:</th>
+      <tr>
+        <td>your TLS secret name from step 3 above, for example, <code>mysql-tls-secret</code></td>
+        <td><code>spec.secretName</code></td>
+      </tr>
+      <tr>
+        <td>the name of your <code>ClusterIssuer</code> or <code>Issuer</code>
                         created in step 2 above</td>
-		    <td><code>spec.issuerRef.name</code></td>
-	    </tr>
-	    <tr>
-		    <td>
+        <td><code>spec.issuerRef.name</code></td>
+      </tr>
+      <tr>
+        <td>
                         the DNS name or the fully qualified DNS name
                         that you use to connect to apps deployed in the same Kubernetes cluster
                         as the MySQL instance:
                         <ul>
-                          <li><code>INSTANCE-NAME.DEVELOPMENT-NAMESPACE</code> for example
-                              <code>mysql-sample.my-namespace</code></li>
-                          <li><code>INSTANCE-NAME.DEVELOPMENT-NAMESPACE.svc.CLUSTER-DOMAIN</code>
-                              for example <code>mysql-sample.my-namespace.svc.cluster.local</code><br>
+                          <li><code>INSTANCE-NAME.DEVELOPMENT-NAMESPACE</code>, for example,
+                             <code>mysql-sample.my-namespace</code></li>
+                          <li><code>INSTANCE-NAME.DEVELOPMENT-NAMESPACE.svc.CLUSTER-DOMAIN</code>,
+                              for example, <code>mysql-sample.my-namespace.svc.cluster.local</code><br>.
                               The default <code>CLUSTER-DOMAIN</code> is <code>cluster.local</code>.
                           </li>
                          </ul>
                     </td>
-		    <td><code>spec.dnsNames</code></td>
-	    </tr>
-	    <tr>
-		    <td>
+        <td><code>spec.dnsNames</code></td>
+      </tr>
+      <tr>
+        <td>
                         the external IP address of the load balancer
                         that you use to connect to apps deployed outside the cluster.
                         To find the address,
                         see step 3 of <a href="accessing.html#off-platform-access">Access
                         the MySQL Server from an External IP Address</a>.
                     </td>
-		    <td><code>spec.ipAddresses</code></td>
-	    </tr>
-	    <tr>
-		    <td>any additional DNS names that clients use to access the MySQL instance through a TLS connection</td>
-		    <td><code>spec.dnsNames</code></td>
-	    </tr>
-	    <tr>
-		    <td>any additional URIs that clients use to access the MySQL instance
-                       through a TLS connection you may have configured to access your MySQL </td>
-		    <td><code>spec.uris</code></td>
-	    </tr>
-	    <tr>
-		    <td>any additional IP addresses that clients use to
+        <td><code>spec.ipAddresses</code></td>
+      </tr>
+      <tr>
+        <td>any additional DNS names that clients use to access the MySQL instance through a TLS connection</td>
+        <td><code>spec.dnsNames</code></td>
+      </tr>
+      <tr>
+        <td>any additional URIs that clients use to access the MySQL instance
+                       through a TLS connection you might have configured to access your MySQL </td>
+        <td><code>spec.uris</code></td>
+      </tr>
+      <tr>
+        <td>any additional IP addresses that clients use to
                         access the MySQL instance through a TLS connection</td>
-		    <td><code>spec.ipAddresses</code></td>
-	    </tr>
+        <td><code>spec.ipAddresses</code></td>
+      </tr>
     </table><br>
 
     For information about troubleshooting certificate creation,
@@ -197,7 +198,7 @@ For information about installing Helm, see the
 
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre> 
+    <pre class="terminal">$ kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre>
 
 
 
@@ -221,7 +222,7 @@ of the TLS Secret created in the namespace.
 
 ## <a id='use-tls'></a>Connect to a Load-Balanced MySQL Instance over TLS
 
-This section shows how to connect to a MySQL Instance configured with a load
+This section shows how to connect to a MySQL instance configured with a load
 balancing service, `spec.serviceType.LoadBalancer`, from an off-cluster machine
 running the MySQL command-line client.
 
@@ -247,13 +248,13 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
 
 2. Create a MySQL username and password to test your connection with.
    You need to connect as a non-root user because MySQL instances prohibit root connection from remote machines.
-   
+
     For an example of creating a database, user, and password for connection testing,
     see [Connecting Apps to MySQL Instances](connecting-apps.html#create-app-db).
-   
-3. Obtain the IP address that your MySQL Instance is listening on for connections.
-  Load-balanced instances expose their IP via their `status.loadBalancer.ingress` property:
-   
+
+3. Obtain the IP address that your MySQL instance is listening on for connections.
+  Load-balanced instances expose their IP address through their `status.loadBalancer.ingress` property:
+
     ```
     kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
     ```
