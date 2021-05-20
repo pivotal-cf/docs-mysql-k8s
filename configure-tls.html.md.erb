@@ -89,6 +89,9 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
           --from-file=ca.crt=/path/server_ca.crt
     </pre>
 
+After completing steps above, you add the secret to the instance by following the instructions
+in [Configure MySQL for TLS](#use-tls) below.
+
 ## <a id='using-cert-manager'></a>Create TLS Secret with cert-manager
 
 This procedure describes how to create the TLS Secret using cert-manager.
@@ -162,7 +165,7 @@ For information about installing Helm, see the
                         the external IP address of the load balancer
                         that you use to connect to apps deployed outside the cluster.
                         To find the address,
-                        see step 3 of <a href="accessing.html#off-platform-access">Access
+                        see step 4 of <a href="accessing.html#off-platform-access">Access
                         the MySQL Server from an External IP Address</a>.
                     </td>
         <td><code>spec.ipAddresses</code></td>
