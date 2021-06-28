@@ -1,0 +1,50 @@
+---
+title: Connecting Tanzu Application Services deployed Apps to MySQL Instances
+owner: MySQL
+---
+
+<strong><%= modified_date %></strong>
+
+This topic demonstrates how you, as an app developer, connect your TAS app to a <%= vars.product_full %> instance.
+
+## Prerequisites
+
+1. <%=vars.product_name %> has been successfully installed on a kubernetes cluster that supports some form of external ingress,
+   such as via a `LoadBalancer`.
+
+2. An app has been deployed to Tanzu Application Services, and it is able to reach the K8s cluster ingress points.
+
+## Procedure
+
+1.  Create a CA (if needed) and a certificate for your upcoming service instance. You can set the common name and subject alt names to fake
+    values because they will not be verified by apps.
+1.  Deploy an instance of <%=vars.product_name %> with a public ingress method, such as `LoadBalancer`, and TLS enabled using
+    the certificate previously generated. Wait for it to be ready.
+1.  Create a database and least privilege mysql user to use from the application, via this procedure: https://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/connecting-apps.html#create-app-db.
+1.  Set environment variables for your newly created user and load balancer hostname:
+    ``` bash
+    export HOSTNAME=$(kubectl get service mysql-sample  -o 'jsonpath={.status.loadBalancer.ingress[].ip}')
+    export USER=bn_wordpress
+    export PASSWORD=hunter2
+    export DATABASE=for_my_app
+    ```
+1.  Create a credentials hash for a TAS user-provided service configuration:
+    ``` bash
+    cf create-user-provided-service k8s-tanzu-sql -p "{\"uri\":\"mysql://$USER:$PASSWORD@$HOSTNAME:3306/$DATABASE?reconnect=true&sslMode=required&ssl_mode=required\"}"
+    ```
+
+Like any data service, the application will automatically connect to the database instance depending on the buildpack. If
+autoconnect is not supported, the application will have to manually make use of the `uri` service credential to make a connection.
+
+## Troubleshooting
+
+This procedure (including autowiring) was valiadated with a Spring Boot application. Auto wiring did not work against a ruby on rails
+application because the version of the MariaDB client library is `cflinuxfs3` was too old to support `sslMode`. If your applications are
+having trouble making SSL connections, you should first attempt to properly consume the connection information components and
+make a manual connection from your application. Some techniques for connecting outside of spring applications are provided
+in the MySQL for VMs documentation: https://docs.pivotal.io/p-mysql/2-10/using-tls.html#activate-non-spring, though the credentials hash
+we created in this page does not have individual components of connection information such as `username` and `hostname`. These components
+can be easily derived by parsing the `uri` in the hash.
+
+If all else fails, you can disable TLS on the MySQL instance and remove the `ssl_mode` and `sslMode` parameters
+in the credentials hash.
