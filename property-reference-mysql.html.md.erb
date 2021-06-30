@@ -22,7 +22,9 @@ The table below explains the properties that you can set in your MySQL resource.
 <tr>
   <td><code>metadata.name</code></td>
   <td>The name of the MySQL instance. Must be unique within a namespace. Cannot be updated. For more information, see the <a href="http://kubernetes.io/docs/user-guide/identifiers#names">Kubernetes documentation</a>.<br /><br />
-  Type: String. Required. Default: <em>n/a</em>.
+  <strong>Type:</strong> String.<br />
+  <strong>Required.</strong><br />
+  <strong>Default:</strong> <em>n/a</em>.
       </td>
   <td><code>my&#8209;instance</code></td>
 </tr>
@@ -32,7 +34,9 @@ The table below explains the properties that you can set in your MySQL resource.
       For information about allowed size units, see discussion about resource quantities in
       the <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities">
       kubernetes / community</a> GitHub repository.<br /><br />
-      Type: Resource quantity.  Required. Default: <em>n/a</em>.
+      <strong>Type:</strong> Resource quantity.<br />
+      <strong>Required.</strong><br />
+      <strong>Default:</strong> <em>n/a</em>.
   </td>
   <td><code>50Gi</code></td>
 </tr>
@@ -40,7 +44,9 @@ The table below explains the properties that you can set in your MySQL resource.
   <td><code>spec.imagePullSecret</code></td>
   <td>An existing Kubernetes docker-registry secret that can access the
   registry containing the MySQL image.<br /><br />
-  Type: String. Required. Default: <em>n/a</em>.</td>
+  <strong>Type:</strong> String.<br />
+  <strong>Required.</strong><br />
+  <strong>Default:</strong> <em>n/a</em>.</td>
   <td><code>tanzu-mysql-image-registry</code></td>
 </tr>
 <tr>
@@ -50,7 +56,9 @@ The table below explains the properties that you can set in your MySQL resource.
       For information about the StorageClass concept, see the
       <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">
       Kubernetes documentation</a>.<br /><br />
-    Type: String. Optional. Default: Standard.</td>
+      <strong>Type:</strong> String.<br />
+      <strong>Optional.</strong><br />
+      <strong>Default:</strong> Standard.</td>
   <td><code>standard</code></td>
 </tr>
 <tr>
@@ -60,13 +68,17 @@ The table below explains the properties that you can set in your MySQL resource.
       For more information about Kubernetes ServiceTypes, see the
       <a href="https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types">
       Kubernetes documentation</a>.<br /><br />
-  Type: String. Optional. Default: ClusterIP.</td>
+      <strong>Type:</strong> String.<br />
+      <strong>Optional.</strong><br />
+      <strong>Default:</strong> ClusterIP.</td>
   <td><code>LoadBalancer</code></td>
 </tr>
 <tr>
   <td><code>spec.tls.secret.name</code></td>
   <td>The name of the Kubernetes secret containing the TLS certificate and private key used to support encrypted connections by clients.<br /><br />
-  Type: String. Optional. Default: <em>n/a</em>.</td>
+  <strong>Type:</strong> String.<br />
+  <strong>Optional.</strong><br />
+  <strong>Default:</strong> <em>n/a</em>.</td>
   <td><code>mysql-tls-secret</code></td>
 </tr>
 <tr>
@@ -74,7 +86,9 @@ The table below explains the properties that you can set in your MySQL resource.
   <td>
   Whether the instance is a high-availability cluster (not single-node).
   For information about high availability, see <a href="high-availability.html">Configuring MySQL Instances for High Availability</a>.<br /><br />
-  Type: Boolean. Optional. Default: False.</td>
+  <strong>Type:</strong> Boolean.<br />
+  <strong>Optional.</strong><br />
+  <strong>Default:</strong> False.</td>
   <td><code>highAvailability.enabled: false</code></td>
 </tr>
 <tr>
@@ -86,7 +100,9 @@ The table below explains the properties that you can set in your MySQL resource.
       For more information about managing resources for containers,
       see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
       Kubernetes documentation</a>.<br /><br />
-  Type: limits.cpu, limits.memory. Optional. Default: Best effort.</td>
+      <strong>Type:</strong> limits.cpu, limits.memory.<br />
+      <strong>Optional.</strong><br />
+      <strong>Default:</strong> Best effort.</td>
   <td><code>limits.cpu: 3 , limits.memory: 800Mi</code></td>
 </tr>
 <tr>
@@ -97,7 +113,9 @@ The table below explains the properties that you can set in your MySQL resource.
       For more information about limits, see the
       <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
       Kubernetes documentation</a>.<br /><br />
-  Type: requests.cpu, requests.memory. Optional. Default: Best effort.</td>
+      <strong>Type:</strong> requests.cpu, requests.memory.<br />
+      <strong>Optional.</strong><br />
+      <strong>Default:</strong> Best effort.</td>
   <td><code>requests.cpu: 2 , requests.memory: 500Mi</code></td>
 </tr>
 <tr>
@@ -108,7 +126,9 @@ The table below explains the properties that you can set in your MySQL resource.
       For more information about CPU and memory resources,
       see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
       Kubernetes documentation</a>.<br /><br /> 
-  Type: limits.cpu, limits.memory.Optional. Default: Best effort.</td>
+      <strong>Type:</strong> limits.cpu, limits.memory.<br />
+      <strong>Optional.</strong><br />
+      <strong>Default:</strong> Best effort.</td>
   <td><code>limits.cpu: 2 , limits.memory: 500Mi</code></td>
 </tr>
 <tr>
@@ -118,7 +138,9 @@ The table below explains the properties that you can set in your MySQL resource.
       For more information about limits, see the
       <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
       Kubernetes documentation</a>.<br /><br />
-      Type: requests.cpu, requests.memory. Optional. Default: Best effort.</td>
+      <strong>Type:</strong> requests.cpu, requests.memory.<br />
+      <strong>Optional.</strong><br />
+      <strong>Default:</strong> Best effort.</td>
   <td><code>requests.cpu:&nbsp;1&nbsp;, requests.memory:&nbsp;200Mi</code>
   </td>
 </tr>
@@ -131,7 +153,9 @@ The table below explains the properties that you can set in your MySQL resource.
       For more information about CPU and memory resources,
       see the <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
       Kubernetes documentation</a>.<br /><br />
-    Type: limits.cpu, limits.memory. Optional. Default: Best effort.</td>
+      <strong>Type:</strong> limits.cpu, limits.memory.<br />
+      <strong>Optional.</strong><br />
+      <strong>Default:</strong> Best effort.</td>
   <td><code>limits.cpu: 1000m, limits.memory: 256Mi</code></td>
 </tr>
 <tr>
@@ -142,7 +166,9 @@ The table below explains the properties that you can set in your MySQL resource.
       For more information about limits, see the
       <a href="https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/">
       Kubernetes documentation</a>.<br /><br />
-  Type: requests.cpu, requests.memory. Optional. Default: Best effort.</td>
+      <strong>Type:</strong> requests.cpu, requests.memory.<br />
+      <strong>Optional.</strong><br />
+      <strong>Default:</strong> Best effort.</td>
   <td><code>requests.cpu: 200m;, requests.memory: 48Mi</code>
   </td>
 </tr>
