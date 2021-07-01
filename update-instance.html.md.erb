@@ -171,10 +171,13 @@ of the Kubernetes cluster.
 
 ## <a id='other-config'></a>Change Other Configurations
 
-Changing `storageClassName` or `imagePullSecret` does not have any effect on a
-running MySQL instance.
+Changing `storageClassName` or `imagePullSecret` does not have any effect on a running MySQL instance.
 If a MySQL instance is not running due to errors in these fields, you can change them.
 The changes are propagated into the StatefulSet to correct the error.
+
+<p class="note">
+<strong>Note:</strong> You cannot modify <code>storageClassName</code> for a successfully created MySQL instance.
+</p>
 
 To change `storageClassName` or `imagePullSecret`,
 update the MySQL configuration by one of the methods below:
