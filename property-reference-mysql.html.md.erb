@@ -21,7 +21,9 @@ The table below explains the properties that you can set in your MySQL resource.
 <th>Example</th>
 <tr>
   <td><code>metadata.name</code></td>
-  <td>The name of the MySQL instance. Must be unique within a namespace. Cannot be updated. For more information, see the <a href="http://kubernetes.io/docs/user-guide/identifiers#names">Kubernetes documentation</a>.<br /><br />
+  <td>The name of the MySQL instance. Must be unique within a namespace. 
+      Cannot be modified after the MySQL instance has been created.
+      For more information, see the <a href="http://kubernetes.io/docs/user-guide/identifiers#names">Kubernetes documentation</a>.<br /><br />
   <strong>Type:</strong> String.<br />
   <strong>Required.</strong><br />
   <strong>Default:</strong> <em>n/a</em>.
@@ -31,6 +33,7 @@ The table below explains the properties that you can set in your MySQL resource.
 <tr>
   <td><code>spec.storageSize</code></td>
   <td>The size of the persistent volume claims (PVCs) for MySQL instance Pods.
+      After being set, cannot be reduced, but can be increased.
       For information about allowed size units, see discussion about resource quantities in
       the <a href="https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities">
       kubernetes / community</a> GitHub repository.<br /><br />
@@ -52,6 +55,7 @@ The table below explains the properties that you can set in your MySQL resource.
 <tr>
   <td><code>spec.storageClassName</code></td>
   <td>The StorageClass used for PVCs associated with MySQL instance Pods.
+      Cannot be modified after the MySQL instance has been created.
       For available types, contact your Kubernetes admin.
       For information about the StorageClass concept, see the
       <a href="https://kubernetes.io/docs/concepts/storage/storage-classes/">
@@ -85,6 +89,7 @@ The table below explains the properties that you can set in your MySQL resource.
   <td><code>spec.highAvailability.enabled</code></td>
   <td>
   Whether the instance is a high-availability cluster (not single-node).
+  After being set to <code>true</code>, cannot be modified.
   For information about high availability, see <a href="high-availability.html">Configuring MySQL Instances for High Availability</a>.<br /><br />
   <strong>Type:</strong> Boolean.<br />
   <strong>Optional.</strong><br />
