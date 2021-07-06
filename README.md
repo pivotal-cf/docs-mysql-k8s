@@ -1,7 +1,7 @@
 # docs-mysql-k8s
 ================
 
-Docs for VMware Tanzu™ SQL with MySQL for Kubernetes
+Documentation for VMware Tanzu™ SQL with MySQL for Kubernetes
 
 ## Which branch to use?
 
