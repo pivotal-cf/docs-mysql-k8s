@@ -195,6 +195,7 @@ However, if any of the following are true, you need to follow the steps below to
 + You deployed the Tanzu SQL for Kubernetes images from a registry other than registry.pivotal.io.
 + You did not use the default `tanzu-mysql-image-registry` for the secret name in Step 4 above.
 + You want to allocate different CPU or memory resources for your Operator.
++ You want to specify an alternate default version for new MySQL instances.
 
 <p class="note">
 <strong>Note:</strong>
@@ -208,8 +209,9 @@ Confirm and configure the Tanzu SQL Operator for your environment:
     For example:
     <pre><code>---
     imagePullSecret: tanzu-mysql-image-registry
-    <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.0.0
-    <br>instanceImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.0.0
+    <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0
+    <br>instanceImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.1.0
+		<br>defaultInstanceVersion: 1.1.0
     <br>resources:
       limits:
         cpu: 100m
@@ -224,9 +226,9 @@ Confirm and configure the Tanzu SQL Operator for your environment:
     <table>
       <thead>
         <tr>
-          <th width="15%">Key</th>
-          <th width="10%">Value Type</th>
-          <th width="35%">Description</th>
+          <th width="30%">Key</th>
+          <th width="15%">Value Type</th>
+          <th width="55%">Description</th>
         </tr>
       </thead>
       <tbody>
@@ -249,6 +251,11 @@ Confirm and configure the Tanzu SQL Operator for your environment:
           <td>Reference to the <%= vars.product_short %> image.
             If you have uploaded the <%= vars.product_short %> image to a private registry,
             you change this reference to pull the <%= vars.product_short %> image from your registry.</td>
+        </tr>
+        <tr>
+          <td><code>defaultInstanceVersion</code></td>
+          <td>String</td>
+          <td>The default version of <%= vars.product_short %> to use when creating new instances.</td>
         </tr>
         <tr>
           <td><code>resources</code></td>
