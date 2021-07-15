@@ -1,0 +1,48 @@
+---
+title: Monitoring MySQL Instances in Kubernetes
+---
+
+This topic describes how to use <%= vars.product_full %> to monitor MySQL instances
+
+
+##<a id='overview'></a>Overview
+
+##<a id='monitor'></a>Monitoring MySQL with Kubernetes
+The [MySQL Server Exporter](https://github.com/prometheus/mysqld_exporter)
+is used to share metrics about the MySQL cluster. Each MySQL pod has a container that runs the MySQL Server Exporter.
+The MySQL Server Exporter queries the MySQL DB and shares the metrics on a /metrics https endpoint on the pod.
+Although [Prometheus](https://prometheus.io/) is the primary consumer of the metrics, any monitoring tool can take advantage of the /metrics endpoint.
+
+
+###<a id='prerequisites'></a>Prerequisites
+####<a id='prometheus'></a>Ensure Prometheus is available.
+Prometheus can be installed in a number of ways.; helm chart, operator, etc 
+One of the CRDs installed by prometheus is the ServiceMonitor CRD.
+Confirm that prometheus is installed using:
+kubectl get customresourcedefinitions.apiextensions.k8s.io servicemonitors.monitoring.coreos.com
+If this command returns success, Prometheus is deployed.
+
+###<a id='monitor-instances'></a>Monitoring MySQL Instances
+To monitor all of the DB instances in the cluster, run:
+
+kubectl apply --filename https://file.that.we.share
+
+Ensure that the above command is run in the same namespace in which prometheus is deployed
+
+####<a id='colectors'></a>MySQL Server Exporter Collectors
+Collectors are logical groups of metrics that can be turned on and off with configuration
+We use the following mysqld exporter collectors
+#####<a id='default-colectors'></a>MySQL Server Exporter Default Collectors
+
+global_status
+global_variables
+slave_status
+innodb_cmp
+innodb_cmpmem
+query_response_time
+
+#####<a id='additional-colectors'></a>MySQL Server Exporter Additional Collectors
+
+replication_group_members
+replication_group_member_stats
+replication_applier_status_by_worker
