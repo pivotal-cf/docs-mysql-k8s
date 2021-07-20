@@ -25,12 +25,15 @@ The diagram below shows the architecture of a single-node MySQL instance with My
 
 ##<a id='prerequisites'></a>Prerequisites
 
-Verify that Prometheus is installed in your environment. One of the CRDs installed by Prometheus is the `ServiceMonitor` CRD. Confirm that Prometheus is installed using:
+Verify that Prometheus is installed in your environment. Use the Prometheus `ServiceMonitor` CRD to confirm: 
     
 ``` bash
 $ kubectl get customresourcedefinitions.apiextensions.k8s.io servicemonitors.monitoring.coreos.com
 ```
+
 Prometheus is deployed if the command returns successfully. (what does a successful command look like??) 
+
+For more information on the `ServiceMonitor` CRD see 
 
 ##<a id='monitor-instances'></a>Monitoring MySQL Instances
 
@@ -48,14 +51,16 @@ Prometheus is deployed if the command returns successfully. (what does a success
     $ kubectl <command to tell us what we deployed>
     ```
 
-##<a id='dashboard'></a>Creating a dashboard to monitor mySQL   
+##<a id='dashboard'></a>Visualizing the mySQL metrics
 
-(we should provide information here how to view the metrics, or an example of collecting them. Is there a default UI with Prometheus? Somewhere where the endpoint is visible?)
+ Grafana or other API consumers can be used to visualize the collected data.
+ 
+ (we should provide information here how to view the metrics, or an example of collecting them. Is there a default UI with Prometheus? Somewhere where the endpoint is visible?)
 
 Does a Grafana example come into this section?
 
 
-##<a id='colectors'></a>Reference for MySQL Server Exporter Collectors 
+##<a id='colectors'></a>MySQL Server Exporter Collectors Reference
 
 Collectors are logical groups of metrics that can be turned on and off with configuration settings. 
 
