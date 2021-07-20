@@ -2,47 +2,80 @@
 title: Monitoring MySQL Instances in Kubernetes
 ---
 
-This topic describes how to use <%= vars.product_full %> to monitor MySQL instances
+This topic describes how to use <%= vars.product_full %> to monitor any MySQL instances in a Kubernetes cluster.
 
 
 ##<a id='overview'></a>Overview
 
-##<a id='monitor'></a>Monitoring MySQL with Kubernetes
-The [MySQL Server Exporter](https://github.com/prometheus/mysqld_exporter)
-is used to share metrics about the MySQL cluster. Each MySQL pod has a container that runs the MySQL Server Exporter.
-The MySQL Server Exporter queries the MySQL DB and shares the metrics on a /metrics https endpoint on the pod.
-Although [Prometheus](https://prometheus.io/) is the primary consumer of the metrics, any monitoring tool can take advantage of the /metrics endpoint.
+<%= vars.product_full %> uses the [MySQL Server Exporter](https://github.com/prometheus/mysqld_exporter), a Prometheus exporter for MySQL server metrics.
+A Prometheus exporter provides an endpoint for Prometheus to scrape metrics from application services. The MySQL Server Exporter shares metrics about the MySQL cluster. 
+
+Upon initialization, each MySQL pod has a container that runs the MySQL server exporter. Prometheus sends an HTTPS request to the exporter. The exporter queries the MySQL database and provides metrics in the Prometheus format on a `/metrics` https endpoint on the pod, conforming to the Prometheus HTTP API. 
+<br><br>
+
+The diagram below shows the architecture of a single-node MySQL instance with MySQL server exporter:
+
+<img src="images/metrics_mysql.png" alt="A diagram showing the architecture of a single-node instance, described below" width="500">
+
+<a href="./images/metrics_mysql.png" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 
 
-###<a id='prerequisites'></a>Prerequisites
-####<a id='prometheus'></a>Ensure Prometheus is available.
-Prometheus can be installed in a number of ways.; helm chart, operator, etc 
-One of the CRDs installed by prometheus is the ServiceMonitor CRD.
-Confirm that prometheus is installed using:
-kubectl get customresourcedefinitions.apiextensions.k8s.io servicemonitors.monitoring.coreos.com
-If this command returns success, Prometheus is deployed.
+[Prometheus](https://prometheus.io/) is the primary consumer of the metrics, but any monitoring tool can take advantage of the `/metrics` endpoint.
 
-###<a id='monitor-instances'></a>Monitoring MySQL Instances
-To monitor all of the DB instances in the cluster, run:
 
-kubectl apply --filename https://file.that.we.share
+##<a id='prerequisites'></a>Prerequisites
 
-Ensure that the above command is run in the same namespace in which prometheus is deployed
+Verify that Prometheus is installed in your environment. One of the CRDs installed by Prometheus is the `ServiceMonitor` CRD. Confirm that Prometheus is installed using:
+    
+    ``` bash
+    $ kubectl get customresourcedefinitions.apiextensions.k8s.io servicemonitors.monitoring.coreos.com
+    ```
+    If the command returns successfully, Prometheus is deployed.
 
-####<a id='colectors'></a>MySQL Server Exporter Collectors
-Collectors are logical groups of metrics that can be turned on and off with configuration
-We use the following mysqld exporter collectors
+##<a id='monitor-instances'></a>Monitoring MySQL Instances
+
+1. To monitor all of the mySQL database instances in the cluster, on the same namespace as Prometheus, run:
+
+    ``` bash
+    $ kubectl apply --filename https://file.that.we.share
+    ```
+
+    (Need to understand if this is a yaml file or not and what are the fields, and if these can be customised. Also we need to consider 1.0 customers)
+
+2. Verify that the service has been created:
+   
+    ``` bash
+    $ kubectl <command to tell us what we deployed>
+    ```
+
+##<a id='dashboard'></a>Creating a dashboard to monitor mySQL   
+
+(we should provide information here how to view the metrics, or an example of collecting them. Is there a default UI with Prometheus? Somewhere where the endpoint is visible?)
+
+Does a Grafana example come into this section?
+
+
+##<a id='colectors'></a>Reference for MySQL Server Exporter Collectors 
+
+Collectors are logical groups of metrics that can be turned on and off with configuration settings. 
+
+(need to explain what each one means and how to turn on or off)
+
 #####<a id='default-colectors'></a>MySQL Server Exporter Default Collectors
 
-global_status
-global_variables
-slave_status
-innodb_cmp
-innodb_cmpmem
-query_response_time
+We use the following MySQL exporter default collectors:
+
+- global_status
+- global_variables
+- slave_status
+- innodb_cmp
+- innodb_cmpmem
+- query_response_time
 
 #####<a id='additional-colectors'></a>MySQL Server Exporter Additional Collectors
 
-replication_group_members
-replication_group_member_stats
-replication_applier_status_by_worker
+We use the following MySQL Exporter additional collectors:
+
+- replication_group_members
+- replication_group_member_stats
+- replication_applier_status_by_worker
