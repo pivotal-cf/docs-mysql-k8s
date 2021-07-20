@@ -33,6 +33,8 @@ For detailed information about the CRDs,
 see [Controllers and Custom Resource Definitions (CRDs)](architecture.html#controllers-crds)
 in _Architecture_.
 
+<p class="note"><strong>Note:</strong> The procedures in this topic require the <%= vars.product_full %> deployment templates. If you have not yet downloaded the deployment templates, see <a href="./create-delete-mysql.html#download-templates">Download the Deployment Templates</a> in <em>Creating and Deleting MySQL Instances</em>.</p>
+
 ##<a id="sync-of-backups"></a> About Synchronization of Backups with the External Blobstore
 
 <%= vars.product_short %> syncs MySQLBackup resources in a Kubernetes cluster with the
@@ -63,8 +65,8 @@ To create a MySQLBackupLocation resource:
 
 1. Find the `backuplocation.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
-   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu SQL for Kubernetes Operator_.
+   For how to download deployment templates, see [Download the Deployment Templates](./create-delete-mysql.html#download-templates)
+   in _Creating and Deleting MySQL Instances_.
 
 2. Create a copy of the `backuplocation.yaml` file and give it a unique name.
 
@@ -124,8 +126,8 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
 1. Find the `backupschedule.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
-   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu SQL for Kubernetes Operator_.
+   For how to download deployment templates, see [Download the Deployment Templates](./create-delete-mysql.html#download-templates)
+   in _Creating and Deleting MySQL Instances_.
 
 2. Create a copy of the `backupschedule.yaml` file and give it a unique name.
 
@@ -213,8 +215,8 @@ To take a backup:
 
 1. Find the `backup.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
-   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu SQL for Kubernetes Operator_.
+   For how to download deployment templates, see [Download the Deployment Templates](./create-delete-mysql.html#download-templates)
+   in _Creating and Deleting MySQL Instances_.
 
 2. Create a copy of the `backup.yaml` file and give it a unique name.
 
@@ -373,8 +375,8 @@ To restore from a backup:
 
 1. Find the `restore.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
-   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu SQL for Kubernetes Operator_.
+   For how to download deployment templates, see [Download the Deployment Templates](./create-delete-mysql.html#download-templates)
+   in _Creating and Deleting MySQL Instances_.
 
 2. Create a copy of the `restore.yaml` file and give it a unique name.
 

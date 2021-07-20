@@ -5,7 +5,7 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic describes how you, as a developer, deploy and delete MySQL instances.
+This topic describes how to create and delete MySQL instances.
 
 ## <a id='prerequisites'></a> Prerequisites
 
@@ -14,6 +14,22 @@ Before you can create or delete MySQL instances, you must have:
 [//]: # (This partial contains a standard set of prereqs. Also used in high-availability topic.)
 <%= partial '/prerequisites' %>
 
+## <a id='download-templates'></a> Download the Deployment Templates
+
+In order to create <%= vars.product_full %> instances, you must first download the deployment templates from Tanzu Network.
+You use these templates to create configuration files that specify the Tanzu MySQL for Kubernetes resources that you wish to create.
+
+<p class='note'><strong>Note:</strong> You only need to download the templates once (before you first create a MySQL instance).</p>
+
+To download the templates:
+
+1. Log in to [<%= vars.product_network %>](https://network.pivotal.io).
+
+1. Visit the **<%= vars.product_full %>** product page.
+
+1. Click **Tanzu MySQL Deployment Templates**. The deployment templates will be downloaded to your local machine.
+
+You do not need to download the **Artifact References** from the Tanzu MySQL for Kubernetes product page.
 
 ## <a id='create-instance'></a>Create a MySQL Instance
 
@@ -57,8 +73,7 @@ To create a MySQL instance:
 
 3. Find the `mysql.yaml` deployment template that you downloaded
    in the **Tanzu MySQL Deployment Templates** TGZ file from <%= vars.product_network %>.
-   For how to download deployment templates, see [Download the Resources](install-operator.html#download)
-   in _Installing the Tanzu SQL for Kubernetes Operator_.
+   For how to download deployment templates, see [Download the Deployment Templates](#download-templates).
 
 4. Create a copy of the `mysql.yaml` file and give it a unique name.
     <br><br>

@@ -6,16 +6,16 @@ owner: MySQL
 <strong><%= modified_date %></strong>
 
 This topic describes how Kubernetes admins install, configure,
-and deploy the <%= vars.product_full %> Operator.
+and deploy the <%= vars.product_full %> operator.
 
 ## <a id="overview"></a> Overview
 
 [//]: # (Rewrite or replace by a process after this page has been reworked.)
 
-To install and configure <%= vars.product_short %>, you must download resources and install
-the <%= vars.product_short %> Operator using Helm.
+To install and configure <%= vars.product_short %>, you must download resources using Docker and Helm.
+You will complete the installation of the <%= vars.product_short %> operator using Helm.
 
-To download resources and install the Operator:
+To download resources and install the operator:
 
 1. [Download the Resources](#download)
 1. [Install the Operator](#install)
@@ -25,11 +25,11 @@ To download resources and install the Operator:
 
 ## <a id='prereq'></a>Prerequisites
 
-Before you deploy the <%= vars.product_short %> Operator, you need:
+Before you deploy the <%= vars.product_short %> operator, you need:
 
 * Access to [<%= vars.product_network %>](https://network.pivotal.io)
   and [<%= vars.product_network %> Registry](https://registry.pivotal.io/).
-  You can use the same credentials for both sites.
+  Use the same credentials for both.
 
 * The Helm v3 command-line tool installed. For more information, see [Installing
   Helm](https://helm.sh/docs/intro/install/) from the Helm documentation.
@@ -37,21 +37,21 @@ Before you deploy the <%= vars.product_short %> Operator, you need:
 * Docker running and configured on your local computer, to access the Kubernetes cluster and Docker registry.
   For information, see the [Docker documentation](https://docs.docker.com/).
 
-* A running Kubernetes cluster and the kubectl command-line tool,
-  configured and authenticated to communicate with your Kubernetes cluster.
+* A running Kubernetes cluster.
+
+* The kubectl command-line tool, configured and authenticated to communicate with your Kubernetes cluster.
+For more information, see [Install Tools](https://kubernetes.io/docs/tasks/tools/install-kubectl/) in the Kubernetes documentation.
 
 * `cluster-admin` ClusterRole access to the Kubernetes cluster.
-For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
-
+For more information, see [User-facing roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles) in the Kubernetes documentation.
 
 ## <a id="download"></a> Download the Resources
 
-To install the <%= vars.product_short %> Operator, you must download the Helm chart,
-images, and deployment templates.
+To install the <%= vars.product_short %> operator, you must download the Helm chart and images.
 
 To download the resources:
 
-0. Set the environment variable to enable OCI support in the Helm v3 client by running:
+1. Set the environment variable to enable OCI support in the Helm v3 client by running:
 
     ```
     export HELM_EXPERIMENTAL_OCI=1
@@ -70,8 +70,6 @@ To download the resources:
 
 1. Log in to [<%= vars.product_network %>](https://network.pivotal.io) and go to
 the **<%= vars.product_full %>** product page.
-
-1. Click **Tanzu MySQL Deployment Templates** to download the deployment templates to your local machine.
 
 1. Click **Artifact References** to navigate into the artifacts directory. Keep the page
 open to reference in the following step.
@@ -127,8 +125,8 @@ registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.0.0</pre>
 
 ## <a id="install"></a> Install the Operator
 
-To install the <%= vars.product_short %> Operator, you must use kubectl to create a namespace and secret.
-Then, use the Helm CLI to install the Operator.
+To install the <%= vars.product_short %> operator, you must use kubectl to create a namespace and secret.
+Then, use the Helm CLI to install the operator.
 
 ### <a id="create-namespace-secret"></a> Create Namespace and Secret
 To create the namespace and secret:
@@ -174,7 +172,7 @@ other than registry.pivotal.io, log in to the docker registry:
     <br>This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory that contains:
     * The <%= vars.product_short %> Helm chart
     * Custom Resource Definitions (CRDs)
-    * Role-Based Access Control (RBAC) definitions required to install the Operator with Helm
+    * Role-Based Access Control (RBAC) definitions required to install the operator with Helm
 
     <br>For example:
     <pre class="terminal">$ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0
@@ -194,7 +192,7 @@ However, if any of the following are true, you need to follow the steps below to
 
 + You deployed the Tanzu SQL for Kubernetes images from a registry other than registry.pivotal.io.
 + You did not use the default `tanzu-mysql-image-registry` for the secret name in Step 4 above.
-+ You want to allocate different CPU or memory resources for your Operator.
++ You want to allocate different CPU or memory resources for your operator.
 + You want to specify an alternate default version for new MySQL instances.
 
 <p class="note">
@@ -202,7 +200,7 @@ However, if any of the following are true, you need to follow the steps below to
 Do not edit <code>values.yaml</code> directly. Create a <code>values-override.yaml</code>.
 </p>
 
-Confirm and configure the Tanzu SQL Operator for your environment:
+Confirm and configure the Tanzu SQL operator for your environment:
 
 1. Review the `values.yaml` file.
 
@@ -241,9 +239,9 @@ Confirm and configure the Tanzu SQL Operator for your environment:
         <tr>
           <td><code>operatorImage</code></td>
           <td>URI</td>
-          <td>Reference to the <%= vars.product_short %> Operator image.
-            If you uploaded the Operator image to a private registry, you must
-            change this reference to pull the Operator image from your registry.</td>
+          <td>Reference to the <%= vars.product_short %> operator image.
+            If you uploaded the operator image to a private registry, you must
+            change this reference to pull the operator image from your registry.</td>
         </tr>
         <tr>
           <td><code>instanceImage</code></td>
@@ -260,7 +258,7 @@ Confirm and configure the Tanzu SQL Operator for your environment:
         <tr>
           <td><code>resources</code></td>
           <td>List</td>
-          <td>Limits and requests for CPU and memory for the <%= vars.product_short %> Operator.
+          <td>Limits and requests for CPU and memory for the <%= vars.product_short %> operator.
             You can change these values to scale your resources.</td>
         </tr>
       </tbody>
@@ -274,12 +272,12 @@ Confirm and configure the Tanzu SQL Operator for your environment:
 
 ### <a id="install-operator"></a> Use Helm CLI to Install the Operator
 
-To install the Operator using the Helm CLI:
+To install the operator using the Helm CLI:
 
 1. Verify that you are in the same working directory as where you downloaded the Helm chart in Step 4 of
 [Create Namespace and Secret](#create-namespace-secret) above.
 
-1. Install the <%= vars.product_short %> Operator by running one of the following:
+1. Install the <%= vars.product_short %> operator by running one of the following:
     + If you created a custom `values-override.yaml` in [Review values.yaml and
     Create Overrides If Needed](#create-overrides) above,
     then run the following helm command:
@@ -293,13 +291,13 @@ To install the Operator using the Helm CLI:
         helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
         ```
 
-1. See that your Operator has installed successfully by running:
+1. See that your operator has installed successfully by running:
 
     ```
     kubectl get all
     ```
-    The <%= vars.product_short %> Operator has finished installing when you see the value of the `STATUS` column for the
-    <%= vars.product_short %> Operator Pod is `Running`. See example output:
+    The <%= vars.product_short %> operator has finished installing when you see the value of the `STATUS` column for the
+    <%= vars.product_short %> operator Pod is `Running`. See example output:
     <pre class="terminal">$ kubectl get all
 NAME                                                           READY   STATUS    RESTARTS   AGE
 pod/mysql-for-kubernetes-controller-manager-84d76dfb77-lq5mb   1/1     <span style="color: #77bf00;">Running</span>   0          21s
@@ -309,5 +307,5 @@ deployment.apps/mysql-for-kubernetes-controller-manager   1/1     1            1
 replicaset.apps/mysql-for-kubernetes-controller-manager-84d76dfb77   1         1         1       23s</pre>
 
     <p class="note">
-      <strong>Note:</strong> You can only have one <%= vars.product_short %> Operator installed in a Kubernetes cluster.
+      <strong>Note:</strong> You can only have one <%= vars.product_short %> operator installed in a Kubernetes cluster.
     </p>
