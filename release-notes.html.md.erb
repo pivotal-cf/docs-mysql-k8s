@@ -5,23 +5,42 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-These are the release notes for <%= vars.product_full %> v1.0.
+These are the release notes for <%= vars.product_full %>.
 
-## <a id="1-1-0"></a> v1.1.0
 
-**Release Date: MMM DD, 2021**
+## <a id="1-0-0"></a> Version 1.1.0
+
+**Release Date: August 12, 2021**
+
 
 ### Features
 
-New feature in this release:
+New features in this release:
 
-* **SUBJECT:** DESCRIPTION
+* Release 1.1.0 supports MySQL Server 8.0.25. For details on MySQL Server 8.0.25 see [MySQL Release notes](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-25.html)
+* Release 1.1.0 supports Percona XtraBackup 8.0.25. For details on Percona XtraBackup 8.0.25 see [Percona XtraBackup Release Notes](https://www.percona.com/doc/percona-xtrabackup/LATEST/release-notes/8.0/8.0.25-17.0.html).
+* <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Prerequisites](install-operator.html#prereq).
+* <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints using `mysql_exporter`. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
 
 ### Known Issues
 
-This release has the following issue:
+This release has the following known issues:
 
-* **SUBJECT:** DESCRIPTION
+* **Scaling down an HA instance is not supported**: Creating an HA instance and scaling back to a single pod is not supported and may incur data loss. The <%= vars.product_full %> operator does not prevent you from changing the property, and changing the property will result in unknown behavior.
+  If the pods for an HA instance crash while the cluster and its metadata are still being created, the cluster may not recover automatically.
+* **Pods may restart when creating a HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
+
+### Limitations
+* HA instances have no anti-affinity capability, so the pods of an HA instance may be scheduled to the same Kubernetes node.
+* Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
+* Changing `spec.storageSize` in a MySQL object to scale the PersistentVolume is not supported. See [Scale storageSize](./update-instance.html#scale-storage) for a workaround that expands the PersistentVolume.
+* To rotate MySQL system account passwords, you must manually restart pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
+* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
+   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
+   * Configuring schemas and users for an application.
+* Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more on server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
+
 
 ### Compatibility
 
@@ -34,7 +53,148 @@ The following components are compatible with this release:
     <th>Version</th>
   </tr>
 
-  <tr><td>Percona Server</td><td></td></tr>
-  <tr><td>Percona XtraBackup</td><td></td></tr>
+  <tr><td>Percona Server</td><td>8.0.25</td></tr>
+  <tr><td>Percona XtraBackup</td><td>8.0.25</td></tr>
+
+</table>
+
+## <a id="1-0-0"></a> Version 1.0.0
+
+**Release Date: April 15, 2021**
+
+This is the first generally available (GA) release of <%= vars.product_full %>.
+For an overview of this product, see [About <%= vars.product_short %>](index.html#about-mysql4k8s).
+
+### Features
+
+New feature in this release:
+
+* **High Availability:** Support for creating a high-availability cluster configuration with three members.
+  For information, see [Architecture](architecture.html) and 
+  [Configuring MySQL Instances for High Availability](high-availability.html).
+
+### Known Issues
+
+This release has the following known issues:
+
+* **Upgrades from beta releases are not supported:** Upgrades from beta releases to the <%= vars.product_full %>
+  v1.0.0 release are not supported.
+  Download and install the latest version.
+* **Scaling down an HA instance is not supported**: Creating an HA instance and scaling back to a single pod is not supported and may incur data loss. The <%= vars.product_full %> operator does not prevent you from changing the property, and changing the property will result in unknown behavior.
+  If the pods for an HA instance crash while the cluster and its metadata are still being created, the cluster may not recover automatically.
+* **Pods may restart when creating a HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
+
+### Limitations
+* HA instances have no anti-affinity capability, so the pods of an HA instance may be scheduled to the same Kubernetes node.
+* Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
+* Changing `spec.storageSize` in a MySQL object to scale the PersistentVolume is not supported. See [Scale storageSize](./update-instance.html#scale-storage) for a workaround that expands the PersistentVolume.
+* To rotate MySQL system account passwords, you must manually restart pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
+* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
+   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
+   * Configuring schemas and users for an application.
+* Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more on server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
+
+
+### Compatibility
+
+The following components are compatible with this release:
+
+<table border="1" class="nice">
+
+  <tr>
+    <th>Component</th>
+    <th>Version</th>
+  </tr>
+
+  <tr><td>Percona Server</td><td>8.0.22–13</td></tr>
+  <tr><td>Percona XtraBackup</td><td>8.0.23–16</td></tr>
+
+</table>
+
+## <a id="0-2-0"></a> v0.2.0-beta
+
+**Release Date: February 4, 2021**
+
+### Features
+New features and changes in this release:
+
+* **Configure TLS:** TanzuMySQL instances only accept encrypted client connections.
+  Users can now configure a TanzuMySQL instance for TLS by creating a TLS Secret.
+  For more information, see [Configuring TLS for MySQL Instances](configure-tls.html).
+
+* **Allow off-platform connections:** Users can connect to a TanzuMySQL instance from outside
+  the Kubernetes cluster using an external load balancer.
+  For more information,
+  see [Connect to the MySQL Server with an External IP Address](accessing.html#off-platform-access)
+  in _Accessing MySQL Instances_.
+
+
+### Known Issues
+
+There are no known issues for this release.
+
+
+### Compatibility
+The following components are compatible with this release:
+
+<table border="1" class="nice">
+
+  <tr>
+    <th>Component</th>
+    <th>Version</th>
+  </tr>
+
+  <tr><td>Percona Server</td><td>8.0.22-13</td></tr>
+  <tr><td>Percona XtraBackup</td><td>8.0.22-15</td></tr>
+
+</table>
+
+## <a id="0-1-0"></a> v0.1.0-beta
+
+**Release Date: December 17, 2020**
+
+### Features
+New features and changes in this release:
+
+* **MySQL for Kubernetes Operator:** <%= vars.product_full %> implements the Kubernetes Operator pattern
+  to provision and manage on-demand TanzuMySQL instances. <%= vars.product_short %> supports single-node
+  MySQL database instances.
+  <br><br>For more information about <%= vars.product_short %> features and compatibility, see [Overview](./index.html).
+  For information about <%= vars.product_short %> architecture, see [Architecture](architecture.html).
+  For more information about the Kubernetes Operator pattern,
+  see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/).
+
+* **Installation Using Helm:** Kubernetes admins can use Helm to install the <%= vars.product_short %> Operator.
+  This simplifies the installation process while maintaining flexibility in configuration.
+  For information about how to install the <%= vars.product_short %> Operator,
+  see [Installing the Operator](install-operator.html).
+
+* **Backup and Restore:** <%= vars.product_short %> automates on-demand and scheduled full physical backups
+  using the [Percona XtraBackup](https://www.percona.com/software/mysql-database/percona-xtrabackup) tool.
+  It also automates restoring and managing backups. For more information,
+  see [Backing Up and Restoring MySQL Instances](backup-restore.html).
+
+* **Sane and Secure Server Defaults:** <%= vars.product_short %> configures MySQL server settings to optimize
+  for security and performance. Certain server settings, like `max-connections`, are auto-tuned based on
+  the compute resources and persistent storage provisioned for the <%= vars.product_short %> instance.
+  <br><br>To see all MySQL server settings configured, follow the procedure in
+  [(Optional) Verify MySQL Server Settings](accessing.html#verify-settings).
+
+* **MySQL credential management:** <%= vars.product_short %> uses Kubernetes automation to simplify rotating
+  MySQL user credentials. For more information, see [Rotating MySQL Credentials](rotating-credentials.html).
+
+### Compatibility
+The following components are compatible with this release:
+
+<table border="1" class="nice">
+
+  <tr>
+    <th>Component</th>
+    <th>Version</th>
+  </tr>
+
+  <tr><td>Percona Server</td><td>8.0.21&ndash;12</td></tr>
+  <tr><td>Percona XtraBackup</td><td>8.0.14</td></tr>
 
 </table>
