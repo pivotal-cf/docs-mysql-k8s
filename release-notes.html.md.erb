@@ -36,7 +36,7 @@ New features in this release:
 
 * Release 1.1.0 supports MySQL Server 8.0.25. For details on MySQL Server 8.0.25 see [MySQL Release notes](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-25.html)
 * Release 1.1.0 supports Percona XtraBackup 8.0.25. For details on Percona XtraBackup 8.0.25 see [Percona XtraBackup Release Notes](https://www.percona.com/doc/percona-xtrabackup/LATEST/release-notes/8.0/8.0.25-17.0.html).
-* Tanzu MySQL instances are now created with a version number. Users may specify the `spec.version` field in the instance `yaml` to specify which Tanzu MySQL version to deploy. Users can now list instances by version number. For more details see [List Instances By Versioin](upgrade-instance.html#list-instances-by-version).
+* Tanzu MySQL instances are now created with a version number. Users may specify the `spec.version` field in the instance `yaml` to specify which Tanzu MySQL version to deploy. Users can now list instances by version number. For more details see [List Instances By Versioin](upgrade-instance.html).
 * <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Prerequisites](install-operator.html#prereq).
 * <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints using `mysql_exporter`. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
 
