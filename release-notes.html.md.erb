@@ -50,7 +50,7 @@ New features in this release:
 - `instanceImage` has been deprecated and removed from the <%= vars.product_short %> Helm chart. This release introduces two new chart values, `registry` and `defaultInstanceVersion`. Users should specify `registry: <my.private-registry>` in their `values-override.yaml`. For more details see [Installing the Tanzu SQL for Kubernetes Operator](install-operator.html).
 - `imagePullSecret` has been renamed to `imagePullSecretName` for the Helm chart and the MySQL resource, and it's now optional. Users who are maintaining a deployment file for the object should rename the field or drop the field entirely. If omitted, the `imagePullSecretName` will default to the helm chart setting.
 - This release now displays an error when the user attempts to change the field `storageClassName`, or reduce `storageSize` on a running MySQL instance.
-- Users can now alter `spec.storageSize` in a MySQL object to scale the PV (Persistent Volume). See [Scale storageSize](./update-instance.html#scale-storage). 
+- Users can now alter `spec.storageSize` in a MySQL object to scale up the PV (Persistent Volume), if the underlying storage class supports `onlineVolumeExpansion`. See [Scale storageSize](./update-instance.html#scale-storage). 
 
 
 ### Known Issues
