@@ -14,6 +14,20 @@ Before you can create or delete MySQL instances, you must have:
 [//]: # (This partial contains a standard set of prereqs. Also used in high-availability topic.)
 <%= partial '/prerequisites' %>
 
+- An expandable storage volume for your Postgres instance, to be able to resize the volume online if needed. For more information, see [Allow Volume Expansion](https://kubernetes.io/docs/concepts/storage/storage-classes/#allow-volume-expansion). 
+
+    Ensure that the storage class `VOLUMEBINDINGMODE` field is set to `volumeBindingMode=WaitForFirstConsumer`, to avoid Postgres pods and Persistent Volumes (PV) scheduling issues. For more details on the Kubernetes storage class binding modes see [Volume Binding Mode](https://kubernetes.io/docs/concepts/storage/storage-classes/#volume-binding-mode).
+
+    To verify the `ALLOWVOLUMEEXPANSION` and `VOLUMEBINDINGMODE` fields use:
+
+    ```
+    $ kubectl get storageclasses
+    ```
+    The output would be similar to:
+
+    ```
+    NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE        ALLOWVOLUMEEXPANSION   AGE
+    standard (default)   kubernetes.io/gce-pd       Delete          WaitForFirstConsumer     true                   4h25m
 
 ## <a id='create-instance'></a>Create a MySQL Instance
 
