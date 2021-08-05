@@ -5,7 +5,7 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to upgrade a <%= vars.product_full %> instance after [upgrading the operator](./upgrade-operator.html).
+This topic describes how to upgrade a <%= vars.product_short %> instance after [upgrading the operator](./upgrade-operator.html).
 
 ## <a id='prereq'></a>Prerequisites
 
@@ -20,7 +20,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
 ## <a id='list-instances-by-version'></a>List Instances By Version
 
-Each MySQL instance has a `version` label containing the version of the instance. The instance version corresponds to a version of <%= vars.product_full %>.
+Each MySQL instance has a `version` label containing the version of the instance. The instance version corresponds to a version of <%= vars.product_short %>.
 
 <p class='note'><strong>Note:</strong> The <code>version</code> label was added in Tanzu MySQL for Kubernetes version 1.1.0. Upgrading the MySQL operator to version 1.1.0 or later causes the <code>version</code> label to be applied to existing MySQL instances automatically.</p>
 
@@ -45,6 +45,18 @@ mysql-sample   true    Running   1.0.0     22m
 Each <%= vars.product_full %> instance is based on a copy of the `mysql.yaml` deployment template file. The file for the instance should have a unique name (for example, `testdb.yaml`). To upgrade an instance, you must edit this configuration file.
 
 To upgrade a MySQL instance:
+
+1. List all the instances across all namespaces in the cluster:
+   
+   ```
+   kubectl get mysql -A
+   ```
+   which returns an output similar to:
+   <pre class="terminal">
+   NAMESPACE        NAME             READY   STATUS    VERSION   AGE
+   my-namespace     mysql-sample-2   true    Running   1.0.0     2h31m
+   acceptance       mysql-sample     true    Running   1.1.0     6h42m
+   </pre>
 
 1. Target the namespace of the MySQL instance:
 
