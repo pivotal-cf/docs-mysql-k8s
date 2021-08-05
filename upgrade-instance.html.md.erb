@@ -1,0 +1,118 @@
+---
+title: Upgrading MySQL Instances
+owner: MySQL
+---
+
+<strong><%= modified_date %></strong>
+
+This topic describes how to upgrade a <%= vars.product_full %> instance after [upgrading the operator](./upgrade-operator.html).
+
+## <a id='prereq'></a>Prerequisites
+
+Before you upgrade a MySQL instance, you must have:
+
+* **Upgraded the MySQL operator.** See [Upgrading the Tanzu SQL for Kubernetes Operator](./upgrade-operator.html).
+
+* **Access to and permissions for the MySQL instance.**
+
+* **The Kubernetes Command Line Interface (kubectl) installed.**
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+
+## <a id='list-instances-by-version'></a>List Instances By Version
+
+Each MySQL instance has a `version` label containing the version of the instance. The instance version corresponds to a version of <%= vars.product_full %>.
+
+<p class='note'><strong>Note:</strong> The <code>version</code> label was added in Tanzu MySQL for Kubernetes version 1.1.0. Upgrading the MySQL operator to version 1.1.0 or later causes the <code>version</code> label to be applied to existing MySQL instances automatically.</p>
+
+To list all MySQL instances at a specific version, run:
+
+```
+kubectl get mysql -l app.kubernetes.io/version=VERSION
+```
+
+Where `VERSION` is the version of <%= vars.product_full %>.
+
+For example:
+
+<pre class="terminal">
+$ kubectl get mysql -l app.kubernetes.io/version=1.0.0
+NAME           READY   STATUS    VERSION   AGE
+mysql-sample   true    Running   1.0.0     22m
+</pre>
+
+## <a id='upgrade-steps'></a>Upgrade an Instance
+
+Each <%= vars.product_full %> instance is based on a copy of the `mysql.yaml` deployment template file. The file for the instance should have a unique name (for example, `testdb.yaml`). To upgrade an instance, you must edit this configuration file.
+
+To upgrade a MySQL instance:
+
+1. Target the namespace of the MySQL instance:
+
+    ```
+    kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
+    ```
+    Where `DEVELOPMENT-NAMESPACE` is the namespace in which the instance was created.
+    <br><br>
+    For example:
+    <pre class="terminal">$ kubectl config set-context --current --namespace=my-namespace
+    </pre>
+
+1. Edit the configuration file for the MySQL instance, setting the `spec.version` property to the desired new version. (This property was added in <%= vars.product_full %> version 1.1.0.)
+    <br><br>
+    For example:
+
+    ```
+    ---
+    apiVersion: with.sql.tanzu.vmware.com/v1
+    kind: MySQL
+    metadata:
+      name: mysql-sample
+    spec:
+      version: 1.1.0
+      ...
+    ```
+
+1. If you are upgrading the instance from <%= vars.product_full %> version 1.0 to version 1.1, you may need to update the `spec.imagePullSecret` property. In version 1.1.0, this property was renamed to `imagePullSecretName`, and the default secret name was changed from `tanzu-mysql-image-registry` to `tanzu-image-registry`. Make sure that you use the correct property name and value in the configuration file for the MySQL instance.
+    <br /><br />
+    For example, if you wish to continue using a secret named `tanzu-mysql-image-registry`:
+
+    ```
+    ---
+    apiVersion: with.sql.tanzu.vmware.com/v1
+    kind: MySQL
+    metadata:
+      name: mysql-sample
+    spec:
+      version: 1.1.0
+      imagePullSecretName: tanzu-mysql-image-registry
+      ...
+    ```
+
+    Alternatively, you can remove the property from the configuration file. If you remove the property, the MySQL instance will use the `imagePullSecretName` specified in the `values-override.yaml` or `values.yaml` file for the MySQL operator.</p>
+
+1. Apply your changes by running:
+
+    ```
+    kubectl apply -f FILENAME
+    ```
+    Where `FILENAME` is the name of the configuration file.
+    <br><br>
+    For example:
+
+    <pre class="terminal">$ kubectl apply -f testdb.yaml
+mysql.with.sql.tanzu.vmware.com/mysql-sample configured
+    </pre>
+
+1. Verify that the instance was upgraded successfully by running:
+
+    ```
+    kubectl get mysql INSTANCE-NAME
+    ```
+    Where `INSTANCE-NAME` is the value configured for `metadata.name` in the configuration file.
+    <br><br>
+    When the instance has been successfully upgraded, the value of the `READY` column for the instance should be `true` and the value of the `VERSION` column for the instance should report the new version. For example:
+
+    <pre class="terminal">$ kubectl get mysql mysql-sample
+NAME           READY   STATUS    VERSION   AGE
+mysql-sample   true    Running   1.1.0     24m
+    </pre>
