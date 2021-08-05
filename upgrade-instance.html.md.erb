@@ -48,17 +48,16 @@ To upgrade a MySQL instance:
 
 1. List all the instances across all namespaces in the cluster:
    
-   ```
-   kubectl get mysql -A
-   ```
-   which returns an output similar to:
-   <pre class="terminal">
-   NAMESPACE        NAME             READY   STATUS    VERSION   AGE
-   my-namespace     mysql-sample-2   true    Running   1.0.0     2h31m
-   acceptance       mysql-sample     true    Running   1.1.0     6h42m
-   </pre>
+    ```
+    kubectl get mysql -A
+    ```
+    which returns an output similar to:
+    <pre class="terminal">
+    NAMESPACE        NAME             READY   STATUS    VERSION   AGE
+    my-namespace     mysql-sample-2   true    Running   1.0.0     2h31m
+    acceptance       mysql-sample     true    Running   1.1.0     6h42m</pre>
 
-1. Target the namespace of the MySQL instance:
+2. Target the namespace of the MySQL instance:
 
     ```
     kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
@@ -69,7 +68,7 @@ To upgrade a MySQL instance:
     <pre class="terminal">$ kubectl config set-context --current --namespace=my-namespace
     </pre>
 
-1. Edit the configuration file for the MySQL instance, setting the `spec.version` property to the desired new version. (This property was added in <%= vars.product_full %> version 1.1.0.)
+3. Edit the configuration file for the MySQL instance, setting the `spec.version` property to the desired new version. (This property was added in <%= vars.product_full %> version 1.1.0.)
     <br><br>
     For example:
 
@@ -84,7 +83,7 @@ To upgrade a MySQL instance:
       ...
     ```
 
-1. If you are upgrading the instance from <%= vars.product_full %> version 1.0 to version 1.1, you may need to update the `spec.imagePullSecret` property. In version 1.1.0, this property was renamed to `imagePullSecretName`, and the default secret name was changed from `tanzu-mysql-image-registry` to `tanzu-image-registry`. Make sure that you use the correct property name and value in the configuration file for the MySQL instance.
+4. If you are upgrading the instance from <%= vars.product_full %> version 1.0 to version 1.1, you may need to update the `spec.imagePullSecret` property. In version 1.1.0, this property was renamed to `imagePullSecretName`, and the default secret name was changed from `tanzu-mysql-image-registry` to `tanzu-image-registry`. Make sure that you use the correct property name and value in the configuration file for the MySQL instance.
     <br /><br />
     For example, if you wish to continue using a secret named `tanzu-mysql-image-registry`:
 
@@ -102,7 +101,7 @@ To upgrade a MySQL instance:
 
     Alternatively, you can remove the property from the configuration file. If you remove the property, the MySQL instance will use the `imagePullSecretName` specified in the `values-override.yaml` or `values.yaml` file for the MySQL operator.</p>
 
-1. Apply your changes by running:
+5. Apply your changes by running:
 
     ```
     kubectl apply -f FILENAME
@@ -115,7 +114,7 @@ To upgrade a MySQL instance:
 mysql.with.sql.tanzu.vmware.com/mysql-sample configured
     </pre>
 
-1. Verify that the instance was upgraded successfully by running:
+6. Verify that the instance was upgraded successfully by running:
 
     ```
     kubectl get mysql INSTANCE-NAME
