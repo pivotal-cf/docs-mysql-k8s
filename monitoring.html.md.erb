@@ -2,85 +2,141 @@
 title: Monitoring MySQL Instances in Kubernetes
 ---
 
-This topic describes how to use <%= vars.product_full %> to monitor any MySQL instances in a Kubernetes cluster.
+This topic describes how to collect metrics and monitor <%= vars.product_full %> instances in a Kubernetes cluster.
 
 
 ##<a id='overview'></a>Overview
 
-<%= vars.product_full %> uses the [MySQL Server Exporter](https://github.com/prometheus/mysqld_exporter), a Prometheus exporter for MySQL server metrics.
-A Prometheus exporter provides an endpoint for Prometheus to scrape metrics from application services. The MySQL Server Exporter shares metrics about the MySQL cluster. 
+<%= vars.product_short %> uses the [MySQL Server Exporter](https://github.com/prometheus/mysqld_exporter), a Prometheus exporter for MySQL server metrics.
+The Prometheus exporter provides an endpoint for Prometheus to scrape metrics from different application services. The MySQL Server Exporter shares metrics about the MySQL instances. 
 
-Upon initialization, each MySQL pod has a container that runs the MySQL server exporter. Prometheus sends an HTTPS request to the exporter. The exporter queries the MySQL database and provides metrics in the Prometheus format on a `/metrics` https endpoint on the pod, conforming to the Prometheus HTTP API. 
-<br><br>
+Upon initialization, each MySQL pod adds a MySQL server exporter container. Prometheus sends HTTPS requests to the exporter. The exporter queries the MySQL database and provides metrics in the Prometheus format on a `/metrics` https endpoint (port 9104) on the pod, conforming to the Prometheus HTTP API. 
 
-The diagram below shows the architecture of a single-node MySQL instance with MySQL server exporter:
+The diagram below shows the architecture of a single-node MySQL instance with MySQL server exporter, where the metrics are exported on port 9104:
 
 <img src="images/metrics_mysql.png" alt="A diagram showing the architecture of a single-node instance, described below" width="500">
 
 <a href="./images/metrics_mysql.png" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 
 
-[Prometheus](https://prometheus.io/) is the primary consumer of the metrics, but any monitoring tool can take advantage of the `/metrics` endpoint.
-
+[Prometheus](https://prometheus.io/) could be your primary consumer of the metrics, but any monitoring tool can take advantage of the `/metrics` endpoint.
 
 ##<a id='prerequisites'></a>Prerequisites
 
-Verify that Prometheus is installed in your environment. Use the Prometheus `ServiceMonitor` CRD to confirm: 
+To take advantage of the metrics endpoint, ensure you have a metrics collector in your environment like Prometheus, or Wavefront.
+For an example Prometheus Operator installation, see [Using Prometheus to Scrape the <%= vars.product_short %> Metrics](#using_prometheus).
+
+##<a id='monitor-instances'></a>Verifying MySQL Metrics
+
+The monitoring metrics are enabled by default. To test that the metrics are being emitted, you may use port forwarding (for more details see [Use Port Forwarding to Access Applications in a Cluster](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) in the Kubernetes documentation):
     
-``` bash
-$ kubectl get customresourcedefinitions.apiextensions.k8s.io servicemonitors.monitoring.coreos.com
+``` 
+$ kubectl port-forward pod/<mysql-pod-name> 9104:9104
+```  
+
+And then in another shell, use a tool like `curl` to run:
+    
+```
+$ curl -k https://localhost:9104/metrics
+```
+    
+The output shows the metrics collection, for example:
+    
+<pre class="terminal">mysql_global_status_open_tables 165</pre>
+    
+For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Exporter Collector Flag Reference](#collectors).
+
+
+##<a id='using_prometheus'></a>Using Prometheus to Scrape the <%= vars.product_short %> Metrics
+
+Prometheus Operator allows you to define and manage monitoring instances as Kubernetes resources. This section provides an example of installing the Prometheus Operator using Helm, and a example Prometheus `PodMonitor` CRD that is used to scrape the MySQL metrics.
+ 
+- Use Helm to install the Prometheus Operator, that defines the custom resource definitions (CRDs) such as `PodMonitor`. The `PodMonitor` CRD defines the configuration details for the MySQL pod monitoring.
+
+    <pre class="terminal">$ helm install prometheus-community/kube-prometheus-stack \
+      --create-namespace \
+      --namespace=prometheus \
+      --set prometheus.service.port=80 \
+      --set prometheus.service.type=LoadBalancer \
+      --set grafana.enabled=false,alertmanager.enabled=false \
+      --set prometheus-node-exporter.hostRootFsMount=false \
+      --wait
+    </pre>
+
+- Confirm the PodMonitor CRD exists using:
+
+    <pre class="terminal">
+    $ kubectl get customresourcedefinitions.apiextensions.k8s.io podmonitors.monitoring.coreos.com
+    </pre>
+
+
+- Create a `PodMonitor` that scrapes all MySQL instances every 10 seconds and skips verifying TLS:
+
+    <pre class="terminal">
+    cat &lt;&lt;EOF | kubectl apply -f -
+    ---
+    apiVersion: monitoring.coreos.com/v1
+    kind: PodMonitor
+    metadata:
+      name: tanzu-mysql-instances
+      namespace: prometheus
+    spec:
+    namespaceSelector:
+      any: true
+    selector:
+      matchLabels:
+      app.kubernetes.io/component: database
+      app.kubernetes.io/name: mysql
+    podTargetLabels:
+        - app.kubernetes.io/instance
+    podMetricsEndpoints:
+        - port: "mysql-metrics"
+          interval: "10s"
+          scheme: https
+          tlsConfig:
+             insecureSkipVerify: true
+    EOF
+    </pre>
+
+- To check if Prometheus is successfully monitoring the instances, visit the PROMETHEUS-API/targets on the Prometheurs UI, and check the status of the `PodMonitor` under
+`podMonitor/prometheus/tanzu-mysql-instances/0 (1/1 up)`. 
+
+    You should view something similar to:
+
+    <img src="images/prometheus_endpoint.png" alt="Prometheus endpoint" width="500">
+
+    <a href="./images/prometheus_endpoint.png" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
+    <br><br>
+
+    For details on the `PodMonitor` API see [PodMonitor](https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#podmonitor) in the Prometheus Operator documentation. 
+
+##<a id='prometheus_TLS'></a>Using TLS for the Metrics Endpoint
+
+During the Tanzu MySQL initialization, the Tanzu MySQL operator creates a metrics related self-signed certificate. The TLS credentials are stored in a Secret named after the MySQL instance name: if the instance name is `mysql-db`, the metrics Secret name is `mysql-db-metrics-tls`.
+
+In order to use TLS for a metrics endpoint, configure Prometheus to use the CA certificate from the Secret. Use the following command to fetch the CA certificate:
+
+```
+$ kubectl get secret <MYSQL-INSTANCE-NAME>-metrics-tls -o 'go-template={{index .data "ca.crt" | base64decode}}'</pre>
 ```
 
-Prometheus is deployed if the command returns successfully. (what does a successful command look like??) 
+where `<MYSQL-INSTANCE-NAME>` is the name of the MySQL instance. 
 
-For more information on the `ServiceMonitor` CRD see 
-
-##<a id='monitor-instances'></a>Monitoring MySQL Instances
-
-1. To monitor all of the mySQL database instances in the cluster, on the same namespace as Prometheus, run:
-
-    ``` bash
-    $ kubectl apply --filename https://file.that.we.share
-    ```
-
-    (Need to understand if this is a yaml file or not and what are the fields, and if these can be customised. Also we need to consider 1.0 customers)
-
-2. Verify that the service has been created:
-   
-    ``` bash
-    $ kubectl <command to tell us what we deployed>
-    ```
-
-##<a id='dashboard'></a>Visualizing the mySQL metrics
-
- Grafana or other API consumers can be used to visualize the collected data.
- 
- (we should provide information here how to view the metrics, or an example of collecting them. Is there a default UI with Prometheus? Somewhere where the endpoint is visible?)
-
-Does a Grafana example come into this section?
+For details on how to configure Prometheus with TLS, see `tls_config` in the [Prometheus CONFIGURATION](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#tls_config) documentation.
 
 
-##<a id='colectors'></a>MySQL Server Exporter Collectors Reference
+##<a id='collectors'></a>MySQL Server Exporter Collector Flag Reference
 
-Collectors are logical groups of metrics that can be turned on and off with configuration settings. 
+Collectors are logical groups of metrics. Currently the following collectors are enabled for <%= vars.product_short %>.  
 
-(need to explain what each one means and how to turn on or off)
-
-#####<a id='default-colectors'></a>MySQL Server Exporter Default Collectors
-
-We use the following MySQL exporter default collectors:
-
-- global_status
+- global_status 
 - global_variables
 - slave_status
 - innodb_cmp
 - innodb_cmpmem
 - query_response_time
-
-#####<a id='additional-colectors'></a>MySQL Server Exporter Additional Collectors
-
-We use the following MySQL Exporter additional collectors:
-
 - replication_group_members
 - replication_group_member_stats
 - replication_applier_status_by_worker
+
+For more details on the collector list, see [MySQL Server Exporter Collector Flags](https://github.com/prometheus/mysqld_exporter/blob/master/README.md#collector-flags). 
