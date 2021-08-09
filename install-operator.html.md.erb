@@ -43,6 +43,51 @@ Before you deploy the <%= vars.product_short %> Operator, you need:
 * `cluster-admin` ClusterRole access to the Kubernetes cluster.
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
 
+* [Cert Manager](https://github.com/jetstack/cert-manager) installed on the Kubernetes cluster. 
+    
+    Install cert-manager by running these commands from your local client:
+
+    ``` bash
+    $ kubectl create namespace cert-manager
+    $ helm repo add jetstack https://charts.jetstack.io
+    $ helm repo update
+    $ helm install cert-manager jetstack/cert-manager --namespace cert-manager  --version <1.latest> --set installCRDs=true
+    ```
+    where:
+    - `--namespace cert-manager` is the namespace used for cert manager in the Kubernetes cluster
+    - `--version <1.latest>` is the latest cert-manager version available (minimum above 1.0.2)
+    - `--set installCRDs=true` ensures cert manager installs all types necessary to create certificates
+
+    To verify the installation run:
+
+    ```
+    $ kubectl get all --namespace=cert-manager
+    ```
+    
+    The output should be similar to:
+
+    ```
+    NAME                                           READY   STATUS    RESTARTS   AGE
+    pod/cert-manager-57b65b7fc-x8vjt               1/1     Running   5          4d19h
+    pod/cert-manager-cainjector-5f988f74c6-tgk25   1/1     Running   15         4d19h
+    pod/cert-manager-webhook-7cf554f879-b5ss9      1/1     Running   4          4d19h
+
+    NAME                           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+    service/cert-manager           ClusterIP   10.106.253.7    <none>        9402/TCP   4d19h
+    service/cert-manager-webhook   ClusterIP   10.108.17.113   <none>        443/TCP    4d19h
+
+    NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/cert-manager              1/1     1            1           4d19h
+    deployment.apps/cert-manager-cainjector   1/1     1            1           4d19h
+    deployment.apps/cert-manager-webhook      1/1     1            1           4d19h
+
+    NAME                                                 DESIRED   CURRENT   READY   AGE
+    replicaset.apps/cert-manager-57b65b7fc               1         1         1       4d19h
+    replicaset.apps/cert-manager-cainjector-5f988f74c6   1         1         1       4d19h
+    replicaset.apps/cert-manager-webhook-7cf554f879      1         1         1       4d19h
+    ```
+    
+    For more advanced security scenarios, see [Configuring TLS for MySQL Instances](configure-tls.html). 
 
 ## <a id="download"></a> Download the Resources
 

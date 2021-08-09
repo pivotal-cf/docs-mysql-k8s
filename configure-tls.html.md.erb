@@ -99,11 +99,8 @@ This procedure describes how to create the TLS Secret using cert-manager.
 To create the TLS Secret through the kubectl instead,
 see [Create the TLS Secret Manually](#create-tls-secret) above.
 
-**Prerequisite:** Before you install cert-manager, you must have the Helm v3 command-line tool installed.
-For information about installing Helm, see the
-[Helm documentation](https://helm.sh/docs/intro/install/).
 
-1. Install cert-manager on your Kubernetes cluster by running these commands:
+1. If you have not installed cert-manager on your Kubernetes cluster during the [Installing the Tanzu SQL for Kubernetes Operator - Prerequisites](install-operator.html#prereq), install it by running these commands:
 
     ```
     kubectl create namespace cert-manager
