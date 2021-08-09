@@ -45,6 +45,7 @@ New features in this release:
 * <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Prerequisites](install-operator.html#prereq).
 * <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints using `mysql_exporter`. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
 
+
 ### Changes
 
 - `instanceImage` has been deprecated and removed from the <%= vars.product_short %> Helm chart. This release introduces two new chart values, `registry` and `defaultInstanceVersion`. Users should specify `registry: <my.private-registry>` in their `values-override.yaml`. For more details see [Installing the Tanzu SQL for Kubernetes Operator](install-operator.html).
@@ -62,6 +63,8 @@ This release has the following known issues:
 * **Pods may restart when creating a HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
 
 ### Limitations
+
+* Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
 * HA instances have no anti-affinity capability, so the pods of an HA instance may be scheduled to the same Kubernetes node.
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
