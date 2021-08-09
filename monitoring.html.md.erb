@@ -24,11 +24,11 @@ The diagram below shows the architecture of a single-node MySQL instance with My
 ##<a id='prerequisites'></a>Prerequisites
 
 To take advantage of the metrics endpoint, ensure you have a metrics collector in your environment like Prometheus, or Wavefront.
-For an example Prometheus Operator installation, see [Using Prometheus to Scrape the <%= vars.product_short %> Metrics](#using_prometheus).
+For an example installation of Prometheus, see [Using Prometheus Operator to Scrape the <%= vars.product_short %> Metrics](#using_prometheus).
 
 ##<a id='monitor-instances'></a>Verifying MySQL Metrics
 
-The monitoring metrics are enabled by default. To test that the metrics are being emitted, you may use port forwarding (for more details see [Use Port Forwarding to Access Applications in a Cluster](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) in the Kubernetes documentation):
+MySQL pods include the exporter that emits metrics by default. To test that the metrics are being emitted, you may use port forwarding (for more details see [Use Port Forwarding to Access Applications in a Cluster](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) in the Kubernetes documentation):
     
 ``` 
 $ kubectl port-forward pod/<mysql-pod-name> 9104:9104
@@ -47,9 +47,9 @@ The output shows the metrics collection, for example:
 For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Exporter Collector Flag Reference](#collectors).
 
 
-##<a id='using_prometheus'></a>Using Prometheus to Scrape the <%= vars.product_short %> Metrics
+##<a id='using_prometheus'></a>Using Prometheus Operator to Scrape the <%= vars.product_short %> Metrics
 
-Prometheus Operator allows you to define and manage monitoring instances as Kubernetes resources. This section provides an example of installing the Prometheus Operator using Helm, and a example Prometheus `PodMonitor` CRD that is used to scrape the MySQL metrics.
+[Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) allows you to define and manage monitoring instances as Kubernetes resources. This section provides an example of installing the Prometheus Operator using Helm, and a example Prometheus `PodMonitor` CRD that is used to scrape the MySQL metrics.
  
 - Use Helm to install the Prometheus Operator, that defines the custom resource definitions (CRDs) such as `PodMonitor`. The `PodMonitor` CRD defines the configuration details for the MySQL pod monitoring.
 
@@ -81,24 +81,24 @@ Prometheus Operator allows you to define and manage monitoring instances as Kube
       name: tanzu-mysql-instances
       namespace: prometheus
     spec:
-    namespaceSelector:
-      any: true
-    selector:
-      matchLabels:
-      app.kubernetes.io/component: database
-      app.kubernetes.io/name: mysql
-    podTargetLabels:
+      namespaceSelector:
+        any: true
+      selector:
+        matchLabels:
+        app.kubernetes.io/component: database
+        app.kubernetes.io/name: mysql
+      podTargetLabels:
         - app.kubernetes.io/instance
-    podMetricsEndpoints:
+      podMetricsEndpoints:
         - port: "mysql-metrics"
           interval: "10s"
           scheme: https
           tlsConfig:
-             insecureSkipVerify: true
+            insecureSkipVerify: true
     EOF
     </pre>
 
-- To check if Prometheus is successfully monitoring the instances, visit the PROMETHEUS-API/targets on the Prometheurs UI, and check the status of the `PodMonitor` under
+- To check if Prometheus is successfully monitoring the instances, open the Prometheus UI in the browser and visit the `/targets` URI  to check the status of the `PodMonitor` under
 `podMonitor/prometheus/tanzu-mysql-instances/0 (1/1 up)`. 
 
     You should view something similar to:
@@ -117,17 +117,17 @@ During the Tanzu MySQL initialization, the Tanzu MySQL operator creates a metric
 In order to use TLS for a metrics endpoint, configure Prometheus to use the CA certificate from the Secret. Use the following command to fetch the CA certificate:
 
 ```
-$ kubectl get secret <MYSQL-INSTANCE-NAME>-metrics-tls -o 'go-template={{index .data "ca.crt" | base64decode}}'</pre>
+$ kubectl get secret <MYSQL-INSTANCE-NAME>-metrics-tls -o 'go-template={{index .data "ca.crt" | base64decode}}'
 ```
 
 where `<MYSQL-INSTANCE-NAME>` is the name of the MySQL instance. 
 
-For details on how to configure Prometheus with TLS, see `tls_config` in the [Prometheus CONFIGURATION](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#tls_config) documentation.
+For details on how to configure Prometheus with TLS, see `tls_config` in the [Prometheus Configuration](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#tls_config) documentation.
 
 
 ##<a id='collectors'></a>MySQL Server Exporter Collector Flag Reference
 
-Collectors are logical groups of metrics. Currently the following collectors are enabled for <%= vars.product_short %>.  
+Collectors are logical groups of metrics. Currently, the following collectors are enabled for <%= vars.product_short %>.  
 
 - global_status 
 - global_variables
