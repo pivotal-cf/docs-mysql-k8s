@@ -3,8 +3,6 @@ title: Release Notes
 owner: MySQL
 ---
 
-<strong><%= modified_date %></strong>
-
 These are the release notes for <%= vars.product_full %>.
 
 
@@ -30,47 +28,53 @@ The <%= vars.product_short %> releases support the components listed below:
   </tr>
 </table>
 
-## <a id="1-0-0"></a> Version 1.1.0
+## <a id="1-1-0"></a> Version 1.1.0
 
-**Release Date: August 12, 2021**
+**Release Date: August 17, 2021**
 
 
-### Features
+### <a id="11_features"></a>Features
 
-New features in this release:
 
 * Release 1.1.0 supports MySQL Server 8.0.25. For details on MySQL Server 8.0.25 see [MySQL Release notes](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-25.html)
 * Release 1.1.0 supports Percona XtraBackup 8.0.25. For details on Percona XtraBackup 8.0.25 see [Percona XtraBackup Release Notes](https://www.percona.com/doc/percona-xtrabackup/LATEST/release-notes/8.0/8.0.25-17.0.html).
 * Tanzu MySQL instances are now created with a version number. Users may specify the `spec.version` field in the instance `yaml` to specify which Tanzu MySQL version to deploy. Users can now list instances by version number. For more details, see [List Instances By Version](upgrade-instance.html).
-* When installing <%= vars.product_full %>, operators can specify a default version for new Tanzu MySQL instances. For more details, see [Installing the Operator](./install-operator.html).
+* When installing <%= vars.product_full %>, users can specify a default version for new Tanzu MySQL instances. For more details, see [Installing the Operator](./install-operator.html).
 * <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Prerequisites](install-operator.html#prereq).
 * <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints using `mysql_exporter`. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
-* An HA cluster that loses quorum due to host issues, can now recover its state. 
+* This release supports an additional auto-recovery feature: an HA cluster that loses quorum can now recover its state. 
+* Customers can now upgrade from a previous release to a new release. For more information on the process, see [Upgrading MySQL Instances](upgrade-instance.html).
+* This release prevents the users from making the following changes:
+    - Users are prevented from scaling an HA instance to a single-node instance.
+    - This release now displays an error when the user attempts to change the field `storageClassName`.
+    - This release now displays an error when the user attempts to reduce `storageSize` on a running MySQL instance.
+    - Users are prevented from downgrading MySQL instances to a lower version.
 
 
+### <a id="11_changes"></a>Changes
 
-
-### Changes
 
 - `instanceImage` has been deprecated and removed from the <%= vars.product_short %> Helm chart. This release introduces two new chart values, `registry` and `defaultInstanceVersion`. Users should specify `registry: <my.private-registry>` in their `values-override.yaml`. For more details, see [Installing the Tanzu SQL for Kubernetes Operator](install-operator.html).
 - `imagePullSecret` has been renamed to `imagePullSecretName` for the Helm chart and the MySQL resource, and it's now optional. Users who are maintaining a deployment file for the object should rename the field or drop the field entirely. If omitted, the `imagePullSecretName` will default to the helm chart setting.
-- This release now displays an error when the user attempts to change the field `storageClassName`, or reduce `storageSize` on a running MySQL instance.
 - Users can now alter `spec.storageSize` in a MySQL object to scale up the PV (Persistent Volume), if the underlying storage class supports `onlineVolumeExpansion`. See [Scale storageSize](./update-instance.html#scale-storage). 
-- This release requires cert-manager installation as part of the prerequisites, before installing the Tanzu MySQL operator. For details, see [Installing the Tanzu SQL for Kubernetes Operator - Prerequisites](install-operator.html#prereq).
+- Before installing the Tanzu MySQL operator, this release now requires cert-manager installation. For details, see [Installing the Tanzu SQL for Kubernetes Operator - Prerequisites](install-operator.html#prereq).
 
-### Resolved Issues
+### <a id="11_resolved"></a>Resolved Issues
 
-* Users are now prevented from scaling down an HA cluster. If the `spec.highAvailability.enabled` is set to `false` in a running HA cluster, the operation returns an error. 
+* [177801601] - Users are now prevented from scaling down an existing HA cluster to a single node instance. If users set the `spec.highAvailability.enabled` to `false` in a running HA cluster, the operation fails and returns an error. 
+* [177369907] - When a user creates a backup with `spec.storageArtifactName`, when the backup starts, the`timeStarted` is now correctly updated.
+* [177648443] - The <%= vars.product_short %> Operator now checks that the DNS name resolution is consistent before repairing an offline cluster.
+* [177801601] - Scaling down an HA instance to a single node is prevented by the <%= vars.product_short %> Operator. 
+* [177069136] - During an HA instance initialization, the proxy container starts only after all Tanzu MySQL HA instances are fully initialized. 
 
-### Known Issues
 
-This release has the following known issues:
+### <a id="11_issues"></a>Known Issues
 
-* **Scaling down an HA instance is not supported**: Creating an HA instance and scaling back to a single pod is not supported and may incur data loss. The <%= vars.product_full %> operator does not prevent you from changing the property, and changing the property will result in unknown behavior.
-  If the pods for an HA instance crash while the cluster and its metadata are still being created, the cluster may not recover automatically.
-* **Pods may restart when creating a HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
+* **Proxy connection limitation**: The proxy in an HA instance supports up to 100 connection errors from the same source IP. When the limit is reached, the proxy does not process any further connection requests. For a workaround, restart the proxy pod in order to reset the connection error counter. 
+* **`imagePullSecretName` required for restores**: MySQLRestore requires `imagePullSecretName` to be provided in the `instanceTemplate`.
+* **Pods may restart when creating an HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
 
-### Limitations
+### <a id="11_limits"></a>Limitations
 
 * Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
 * HA instances have no anti-affinity capability, so the pods of an HA instance may be scheduled to the same Kubernetes node.
@@ -90,7 +94,7 @@ This release has the following known issues:
 This is the first generally available (GA) release of <%= vars.product_full %>.
 For an overview of this product, see [About <%= vars.product_short %>](index.html#about-mysql4k8s).
 
-### Features
+### <a id="10_features"></a>Features
 
 * **MySQL for Kubernetes Operator:** <%= vars.product_full %> implements the Kubernetes Operator pattern
   to provision and manage on-demand TanzuMySQL instances. <%= vars.product_short %> supports single-node
@@ -134,9 +138,8 @@ For an overview of this product, see [About <%= vars.product_short %>](index.htm
   in _Accessing MySQL Instances_.
   
 
-### Known Issues
+### <a id="10_issues"></a>Known Issues
 
-This release has the following known issues:
 
 * **Upgrades from beta releases are not supported:** Upgrades from beta releases to the <%= vars.product_full %>
   v1.0.0 release are not supported.
@@ -145,7 +148,9 @@ This release has the following known issues:
   If the pods for an HA instance crash while the cluster and its metadata are still being created, the cluster may not recover automatically.
 * **Pods may restart when creating a HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
 
-### Limitations
+### <a id="10_limits"></a>Limitations
+
+
 * HA instances have no anti-affinity capability, so the pods of an HA instance may be scheduled to the same Kubernetes node.
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * Changing `spec.storageSize` in a MySQL object to scale the PersistentVolume is not supported. See [Scale storageSize](./update-instance.html#scale-storage) for a workaround that expands the PersistentVolume.
