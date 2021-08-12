@@ -18,8 +18,8 @@ The <%= vars.product_short %> releases support the components listed below:
   </tr>
   <tr>
     <td>1.1.0</td>
-    <td>8.0.25</td>
-    <td>8.0.25</td>
+    <td>8.0.25-15</td>
+    <td>8.0.25-17</td>
   </tr>
   <tr>
     <td>1.0.0</td>
@@ -36,12 +36,12 @@ The <%= vars.product_short %> releases support the components listed below:
 ### <a id="11_features"></a>Features
 
 
-* Release 1.1.0 supports MySQL Server 8.0.25. For details on MySQL Server 8.0.25 see [MySQL Release notes](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-25.html)
+* Release 1.1.0 supports MySQL Server 8.0.25. For details on MySQL Server 8.0.25 see [MySQL Release Notes](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-25.html) and [Percona Server Release Nootes](https://www.percona.com/doc/percona-server/LATEST/release-notes/Percona-Server-8.0.25-15.html).
 * Release 1.1.0 supports Percona XtraBackup 8.0.25. For details on Percona XtraBackup 8.0.25 see [Percona XtraBackup Release Notes](https://www.percona.com/doc/percona-xtrabackup/LATEST/release-notes/8.0/8.0.25-17.0.html).
-* Tanzu MySQL instances are now created with a version number. Users may specify the `spec.version` field in the instance `yaml` to specify which Tanzu MySQL version to deploy. Users can now list instances by version number. For more details, see [List Instances By Version](upgrade-instance.html).
+* Tanzu MySQL instances are now created with a version number. Users may specify the `spec.version` field in the instance definition to specify which Tanzu MySQL version to deploy. Users can now list instances by version number. For more details, see [List Instances By Version](upgrade-instance.html).
 * When installing <%= vars.product_full %>, users can specify a default version for new Tanzu MySQL instances. For more details, see [Installing the Operator](./install-operator.html).
 * <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Prerequisites](install-operator.html#prereq).
-* <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints using `mysql_exporter`. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
+* <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
 * This release supports an additional auto-recovery feature: an HA cluster that loses quorum can now recover its state. 
 * Customers can now upgrade from a previous release to a new release. For more information on the process, see [Upgrading MySQL Instances](upgrade-instance.html).
 * This release prevents the users from making the following changes:
@@ -72,7 +72,6 @@ The <%= vars.product_short %> releases support the components listed below:
 
 * **Proxy connection limitation**: The proxy in an HA instance supports up to 100 connection errors from the same source IP. When the limit is reached, the proxy does not process any further connection requests. For a workaround, restart the proxy pod in order to reset the connection error counter. 
 * **`imagePullSecretName` required for restores**: MySQLRestore requires `imagePullSecretName` to be provided in the `instanceTemplate`.
-* **Pods may restart when creating an HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
 
 ### <a id="11_limits"></a>Limitations
 
