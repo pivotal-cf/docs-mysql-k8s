@@ -44,6 +44,9 @@ New features in this release:
 * Tanzu MySQL instances are now created with a version number. Users may specify the `spec.version` field in the instance `yaml` to specify which Tanzu MySQL version to deploy. Users can now list instances by version number. For more details see [List Instances By Versioin](upgrade-instance.html).
 * <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Prerequisites](install-operator.html#prereq).
 * <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints using `mysql_exporter`. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
+* An HA cluster that loses quorum due to host issues, can now recover its state. 
+
+
 
 
 ### Changes
@@ -52,7 +55,11 @@ New features in this release:
 - `imagePullSecret` has been renamed to `imagePullSecretName` for the Helm chart and the MySQL resource, and it's now optional. Users who are maintaining a deployment file for the object should rename the field or drop the field entirely. If omitted, the `imagePullSecretName` will default to the helm chart setting.
 - This release now displays an error when the user attempts to change the field `storageClassName`, or reduce `storageSize` on a running MySQL instance.
 - Users can now alter `spec.storageSize` in a MySQL object to scale up the PV (Persistent Volume), if the underlying storage class supports `onlineVolumeExpansion`. See [Scale storageSize](./update-instance.html#scale-storage). 
+- This release requires cert-manager installation as part of the prerequisites, before installing the Tanzu MySQL operator. For details, see [Installing the Tanzu SQL for Kubernetes Operator - Prerequisites](install-operator.html#prereq).
 
+### Resolved Issues
+
+* Users are now prevented from scaling down an HA cluster. If the `spec.highAvailability.enabled` is set to `false` in a running HA cluster, the operation returns an error. 
 
 ### Known Issues
 
