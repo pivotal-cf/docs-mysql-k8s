@@ -9,23 +9,23 @@ This topic demonstrates how to connect an application running on VMware Tanzu Ap
 
 ## Prerequisites
 
-Before you can connect an application running on TAS to a MySQL instance, you must have:
+Before you can connect an application running on TAS to a <%= vars.product_short %> instance, you must have:
 
 * The Kubernetes Command Line Interface (kubectl) installed.
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-* Installed <%= vars.product_short %> on a Kubernetes cluster that supports a form of external ingress, for example, via a `LoadBalancer`.
+* A <%= vars.product_short %> instance installed on a Kubernetes cluster that supports a form of external ingress, for example a `LoadBalancer`. For more details see [Creating and Deleting MySQL Instances](create-delete-mysql.html).
 
-* An application that is deployed to Tanzu Application Service and can access the Kubernetes cluster ingress points.
+* An application that is deployed to TAS and can access the Kubernetes cluster ingress points.
 
 ## <a id='binding-an-application'></a> Binding an Application
 
 To bind a MySQL instance to an application running on TAS:
 
-1.  Deploy an instance of <%=vars.product_full %> that uses a public ingress method, such as `LoadBalancer`.
+1. Deploy an instance of <%=vars.product_full %> that uses a public ingress method, such as `LoadBalancer`.
 1. Enable TLS for the instance, following the instructions in [Configuring TLS for MySQL Instances](./configure-tls.html).
-1.  Create a database and least-privilege MySQL user for the application, following the procedure [Create a Database and Privileged MySQL User for the App](./connecting-apps.html#create-app-db).
-1.  Set environment variables for your newly created user and for the load balancer hostname:
+1. Create a database and a privileged MySQL user for the application, following the procedure [Create a Database and Privileged MySQL User for the App](./connecting-apps.html#create-app-db).
+1.  Set the environment variables for your newly created user and for the load balancer hostname:
 
     ```bash
     export HOSTNAME=$(kubectl get service mysql-sample  -o 'jsonpath={.status.loadBalancer.ingress[].ip}')
@@ -39,8 +39,8 @@ To bind a MySQL instance to an application running on TAS:
     cf create-user-provided-service k8s-tanzu-sql -p "{\"uri\":\"mysql://$USER:$PASSWORD@$HOSTNAME:3306/$DATABASE?reconnect=true&sslMode=required&ssl_mode=required\"}"
     ```
 
-As with any data service, the application will automatically connect to the database instance if this is supported by the buildpack that the application uses. If
-the buildpack does not support autoconnect, you will need to manually use the `uri` service credential to connect the application to the database instance.
+If autoconnect is supported by the applicatioin buildpack, as is common with data services, the application will automatically connect to the database instance. If
+the buildpack does not support autoconnect, you will need to manually use the `uri` service credentials to connect the application to the database instance.
 
 ## <a id='troubleshooting'></a> Troubleshooting
 
