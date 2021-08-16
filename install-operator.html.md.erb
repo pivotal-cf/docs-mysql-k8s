@@ -128,19 +128,19 @@ open to reference in the following step.
   <br><a href="./images/tanzu-mysql-operator-artifact.png" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
   <br><br>For example:
   <pre class="terminal">$ export HELM\_EXPERIMENTAL\_OCI=1
-$ helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0
-<br>1.0.0: Pulling from registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
-ref:     <span style="color: #77bf00;">registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0</span>
+$ helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
+<br>1.1.0: Pulling from registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
+ref:     <span style="color: #77bf00;">registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0</span>
 digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
 size:    4.2 KiB
 name:    tanzu-sql-with-mysql-operator
-version: 1.0.0
-Status: Downloaded newer chart for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0</pre>
+version: 1.1.0
+Status: Downloaded newer chart for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0</pre>
   1. **To download `tanzu-mysql-instance`:** Click the artifact from <%= vars.product_network %> and paste the
   command into the command line.
   <br><br>For example:
-  <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.0.0
-    <br>1.0.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-instance
+  <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.1.0
+    <br>1.1.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-instance
 f22ccc0b8772: Pull complete
 3cf8fb62ba5f: Pull complete
 e80c964ece6a: Pull complete
@@ -156,18 +156,18 @@ e9ad4cffabdc: Pull complete
 4b9107ee1e3e: Pull complete
 faffd54990ce: Pull complete
 Digest: sha256:78073dcf626603da192b78643bda24e0098f944d0bd54da1d60924b20d5eea8c
-Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.0.0
-registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.0.0</pre>
+Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.1.0
+registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.1.0</pre>
   1. **To download the `tanzu-mysql-operator` image:** Click the artifact from <%= vars.product_network %> and paste the
   command into the command line.
   <br><br>For example:
-  <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.0.0
-    <br>1.0.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-operator
+  <pre class="terminal">$ docker pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0
+    <br>1.1.0: Pulling from tanzu-mysql-for-kubernetes/tanzu-mysql-operator
 be69922ffb42: Pull complete
 ef291e196a72: Pull complete
 Digest: sha256:91664f6866b7228b68d3fb9ff8e13af95f618b7b78e5fd35690dd29394a08db1
-Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.0.0
-registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.0.0</pre>
+Status: Downloaded newer image for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0
+registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0</pre>
 
 ## <a id="install"></a> Install the Operator
 
@@ -197,7 +197,7 @@ other than registry.pivotal.io, log in to the docker registry:
 4. Create a Kubernetes secret for accessing registry containing the <%= vars.product_short %> images by running:
 
     ```
-    kubectl create secret docker-registry tanzu-mysql-image-registry --docker-server=https://registry.pivotal.io/ \
+    kubectl create secret docker-registry tanzu-image-registry --docker-server=https://registry.pivotal.io/ \
     --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
     ```
 
@@ -221,12 +221,12 @@ other than registry.pivotal.io, log in to the docker registry:
     * Role-Based Access Control (RBAC) definitions required to install the operator with Helm
 
     <br>For example:
-    <pre class="terminal">$ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0
-    <br>ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.0.0
+    <pre class="terminal">$ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
+    <br>ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
     digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
     size:    4.2 KiB
     name:    tanzu-sql-with-mysql-operator
-    version: 1.0.0
+    version: 1.1.0
     Exported chart to tanzu-sql-with-mysql-operator/
     </pre>
 
@@ -237,7 +237,7 @@ In most situtations, the default values supplied in the `values.yaml` file do no
 However, if any of the following are true, you need to follow the steps below to override the defaults:
 
 + You deployed the Tanzu SQL for Kubernetes images from a registry other than registry.pivotal.io.
-+ You did not use the default `tanzu-mysql-image-registry` for the secret name in Step 4 above.
++ You did not use the default `tanzu-image-registry` for the secret name in Step 4 above.
 + You want to allocate different CPU or memory resources for your operator.
 + You want to specify an alternate default version for new MySQL instances.
 
@@ -252,9 +252,9 @@ Confirm and configure the Tanzu SQL operator for your environment:
 
     For example:
     <pre><code>---
-    imagePullSecret: tanzu-mysql-image-registry
+    imagePullSecret: tanzu-image-registry
     <br>operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0
-    <br>instanceImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance:1.1.0
+    <br>registry: "registry.pivotal.io/tanzu-mysql-for-kubernetes/"
 		<br>defaultInstanceVersion: 1.1.0
     <br>resources:
       limits:
@@ -290,11 +290,9 @@ Confirm and configure the Tanzu SQL operator for your environment:
             change this reference to pull the operator image from your registry.</td>
         </tr>
         <tr>
-          <td><code>instanceImage</code></td>
+          <td><code>registry</code></td>
           <td>URI</td>
-          <td>Reference to the <%= vars.product_short %> image.
-            If you have uploaded the <%= vars.product_short %> image to a private registry,
-            you change this reference to pull the <%= vars.product_short %> image from your registry.</td>
+          <td>The registry from which to download Tanzu MySQL images.</td>
         </tr>
         <tr>
           <td><code>defaultInstanceVersion</code></td>

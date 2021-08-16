@@ -101,7 +101,7 @@ with a service type of `ClusterIP` which routes connections to the MySQL Pod.
         requests:
           memory: 1Gi
     storageSize: 1Gi
-    imagePullSecret: tanzu-mysql-image-registry
+    imagePullSecretName: tanzu-mysql-image-registry
   ```
 
 After applying this resource, the Operator creates
@@ -117,8 +117,8 @@ Initially, this instance is in a pending state:
 
 <pre class="terminal">
 $ kubectl get mysqls.with.sql.tanzu.vmware.com
-NAME           READY   STATUS    AGE
-mysql-sample           Pending   2s
+NAME           READY   STATUS    VERSION   AGE
+mysql-sample   true    Pending   1.1.0     2s</pre>
 </pre>
 
 Later, the instance transitions to a running state:
