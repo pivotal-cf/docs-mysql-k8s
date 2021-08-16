@@ -171,7 +171,7 @@ of the Kubernetes cluster.
 
 ## <a id='other-config'></a>Change Other Configurations
 
-Changing `storageClassName` or `imagePullSecret` does not have any effect on a running MySQL instance.
+Changing `storageClassName` or `imagePullSecretName` on a running MySQL instance is not supported and it returns an error. 
 If a MySQL instance is not running due to errors in these fields, you can change them.
 The changes are propagated into the StatefulSet to correct the error.
 
@@ -179,7 +179,7 @@ The changes are propagated into the StatefulSet to correct the error.
 <strong>Note:</strong> You cannot modify <code>storageClassName</code> for a successfully created MySQL instance.
 </p>
 
-To change `storageClassName` or `imagePullSecret`,
+To change `storageClassName` or `imagePullSecretName`,
 update the MySQL configuration by one of the methods below:
 
 * Patch the existing API object in place:
@@ -193,7 +193,7 @@ update the MySQL configuration by one of the methods below:
     + `VALUE` is the new property value.
 
     For example:
-    <pre class="terminal">$ kubectl patch mysql mysql-sample -p '{"spec": {"imagePullSecret": "new-secret-name"}}'</pre>
+    <pre class="terminal">$ kubectl patch mysql mysql-sample -p '{"spec": {"imagePullSecretName": "new-secret-name"}}'</pre>
 
 * If you manage MySQL resources with a set of configuration files in source control, you can
     change the fields in the file and apply the changes.

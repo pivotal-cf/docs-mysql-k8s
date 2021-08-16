@@ -33,6 +33,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
     </pre>
 
 1. Create any MySQL constructs needed by your app, and create a user with privileges to access those constructs as required by your app.
+   <b>NOTE: Older MySQL client libraries (such as those base on 5.6) need an older password encryption method. We show both type of `CREATE USER` commands below.</b>
     <br /> <br />
     For example, the following commands create a `bitnami_wordpress` database and `bn_wordpress` user for the Bitnami WordPress Stack deployment:
 
@@ -42,6 +43,9 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
     Query OK, 1 row affected (0.20 sec)
 
     mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED BY 'hunter2';
+    Query OK, 0 rows affected (0.08 sec)
+    --- OR, for broader compatibility with older client libraries ---
+    mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED WITH mysql_native_password BY 'hunter2';
     Query OK, 0 rows affected (0.08 sec)
 
     mysql> GRANT ALL PRIVILEGES ON bitnami_wordpress.* TO 'bn_wordpress'@'%';
@@ -57,7 +61,7 @@ Application configuration will be specific to the app being deployed. This secti
 
 This section assumes that the MySQL instance is named `mysql-sample` and is deployed to the `default` Kubernetes namespace.
 
-1. Install cert-manager if it is not already present in the cluster. For more information, see the [cert-manager documentation](https://cert-manager.io/docs/installation/kubernetes/).
+1. Install cert-manager if it is not already present in the cluster following the details in [Installing the Tanzu SQL for Kubernetes Operator - Prerequisites](install-operator.html#prereq). 
 
 1. Generate a certificate for MySQL to present to WordPress. The certificate must meet the WordPress authentication requirements.
     <br /><br />
