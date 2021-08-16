@@ -85,7 +85,7 @@ To create an HA instance:
           name: mysql-ha-sample
         spec:
           storageSize: 1Gi
-          imagePullSecret: tanzu-mysql-image-registry
+          imagePullSecretName: tanzu-image-registry
           highAvailability:
             enabled: true
         ```
