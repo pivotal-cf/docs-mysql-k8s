@@ -343,7 +343,7 @@ To delete a backup:
 
 ##<a id="restore"></a>Restore
 
-This section discusses two kinds of restoring:
+This section discusses two kinds of restore:
 
 + [Restore from a Backup](#restore-from-backup)
 + [Restore a Backup to a Different Namespace or Kubernetes Cluster](#restore-to-different)
@@ -351,13 +351,11 @@ This section discusses two kinds of restoring:
 ###<a id="restore-from-backup"></a> Restore from a Backup
 
 MySQLRestores always restores to a new MySQL instance to avoid overwriting any data
-on an existing MySQL instance.
-The MySQL instance is created automatically when the restore is triggered.
+on an existing MySQL instance. When the restore is triggered, it automatically creates the new MySQL instance.
 
 <%= vars.product_short %> does not allow you to restore a backup to an existing MySQL instance.
 Although you can perform this manually by copying the MySQL data from the backup artifact
-onto an existing MySQL instance,
-VMware strongly discourages you from doing this because
+onto an existing MySQL instance, VMware strongly discourages you from doing this because
 you might overwrite existing data on the MySQL instance.
 
 #### Prerequisites
@@ -388,6 +386,27 @@ To restore from a backup:
 3. Edit the file.
    For information about the properties that you can set for the MySQLRestore resource,
    see [Property Reference for Backup and Restore](property-reference-backup-restore.html#restore).
+
+    To restore from an HA instance to a non-HA instance, edit the `testrestore.yaml` and ammend the `spec.instanceTemplate.spec.highAvailability` field to false. For example:
+
+    ```
+    ---
+    apiVersion: with.sql.tanzu.vmware.com/v1
+    kind: MySQLRestore
+    metadata:
+      name: restore-sample
+    spec:
+      backup:
+         name: backup-sample
+      instanceTemplate:
+         metadata:
+           name: mysql-sample
+         spec:
+           storageSize: 1Gi
+           imagePullSecret: tanzu-mysql-image-registry
+           highAvailability:
+             enabled: false
+     ```
 
 4. Trigger the restore by creating the MySQLRestore resource in the same namespace
    as the MySQLBackup and MySQLBackupLocation by running:
