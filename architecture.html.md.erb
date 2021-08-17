@@ -3,8 +3,6 @@ title: Architecture
 owner: MySQL
 ---
 
-<strong><%= modified_date %></strong>
-
 This topic provides some architectural information about <%= vars.product_full %>.
 
 ## <a id='mysql4k8s-architecture'></a><%= vars.product_full %> Architecture
@@ -67,6 +65,7 @@ and a new secondary MySQL Pod is created to replace the failed Pod.
 
 If a proxy Pod fails, Kubernetes directs traffic to the remaining proxy Pod
 while re-creating the failed Pod in the background.
+
 ## <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
 
 <%= vars.product_full %> provides extensions to the Kubernetes API through custom resources.
@@ -76,7 +75,7 @@ The product provides five separate custom resources:
 + [MySQLBackupLocation](#mysqlbackuplocation): Defines an S3 storage bucket for backups
 + [MySQLBackup](#mysqlbackup): Requests for a backup
 + [MySQLBackupSchedule](#mysqlbackupschedule): Defines a backup schedule
-+ [MySQLRestore](#mysqlrestore): Requests to restore data
++ [MySQLRestore](#mysqlrestore): Requests a data restore
 
 ###<a id="mysql"></a> MySQL
 
