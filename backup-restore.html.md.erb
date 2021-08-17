@@ -387,7 +387,7 @@ To restore from a backup:
    For information about the properties that you can set for the MySQLRestore resource,
    see [Property Reference for Backup and Restore](property-reference-backup-restore.html#restore).
 
-    To restore from an HA instance to a non-HA instance, edit the `testrestore.yaml` and ammend the `spec.instanceTemplate.spec.highAvailability` field to false. For example:
+    To restore from an HA instance to a non-HA instance, edit the `testrestore.yaml` and amend the `spec.instanceTemplate.spec.highAvailability` field to false. For example:
 
     ```
     ---
@@ -403,7 +403,7 @@ To restore from a backup:
            name: mysql-sample
          spec:
            storageSize: 1Gi
-           imagePullSecret: tanzu-mysql-image-registry
+           imagePullSecretName: tanzu-mysql-image-registry
            highAvailability:
              enabled: false
      ```
