@@ -80,9 +80,13 @@ The product provides five separate custom resources:
 ###<a id="mysql"></a> MySQL
 
 Applying this resource causes the Kubernetes Operator to create a StatefulSet with a single Pod
+<<<<<<< HEAD
 and three containers, 
 One container runs the MySQL database software, one runs the components to support backups, and the third runs the mysqld_exporter (for monitoring).
 
+=======
+and three containers. One container runs the MySQL database software, one runs the components to support backups, and the third runs the mysqld_exporter (for monitoring).
+>>>>>>> 1.1
 The MySQL Pod mounts a persistent volume claim (PVC) which holds the MySQL data.
 
 When a MySQL instance is created, the MySQL Operator automatically creates a Kubernetes service
