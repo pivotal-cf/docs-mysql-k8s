@@ -70,6 +70,7 @@ The <%= vars.product_short %> releases support the components listed below:
 
 ### <a id="11_issues"></a>Known Issues
 
+* **Existing or new 1.0.0 Tanzu MySQL instance require an upgrade**: New Tanzu MySQL 1.0.0 instances, or existing 1.0.0 instances that restart, do not reach a Running state. The 1.1.0 Tanzu MySQL Operator tries to grant permissions for a system table that was introduced in Percona 8.0.25, and does not exist in 1.0.0 instances. As a workaround, upgrade existing 1.0.0 Tanzu MySQL instances to 1.1.0, and avoid creating new 1.0.0 instances.
 * **Proxy connection limitation**: The proxy in an HA instance supports up to 100 connection errors from the same source IP. When the limit is reached, the proxy does not process any further connection requests. For a workaround, restart the proxy pod in order to reset the connection error counter. 
 * **`imagePullSecretName` required for restores**: MySQLRestore requires `imagePullSecretName` to be provided in the `instanceTemplate`.
 
