@@ -26,7 +26,9 @@ Before you deploy the Tanzu MySQL operator, you need:
 
 - [Docker](https://github.com/docker) running and configured on your local computer, to access the Kubernetes cluster and Docker registry.
 
-- A running Kubernetes cluster - [Google Kubernetes Engine (GKE)](prepare-gke.html), [VMware Enterprise TKGi)](prepare-pks.html) or [Minikube](minikube.html) - and the [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) command-line tool, configured and authenticated to communicate with your Kubernetes cluster. If you are using GKE, install the [gcloud](https://cloud.google.com/sdk/gcloud/) command-line tool on your local client.
+- A running Kubernetes cluster.
+
+- The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) command-line tool, configured and authenticated to communicate with your Kubernetes cluster.
 
 - The Helm v3 command-line tool installed. For more information, see [Installing Helm](https://helm.sh/docs/intro/install/) from the Helm documentation.
 
@@ -305,7 +307,7 @@ $ docker push ${OPERATOR_IMAGE_NAME}
 
 Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private container registry so it can pull images. These examples create a secret named `tanzu-image-registry` using Harbor, Google Cloud Registry (GCR), and Amazon Elastic Container Registry (ECR). 
 
-**IMPORTANT**: The commands below create the secret in the `default` namespace. Only pods created in the same `default` namespace can reference the secret. To create a secret in a different namespace, use the `--namespace` flag.
+<p class='note important'><strong>Important:</strong> The commands below create the secret in the current configured namespace for the kubectl context. Only pods created in the same namespace can reference the secret. To create a secret in a different namespace, use the `--namespace` flag. You should create an identical secret in the operator namespace and in each namespace where you will create Tanzu MySQL instances.</p>
 
 **Harbor**
 
@@ -439,11 +441,12 @@ resources: {}
     
     ``` bash
     $ helm install --wait my-mysql-operator charts/tanzu-sql-with-mysql-operator/ \
-      --namespace=${OPERATOR_NAMESPACE} \
-      --create-namespace \   
+      --values=operator-values-overrides.yaml \
+      --namespace=mysql-for-kubernetes-system \
+      --create-namespace
     ```
 
-    Helm installs the new release into the Kubernetes namespace specified in the current Kubernetes context. The command displays a message similar to:
+    The command displays a message similar to:
 
     ```
     NAME: my-mysql-operator
