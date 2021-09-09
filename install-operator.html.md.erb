@@ -474,9 +474,9 @@ resources: {}
     Use the label `app=tanzu-mysql-operator` to search across resources created by the MySQL Operator Helm chart:
 
     ``` bash
-    $ kubectl get all -l app=tanzu-mysql-operator -n mysql-operator
+    $ kubectl get all -l app=tanzu-mysql-operator -n mysql-for-kubernetes-system
     ```
-    where `-n mysql-operator` defines the namespace. The output would be similar to:
+    where `-n mysql-for-kubernetes-system` defines the namespace. The output would be similar to:
 
     ``` bash
     NAME                                           READY       STATUS           RESTARTS      AGE
