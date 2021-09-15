@@ -44,7 +44,7 @@ The <%= vars.product_short %> releases support the components listed below:
 * Release 1.1.0 supports Percona XtraBackup 8.0.25. For details on Percona XtraBackup 8.0.25 see [Percona XtraBackup Release Notes](https://www.percona.com/doc/percona-xtrabackup/LATEST/release-notes/8.0/8.0.25-17.0.html).
 * Tanzu MySQL instances are now created with a version number. Users may specify the `spec.version` field in the instance definition to specify which Tanzu MySQL version to deploy. Users can now list instances by version number. For more details, see [List Instances By Version](upgrade-instance.html).
 * When installing <%= vars.product_full %>, users can specify a default version for new Tanzu MySQL instances. For more details, see [Installing the Operator](./install-operator.html).
-* <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Prerequisites](install-operator.html#prereq).
+* <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Installing the Operator](./install-operator.html).
 * <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
 * This release supports an additional auto-recovery feature: an HA cluster that loses quorum can now recover its state. 
 * Customers can now upgrade from a previous release to a new release. For more information on the process, see [Upgrading MySQL Instances](upgrade-instance.html).
@@ -58,10 +58,10 @@ The <%= vars.product_short %> releases support the components listed below:
 ### <a id="11_changes"></a>Changes
 
 
-- `instanceImage` has been deprecated and removed from the <%= vars.product_short %> Helm chart. This release introduces two new chart values, `registry` and `defaultInstanceVersion`. Users should specify `registry: <my.private-registry>` in their `values-override.yaml`. For more details, see [Installing the Tanzu SQL for Kubernetes Operator](install-operator.html).
+- `instanceImage` has been deprecated and removed from the <%= vars.product_short %> Helm chart. This release introduces two new chart values, `registry` and `defaultInstanceVersion`. Users should specify `registry: <my.private-registry>` in their `values-override.yaml`. For more details, see [Installing the Tanzu SQL for Kubernetes Operator](./install-operator.html).
 - `imagePullSecret` has been renamed to `imagePullSecretName` for the Helm chart and the MySQL resource, and it's now optional. Users who are maintaining a deployment file for the object should rename the field or drop the field entirely. If omitted, the `imagePullSecretName` will default to the Helm chart setting.
 - Users can now alter `spec.storageSize` in a MySQL object to scale up the PV (Persistent Volume), if the underlying storage class supports `onlineVolumeExpansion`. See [Scale storageSize](./update-instance.html#scale-storage). 
-- Before installing the Tanzu MySQL operator, this release now requires cert-manager installation. For details, see [Installing the Tanzu SQL for Kubernetes Operator - Prerequisites](install-operator.html#prereq).
+- Before installing the Tanzu MySQL operator, this release now requires cert-manager installation. For details, see [Prerequisites for Installing via the Tanzu Network Registry](./install-operator.html#tanzu-network-prerequisites).
 
 ### <a id="11_resolved"></a>Resolved Issues
 
@@ -111,7 +111,7 @@ For an overview of this product, see [About <%= vars.product_short %>](index.htm
 * **Installation Using Helm:** Kubernetes admins can use Helm to install the <%= vars.product_short %> Operator.
   This simplifies the installation process while maintaining flexibility in configuration.
   For information about how to install the <%= vars.product_short %> Operator,
-  see [Installing the Operator](install-operator.html).
+  see [Installing the Operator](./install-operator.html).
 
 * **Backup and Restore:** <%= vars.product_short %> automates on-demand and scheduled full physical backups
   using the [Percona XtraBackup](https://www.percona.com/software/mysql-database/percona-xtrabackup) tool.
