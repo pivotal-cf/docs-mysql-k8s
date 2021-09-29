@@ -73,7 +73,7 @@ The <%= vars.product_short %> releases support the components listed below:
 * **Existing or new 1.0.0 Tanzu MySQL instances require an upgrade**: New Tanzu MySQL 1.0.0 instances, or existing 1.0.0 instances that restart, do not reach a Running state. The 1.1.0 Tanzu MySQL Operator tries to grant permissions to the `performance_schema.keyring_component_status` system table that is introduced in Percona 8.0.25, and does not exist in Percona 8.0.22 and the 1.0.0 instances. As a workaround, upgrade existing 1.0.0 Tanzu MySQL instances to 1.1.0, and avoid creating new 1.0.0 instances.
 * **Proxy connection limitation**: The proxy in an HA instance supports up to 100 connection errors from the same source IP. When the limit is reached, the proxy does not process any further connection requests. For a workaround, restart the proxy pod in order to reset the connection error counter. 
 * **`imagePullSecretName` required for restores**: MySQLRestore requires `imagePullSecretName` to be provided in the `instanceTemplate`.
-* **S3 backups are limited to 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. With the default 5 MB part size, this results in an upper limit of 50 GB for the full backup.
+* **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
 
 ### <a id="11_limits"></a>Limitations
 
@@ -148,7 +148,7 @@ For an overview of this product, see [About <%= vars.product_short %>](index.htm
 * **Scaling down an HA instance is not supported**: Creating an HA instance and scaling back to a single pod is not supported and may incur data loss. The <%= vars.product_full %> operator does not prevent you from changing the property, and changing the property will result in unknown behavior.
   If the pods for an HA instance crash while the cluster and its metadata are still being created, the cluster may not recover automatically.
 * **Pods may restart when creating a HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
-* **S3 backups are limited to 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. With the default 5 MB part size, this results in an upper limit of 50 GB for the full backup.
+* **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
 
 ### <a id="10_limits"></a>Limitations
 
