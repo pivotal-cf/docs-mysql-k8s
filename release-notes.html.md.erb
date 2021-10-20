@@ -39,6 +39,28 @@ The <%= vars.product_short %> releases support the components listed below:
 
 ### <a id="11_features"></a>Features
 
+**Security**
+
+* The Tanzu MySQL Operator 1.2.0 now uses a default self-signed `ClusterIssuer` and creates a custom `mysql-sample-tls-secret` in scenarios where users do not configure their own TLS secrets for their instances. 
+* Tanzu MySQL 1.2.0 automatically refreshes instance TLS certificates when the user renews a private TLS key.
+* When a Tanzu MySQL instance is deleted, all TLS secrets related to that instance, are also deleted. 
+* The Tanzu MySQL Operator 1.2.0 automatically recreates any MySQL instance secrets that are accidentally deleted. 
+
+ 
+
+
+
+### <a id="11_resolved"></a>Resolved Issues
+
+
+
+## <a id="1-1-0"></a> Version 1.1.0
+
+**Release Date: August 17, 2021**
+
+
+### <a id="11_features"></a>Features
+
 
 * Release 1.1.0 supports MySQL Server 8.0.25. For details on MySQL Server 8.0.25 see [MySQL Release Notes](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-25.html) and [Percona Server Release Notes](https://www.percona.com/doc/percona-server/LATEST/release-notes/Percona-Server-8.0.25-15.html).
 * Release 1.1.0 supports Percona XtraBackup 8.0.25. For details on Percona XtraBackup 8.0.25 see [Percona XtraBackup Release Notes](https://www.percona.com/doc/percona-xtrabackup/LATEST/release-notes/8.0/8.0.25-17.0.html).
