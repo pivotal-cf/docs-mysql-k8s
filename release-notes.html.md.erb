@@ -32,21 +32,22 @@ The <%= vars.product_short %> releases support the components listed below:
      <strong>IMPORTANT:</strong> VMware does not support deployments that have been modified by adding layers to the packaged Docker images, or deployments that reference images other than the VMware MySQL Operator. VMware does not support changing the contents of the deployed containers and pods in any way.
  </p>
 
-## <a id="1-1-0"></a> Version 1.1.0
+## <a id="1-2-0"></a> Version 1.2.0
 
-**Release Date: August 17, 2021**
+**Release Date: November 4, 2021**
 
 
-### <a id="11_features"></a>Features
+### <a id="12_features"></a>Features
 
 **Security**
 
-* The Tanzu MySQL Operator 1.2.0 now uses a default self-signed `ClusterIssuer` and creates a custom `mysql-sample-tls-secret` in scenarios where users do not configure their own TLS secrets for their instances. 
-* Tanzu MySQL 1.2.0 automatically refreshes instance TLS certificates when the user renews a private TLS key.
-* When a Tanzu MySQL instance is deleted, all TLS secrets related to that instance, are also deleted. 
+* The Tanzu MySQL Operator 1.2.0 now uses a default self-signed `ClusterIssuer` and creates a default secret when users do not configure their own TLS secrets. For details see [Using the Default provided TLS](configure-tls.html#using-default-tls) in the _Configuring TLS for MySQL Instances_ page.
+* Users can now configure a custom CA authority for the Tanzu MySQL Operator. For details see [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer)
+* The Tanzu MySQL 1.2.0 Operator automatically refreshes instance TLS certificates when the user renews a private TLS key.
+* When a Tanzu MySQL instance is deleted, all TLS secrets related to that instance are also deleted. 
 * The Tanzu MySQL Operator 1.2.0 automatically recreates any MySQL instance secrets that are accidentally deleted. 
+* With this release, when users update TLS secrets or certificates, the MySQL instances refresh their TLS configuration without any pod restart. 
 
- 
 
 
 
@@ -65,7 +66,7 @@ The <%= vars.product_short %> releases support the components listed below:
 * Release 1.1.0 supports MySQL Server 8.0.25. For details on MySQL Server 8.0.25 see [MySQL Release Notes](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-25.html) and [Percona Server Release Notes](https://www.percona.com/doc/percona-server/LATEST/release-notes/Percona-Server-8.0.25-15.html).
 * Release 1.1.0 supports Percona XtraBackup 8.0.25. For details on Percona XtraBackup 8.0.25 see [Percona XtraBackup Release Notes](https://www.percona.com/doc/percona-xtrabackup/LATEST/release-notes/8.0/8.0.25-17.0.html).
 * Tanzu MySQL instances are now created with a version number. Users may specify the `spec.version` field in the instance definition to specify which Tanzu MySQL version to deploy. Users can now list instances by version number. For more details, see [List Instances By Version](upgrade-instance.html).
-* When installing <%= vars.product_full %>, users can specify a default version for new Tanzu MySQL instances. For more details, see [Installing the Operator](./install-operator.html).
+* When installing Tanzu MySQL, users can specify a default version for new Tanzu MySQL instances. For more details, see [Installing the Operator](./install-operator.html).
 * <%= vars.product_short %> now requires installing Cert Manager before creating or updating new instances. For more details, see [Installing the Operator](./install-operator.html).
 * <%= vars.product_short %> instances now expose Prometheus compatible metrics endpoints. Metrics are secured behind a self-signed TLS certificate. For more details see [Monitoring MySQL Instances in Kubernetes](monitoring.html).
 * This release supports an additional auto-recovery feature: an HA cluster that loses quorum can now recover its state. 
