@@ -42,6 +42,488 @@ You do not need to download the **Artifact References** from the Tanzu MySQL for
 
 ## <a id='create-instance'></a>Create a MySQL Instance
 
+To create a MySQL instance, a `MySQL` resource definition must be created and applied. The Tanzu MySQL Operator creates
+the necessary resources, such as Secrets, Services and Statefulsets, in the same namespace where the MySQL instance was
+defined.
+
+First, create a `MySQL` resource named `mysql.yaml`:
+
+```bash
+$ cat > mysql.yaml <<EOF
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+  name: my-instance
+spec:
+  storageSize: 1Gi
+```
+
+**Note:** `storageSize` is a required parameter which defines the size of the disk used for the MySQL Database Server.
+
+Next, apply this file to the kubernetes cluster:
+
+```bash
+$ kubectl apply --filename=mysql.yaml
+mysql/my-instance created
+```
+
+Then, verify the instance was successfully created by running:
+
+```bash
+$ kubectl get all --selector "app.kubernetes.io/instance=mysql-sample"
+NAME                 READY   STATUS    RESTARTS   AGE
+pod/mysql-sample-0   3/3     Running   0          27s
+
+NAME                           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)              AGE
+service/mysql-sample           ClusterIP   10.111.245.250   <none>        3306/TCP,33060/TCP   27s
+service/mysql-sample-members   ClusterIP   None             <none>        3306/TCP,33060/TCP   27s
+
+NAME                            READY   AGE
+statefulset.apps/mysql-sample   1/1     27s
+```
+
+The MySQL instance is now ready to be used by an application.
+
+
+## <a id='configure-instance'></a>Configure a MySQL Instance
+
+To configure a MySQL instance open the mysql.yaml that was previously created or edit the configuration in place by running:
+
+```bash
+$ kubectl edit mysql my-instance
+```
+
+Next, add any of the properties described below along with their values.  Every property listed below is optional, except `storageSize`
+
+<a id="instance-storageSize"></a>**storageSize**
+
+Description: The capacity of the persistent volume, expressed as a Kubernetes resource quantity.
+
+Default Value: No default. This is a required value.
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 10Gi
+```
+
+Notes:
+
+A 1Gi disk is the minimum recommended value.  The value to use in your environment will depend on the size of your database and your expected data growth.  Talk to your local database administrator for more details.
+
+
+<a id="instance-storageClassName"></a>**storageClassName**
+
+Description: The name of the [Kubernetes StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/) to
+use when creating a [Kubernetes persistent volume](https://kubernetes.io/docs/concepts/storage/persistent-volumes/). 
+This volume is used by the MySQL Database Server to persist data files.
+
+Default Value: No default specified.  The default storage class of the Kubernetes cluster will be used, if any.
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+```
+
+Notes:
+
+If no default storageClass is defined in the Kubernetes cluster, then `storageClassName` is a required option in order
+for a MySQL instance to start successfully.
+
+Run the following class to see available storageClasses in your cluster:
+
+```bash
+$ kubectl get storageclasses
+```
+
+<a id="instance-imagePullSecretName"></a>**imagePullSecretName**
+
+Description: A reference to a [Kubernetes
+Secret](https://kubernetes.io/docs/concepts/configuration/secret/#docker-config-secrets) containing registry
+credentials.  This secret will be configured on Kubernetes Pods to retrieve the Tanzu MySQL instance images from the
+registry configured when the Tanzu MySQL Operator was installed.
+
+Default Value: "tanzu-image-registry"
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   imagePullSecretName: "my-local-pull-secret"
+```
+
+Notes:
+
+To create a Kubernetes registry secret, run this command:
+
+```bash
+$ kubectl create secret docker-registry my-local-pull-secret --docker-server=MY-REGISTRY.DOMAIN --docker-username=MY-REGISTRY-USERNAME --docker-password=MY-REGISTRY-PASSWORD
+```
+
+<a id="instance-serviceType"></a>**serviceType**
+
+Description: Specify the [Kubernetes Service](https://kubernetes.io/docs/concepts/services-networking/service/) type for the MySQL Service. This configures an endpoint for an application or database client to connect to the database instance.
+
+TODO: Reference "Connect to your MySQL Instance Docs"
+
+The valid types for a Tanzu MySQL instance are:
+ - ClusterIP
+ - LoadBalancer
+
+Default Value: "ClusterIP"
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   serviceType: "LoadBalancer"
+```
+
+Notes:
+
+Tanzu MySQL does not support other service types such as `ExternalName` or `NodePort` that are otherwise supported by a standalone Kubernetes Service.
+
+
+<a id="instance-tls-secret-name"></a>**tls.secret.name**
+
+Description: Configure the MySQL instance to use the certificates provided by the [Kubernetes TLS Secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets) referenced by this property. The
+Secret must already exist in the same Namespace as the `MySQL` instance. The Secret MUST contain
+`tls.key`, `tls.crt` and `ca.crt` for the private key, public certificate and certificate authority respectively.
+
+TODO: Reference "Configuring TLS docs"
+
+Default Value: cert-manager managed secret created via the cert-manager/ClusterIssuer configured when installing the Tanzu MySQL Operator.
+
+Example:
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+   name: my-custom-secret-name
+type: kubernetes.io/tls
+data:
+   # the data is abbreviated in this example
+   ca.crt: |
+      MIIC2DCCAcCgAwIBAgIBATANBgkqh ...
+   tls.crt: |
+      MIIC2DCCAcCgAwIBAgIBATANBgkqh ...
+   tls.key: |
+      MIIEpgIBAAKCAQEA7yn3bRHQ5FHMQ ...
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   tls:
+     secret:
+       name: "my-custom-secret-name"
+```
+
+Notes:
+
+This is an entirely optional value when a user desires to customize the TLS certificates used by the Tanzu MySQL Operator.
+
+It is recommended that secrets are created by creating cert-manager certificates so that they are automatically
+refreshed before they expire.  This is not enforced by the Tanzu MysQL Operator, and if a user provides "static"
+certificates that are not managed they may expire without warning and prevent TLS connections to the MySQL database.
+
+<a id="instance-highAvailability-enabled"></a>**highAvailability.enabled**
+
+Description: Configures the MySQL instance to be a high-availability cluster with 3 redundant pods and 2 proxy pods. 
+
+After being set to true, cannot be modified or update for an existing instance. 
+For information about high availability, see [Configuring MySQL Instances for High Availability](high-availability.html). 
+
+TODO: Reference "Configuring TLS docs"
+
+Default Value: false.  A MySQL instance will create a single pod running a single copy of the MySQL Database Server.
+
+Example:
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+   name: my-custom-secret-name
+type: kubernetes.io/tls
+data:
+   # the data is abbreviated in this example
+   ca.crt: |
+      MIIC2DCCAcCgAwIBAgIBATANBgkqh ...
+   tls.crt: |
+      MIIC2DCCAcCgAwIBAgIBATANBgkqh ...
+   tls.key: |
+      MIIEpgIBAAKCAQEA7yn3bRHQ5FHMQ ...
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   tls:
+     secret:
+       name: "my-custom-secret-name"
+```
+
+Notes:
+
+This is an entirely optional value when a user desires to customize the TLS certificates used by the Tanzu MySQL Operator.
+
+It is recommended that secrets are created by creating cert-manager certificates so that they are automatically
+refreshed before they expire.  This is not enforced by the Tanzu MysQL Operator, and if a user provides "static"
+certificates that are not managed they may expire without warning and prevent TLS connections to the MySQL database.
+
+<a id="instance-databasePodConfig"></a>**databasePodConfig**
+
+Description: Configures advanced Kubernetes Pod rules for [Affinity and
+Anti-Affinity](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity) and
+[Tolerations](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration) for MySQL Database pods.
+
+
+Default Value: preferred anti-affinity between pods for the same Tanzu MySQL instance so that each pod will preferably run on different [Kubernetes Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/).  This default only affects
+instances configures with <a href="#instance-highAvailability-enabled">high-availability</a>.
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   databasePodConfig:
+     affinity:
+       podAntiAffinity:
+         requiredDuringSchedulingIgnoredDuringExecution:
+           - weight: 1
+             podAffinityTerm:
+               topologyKey: "kubernetes.io/hostname"
+               labelSelector:
+                 matchExpressions:
+                   - key: "app.kubernetes.io/component"
+                     operator: In
+                     values:
+                       - database
+                   - key: "app.kubernetes.io/instance"
+                     operator: In
+                     values:
+                       - my-instance
+```
+
+Notes:
+
+TODO: Wordsmithing
+
+This is an advanced configuration option to allow a MySQL instance to run on specific nodes or tolerate specific kinds
+of Kubernetes Node failures gracefully.
+
+
+<a id="instance-databasePodConfig"></a>**proxyPodConfig**
+
+Description: Configures advanced Kubernetes Pod rules for [Affinity and
+Anti-Affinity](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity) and
+[Tolerations](https://kubernetes.io/docs/concepts/configuration/taint-and-toleration) for proxy pods used in High Availability clusters. 
+
+
+Default Value: preferred anti-affinity between pods for the same Tanzu MySQL instance so that each pod will preferably run on different [Kubernetes Nodes](https://kubernetes.io/docs/concepts/architecture/nodes/).  This default only affects
+instances configures with <a href="#instance-highAvailability-enabled">high-availability</a>.
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   proxyPodConfig:
+     affinity:
+       podAntiAffinity:
+         requiredDuringSchedulingIgnoredDuringExecution:
+           - weight: 1
+             podAffinityTerm:
+               topologyKey: "kubernetes.io/hostname"
+               labelSelector:
+                 matchExpressions:
+                   - key: "app.kubernetes.io/component"
+                     operator: In
+                     values:
+                       - proxy
+                   - key: "app.kubernetes.io/instance"
+                     operator: In
+                     values:
+                       - my-instance
+```
+
+Notes:
+
+TODO: Wordsmithing
+
+This is an advanced configuration option to allow a MySQL instance to run on specific nodes or tolerate specific kinds
+of Kubernetes Node failures gracefully.
+
+
+<a id="instance-resources"></a>**resources**
+
+Description: Specify the resource requests and limits of the `MySQL` containers for a given instance. CPU requirements
+must be in CPU units. Memory requirements must be in bytes. Both values must be expressed as a [Kubernetes Resource
+Quantity](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#resource-units-in-kubernetes)
+
+Default Value: No default.  All MySQL pods run with [Kubernetes Best Effort quality-of-service (QoS)](https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/#create-a-pod-that-gets-assigned-a-qos-class-of-besteffort)
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   resources: 
+     ### This is the container running the mysql server.
+     mysql:
+       requests:
+         cpu: 750m
+         memory: 500Mi
+       limits:
+         cpu: '1.0'
+         memory: 800Mi 
+     ### This is the sidecar container that manages backups and highAvailability cluster operations
+     mysqlSidecar:
+       requests:
+         cpu: 100m
+         memory: 50Mi
+       limits:
+         cpu: 250m
+         memory: 75Mi 
+     ### This is the container that exports metrics
+     metrics:
+       requests:
+         cpu: 100m
+         memory: 32Mi
+       limits:
+         cpu: 250m
+         memory: 75Mi
+
+     ### This is the container that proxies connections to MySQL when highAvailability.enabled is true
+     proxy:
+       requests:
+         cpu: 200m
+         memory: 48Mi
+       limits:
+         cpu: '1.0'
+         memory: 256Mi
+```
+
+Notes:
+
+Specific values will depend on capacity planning for the database instance.  Above example is only for sample purposes
+and only suitable for a low traffic database.  More demanding workloads will require higher values.
+
+<a id="instance-persistentVolumeClaimPolicy"></a>**persistentVolumeClaimPolicy**
+
+Description: Configures the retention for the persistent disk when the MySQL instance is deleted
+
+Valid Values:
+- Retain
+- Delete
+
+Default Value: Retain
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   persistentVolumeClaimPolicy: Delete
+```
+
+Notes:
+
+By default, if a MySQL instance is deleted the Persistent Volume is preserved in the Kubernetes cluster.  A user will need to manually delete that volume at a later time if they no longer wish to preserve that data.
+
+If a user wishes to automatically remove Persistent Volumes when a MySQL instance is deleted,
+persistentVolumeClaimPolicy must be explicitly configured with the value `Delete`.
+
+
+<a id="instance-version"></a>**version**
+
+Description: Configures the Tanzu MySQL version to configure an instance
+
+Valid Values:
+- 1.0.0
+- 1.1.0
+- 1.2.0
+
+Default Value: 1.2.0, but default may be overridden when installing the Tanzu MySQL Operator
+
+Example:
+
+```yaml
+---
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+   name: my-instance
+spec:
+   storageSize: 1Gi
+   version: "1.2.0"
+```
+
+Notes:
+
+This property exists to support MySQL upgrades.   When an instance is created by the 1.1.0 operator, and that operator
+is later upgraded to 1.2.0 the instance will _not_ be automatically updated.  This avoids unexpected downtime by
+automatically restarting the instance.  
+
+However, in order for a user to take advantage of features in the latest operator, the instance `spec.version` should be
+configured to the latest supported version.
+
+## <a id='create-instance'></a>Create a MySQL Instance
+
 [//]: # (Note to authors: if you change step numbers in this procedure, edit high-availability topic.)
 
 To create a MySQL instance:
