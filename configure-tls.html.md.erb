@@ -104,7 +104,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 3. Create a CA issuer in cert-manager using a `ClusterIssuer` resource and associate it with the CA Secret created in step 2. For information about the cert-manager `Issuer` types, see [Issuer Configuration](https://cert-manager.io/docs/configuration/) in the cert-manager documentation.
 
     <p class="note">
-       <strong>Note:</strong> The MySQL instance TLS secret requires the <code>ca.crt</code> key, therefore VMware does not recommend using the ACME Issuer.
+       <strong>Note:</strong> The MySQL instance TLS secret requires the <code>ca.crt</code> key. As the ACME Issuer does not provide a <code>ca.crt</code> key, VMware does not recommend using the ACME Issuer.
     </p>
 
 
@@ -188,7 +188,7 @@ To create the TLS Secret using cert-manager instead,
 see [Create TLS Secret with cert-manager](#using-cert-manager) below.
 
 1. Generate a certificate and private key using a certificate manager,
-   such as OpenSSL, certstrap, or Let's Encrypt.
+   such as OpenSSL or certstrap.
    <br><br>
    When creating the certificate, supply the server hostname for the subject alternative names (SANs).
    The server hostname is the DNS name that you use when connecting your app to the MySQL instance:
