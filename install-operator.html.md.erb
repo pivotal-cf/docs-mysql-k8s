@@ -197,7 +197,7 @@ To install the Operator using the Helm CLI:
 
 1. By default, the Tanzu MySQL Operator 1.2.0 configures a self-signed `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
     
-    If you're not configuring a custom CA, continue with the default installation. If you created a custom `values-override.yaml` in [Review values.yaml and Create Overrides If Needed](#create-overrides) above, then run the following Helm command, including the `--values` flag with the location of your override file:
+    If you do not require a custom CA, continue with the default installation. If you created a custom `values-override.yaml` in [Review values.yaml and Create Overrides If Needed](#create-overrides) above, then run the following Helm command, including the `--values` flag with the location of your override file:
 
     ``` bash
     $ helm install --values=/your/values-override.yaml tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
@@ -431,7 +431,7 @@ resources: {}
 
 **IMPORTANT**: Helm 3.7 is currently not supported.
 
-1.  By default, the Tanzu MySQL Operator 1.2.0 configures a `ClusterIssuer` for MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
+1.  By default, the Tanzu MySQL Operator 1.2.0 configures a `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
 
     To continue with the default installation, use Helm to install the MySQL Operator in your Kubernetes cluster:
 

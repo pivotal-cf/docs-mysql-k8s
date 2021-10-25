@@ -11,14 +11,14 @@ This topic describes how to configure TLS for a Tanzu MySQL instance.
 
 The Tanzu MySQL TLS configuration provides various options:
 
-- By default, the Tanzu MySQL Operator uses a self-signed `ClusterIssuer` and MySQL instances use certificates issued by the self-signed CA. See [Using the Default provided TLS](#using-default-tls). 
+- By default, the Tanzu MySQL Operator configures a self-signed `ClusterIssuer` for issuing MySQL instance TLS certificates. See [Using the Default provided TLS](#using-default-tls). 
 
-- Administrators can also customize the Certificate Authority (CA) to comply with an organizations' CA. See [Configuring a Custom TLS Issuer](#configuring-custom-tls-issuer).
+- Administrators can also customize the Certificate Authority (CA) to comply with an organization's CA. See [Configuring a Custom TLS Issuer](#configuring-custom-tls-issuer).
 
 - MySQL server administrators can override the default or the custom CA, by using a per instance TLS key pair. See [Explicitly Configure a MySQL instance for TLS](#explicitly-configure-instance-for-TLS).
 
 
-## <a id="using-default-tls"></a>Using the Default provided TLS
+## <a id="using-default-tls"></a>Using the Default Provided TLS
 
 From Tanzu MySQL 1.2.0, the MySQL Operator deploys the instances with TLS from the self-signed `ClusterIssuer` configured during Operator install.
 
@@ -36,7 +36,7 @@ USER-SUPPLIED VALUES:
 null
 ```
 
-When installing the MyQL instances using the default MySQL Operator settings, the instance secret is named with the convention `${INSTANCE_NAME}-mysql-tls`. For example, if you used the default `mysql.yaml` provided with the release, and created an instance: 
+When installing the MySQL instances using the default MySQL Operator settings, the instance secret is named with the convention `${INSTANCE_NAME}-mysql-tls`. For example, if you used the default `mysql.yaml` provided with the release, and created an instance: 
 
 ``` bash
 $ kubectl apply --filename=config/samples/mysql.yaml
@@ -51,7 +51,7 @@ the instance would be called `mysql-sample` and the default TLS secret would be 
 $ kubectl get secret mysql-sample-mysql-tls --template='{{ index .data "ca.crt" | base64decode }}'
 ```
 
-which returns an output similar to:
+This returns an output similar to:
 
 ```
 -----BEGIN CERTIFICATE-----
@@ -69,9 +69,7 @@ This procedure describes how to configure a custom Certificate Authority (CA) an
 
 ### Prerequisites
 
-Before you configure TLS using a custom CA authority, you must have:
-
-- access permissions to install or upgrade the Tanzu MySQL Operator using Helm. 
+Before you configure TLS using a custom CA authority, you must have access permissions to install or upgrade the Tanzu MySQL Operator using Helm. 
 
 ### Procedure
 
@@ -100,7 +98,7 @@ Before you configure TLS using a custom CA authority, you must have:
     ```
 
     **Note:** The specific namespace for this secret depends on whether cert-manager was deployed with a specific
-    `--cluster-resource-namespace` option.  cert-manager defaults to the namespace `cert-manager` to reference
+    `--cluster-resource-namespace` option. Cert-manager defaults to the namespace `cert-manager` to reference
     `ClusterIssuer` resources such as CA certificate keypairs.  See [the cert-manager docs](https://cert-manager.io/docs/faq/cluster-resource/) for details.
 
 3. Create a CA issuer in cert-manager using a `ClusterIssuer` resource and associate it with the CA Secret created in step 2. For information about the cert-manager `Issuer` types, see [Issuer Configuration](https://cert-manager.io/docs/configuration/) in the cert-manager documentation.
