@@ -16,7 +16,7 @@ and deploy the <%= vars.product_full %> using two different methods.
 
 Before you deploy the Tanzu MySQL Operator, you need:
 
-- Access to [Tanzu Network](https://network.pivotal.io) and [Tanzu Network Registry](https://registry.pivotal.io/). You can use the same credentials for both sites.
+- Access to [Tanzu Network](https://network.pivotal.io) and [Tanzu Network Registry](https://registry.tanzu.vmware.com/). You can use the same credentials for both sites.
 
 - [Docker](https://github.com/docker) running and configured on your local computer, to access the Kubernetes cluster and Docker registry.
 
@@ -99,7 +99,7 @@ To download the resources:
 1. Use Helm to log in to the Tanzu Network Registry by running:
 
     ```
-    helm registry login registry.pivotal.io
+    helm registry login registry.tanzu.vmware.com
     ```
 
     Follow the prompts to enter the email address and password for your <%= vars.product_network %> account.
@@ -107,14 +107,14 @@ To download the resources:
 1. Download the `tanzu-mysql-operator-chart` using Helm:
 
     ```
-    $ helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
-    1.1.0: Pulling from registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
-    ref:     <span style="color: #77bf00;">registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0</span>
+    $ helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
+    1.1.0: Pulling from registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
+    ref:     <span style="color: #77bf00;">registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0</span>
     digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
     size:    4.2 KiB
     name:    tanzu-sql-with-mysql-operator
     version: 1.1.0
-    Status: Downloaded newer chart for registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
+    Status: Downloaded newer chart for registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
     ```
 
 ### <a id="create-namespace-secret"></a> Create Namespace and Secret
@@ -136,7 +136,7 @@ To create the namespace and secret:
 1. Create a Kubernetes secret for accessing registry containing the Tanzu MySQL images by running:
 
     ```
-    kubectl create secret docker-registry tanzu-image-registry --docker-server=https://registry.pivotal.io/ \
+    kubectl create secret docker-registry tanzu-image-registry --docker-server=https://registry.tanzu.vmware.com/ \
     --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
     ```
 
@@ -150,7 +150,7 @@ To create the namespace and secret:
     <br>The value of `REGISTRY-URL` has the following pattern:
 
     ```
-    registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
+    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
     ```
     Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
 
@@ -161,9 +161,9 @@ To create the namespace and secret:
 
     For example:
     <pre class="terminal">
-    $ helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
+    $ helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
     <br>
-    ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
+    ref:     registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
     digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
     size:    4.2 KiB
     name:    tanzu-sql-with-mysql-operator
@@ -177,7 +177,7 @@ In most situations, the default values supplied in the `values.yaml` file do not
 
 However, if any of the following are true, follow the steps described in [Edit the Operator Configuration](#config-file) to override the defaults:
 
-* You deployed the Tanzu SQL for Kubernetes images from a registry other than registry.pivotal.io.
+* You deployed the Tanzu SQL for Kubernetes images from a registry other than registry.tanzu.vmware.com.
 * You did not use the default `tanzu-image-registry` for the secret name in Step 4 above.
 * You want to allocate different CPU or memory resources for your Operator.
 * You want to specify an alternate default version for new MySQL instances.
@@ -279,9 +279,9 @@ Before you deploy the Tanzu MySQL Operator, review the list of [Prerequisites](#
 
     <pre class="terminal">
 $ docker images
-REPOSITORY                                                            TAG       IMAGE ID       CREATED        SIZE
-registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.1.0     5f0ad7bad51b   5 weeks ago    792MB
-registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.1.0     eb1458d2e1bd   5 weeks ago    76MB
+REPOSITORY                                                                  TAG       IMAGE ID       CREATED        SIZE
+registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.1.0     5f0ad7bad51b   5 weeks ago    792MB
+registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.1.0     eb1458d2e1bd   5 weeks ago    76MB
     </pre>
 
 ### <a id="push-to-registry"></a>Push the Images to a Private Container Registry
@@ -360,8 +360,8 @@ The MySQL Operator is the controller for MySQL instances resources. You install 
     ```
 ---
 imagePullSecretName: tanzu-image-registry
-operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0-rc.8
-registry: "registry.pivotal.io/tanzu-mysql-for-kubernetes/"
+operatorImage: registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0-rc.8
+registry: "registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/"
 defaultInstanceVersion: 1.1.0-rc.8
 resources: {}
     ```
