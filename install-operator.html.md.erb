@@ -23,7 +23,7 @@ Before you deploy the Tanzu MySQL Operator, you need:
 - The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) command-line tool, configured and authenticated to communicate with your Kubernetes cluster.
 
 - The Helm v3 command-line tool installed. For more information, see [Installing Helm](https://helm.sh/docs/intro/install/) from the Helm documentation. <br>
-    **IMPORTANT**: Helm 3.7 is currently not supported.
+    **IMPORTANT**: Helm 3.7.x is currently not supported.
 
 - `cluster-admin` ClusterRole access to the Kubernetes cluster. For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
 
@@ -81,7 +81,7 @@ This section describes how to access the resources, and deploy the Tanzu MySQL O
 To install the Tanzu MySQL Operator, you must use kubectl to create a namespace and secret.
 Then, use the Helm CLI to install the Operator.
 
-**IMPORTANT**: Helm 3.7 is currently not supported.
+**IMPORTANT**: Helm 3.7.x is currently not supported.
 
 ### <a id="access"></a> Access the Resources
 
@@ -188,7 +188,7 @@ However, if any of the following are true, follow the steps described in [Edit t
 
 ### <a id="install-operator"></a> Use Helm CLI to Install the Operator
 
-**IMPORTANT**: Helm 3.7 is currently not supported.
+**IMPORTANT**: Helm 3.7.x is currently not supported.
 
 To install the Operator using the Helm CLI:
 
@@ -237,7 +237,7 @@ Choose this method if:
 - The installation destination (for example an air-gapped network) cannot access the [VMware Tanzu Network](https://network.pivotal.io).
 - Or you wish to load the Operator and instance images to a private Docker registry.
 
-**IMPORTANT**: Helm 3.7 is currently not supported.
+**IMPORTANT**: Helm 3.7.x is currently not supported.
 
 This section covers:
 
@@ -429,7 +429,7 @@ resources: {}
 
 #### <a id="create-release"></a>Create the MySQL Operator 
 
-**IMPORTANT**: Helm 3.7 is currently not supported.
+**IMPORTANT**: Helm 3.7.x is currently not supported.
 
 1.  By default, the Tanzu MySQL Operator 1.2.0 configures a `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
 

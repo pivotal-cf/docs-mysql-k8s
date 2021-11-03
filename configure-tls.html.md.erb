@@ -27,7 +27,7 @@ By default, the Operator will create a `ClusterIssuer` named `tanzu-sql-with-mys
 To verify that your MySQL Operator is using the default settings, with no `ClusterIssuer` customization, use:
 
 ``` bash 
-$ helm --namespace=tanzu-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
+helm --namespace=tanzu-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
 ```
 The output should be similar to:
 
@@ -39,7 +39,7 @@ null
 When installing the MySQL instances using the default MySQL Operator settings, the instance secret is named with the convention `${INSTANCE_NAME}-mysql-tls`. For example, if you used the default `mysql.yaml` provided with the release, and created an instance: 
 
 ``` bash
-$ kubectl apply --filename=config/samples/mysql.yaml
+kubectl apply --filename=config/samples/mysql.yaml
 ```
 ```
 mysql.with.sql.tanzu.vmware.com/mysql-sample created
@@ -48,7 +48,7 @@ mysql.with.sql.tanzu.vmware.com/mysql-sample created
 the instance would be called `mysql-sample` and the default TLS secret would be `mysql-sample-mysql-tls`. To view the secret, use:
 
 ``` bash
-$ kubectl get secret mysql-sample-mysql-tls --template='{{ index .data "ca.crt" | base64decode }}'
+kubectl get secret mysql-sample-mysql-tls --template='{{ index .data "ca.crt" | base64decode }}'
 ```
 
 This returns an output similar to:
@@ -71,12 +71,14 @@ This procedure describes how to configure a custom Certificate Authority (CA) an
 
 Before you configure TLS using a custom CA authority, you must have access permissions to install or upgrade the Tanzu MySQL Operator using Helm. 
 
+**IMPORTANT**: Helm 3.7.x is currently not supported.
+
 ### Procedure
 
 1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#tanzu-network-prerequisites) prerequisites:
 
     ``` bash
-    $ kubectl get all --namespace=cert-manager
+    kubectl get all --namespace=cert-manager
     ```
 
 2. Create a Kubernetes Secret for the CA certificate. For example, create a `my-CA-secret.yaml` with values similar to:
@@ -94,7 +96,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
     and apply with:
 
     ``` bash
-    $ kubectl apply -f my-CA-secret.yaml
+    kubectl apply -f my-CA-secret.yaml
     ```
 
     **Note:** The specific namespace for this secret depends on whether cert-manager was deployed with a specific
@@ -104,7 +106,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 3. Create a CA issuer in cert-manager using a `ClusterIssuer` resource and associate it with the CA Secret created in step 2. For information about the cert-manager `Issuer` types, see [Issuer Configuration](https://cert-manager.io/docs/configuration/) in the cert-manager documentation.
 
     <p class="note">
-       <strong>Note:</strong> The MySQL instance TLS secret requires the <code>ca.crt</code> key. As the ACME Issuer does not provide a <code>ca.crt</code> key, VMware does not recommend using the ACME Issuer.
+       <strong>Note:</strong> The MySQL instance TLS secret requires the <code>ca.crt</code> key. The ACME Issuer does not provide a <code>ca.crt</code> key, therefore VMware does not recommend using it.
     </p>
 
 
@@ -123,7 +125,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 4. Apply the Secret using:
 
     ```
-    $ kubectl apply -f my-cluster-issuer.yaml
+    kubectl apply -f my-cluster-issuer.yaml
     ```
 
     For certificate creation troubleshooting see the [cert-manager](https://cert-manager.io/docs/faq/troubleshooting/) documentation.
@@ -131,13 +133,13 @@ Before you configure TLS using a custom CA authority, you must have access permi
 5. For new Tanzu MySQL customers, create the MySQL Operator and set it to use the custom TLS issuer by using a command similar to:
 
     ```bash
-    $ helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
+    helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
     ```
 
     For existing Tanzu MySQL customers, update the Operator using a command similar to:
 
     ```bash
-    $ helm update tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
+    helm update tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
     ```
 
     **Note**: If you need to use more than one CA issuer, either see [Explicitly Configure a MySQL instance for TLS](#explicitly-configure-instance-for-TLS) or run another MySQL Operator in a different Kubernetes cluster.
@@ -145,7 +147,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 6. To verify the custom `ClusterIssuer` setup, use:
 
     ``` bash
-    $ helm --namespace=tanzu-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
+    helm --namespace=tanzu-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
     ```
     ```
     USER-SUPPLIED VALUES:
@@ -218,7 +220,7 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
     For example:
 
     <pre class="terminal">
-      $ kubectl -n my-namespace create secret generic mysql-tls-secret \
+      kubectl -n my-namespace create secret generic mysql-tls-secret \
           --type kubernetes.io/tls \
           --from-file=tls.crt=/path/server.crt \
           --from-file=tls.key=/path/server.key \
@@ -236,14 +238,10 @@ To create the TLS Secret through the kubectl instead,
 see [Create the TLS Secret Manually](#create-tls-secret) above.
 
 
-1. If you have not yet installed cert-manager on your Kubernetes cluster, install it by running these commands:
+1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#tanzu-network-prerequisites) prerequisites:
 
-    ```
-    kubectl create namespace cert-manager
-    helm repo add jetstack https://charts.jetstack.io
-    helm repo update
-    helm install cert-manager jetstack/cert-manager \
-    --namespace cert-manager --version v1.0.2 --set installCRDs=true
+    ``` bash
+    kubectl get all --namespace=cert-manager
     ```
 
 2. Use cert-manager to create either a cluster-wide `ClusterIssuer` resource or a namespace-local `Issuer` resource
@@ -334,7 +332,7 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
 
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre>
+    <pre class="terminal"> kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre>
 
 ### <a id='use-tls'></a>Configure MySQL for TLS
 
@@ -371,14 +369,14 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
     Save that certificate to a local file ca.crt by running:
 
     ``` bash
-    $ kubectl -n DEVELOPMENT-NAMESPACE get secret TLS-SECRET-NAME -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
+    kubectl -n DEVELOPMENT-NAMESPACE get secret TLS-SECRET-NAME -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
     ```
     where `TLS-SECRET-NAME` is the secret from [Using the Default provided TLS](#using-default-tls) or the custom configured secret in [Configuring a Custom TLS Issuer](#configuring-custom-tls-issuer) or [Explicitly Configure a MySQL instance for TLS](#explicitly-configure-instance-for-TLS).
 
     For example:
 
     <pre class="terminal">
-    $ kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
+    kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
     </pre>
 
 2. Create a MySQL username and password to test your connection with.
@@ -397,7 +395,7 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
 4. Connect your local MySQL command-line client to your MySQL instance by running:
 
     ```  
-    $ mysql --user=<USERNAME> --password=<PASSWORD> --host=<IP_ADDRESS> --ssl-mode=VERIFY_CA --ssl-ca=<CA-CERTPATH>
+    mysql --user=<USERNAME> --password=<PASSWORD> --host=<IP_ADDRESS> --ssl-mode=VERIFY_CA --ssl-ca=<CA-CERTPATH>
     ```
 
     Where:
@@ -409,7 +407,7 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
     For example:
 
     <pre class="terminal">
-$ mysql --user=bn_wordpress --password=hunter2 --host=192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt  <br>
+mysql --user=bn_wordpress --password=hunter2 --host=192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt  <br>
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 7
