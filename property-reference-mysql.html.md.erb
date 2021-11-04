@@ -315,4 +315,20 @@ The table below explains the properties that you can set in your MySQL resource.
   <td><code>limits.cpu: 250m, limits.memory: 75Mi</code>
   </td>
 </tr>
+<tr>
+  <td><code>spec.persistentVolumeClaimPolicy</code></td>
+  <td>
+    One of
+    <ul>
+      <li>Retain</li>
+      <li>Delete</li>
+    </ul>
+  </td>
+  <td>Retain</td>
+  <td>Describes the PVC retention policy when the associated MySQL instance is deleted.
+  </td>
+  <td><code>Delete</code>
+  </td>
+  <td>No</td>
+</tr>
 </table>

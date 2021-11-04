@@ -304,6 +304,14 @@ The table below explains the properties that can be set for the MySQLRestore res
    <td>See example below.*</td>
    <td>Yes</td>
 </tr>
+<tr>
+   <td>spec.instanceTemplate.spec.imagePullSecretName</td>
+   <td>String</td>
+   <td><em>n/a</em></td>
+   <td>The name of the secret used to restore the backup pulled from the instance spec. MySQLRestore will default to use the imagePullSecretName that is configured in the helm chart, when the user does not provide it.</td>
+   <td>tanzu-mysql-image-registry</td>
+   <td>No</td>
+</tr>
 </table>
 
 <br>
@@ -314,7 +322,6 @@ metadata:
   name: mysql-sample
 spec:
   storageSize: 1Gi
-  imagePullSecret: tanzu-mysql-image-registry
   highAvailability:
     enabled: true
 </pre>
