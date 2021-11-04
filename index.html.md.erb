@@ -8,34 +8,58 @@ This topic provides an overview of <%= vars.product_full %> (<%= vars.product_sh
 ## <a id='about-mysql4k8s'></a>About <%= vars.product_short %>
 
 <%= vars.product_short %> is a Kubernetes Operator that automates provisioning, management,
-and operations of dedicated MySQL instances running on Kubernetes.
-By default, MySQL instances provisioned by <%= vars.product_short %> are configured with
-secure and functional settings to meet app developer expectations for a general-use relational
+and operations of dedicated MySQL instances running on Kubernetes. Applications running on Kubernetes can use MySQL instances deployed using the Operator.
+By default, Tanzu MySQL instances are provisioned with secure and functional settings to meet application developer expectations for a general-use relational
 database.
 
-Kubernetes Operators are software extensions to Kubernetes that provide custom resources
-for the management of apps, services, and their components.
-
-The Operator provides a consistent way to deploy MySQL instances to Kubernetes and to run them.
-This includes "day two", continuous operations.
-Apps running on Kubernetes can use MySQL instances deployed using the Operator.
-
-<%= vars.product_short %> packages a collection of open-source software to help you deploy
-and manage one or more instances of the MySQL database on Kubernetes.
-It includes the following components:
+<%= vars.product_short %> packages a collection of open-source software to deploy
+and manage one or more instances of the MySQL database. It includes the following components:
 
   * [Percona Server 8.0](https://www.percona.com/software/mysql-database/percona-server)
   * [Percona XtraBackup 8.0](https://www.percona.com/software/mysql-database/percona-xtrabackup)
 
-### <a id='features-mysql4k8s'></a><%= vars.product_short %>
-
 The major features of <%= vars.product_short %> include:
 
-  * Single instance or HA
-  * Backup/restore including on demand and scheduled backups to S3-compatible blob stores
-  * TLS for client connections and intra-cluster connections
-  * Compatibility with [Restricted Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted)
-  * Easily deploy and upgrade MySQL instances
+  * Single instance or High Availability (HA).
+  * Backup and restore, including on demand and scheduled backups to S3-compatible blob stores.
+  * TLS for client and intra-cluster connections.
+  * Compatibility with the [Restricted Pod Security Standard](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted).
+  * MySQL instances ease of deployment and upgrades. 
+
+## <a id='snapshot'></a>Product Snapshot
+
+The following table provides version and version-support information about <%= vars.product_short %>. For more details, refer to the [Release Notes](release-notes.html).
+
+<table border="1" class="nice">
+  <tr>
+    <th><%= vars.product_short %> Version</th>
+    <th>Percona Server</th>
+    <th>Percona XtraBackup</th>
+    <th>Release Date</th>
+    <th>Compatible<br>Kubernetes Version</th>
+  </tr>
+  <tr>
+    <td>1.2.0</td>
+    <td>8.0.26</td>
+    <td>8.0.26</td>
+    <td>Nov 5th, 2021</td>
+    <td>1.16+</td>
+  </tr>
+  <tr>
+    <td>1.1.0</td>
+    <td>8.0.25-15</td>
+    <td>8.0.25-17</td>
+    <td>Aug 17th, 2021</td>
+    <td>1.16+</td>
+  </tr>
+  <tr>
+    <td>1.0.0</td>
+    <td>8.0.22–13</td>
+    <td>8.0.23–16</td>
+    <td>Apr 15th, 2021</td>
+    <td>1.16+</td>
+  </tr>
+</table>
 
 ## <a id='about-mysql-8-0'></a>About MySQL 8.0
 
@@ -45,9 +69,6 @@ As its user community has grown, MySQL has become a robust system
 capable of handling a wide variety of use cases and very significant workloads.
 Unlike other traditional databases that centralize and consolidate data,
 MySQL lends itself to dedicated deployment, which supports building "cloud native" apps.
-
-
-### <a id='features-mysql-8-0'></a>MySQL 8.0 Features
 
 The major features of MySQL 8.0 include:
 
@@ -63,40 +84,11 @@ The major features of MySQL 8.0 include:
   * Native JSON datatype
   * Native Geographic Information System (GIS) support
 
-### <a id='what-is-mysql'></a> More about MySQL
-
 If you are new to MySQL and want general information about MySQL,
 see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/what-is-mysql.html).
 
-## <a id='snapshot'></a>Product Snapshot
-
-The following table provides version and version-support information about <%= vars.product_short %>.
-
-<table class="nice">
-<th>Element</th>
-<th>Details</th>
-<tr>
-  <td>Version</td>
-  <td>1.1.0</td>
-</tr>
-<tr>
-  <td>Release date</td>
-  <td>August 12, 2021</td>
-</tr>
-<tr>
-  <td>Compatible Kubernetes versions</td>
-  <td>1.16 or later</td>
-</tr>
-</table>
 
 ## <a id='license'></a> License
 This product is distributed under the
 [VMware EULA](https://network.pivotal.io/legal_documents/vmware-eula) license.
 
-## <a id="gen-limits"></a> General Limitations
-
-<%= vars.product_short %> has the following limitation:
-
-* This product is intended to be used with any Kubernetes distribution v1.16 or later.
-  However, given the number of Kubernetes vendors, versions, and configurations, not all of them have been
-  tested with <%= vars.product_short %>.
