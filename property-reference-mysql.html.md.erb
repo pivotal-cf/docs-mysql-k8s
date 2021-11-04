@@ -329,4 +329,140 @@ The table below explains the properties that you can set in your MySQL resource.
   </td>
   <td>Delete</td>
 </tr>
+<tr>
+  <td><code>spec.databasePodConfig.affinity</code></td>
+  <td>Affinity rules for the MySQL database pods
+    <br /><br />
+    For more information, see the <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity">Kubernetes documentation</a>.
+    <br /><br />
+    <strong>Type:</strong> Kubernetes Pod Affinity<br />
+    <strong>Optional</strong><br />
+    <strong>Default:</strong>Prefer that database pods for a given instance are scheduled for unique Kubernetes Nodes
+  </td>
+  <td>
+      <code>
+        ---
+        apiVersion: with.sql.tanzu.vmware.com/v1
+        kind: MySQL
+        metadata:
+           name: my-instance
+        spec:
+           storageSize: 1Gi
+           databasePodConfig:
+             affinity:
+               podAntiAffinity:
+                 requiredDuringSchedulingIgnoredDuringExecution:
+                   - weight: 1
+                     podAffinityTerm:
+                       topologyKey: "kubernetes.io/hostname"
+                       labelSelector:
+                         matchExpressions:
+                           - key: "app.kubernetes.io/component"
+                             operator: In
+                             values:
+                               - database
+                           - key: "app.kubernetes.io/instance"
+                             operator: In
+                             values:
+                               - my-instance
+      </code>
+  </td>
+</tr>
+<tr>
+  <td><code>spec.databasePodConfig.tolerations</code></td>
+  <td>Configures Kubernetes Tolerations for the MySQL instance's database Pods
+    <br /><br />
+    For more information, see the <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">Kubernetes documentation</a>.
+    <br /><br />
+    <strong>Type:</strong> Kubernetes Pod Tolerations<br />
+    <strong>Optional</strong><br />
+    <strong>Default:</strong>No default tolerations are configured by the Tanzu MySQL Operator
+  </td>
+  <td>
+    <code>
+    ---
+    apiVersion: with.sql.tanzu.vmware.com/v1
+    kind: MySQL
+    metadata:
+       name: my-instance
+    spec:
+       storageSize: 1Gi
+       databasePodConfig:
+         tolerations:
+         - key: node.kubernetes.io/memory-pressure
+           operator: "Exists"
+           effect: "NoExecute"
+           tolerationSeconds: 3600
+    </code>
+  </td>
+</tr>
+<tr>
+  <td><code>spec.proxyPodConfig.affinity</code></td>
+  <td>Affinity rules for the Proxy database pods
+    <br /><br />
+    <b>Used only when spec.highAvailability.enabled = true</b>
+    For more information, see the <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity">Kubernetes documentation</a>.
+    <br /><br />
+    <strong>Type:</strong> Kubernetes Affinity configuration<br />
+    <strong>Optional</strong><br />
+    <strong>Default:</strong>Prefer that proxy pods are not scheduled on the same Kubernetes node.
+  </td>
+  <td>
+      <code>
+        ---
+        apiVersion: with.sql.tanzu.vmware.com/v1
+        kind: MySQL
+        metadata:
+           name: my-instance
+        spec:
+           storageSize: 1Gi
+           proxyPodConfig:
+             affinity:
+               podAntiAffinity:
+                 requiredDuringSchedulingIgnoredDuringExecution:
+                   - weight: 1
+                     podAffinityTerm:
+                       topologyKey: "kubernetes.io/hostname"
+                       labelSelector:
+                         matchExpressions:
+                           - key: "app.kubernetes.io/component"
+                             operator: In
+                             values:
+                               - proxy
+                           - key: "app.kubernetes.io/instance"
+                             operator: In
+                             values:
+                               - my-instance
+      </code>
+  </td>
+</tr>
+<tr>
+  <td><code>spec.proxyPodConfig.tolerations</code></td>
+  <td>Configures Kubernetes Tolerations for the MySQL instance's proxy Pods
+    <br /><br />
+    <b>Used only when spec.highAvailability.enabled = true</b>
+    For more information, see the <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">Kubernetes documentation</a>.
+    <br /><br />
+    <strong>Type:</strong>Kubernetes Tolerations configuration<br />
+    <strong>Optional</strong><br />
+    <strong>Default:</strong>No default tolerations are configured by the Tanzu MySQL Operator
+  </td>
+  <td>
+    <code>
+    ---
+    apiVersion: with.sql.tanzu.vmware.com/v1
+    kind: MySQL
+    metadata:
+       name: my-instance
+    spec:
+       storageSize: 1Gi
+       proxyPodConfig:
+         tolerations:
+         - key: node.kubernetes.io/memory-pressure
+           operator: "Exists"
+           effect: "NoExecute"
+           tolerationSeconds: 3600
+    </code>
+  </td>
+</tr>
 </table>
