@@ -50,11 +50,11 @@ We want to use placeholders consistently througout the doc.
 | Placeholder | Sample | Explanation | Used in |
 |-------------|--------|-------------|---------|
 | DEVELOPMENT-NAMESPACE | my-namespace | "is the namespace in which you want to create the instance" or "is the namespace where you created the instance." | create-delete.html |
-| REGISTRY-SERVER-URL |https://registry.pivotal.io/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
+| REGISTRY-SERVER-URL |https://registry.tanzu.vmware.com/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
 | DOCKER-PASSWORD | sample-password | credentials used to pull images from the registry | create-delete.html |
 | DOCKER-USERNAME |sample-username |  credentials used to pull images from the registry | create-delete.html |
 | INSTANCE-NAME | mysql-sample and another-sample |   is the value that you configured for metadata.name in the mysql.yaml deployment template | create-delete.html, accessing.html |
 | INSTANCE-NAME-N (use instead of POD-NAME)| mysql-sample-0 | "Where: + `INSTANCE-NAME` is the value that you configured for metadata.name in the mysql.yaml deployment template. + `N` is the index of the Pod in the MySQL instance." | create-delete-mysql.html, update-instance.html |
-| REGISTRY-SERVER-URL |https://registry.pivotal.io/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
+| REGISTRY-SERVER-URL |https://registry.tanzu.vmware.com/ |  is the TanzuNet registry or the private registry configured for your environment | create-delete.html|
 | TLS-SECRET-NAME |mysql-tls-secret | the name you choose for the TLS Secret.  | configure-tls.html|
 |
