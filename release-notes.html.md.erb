@@ -86,6 +86,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="11_limits"></a>Limitations
 
+* The Tanzu SQL release supports Helm 3.6.3 and lower. Helm 3.7.x is not supported.
 * Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
