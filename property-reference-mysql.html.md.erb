@@ -43,6 +43,110 @@ The table below explains the properties that you can set in your MySQL resource.
   <td>Yes</td>
 </tr>
 <tr>
+  <td><code>spec.databasePodConfig.affinity</code></td>
+  <td>corev1.Affinity</td>
+  <td><em>n/a</em></td>
+  <td>The affinity for your MySQL database instance:<br><br>
+      <ul>
+         <li>Must follow the affinity defined by the Kuberenetes api</li>
+         <li>Can be updated</li>
+         <li>Not required when creating resources</li>
+      </ul>
+      For more information about Affinity, see the <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity">
+      Kubernetes documentation</a>.</td>
+  <td><code>
+  affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+      - topologyKey: "kubernetes.io/hostname"
+        labelSelector:
+          matchExpressions:
+            - key: "app.kubernetes.io/component"
+              operator: In
+              values:
+                - database
+            - key: "app.kubernetes.io/instance"
+              operator: In
+              values:
+                - <instance.name>
+  </code></td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>spec.proxyPodConfig.affinity</code></td>
+  <td>corev1.Affinity</td>
+  <td><em>n/a</em></td>
+  <td>The affinity for your MySQL database proxy:<br><br>
+      <ul>
+         <li>Must follow the affinity defined by the Kuberenetes api</li>
+         <li>Can be updated</li>
+         <li>Not required when creating resources.</li>
+      </ul>
+      For more information about Affinity, see the <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity">
+      Kubernetes documentation</a>.</td>
+  <td><code>
+  affinity:
+  podAntiAffinity:
+   preferredDuringSchedulingIgnoredDuringExecution:
+     - weight: 1
+     - topologyKey: "kubernetes.io/hostname"
+       labelSelector:
+         matchExpressions:
+           - key: "app.kubernetes.io/component"
+             operator: In
+             values:
+               - proxy
+           - key: "app.kubernetes.io/instance"
+             operator: In
+             values:
+               - <instance.name>
+  </code></td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>spec.databasePodConfig.tolerations</code></td>
+  <td>corev1.Toleration</td>
+  <td><em>n/a</em></td>
+  <td>The tolerations for your MySQL database instance:<br><br>
+      <ul>
+         <li>Must follow the tolerations defined by the Kuberenetes api</li>
+         <li>Can be updated</li>
+         <li>Not required when creating resources</li>
+      </ul>
+      For more information about tolerations, see the <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">
+      Kubernetes documentation</a>.</td>
+  <td><code>
+  tolerations:
+  - key: node.kubernetes.io/disk-pressure
+    operator: "Exists"
+    effect: "NoExecute"
+    tolerationSeconds: 3600
+  </code></td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td><code>spec.proxyPodConfig.tolerations</code></td>
+  <td>corev1.Toleration[]</td>
+  <td><em>n/a</em></td>
+  <td>The tolerations for your MySQL database proxy:<br><br>
+      <ul>
+         <li>Must follow the tolerations defined by the Kuberenetes api</li>
+         <li>Can be updated</li>
+         <li>Not required when creating resources.</li>
+      </ul>
+      For more information about tolerations, see the <a href="https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/">
+      Kubernetes documentation</a>.</td>
+  <td><code>
+  tolerations:
+  - key: node.kubernetes.io/memory-pressure
+    operator: "Exists"
+      effect: "NoExecute"
+        tolerationSeconds: 3600
+  </code></td>
+  <td>Yes</td>
+</tr>
+<tr>
   <td><code>spec.storageSize</code></td>
   <td>Resource quantity</td>
   <td><em>n/a</em></td>
