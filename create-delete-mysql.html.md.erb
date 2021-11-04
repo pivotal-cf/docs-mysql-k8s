@@ -91,9 +91,12 @@ To create a MySQL instance:
     <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml</pre>
 
 
-5. Edit the file.
-   For information about the properties that you can set for the MySQL resource,
-   see [Property Reference for the MySQL Resource](property-reference-mysql.html).
+5. Edit the file and customize the instance according to your requirements. 
+    <br>
+    You may customize your Tanzu MySQL instance version, instance resources, instance storage class, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For more details on all the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
+    <br><br>
+    When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form <code>mysql-data-INSTANCE-NAME-N</code>, for example `mysql-data-mysql-sample-0`.
+
 
 6. Deploy a MySQL instance to Kubernetes by running:
 
@@ -123,30 +126,13 @@ NAME           READY   STATUS    AGE
 mysql-sample   true    Running   2m17s
     </pre>
 
-
-By default, the MySQL servers created by Tanzu Operator 1.2.0 (and later) use TLS certificates provided by the cert-manager `ClusterIssuer`, using a self-signed certificate authority (CA). Clients can connect to the MySQL server and verify the MySQL instance using the ClusterIssuer CA. For more information on TLS and how to configure custom `ClusterIssuer`, see [Configuring TLS for MySQL Instances](configure-tls.html). 
+By default, the MySQL servers created by Tanzu Operator 1.2.0 (and later) use TLS certificates provided by the cert-manager `ClusterIssuer`, using a self-signed certificate authority (CA). For more information on TLS and how to configure custom a `ClusterIssuer`, see [Configuring TLS for MySQL Instances](configure-tls.html). 
     
-## <a id='delete-instance'></a>Delete a MySQL Instance
+## <a id='delete-instance'></a>Delete a Tanzu MySQL Instance
 
-This section provides some conceptual information about persistent volume claims (PVCs)
-and deleting an instance.
-It also provides the procedure for how to delete an instance.
+This section provides some conceptual information about deleting an instance, and the procedure for how to delete an instance.
 
-###<a id="about-pvcs"></a> About PVCs
-
-When you create a MySQL instance, the MySQL Operator also creates PVCs.
-The PVCs are attached to the instance and contain the data for the MySQL database.
-Single-node instances have one PVC, and high-availability (HA) instances have three.
-
-The PVC name contains the instance name and the MySQL Pod number.
-The PVC name is of the form <code>mysql-data-INSTANCE-NAME-N</code>,
-for example, `mysql-data-mysql-sample-0`.
-
-
-###<a id="about-deleting"></a> About Deleting a MySQL Instance
-
-There are two steps to deleting an instance.
-The first step is to delete the instance itself, and the second step is to delete the PVCs.
+There are two steps to deleting an instance. The first step is to delete the instance itself, and the second step is to delete the PVCs.
 
 There are situations where you want to delete the instance but not delete the PVC.
 For example, in a test environment, you might delete the instance to save costs

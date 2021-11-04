@@ -5,8 +5,7 @@ owner: MySQL
 
 These are the release notes for <%= vars.product_full %>.
 
-
-## <a id="platforms"></a>Supported Platforms
+## <a id="components"></a>Software Component Versions
 
 The <%= vars.product_short %> releases support the components listed below:
 
@@ -15,6 +14,11 @@ The <%= vars.product_short %> releases support the components listed below:
     <th><%= vars.product_short %> Version</th>
     <th>Percona Server</th>
     <th>Percona XtraBackup</th>
+  </tr>
+  <tr>
+    <td>1.2.0</td>
+    <td>8.0.26</td>
+    <td>8.0.26</td>
   </tr>
   <tr>
     <td>1.1.0</td>
@@ -34,10 +38,25 @@ The <%= vars.product_short %> releases support the components listed below:
 
 ## <a id="1-2-0"></a> Version 1.2.0
 
-**Release Date: November 4, 2021**
+**Release Date: November 5, 2021**
+
+### <a id="supported_platforms"></a>Supported Platforms
+
+This version of Tanzu MySQL is supported on the following platforms:
+
+- [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI), version 1.9.x - 1.12.x.
+- [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKGm) on AWS, version 1.2.x - 1.4.x.
+- Google Kubernetes Engine (GKE) 
+- Kubernetes version 1.19+
+
+Additional Kubernetes environments, such as Minikube, can be used for testing or demonstration purposes.
 
 
 ### <a id="12_features"></a>Features
+
+* This release supports Percona Server 8.0.26, Percona XtraBackup 8.0.26, and MySQL Router 8.0.26. 
+* Users can now configure PVC retention policies. When deleting an instance now the PVCs can be automatically garbage collected by Kubernetes. By default, PVCs will be retained unless the user configures the retention policy. 
+* Pods running the MySQL Operator, MySQL proxies and MySQL database instances now conform to the "Restricted Pod Security" standard. For more details see [Restricted](https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted) in the Kubernetes documentation.
 
 **Security**
 
@@ -48,11 +67,31 @@ The <%= vars.product_short %> releases support the components listed below:
 * The Tanzu MySQL Operator 1.2.0 automatically recreates any MySQL instance secrets that are accidentally deleted. 
 * With this release, when users update TLS secrets or certificates, the MySQL instances refresh their TLS configuration without any pod restart. 
 
+**HA enhancements**
 
+- Users can now specify database and proxy pod affinity, to schedule pods according to preference. 
+- Users can now specify database and proxy pod tolerations, to schedule pods where they would prefer.  
 
+### <a id="12_resolved"></a>Resolved Issues
 
-### <a id="11_resolved"></a>Resolved Issues
+* **The Tanzu MySQL Operator 1.2.0 can now create 1.0.0 Tanzu MySQL instances**: New Tanzu MySQL 1.0.0 instances, or existing 1.0.0 instances that restart, do not require an upgrade to the latest Tanzu MySQL version.
+* **Proxy connection limitation**: The proxy in an HA instance will no longer block further connections after 100 failed connection attempts.
+* **`imagePullSecretName` no longer required for restores**: MySQLRestore required `imagePullSecretName` to be provided in the `instanceTemplate`. MySQLRestore now defaults to using the `imagePullSecretName` that is configured in the Helm chart if the user does not provide the secret. 
 
+### <a id="11_issues"></a>Known Issues
+
+* **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
+
+### <a id="11_limits"></a>Limitations
+
+* Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
+* Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
+* To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
+* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
+   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
+   * Configuring schemas and users for an application.
+* Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
 
 
 ## <a id="1-1-0"></a> Version 1.1.0

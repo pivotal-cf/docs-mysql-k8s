@@ -3,12 +3,123 @@ title: Property Reference for the MySQL Resource
 owner: MySQL
 ---
 
-<strong><%= modified_date %></strong>
-
 This topic contains a property reference table for the MySQL resource.
 Refer to this table when you are creating the YAML file for a MySQL instance.
 For more information, see [Create a Mysql Instance](create-delete-mysql.html#create-instance) in
 _Creating and Deleting a MySQL Instance_.
+
+Each Tanzu MySQL release contains an example mysql.yaml with the properties relative to the downloaded release:
+
+```
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+  name: mysql-sample
+spec:
+  storageSize: 1Gi
+#  imagePullSecretName: tanzu-image-registry
+
+#### Set the storage class name to change storage class of the PVC associated with this resource
+#  storageClassName: standard
+
+#### Set the type of Service used to provide access to the MySQL database.
+#  serviceType: LoadBalancer
+
+#### Set the name of the Secret used for TLS
+#  tls:
+#    secret:
+#      name: mysql-tls-secret
+
+#### Enable highly available cluster
+#  highAvailability:
+#    enabled: true
+
+#### Enable affinity
+#  databasePodConfig:
+#    affinity:
+#      podAntiAffinity:
+#        preferredDuringSchedulingIgnoredDuringExecution:
+#          - weight: 1
+#            podAffinityTerm:
+#              topologyKey: "kubernetes.io/hostname"
+#              labelSelector:
+#                matchExpressions:
+#                  - key: "app.kubernetes.io/component"
+#                    operator: In
+#                    values:
+#                      - database
+#                  - key: "app.kubernetes.io/instance"
+#                    operator: In
+#                    values:
+#                      - mysql-sample
+#    tolerations:
+#    - key: node.kubernetes.io/disk-pressure
+#      operator: "Exists"
+#      effect: "NoExecute"
+#      tolerationSeconds: 3600
+#  proxyPodConfig:
+#    affinity:
+#      podAntiAffinity:
+#        preferredDuringSchedulingIgnoredDuringExecution:
+#          - weight: 1
+#            podAffinityTerm:
+#              topologyKey: "kubernetes.io/hostname"
+#              labelSelector:
+#                matchExpressions:
+#                  - key: "app.kubernetes.io/component"
+#                    operator: In
+#                    values:
+#                      - proxy
+#                  - key: "app.kubernetes.io/instance"
+#                    operator: In
+#                    values:
+#                      - mysql-sample
+#    tolerations:
+#    - key: node.kubernetes.io/memory-pressure
+#      operator: "Exists"
+#      effect: "NoExecute"
+#      tolerationSeconds: 3600
+
+#### Examples to set resource limit/request for mysql/backup containers.
+#  resources:
+
+#### This is the container running the mysql server.
+#    mysql:
+#      requests:
+#        cpu: 750m
+#        memory: 500Mi
+#      limits:
+#        cpu: '1.0'
+#        memory: 800Mi
+
+#### This is the sidecar container that manages backups and innodb cluster operations
+#    mysqlSidecar:
+#      requests:
+#        cpu: 100m
+#        memory: 50Mi
+#      limits:
+#        cpu: 250m
+#        memory: 75Mi
+
+#### This is the container that proxies connections to MySQL
+#    proxy:
+#      requests:
+#        cpu: 200m
+#        memory: 48Mi
+#      limits:
+#        cpu: '1.0'
+#        memory: 256Mi
+
+#### This is the container that exports metrics
+#    metrics:
+#      requests:
+#        cpu: 100m
+#        memory: 32Mi
+#      limits:
+#        cpu: 250m
+#        memory: 75Mi
+```
+
 
 The table below explains the properties that you can set in your MySQL resource.
 
