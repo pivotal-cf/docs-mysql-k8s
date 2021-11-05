@@ -120,7 +120,7 @@ spec:
 
 Applying this resource causes the Kubernetes Operator to create a StatefulSet with a single Pod and three containers. One container runs the MySQL database software, one runs the components to support backups, and the third runs the mysqld_exporter (for monitoring). The MySQL pod mounts a persistent volume claim (PVC) which holds the MySQL data.
 
-You specify MySQL instance configuration properties to the MySQL operator with a YAML-formatted manifest file. A sample manifest file is provided in `mysql.yaml`. See also [Creating and Deleting Instance](create-delete-mysQL.html) for information about deploying a new MySQL instance using a manifest file.
+You specify MySQL instance configuration properties to the MySQL operator with a YAML-formatted manifest file. A sample manifest file is provided in `mysql.yaml`. See also [Creating and Deleting Instance](create-delete-mysql.html) for information about deploying a new MySQL instance using a manifest file.
 
 The list below explains the properties that you can set in your MySQL resource.
 
