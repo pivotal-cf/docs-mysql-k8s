@@ -2,7 +2,7 @@
 title: Tanzu MySQL CRD Property Reference
 ---
 
-This topic describes the available fields of the Tanzu MySQL Custom Resource Definition. 
+This topic describes the available fields of the Tanzu MysQL Custom Resource Definition. 
 
 ## <a id="synopsis"></a>Synopsis
 
@@ -159,12 +159,6 @@ The StorageClass used for PVCs associated with MySQL instance Pods. Cannot be mo
 The type of Service used to provide access to the MySQL database. Only `ClusterIP` and `LoadBalancer` are supported. For more information about Kubernetes ServiceTypes, see the [Service Types](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) in the Kubernetes documentation.<br />
 **Example**: LoadBalancer
 
-**`version: <string>`**<br />
-**Optional**<br />
-**Default**: The value of <code>defaultInstanceVersion</code> set by the service administrator in the Tanzu MySQL Helm chart. <br />
-The version of the MySQL instance installed. Can be any of '1.0.0', '1.1.0', or '1.2.0'.<br />
-**Example**: 1.1.0
-
 **`tls.secret.name: <string>`**<br />
 **Optional**<br />
 **Default**: n/a<br />
@@ -211,7 +205,7 @@ spec:
 **`databasePodConfig.tolerations: <corev1.Toleration>`**<br />
 **Optional**<br />
 **Default**: No default tolerations are configured by the Tanzu MySQL Operator.<br />
-Configures Kubernetes Tolerations for the MySQL instance's database Pods. The Tolerations can be updated, and are not required when creating resources. For more details on the Kubernetes Taints and Tolerations concept, see [Taints and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) in the Kubernetes documentation. <br />
+Configures Kubernetes Tolerations for the MySQL instance's database Pods. The Tolerations can be updated, and are not required when creating resources. For more details on the Kubernetes tolerations concept, see [Taint and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) in the Kubernetes documentation. <br />
 **Example**:
 
 ```
@@ -265,7 +259,7 @@ spec:
 **`proxyPodConfig.tolerations: <corev1.Toleration>`**<br />
 **Optional**<br />
 **Default**: No default tolerations are configured by the Tanzu MySQL Operator<br />
-Configures Kubernetes Tolerations for the MySQL instance's database Pods. For more details on the Kubernetes Taints and Tolerations concept, see [Taints and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) in the Kubernetes documentation. <br />
+Configures Kubernetes Tolerations for the MySQL instance's database Pods. For more details on the Kubernetes tolerations concept, see [Taint and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) in the Kubernetes documentation. <br />
 **Example**:
 
 ```
@@ -403,7 +397,7 @@ resources:
 **`resources.proxy: <requests.cpu, requests.memory>`**<br />
 **Optional**<br />
 **Default**: Best effort<br />
-The minimum CPU and memory allowed for the MySQL proxy container that handles connections to MySQL when `highAvailability.enabled` is true. If not specified, defaults to limits, if limits have been explicitly specified. For more information see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.<br />
+The minimum CPU and memory allowed for the MySQL proxy container that handles connections to MySQL when `highAvailability.enabled` is true. If not specified, defaults to limits, if limits have been explicitly specified. For more information about limits, see theFor more information about managing resources for containers, see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.<br />
 **Example**: 
 
 ```
