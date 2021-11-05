@@ -2,7 +2,7 @@
 title: Tanzu MySQL CRD Property Reference
 ---
 
-This topic describes the available fields of the Tanzu MysQL Custom Resource Definition. 
+This topic describes the available fields of the Tanzu MySQL Custom Resource Definition. 
 
 ## <a id="synopsis"></a>Synopsis
 
@@ -158,6 +158,12 @@ The StorageClass used for PVCs associated with MySQL instance Pods. Cannot be mo
 **Default**: ClusterIP<br />
 The type of Service used to provide access to the MySQL database. Only `ClusterIP` and `LoadBalancer` are supported. For more information about Kubernetes ServiceTypes, see the [Service Types](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) in the Kubernetes documentation.<br />
 **Example**: LoadBalancer
+
+**`version: <string>`**<br />
+**Optional**<br />
+**Default**: The value of <code>defaultInstanceVersion</code> set by the service administrator in the Tanzu MySQL Helm chart. <br />
+The version of the MySQL instance installed. Can be any of '1.0.0', '1.1.0', or '1.2.0'.<br />
+**Example**: 1.1.0
 
 **`tls.secret.name: <string>`**<br />
 **Optional**<br />
