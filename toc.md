@@ -5,7 +5,7 @@
 * [Installing the Operator](./install-operator.html)
 * [Upgrading the Operator](upgrade-operator.html)
 * [Creating and Deleting Instances](./create-delete-mysql.html)
-* [Updating Instances](./update-instances.html)
+* [Updating Instances](./update-instance.html)
 * [Upgrading Instances](./upgrade-instance.html)
 * [Accessing Instances](./accessing.html)
 * [Configuring High Availability](./high-availability.html)
