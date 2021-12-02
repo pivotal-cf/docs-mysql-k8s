@@ -14,7 +14,7 @@ For more information about high availability including an architecture diagram,
 see [Architecture of an HA MySQL Instance](architecture.html#ha-diagram)
 in _Architecture_.
 
-###<a id='planning'></a>About Planning for Long-Lived HA MySQL Instances
+### <a id='planning'></a>About Planning for Long-Lived HA MySQL Instances
 
 HA MySQL instances are often used in production environments.
 Before creating an HA instance that you intend to rely on for a long time,
@@ -27,24 +27,24 @@ as Kubernetes manages resources allocation among its Pods.
 For information about the properties used to set limits and requests,
 see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
-###<a id='node-selection'></a>About Explicit Node Selection and Anti-Affinity
+### <a id='node-selection'></a>About Explicit Node Selection and Anti-Affinity
 
 <%= vars.product_full %> does not support explicit node selection for controlling Pod 
 assignment to Kubernetes nodes. The Pod's nodeSelector field is not assigned.
 Pod assignment to Kubernetes nodes can be controlled using Node Affinity 
 
-###<a id='affinity-tolerations'></a>About Affinity and Tolerations
+### <a id='affinity-tolerations'></a>About Affinity and Tolerations
 <%= vars.product_full %> does support Affinity and Tolerations to control where the Pods are assigned.
 The Operator assigns the Affinity and Toleration fields within MySQL objects to the corresponding fields
 in the Pods' spec.
 To understand how to constrain Pods to run on a particular node refer [here](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/)
 
-###<a id='scale-up'></a>About Scaling Single Node to HA
+### <a id='scale-up'></a>About Scaling Single Node to HA
 
 You can convert a single-node MySQL instance to an HA MySQL instance with a single command.
 See [Convert a Single-Node MySQL Instance to an HA MySQL Instance](#convert-to-ha) below.
 
-###<a id='scale-down'></a>About Scaling HA to Single Node
+### <a id='scale-down'></a>About Scaling HA to Single Node
 
 It is not straightforward to convert an HA instance to a single-node instance.
 To move from an HA instance to a single-node instance,

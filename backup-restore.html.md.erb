@@ -56,7 +56,7 @@ Before starting the procedures for backing up a <%= vars.product_short %> instan
 ensure that you know the configuration details of your external blobstore and how often
 you want to perform scheduled backups.
 
-###<a id="create-backuplocation"></a> Create a MySQLBackupLocation Resource
+### <a id="create-backuplocation"></a> Create a MySQLBackupLocation Resource
 
 The purpose of creating this MySQLBackupLocation Resource is to configure the namespace
 with the location of the blobstore and the credentials to access it.
@@ -125,7 +125,7 @@ To create a MySQLBackupLocation resource:
     }
     ``` 
 
-###<a id="create-backupschedule"></a> Create a MySQLBackupSchedule Resource
+### <a id="create-backupschedule"></a> Create a MySQLBackupSchedule Resource
 
 To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
@@ -192,7 +192,7 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
     `MySQLBackupSchedule` resource for an existing MySQL instance,
     you see backups being generated and uploaded to the external blobstore.
 
-###<a id="name-and-location"></a> Name and Location for Backup Artifacts
+### <a id="name-and-location"></a> Name and Location for Backup Artifacts
 
 
 MySQLBackup resources that are automatically generated as a result of a MySQLBackupSchedule are named
@@ -361,7 +361,7 @@ This section discusses two kinds of restore:
 + [Restore from a Backup](#restore-from-backup)
 + [Restore a Backup to a Different Namespace or Kubernetes Cluster](#restore-to-different)
 
-###<a id="restore-from-backup"></a> Restore from a Backup
+### <a id="restore-from-backup"></a> Restore from a Backup
 
 MySQLRestores always restores to a new MySQL instance to avoid overwriting any data
 on an existing MySQL instance. When the restore is triggered, it automatically creates the new MySQL instance.
@@ -494,7 +494,7 @@ To restore from a backup:
             </tr>
     </table>
 
-###<a id="restore-to-different"></a> Restoring a Backup to a Different Namespace or Kubernetes Cluster
+### <a id="restore-to-different"></a> Restoring a Backup to a Different Namespace or Kubernetes Cluster
 
 If you want to restore a backup to a different namespace or a different Kubernetes cluster,
 create a `MySQLBackupLocation` in the target namespace or Kubernetes cluster.

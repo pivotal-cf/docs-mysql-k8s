@@ -77,7 +77,7 @@ The product provides five separate custom resources:
 + [MySQLBackupSchedule](#mysqlbackupschedule): Defines a backup schedule
 + [MySQLRestore](#mysqlrestore): Requests a data restore
 
-###<a id="mysql"></a> MySQL
+### <a id="mysql"></a> MySQL
 
 Applying this resource causes the Kubernetes Operator to create a StatefulSet with a single Pod and three containers. One container runs the MySQL database software, one runs the components to support backups, and the third runs the mysqld_exporter (for monitoring).
 The MySQL Pod mounts a persistent volume claim (PVC) which holds the MySQL data.
@@ -213,7 +213,7 @@ NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLE
 backup-sample   Succeeded   mysql-sample      2020-12-07T15:52:12Z   2020-12-07T15:52:16Z
 ``` 
 
-###<a id="mysqlbackupschedule"></a> MySQLBackupSchedule
+### <a id="mysqlbackupschedule"></a> MySQLBackupSchedule
 
 This resource defines a schedule to automatically create MySQLBackup resources.
 For example:
@@ -246,7 +246,7 @@ NAME                         AGE
 mysqlbackupschedule-sample   8s
 ``` 
 
-###<a id="mysqlrestore"></a> MySQLRestore
+### <a id="mysqlrestore"></a> MySQLRestore
 
 This resource instructs the Operator to create a new PVC and a new MySQL instance
 from an existing MySQLBackup resource.
