@@ -111,19 +111,24 @@ kubectl get mysqls.with.sql.tanzu.vmware.com
 
 Initially, this instance is in a pending state:
 
-<pre class="terminal">
+``` 
 $ kubectl get mysqls.with.sql.tanzu.vmware.com
+```
+```
 NAME           READY   STATUS    VERSION   AGE
-mysql-sample   true    Pending   1.1.0     2s</pre>
-</pre>
+mysql-sample   true    Pending   1.1.0     2s
+``` 
+
 
 Later, the instance transitions to a running state:
 
-<pre class="terminal">
+``` 
 $ kubectl get mysqls.with.sql.tanzu.vmware.com
+```
+```
 NAME           READY   STATUS    AGE
 mysql-sample   true    Running   27s
-</pre>
+``` 
 
 ### <a id="mysqlbackuplocation"></a> MySQLBackupLocation
 
@@ -166,11 +171,13 @@ MySQLBackupLocation resources do not currently have any associated status,
 but you can list them using kubectl.
 For example:
 
-<pre class='terminal'>
+```
 $ kubectl get mysqlbackuplocations.with.sql.tanzu.vmware.com
+```
+```
 NAME                    AGE
 backuplocation-sample   2m38s
-</pre>
+``` 
 
 ### <a id='mysqlbackup'></a> MySQLBackup
 
@@ -198,11 +205,13 @@ spec:
 You can see the status of the backup using kubectl.
 For example:
 
-<pre class='terminal'>
+```
 $ kubectl get mysqlbackups.with.sql.tanzu.vmware.com
+```
+```
 NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLETED
 backup-sample   Succeeded   mysql-sample      2020-12-07T15:52:12Z   2020-12-07T15:52:16Z
-</pre>
+``` 
 
 ###<a id="mysqlbackupschedule"></a> MySQLBackupSchedule
 
@@ -229,11 +238,13 @@ MySQLBackupSchedule resources do not currently have any associated status,
 but you can list them using kubectl.
 For example:
 
-<pre class='terminal'>
+```
 $ kubectl get mysqlbackupschedules.with.sql.tanzu.vmware.com
+```
+```
 NAME                         AGE
 mysqlbackupschedule-sample   8s
-</pre>
+``` 
 
 ###<a id="mysqlrestore"></a> MySQLRestore
 
@@ -263,29 +274,35 @@ spec:
 You can see the status of the restore using kubectl.
 For example:
 
-<pre class='terminal'>
+```
 $ kubectl get mysqlrestores.with.sql.tanzu.vmware.com
+```
+```
 NAME             STATUS    SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
 restore-sample   Running   backup-sample   mysql-sample      2020-12-07T15:56:26Z
-</pre>
+``` 
 
 The restore retrieves and unpacks the backup artifact and creates the MySQL instance.
 The restore time is proportional to the size of the backup artifact.
 For example:
 
-<pre class='terminal'>
+```
 $ kubectl get mysqlrestores.with.sql.tanzu.vmware.com
+```
+```
 NAME             STATUS      SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
 restore-sample   Succeeded   backup-sample   mysql-sample      2020-12-07T15:56:26Z   2020-12-07T15:56:41Z
-</pre>
+``` 
 
 
 At the end of the restore process, you have a MySQL instance with the `READY` state `true`
 and with `STATUS` `running`.
 For example:
 
-<pre class='terminal'>
+```
 $ kubectl get mysqls.with.sql.tanzu.vmware.com
+```
+```
 NAME           READY   STATUS    AGE
 mysql-sample   true    Running   30s
-</pre>
+``` 

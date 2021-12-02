@@ -34,11 +34,13 @@ Where `VERSION` is the version of <%= vars.product_full %>.
 
 For example:
 
-<pre class="terminal">
-$ kubectl get mysql -l app.kubernetes.io/version=1.0.0
+``` 
+kubectl get mysql -l app.kubernetes.io/version=1.0.0
+```
+```
 NAME           READY   STATUS    VERSION   AGE
 mysql-sample   true    Running   1.0.0     22m
-</pre>
+``` 
 
 ## <a id='upgrade-steps'></a>Upgrade an Instance
 
@@ -52,10 +54,11 @@ To upgrade a MySQL instance:
     kubectl get mysql -A
     ```
     which returns an output similar to:
-    <pre class="terminal">
+    ``` 
     NAMESPACE        NAME             READY   STATUS    VERSION   AGE
     my-namespace     mysql-sample-2   true    Running   1.0.0     2h31m
-    acceptance       mysql-sample     true    Running   1.1.0     6h42m</pre>
+    acceptance       mysql-sample     true    Running   1.1.0     6h42m
+    ``` 
 
 2. Target the namespace of the MySQL instance:
 
@@ -65,8 +68,9 @@ To upgrade a MySQL instance:
     Where `DEVELOPMENT-NAMESPACE` is the namespace in which the instance was created.
     <br><br>
     For example:
-    <pre class="terminal">$ kubectl config set-context --current --namespace=my-namespace
-    </pre>
+    ``` 
+    kubectl config set-context --current --namespace=my-namespace
+    ``` 
 
 3. Edit the configuration file for the MySQL instance, setting the `spec.version` property to the desired new version. (This property was added in <%= vars.product_full %> version 1.1.0.)
     <br><br>
@@ -110,9 +114,12 @@ To upgrade a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">$ kubectl apply -f testdb.yaml
-mysql.with.sql.tanzu.vmware.com/mysql-sample configured
-    </pre>
+    ``` 
+    kubectl apply -f testdb.yaml
+    ```
+    ```
+    mysql.with.sql.tanzu.vmware.com/mysql-sample configured
+    ``` 
 
 6. Verify that the instance was upgraded successfully by running:
 
@@ -123,7 +130,10 @@ mysql.with.sql.tanzu.vmware.com/mysql-sample configured
     <br><br>
     When the instance has been successfully upgraded, the value of the `READY` column for the instance should be `true` and the value of the `VERSION` column for the instance should report the new version. For example:
 
-    <pre class="terminal">$ kubectl get mysql mysql-sample
-NAME           READY   STATUS    VERSION   AGE
-mysql-sample   true    Running   1.1.0     24m
-    </pre>
+    ``` 
+    kubectl get mysql mysql-sample
+    ```
+    ```
+    NAME           READY   STATUS    VERSION   AGE
+    mysql-sample   true    Running   1.1.0     24m
+    ``` 

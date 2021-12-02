@@ -133,9 +133,12 @@ To change a single-node instance into an HA instance:
 
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace apply -f testdb.yaml
+    ``` 
+    kubectl -n my-namespace apply -f testdb.yaml
+    ```
+    ```
     mysql.with.sql.tanzu.vmware.com/mysql-sample created
-    </pre>
+    ``` 
 
 ## <a id="inspect-instance"></a>Inspect an HA MySQL Instance
 
@@ -155,7 +158,9 @@ This inspection procedure can also be used for troubleshooting.
 
     For example:
 
-    <pre class="terminal">$ kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash</pre>
+    ``` 
+    kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash
+    ``` 
 
 2. On the Pod, log in to the MySQL database by running:
 
@@ -168,9 +173,9 @@ This inspection procedure can also be used for troubleshooting.
 
     For example:
 
-    <pre class="terminal">
+    ``` 
     mysql@mysql-sample-0:/$ mysql --user=root --password=$(cat $MYSQL_ROOT_PASSWORD_FILE)
-    </pre>
+    ``` 
 
 3. Query the database by running:
 
@@ -180,40 +185,40 @@ This inspection procedure can also be used for troubleshooting.
     The following example is from
     a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members:
 
-    <pre class="terminal">
-mysql>SELECT * FROM performance_schema.replication_group_members\G;
-*************************** 1. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 157baa2a-8c22-11eb-847c-0242ac110009
-   MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: PRIMARY
-MEMBER_VERSION: 8.0.22
-*************************** 2. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 281ad3c9-8c22-11eb-b3aa-0242ac11000a
-   MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: SECONDARY
-MEMBER_VERSION: 8.0.22
-*************************** 3. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 3c52bb9a-8c22-11eb-aade-0242ac11000b
-   MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: SECONDARY
-MEMBER_VERSION: 8.0.22
-</pre>
+    ``` 
+      mysql>SELECT * FROM performance_schema.replication_group_members\G;
+      *************************** 1. row ***************************
+      CHANNEL_NAME: group_replication_applier
+         MEMBER_ID: 157baa2a-8c22-11eb-847c-0242ac110009
+         MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-members.default.svc.cluster.local
+         MEMBER_PORT: 3306
+      MEMBER_STATE: ONLINE
+         MEMBER_ROLE: PRIMARY
+      MEMBER_VERSION: 8.0.22
+      *************************** 2. row ***************************
+      CHANNEL_NAME: group_replication_applier
+         MEMBER_ID: 281ad3c9-8c22-11eb-b3aa-0242ac11000a
+         MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-members.default.svc.cluster.local
+         MEMBER_PORT: 3306
+      MEMBER_STATE: ONLINE
+         MEMBER_ROLE: SECONDARY
+      MEMBER_VERSION: 8.0.22
+      *************************** 3. row ***************************
+      CHANNEL_NAME: group_replication_applier
+         MEMBER_ID: 3c52bb9a-8c22-11eb-aade-0242ac11000b
+         MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-members.default.svc.cluster.local
+         MEMBER_PORT: 3306
+      MEMBER_STATE: ONLINE
+         MEMBER_ROLE: SECONDARY
+      MEMBER_VERSION: 8.0.22
+    ``` 
 
 4. Review the value of `MEMBER_STATE`.
    A healthy cluster shows `ONLINE` for all members.
     For information about the Group Replication server states,
     see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/group-replication-server-states.html).
 
-##<a id='ha-to-sn'></a>Move an HA MySQL Instance to a Single-Node MySQL Instance
+## <a id='ha-to-sn'></a>Move an HA MySQL Instance to a Single-Node MySQL Instance
 
 To move from an HA MySQL instance to a single-node MySQL instance, you need to back up the HA instance
 and restore the backup to a single-node instance.

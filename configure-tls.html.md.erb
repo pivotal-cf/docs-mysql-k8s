@@ -26,7 +26,7 @@ By default, the Operator will create a `ClusterIssuer` named `tanzu-sql-with-mys
 
 To verify that your MySQL Operator is using the default settings, with no `ClusterIssuer` customization, use:
 
-``` bash 
+``` 
 helm --namespace=tanzu-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
 ```
 The output should be similar to:
@@ -38,7 +38,7 @@ null
 
 When installing the MySQL instances using the default MySQL Operator settings, the instance secret is named with the convention `${INSTANCE_NAME}-mysql-tls`. For example, if you used the default `mysql.yaml` provided with the release, and created an instance: 
 
-``` bash
+```
 kubectl apply --filename=config/samples/mysql.yaml
 ```
 ```
@@ -47,7 +47,7 @@ mysql.with.sql.tanzu.vmware.com/mysql-sample created
 
 the instance would be called `mysql-sample` and the default TLS secret would be `mysql-sample-mysql-tls`. To view the secret, use:
 
-``` bash
+```
 kubectl get secret mysql-sample-mysql-tls --template='{{ index .data "ca.crt" | base64decode }}'
 ```
 
@@ -77,7 +77,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 
 1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#tanzu-network-prerequisites) prerequisites:
 
-    ``` bash
+    ```
     kubectl get all --namespace=cert-manager
     ```
 
@@ -95,7 +95,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 
     and apply with:
 
-    ``` bash
+    ```
     kubectl apply -f my-CA-secret.yaml
     ```
 
@@ -146,7 +146,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 
 6. To verify the custom `ClusterIssuer` setup, use:
 
-    ``` bash
+    ```
     helm --namespace=tanzu-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
     ```
     ```
@@ -219,13 +219,13 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
 
     For example:
 
-    <pre class="terminal">
+    ``` 
       kubectl -n my-namespace create secret generic mysql-tls-secret \
           --type kubernetes.io/tls \
           --from-file=tls.crt=/path/server.crt \
           --from-file=tls.key=/path/server.key \
           --from-file=ca.crt=/path/server_ca.crt
-    </pre>
+    ``` 
 
 After completing the steps above, you add the secret to the instance by following the instructions
 in [Configure MySQL for TLS](#use-tls) below.
@@ -240,7 +240,7 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
 
 1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#tanzu-network-prerequisites) prerequisites:
 
-    ``` bash
+    ```
     kubectl get all --namespace=cert-manager
     ```
 
@@ -332,7 +332,7 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
 
     For example:
 
-    <pre class="terminal"> kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre>
+    ```  kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  ``` 
 
 ### <a id='use-tls'></a>Configure MySQL for TLS
 
@@ -368,16 +368,16 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
     The CA certificate is stored in the TLS secrets `ca.crt` field, base64 encoded.
     Save that certificate to a local file ca.crt by running:
 
-    ``` bash
+    ```
     kubectl -n DEVELOPMENT-NAMESPACE get secret TLS-SECRET-NAME -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
     ```
     where `TLS-SECRET-NAME` is the secret from [Using the Default provided TLS](#using-default-tls) or the custom configured secret in [Configuring a Custom TLS Issuer](#configuring-custom-tls-issuer) or [Explicitly Configure a MySQL instance for TLS](#explicitly-configure-instance-for-TLS).
 
     For example:
 
-    <pre class="terminal">
+    ``` 
     kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
-    </pre>
+    ``` 
 
 2. Create a MySQL username and password to test your connection with.
     You need to connect as a non-root user because MySQL instances prohibit root connection from remote machines.
@@ -406,7 +406,7 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
 
     For example:
 
-    <pre class="terminal">
+    ``` 
 mysql --user=bn_wordpress --password=hunter2 --host=192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt  <br>
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Welcome to the MySQL monitor.  Commands end with ; or \g.
@@ -414,4 +414,4 @@ Your MySQL connection id is 7
 ...
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.<br>
 mysql>
-    </pre>
+    ``` 

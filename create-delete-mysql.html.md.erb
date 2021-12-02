@@ -54,8 +54,9 @@ To create a MySQL instance:
     Where `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance.
     <br><br>
     For example:
-    <pre class="terminal">$ kubectl config set-context --current --namespace=my-namespace
-    </pre>
+    ``` 
+    kubectl config set-context --current --namespace=my-namespace
+    ``` 
 
 2. From your namespace, Kubernetes must be able to access the registry
    that stores the <%= vars.product_short %> images.
@@ -71,14 +72,15 @@ To create a MySQL instance:
 
     For example:
 
-    <pre class="terminal">$ kubectl create secret --namespace=my-namespace \
+    ``` 
+    kubectl create secret --namespace=my-namespace \
     docker-registry tanzu-mysql-image-registry  \
     --docker-server=https://registry.tanzu.vmware.com/ \
     --docker-username=sample-username  \
     --docker-password=sample-password
 
     secret/tanzu-mysql-image-registry created
-    </pre>
+    ``` 
 
 3. Find the `mysql.yaml` deployment template that you downloaded
    in the TGZ file from <%= vars.product_network %>.
@@ -88,14 +90,16 @@ To create a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml</pre>
+    ``` 
+    cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml
+    ``` 
 
 
 5. Edit the file and customize the instance according to your requirements. 
     <br>
     You may customize your Tanzu MySQL instance version, instance resources, instance storage class, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For more details on all the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
     <br><br>
-    When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form <code>mysql-data-INSTANCE-NAME-N</code>, for example `mysql-data-mysql-sample-0`.
+    When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form `mysql-data-INSTANCE-NAME-N`, for example `mysql-data-mysql-sample-0`.
 
 
 6. Deploy a MySQL instance to Kubernetes by running:
@@ -107,9 +111,12 @@ To create a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace apply -f testdb.yaml
+    ``` 
+    kubectl -n my-namespace apply -f testdb.yaml
+    ```
+    ```
     mysql.with.sql.tanzu.vmware.com/mysql-sample created
-    </pre>
+    ``` 
 
 
 7. Verify that the instance was created successfully by running:
@@ -121,10 +128,13 @@ To create a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace get mysql mysql-sample
-NAME           READY   STATUS    AGE
-mysql-sample   true    Running   2m17s
-    </pre>
+    ``` 
+    kubectl -n my-namespace get mysql mysql-sample
+    ```
+    ```
+    NAME           READY   STATUS    AGE
+    mysql-sample   true    Running   2m17s
+    ``` 
 
 By default, the MySQL servers created by Tanzu Operator 1.2.0 (and later) use TLS certificates provided by the cert-manager `ClusterIssuer`, using a self-signed certificate authority (CA). For more information on TLS and how to configure custom a `ClusterIssuer`, see [Configuring TLS for MySQL Instances](configure-tls.html). 
     
@@ -147,7 +157,7 @@ the old PVCs automatically reattach to the new instance and you have access to y
    as described in step 1 below.
 </p>
 
-###<a id="procedure"></a> Procedure
+### <a id="procedure"></a> Procedure
 
 To delete a MySQL instance:
 
@@ -163,10 +173,12 @@ To delete a MySQL instance:
 
     For example:
 
-    <pre class="terminal">
-    $ kubectl -n my-namespace delete mysql mysql-sample
+    ``` 
+    kubectl -n my-namespace delete mysql mysql-sample
+    ```
+    ```
     my-namespace "mysql-sample" deleted
-    </pre>
+    ``` 
 
 2. (Optional) Delete the PVCs by running:
 
@@ -183,9 +195,12 @@ To delete a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">
-   $ kubectl delete pvc -l app.kubernetes.io/instance=mysql-sample
-persistentvolumeclaim "mysql-data-mysql-sample-0" deleted</pre>
+    ``` 
+    kubectl delete pvc -l app.kubernetes.io/instance=mysql-sample
+    ```
+    ```
+    persistentvolumeclaim "mysql-data-mysql-sample-0" deleted
+    ``` 
 
     <p class="note">
         <strong> Note:</strong> For HA MySQL instances, the command deletes
