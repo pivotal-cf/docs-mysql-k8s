@@ -5,7 +5,7 @@ title: Configuring MySQL Instances for High Availability
 This topic describes how to use <%= vars.product_full %> to create high-availability (HA) MySQL instances.
 
 
-##<a id='overview'></a>Overview
+## <a id='overview'></a>Overview
 
 High-availability (HA) MySQL instances offer automatic failover, ensuring that app requests operate continuously
 and without extended downtime.
@@ -174,7 +174,7 @@ This inspection procedure can also be used for troubleshooting.
     For example:
 
     ``` 
-    mysql@mysql-sample-0:/$ mysql --user=root --password=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+    mysql@mysql-sample-0:/mysql --user=root --password=$(cat $MYSQL_ROOT_PASSWORD_FILE)
     ``` 
 
 3. Query the database by running:

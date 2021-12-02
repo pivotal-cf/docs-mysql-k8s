@@ -291,10 +291,12 @@ Before you deploy the Tanzu MySQL Operator, review the list of [Prerequisites](#
 3.  Verify that the two Docker images are now available.
 
     ``` 
-$ docker images
-REPOSITORY                                                                  TAG       IMAGE ID       CREATED        SIZE
-registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.2.0     5f0ad7bad51b   5 weeks ago    792MB
-registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.2.0     eb1458d2e1bd   5 weeks ago    76MB
+    docker images
+    ```
+    ```
+    REPOSITORY                                                                  TAG       IMAGE ID       CREATED        SIZE
+    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.2.0     5f0ad7bad51b   5 weeks ago    792MB
+    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.2.0     eb1458d2e1bd   5 weeks ago    76MB
     ``` 
 
 ### <a id="push-to-registry"></a>Push the Images to a Private Container Registry

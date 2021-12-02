@@ -112,7 +112,7 @@ kubectl get mysqls.with.sql.tanzu.vmware.com
 Initially, this instance is in a pending state:
 
 ``` 
-$ kubectl get mysqls.with.sql.tanzu.vmware.com
+kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
 NAME           READY   STATUS    VERSION   AGE
@@ -123,7 +123,7 @@ mysql-sample   true    Pending   1.1.0     2s
 Later, the instance transitions to a running state:
 
 ``` 
-$ kubectl get mysqls.with.sql.tanzu.vmware.com
+kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
 NAME           READY   STATUS    AGE
@@ -172,7 +172,7 @@ but you can list them using kubectl.
 For example:
 
 ```
-$ kubectl get mysqlbackuplocations.with.sql.tanzu.vmware.com
+kubectl get mysqlbackuplocations.with.sql.tanzu.vmware.com
 ```
 ```
 NAME                    AGE
@@ -206,7 +206,7 @@ You can see the status of the backup using kubectl.
 For example:
 
 ```
-$ kubectl get mysqlbackups.with.sql.tanzu.vmware.com
+kubectl get mysqlbackups.with.sql.tanzu.vmware.com
 ```
 ```
 NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLETED
@@ -239,7 +239,7 @@ but you can list them using kubectl.
 For example:
 
 ```
-$ kubectl get mysqlbackupschedules.with.sql.tanzu.vmware.com
+kubectl get mysqlbackupschedules.with.sql.tanzu.vmware.com
 ```
 ```
 NAME                         AGE
@@ -275,7 +275,7 @@ You can see the status of the restore using kubectl.
 For example:
 
 ```
-$ kubectl get mysqlrestores.with.sql.tanzu.vmware.com
+kubectl get mysqlrestores.with.sql.tanzu.vmware.com
 ```
 ```
 NAME             STATUS    SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
@@ -287,7 +287,7 @@ The restore time is proportional to the size of the backup artifact.
 For example:
 
 ```
-$ kubectl get mysqlrestores.with.sql.tanzu.vmware.com
+kubectl get mysqlrestores.with.sql.tanzu.vmware.com
 ```
 ```
 NAME             STATUS      SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
@@ -300,7 +300,7 @@ and with `STATUS` `running`.
 For example:
 
 ```
-$ kubectl get mysqls.with.sql.tanzu.vmware.com
+kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
 NAME           READY   STATUS    AGE
