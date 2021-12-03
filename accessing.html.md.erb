@@ -7,14 +7,14 @@ owner: MySQL
 
 This topic describes how to access an instance of <%= vars.product_full %>.
 
-## <a id='prereq'></a>Prerequisites
+## <a id='prereq'></a> Prerequisites
 
 Before accessing a MySQL instance, you must have:
 
 * The Kubernetes Command Line Interface (kubectl) installed.
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-## <a id='verify-settings'></a> (Optional) Verify MySQL Instance Settings
+## <a id='verify-settings'></a>  (Optional) Verify MySQL Instance Settings
 
 To see all MySQL instance settings configured:
 
@@ -35,7 +35,7 @@ To see all MySQL instance settings configured:
 
 1. Review the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
 
-## <a id='server-login'></a> Get Root Access to the MySQL Server
+## <a id='server-login'></a>  Get Root Access to the MySQL Server
 
 Database administrative operations, such as creating users and databases, require connecting
 to MySQL as the root database user.
@@ -92,11 +92,11 @@ To connect to the MySQL instance as the MySQL root user:
     mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     ```
 
-## <a id='off-platform-access'></a> Access the MySQL Server from an External IP Address
+## <a id='off-platform-access'></a>  Access the MySQL Server from an External IP Address
 
 <p class="note">
 <strong>Note:</strong> This procedure requires that your cloud provider supports external load balancers. For more information about the <code>LoadBalancer</code> service type, see the
-  <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">Kubernetes documentation</a>.
+  <a href="https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer">Kubernetes documentation</a> .
 </p>
 
 To connect to a MySQL instance from outside of your Kubernetes cluster,
@@ -128,7 +128,7 @@ To access the MySQL server from an external IP address:
    to `LoadBalancer</code>.<br>
        For information about updating an instance, see [Updating MySQL Instances](update-instance.html).
        For information about the property,
-       see <a href="./property-reference-mysql.html">Property Reference for the MySQL Resource</a>.
+       see <a href="./property-reference-mysql.html">Property Reference for the MySQL Resource</a> .
 
 1. Find the external IP address allocated for the service.
 
@@ -170,7 +170,7 @@ To access the MySQL server from an external IP address:
     mysql -u report_admin -phunter2 -P 3306 -h a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     ``` 
 
-### <a id='remove-off-platform-access'></a> Turn Off External Access
+### <a id='remove-off-platform-access'></a>  Turn Off External Access
 
 To disable off-platform connections:
 
@@ -184,7 +184,7 @@ To disable off-platform connections:
 </p>
 
 
-## <a id='app-connect'></a> Access MySQL From Cluster-Hosted Applications
+## <a id='app-connect'></a>  Access MySQL From Cluster-Hosted Applications
 
 Each MySQL instance has a Kubernetes service named after the instance.
 The service is used to connect an app to its MySQL database.

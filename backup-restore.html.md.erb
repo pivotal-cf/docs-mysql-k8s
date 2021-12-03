@@ -5,7 +5,7 @@ owner: MySQL
 
 This topic describes how to back up and restore <%= vars.product_full %>.
 
-## <a id="overview"></a> Overview
+## <a id="overview"></a>  Overview
 
 <%= vars.product_short %> allows you to generate on-demand backups,
 configure schedules for automated backups, and restore backups to new MySQL instances.
@@ -33,9 +33,9 @@ For detailed information about the CRDs,
 see [Controllers and Custom Resource Definitions (CRDs)](architecture.html#controllers-crds)
 in _Architecture_.
 
-<p class="note"><strong>Note:</strong> The procedures in this topic require the <%= vars.product_full %> deployment templates. If you have not yet downloaded the deployment templates, see <a href="./create-delete-mysql.html#download-templates">Download the Deployment Templates</a> in <em>Creating and Deleting MySQL Instances</em>.</p>
+<p class="note"><strong>Note:</strong> The procedures in this topic require the <%= vars.product_full %> deployment templates. If you have not yet downloaded the deployment templates, see <a href="./create-delete-mysql.html#download-templates">Download the Deployment Templates</a>  in <em>Creating and Deleting MySQL Instances</em>.</p>
 
-## <a id="sync-of-backups"></a> About Synchronization of Backups with the External Blobstore
+## <a id="sync-of-backups"></a>  About Synchronization of Backups with the External Blobstore
 
 <%= vars.product_short %> syncs MySQLBackup resources in a Kubernetes cluster with the
 contents of the external blobstore.
@@ -45,7 +45,7 @@ associated backup artifact still exists in the external blobstore, <%= vars.prod
 re-creates the `MySQLBackup` resource to match the contents of the external
 blobstore.
 
-## <a id="backup"></a> Back Up <%= vars.product_short %> Data
+## <a id="backup"></a>  Back Up <%= vars.product_short %> Data
 
 Performing backups for <%= vars.product_short %> requires creating a MySQLBackupLocation resource
 that references an external blobstore.
@@ -56,7 +56,7 @@ Before starting the procedures for backing up a <%= vars.product_short %> instan
 ensure that you know the configuration details of your external blobstore and how often
 you want to perform scheduled backups.
 
-### <a id="create-backuplocation"></a> Create a MySQLBackupLocation Resource
+### <a id="create-backuplocation"></a>  Create a MySQLBackupLocation Resource
 
 The purpose of creating this MySQLBackupLocation Resource is to configure the namespace
 with the location of the blobstore and the credentials to access it.
@@ -125,7 +125,7 @@ To create a MySQLBackupLocation resource:
     }
     ``` 
 
-### <a id="create-backupschedule"></a> Create a MySQLBackupSchedule Resource
+### <a id="create-backupschedule"></a>  Create a MySQLBackupSchedule Resource
 
 To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
@@ -192,7 +192,7 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
     `MySQLBackupSchedule` resource for an existing MySQL instance,
     you see backups being generated and uploaded to the external blobstore.
 
-### <a id="name-and-location"></a> Name and Location for Backup Artifacts
+### <a id="name-and-location"></a>  Name and Location for Backup Artifacts
 
 
 MySQLBackup resources that are automatically generated as a result of a MySQLBackupSchedule are named
@@ -212,7 +212,7 @@ path is `my-backups/`, and a backup was taken on Thursday, December 10, 2020 at 
 * The backup artifact in the external blobstore is named `20201210T205103-kzw54l-backup.xb`
 * The path to the artifact is `my-backups/2020/12/10/`.
 
-### <a id="on-demand"></a>Perform an On-Demand Backup
+### <a id="on-demand"></a> Perform an On-Demand Backup
 
 In addition to scheduled backups, you can take individual backups whenever you want.
 
@@ -271,7 +271,7 @@ To take a backup:
     For an explanation of what each column means,
     see [List Existing MySQLBackup Resources](#list-resources) below.
 
-## <a id="list-resources"></a> List Existing MySQLBackup Resources
+## <a id="list-resources"></a>  List Existing MySQLBackup Resources
 
 You might want to list existing MySQLBackup resources for various reasons, for example:
 
@@ -316,7 +316,7 @@ To see a list of existing MySQLBackup resources:
                            <li>Succeeded: The backup has completed successfully.</li>
                            <li>Failed: The backup has failed to complete.
                                To troubleshoot a failed backup,
-                               see <a href="#troubleshoot">Troubleshoot Backup and Restore</a> below.</li>
+                               see <a href="#troubleshoot">Troubleshoot Backup and Restore</a>  below.</li>
                         </ul>
                    </td>
               </tr>
@@ -334,7 +334,7 @@ To see a list of existing MySQLBackup resources:
              </tr>
     </table>
 
-## <a id="delete-backups"></a> Delete Old Backup Artifacts
+## <a id="delete-backups"></a>  Delete Old Backup Artifacts
 
 Tanzu SQL for Kubernetes does not natively support retention policies for backup artifacts.
 You can configure retention policies on your external blobstore.
@@ -357,14 +357,14 @@ To delete a backup:
     ``` 
 
 
-## <a id="restore"></a>Restore
+## <a id="restore"></a> Restore
 
 This section discusses two kinds of restore:
 
 + [Restore from a Backup](#restore-from-backup)
 + [Restore a Backup to a Different Namespace or Kubernetes Cluster](#restore-to-different)
 
-### <a id="restore-from-backup"></a> Restore from a Backup
+### <a id="restore-from-backup"></a>  Restore from a Backup
 
 MySQLRestores always restores to a new MySQL instance to avoid overwriting any data
 on an existing MySQL instance. When the restore is triggered, it automatically creates the new MySQL instance.
@@ -474,7 +474,7 @@ To restore from a backup:
                            <li>Succeeded: The restore has completed successfully.</li>
                            <li>Failed: The restore failed.
                                To troubleshoot, see <a href="#troubleshoot">Troubleshoot
-                               Backup and Restore</a> below.</li>
+                               Backup and Restore</a>  below.</li>
                         </ul>
                     </td>
             </tr>
@@ -497,7 +497,7 @@ To restore from a backup:
             </tr>
     </table>
 
-### <a id="restore-to-different"></a> Restoring a Backup to a Different Namespace or Kubernetes Cluster
+### <a id="restore-to-different"></a>  Restoring a Backup to a Different Namespace or Kubernetes Cluster
 
 If you want to restore a backup to a different namespace or a different Kubernetes cluster,
 create a `MySQLBackupLocation` in the target namespace or Kubernetes cluster.
@@ -528,7 +528,7 @@ BackupLocation in the target namespace:
 
 1. Trigger a restore by following steps in [Restore from a Backup](#restore-from-backup).
 
-## <a id="troubleshoot"></a> Troubleshoot Backup and Restore
+## <a id="troubleshoot"></a>  Troubleshoot Backup and Restore
 
 Basic troubleshooting begins with reviewing the status for the resource and
 reading the messages associated with the resource events.

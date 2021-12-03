@@ -8,7 +8,7 @@ owner: MySQL
 This topic describes how to scale or change configurations on a
 <%= vars.product_full %> instance.
 
-## <a id='prereq'></a>Prerequisites
+## <a id='prereq'></a> Prerequisites
 
 Before you update the MySQL instance, you must have:
 
@@ -18,7 +18,7 @@ Before you update the MySQL instance, you must have:
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
 
-## <a id='scale-storage'></a>Scale storageSize
+## <a id='scale-storage'></a> Scale storageSize
 
 For storage classes that support `storageSize`, you can expand the `storageSize`
 but not reduce it.
@@ -144,7 +144,7 @@ has successfully restarted, verify that the storage has been resized.
     /dev/sdb        3.0G  346M  2.6G  12% /var/lib/mysql
     ``` 
 
-### <a id='scale-storage-downtime'></a>Expected Downtime When Scaling storageSize
+### <a id='scale-storage-downtime'></a> Expected Downtime When Scaling storageSize
 
 For HA instances, no downtime is expected.
 
@@ -154,7 +154,7 @@ For single-node instances, the expected downtime when expanding storage is as fo
 - With offline expansion: There is downtime while the MySQL Pod is re-created and the
 PVC is being resized.
 
-## <a id='scale-resources'></a>Scale CPU and Memory Resources
+## <a id='scale-resources'></a> Scale CPU and Memory Resources
 
 To scale CPU or memory resources, update the MySQL configuration `spec.resources` field to change the CPU
 or memory requirements for the mysql or sidecar containers.
@@ -188,7 +188,7 @@ You can use one of these methods to update the configuration:
 
 For more information on managing CPU and Memory resources, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
-### <a id='scale-resources-downtime'></a>Expected Downtime When Scaling CPU and Memory Resources
+### <a id='scale-resources-downtime'></a> Expected Downtime When Scaling CPU and Memory Resources
 
 For HA instances, no downtime is expected.
 
@@ -198,7 +198,7 @@ For single-node instances, the expected downtime when changing resource reservat
 - Risk of longer downtime if the new requested values exceed the available capacity
 of the Kubernetes cluster.
 
-## <a id='other-config'></a>Change Other Configurations
+## <a id='other-config'></a> Change Other Configurations
 
 Changing `storageClassName` or `imagePullSecretName` on a running MySQL instance is not supported and it returns an error. 
 If a MySQL instance is not running due to errors in these fields, you can change them.

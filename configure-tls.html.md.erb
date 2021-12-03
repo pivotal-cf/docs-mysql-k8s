@@ -5,7 +5,7 @@ owner: MySQL
 
 This topic describes how to configure TLS for a Tanzu MySQL instance.
 
-## <a id='overview'></a>Overview
+## <a id='overview'></a> Overview
 
 <%= vars.product_short %> is configured to require an encrypted connection for client communication. 
 
@@ -18,7 +18,7 @@ The Tanzu MySQL TLS configuration provides various options:
 - MySQL server administrators can override the default or the custom CA, by using a per instance TLS key pair. See [Explicitly Configure a MySQL instance for TLS](#explicitly-configure-instance-for-TLS).
 
 
-## <a id="using-default-tls"></a>Using the Default Provided TLS
+## <a id="using-default-tls"></a> Using the Default Provided TLS
 
 From Tanzu MySQL 1.2.0, the MySQL Operator deploys the instances with TLS from the self-signed `ClusterIssuer` configured during Operator install.
 
@@ -63,7 +63,7 @@ NzE1MDMGA1UEAxMsdGFuenUtc3FsLXdpdGgtbXlzcWwtb3BlcmF0b3ItY2EtY2Vy
 
 To override the default `ClusterIssuer` follow the steps in [Configuring a Custom TLS issuer](#configuring-custom-tls-issuer). To explicitly configure an instance with a custom `spec.tls.secret.name` and TLS key pair, see [Explicitly Configure a MySQL instance for TLS](#explicitly-configure-instance-for-TLS).
 
-## <a id="configuring-custom-tls-issuer"></a>Configuring a Custom TLS Issuer
+## <a id="configuring-custom-tls-issuer"></a> Configuring a Custom TLS Issuer
 
 This procedure describes how to configure a custom Certificate Authority (CA) and custom certificates using cert-manager. When you complete these steps, your Tanzu MySQL Operator will use the custom CA for any MySQL instance certificates. 
 
@@ -155,7 +155,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
     ```
 
 
-## <a id="explicitly-configure-instance-for-TLS"></a>Explicitly Configure a MySQL instance for TLS
+## <a id="explicitly-configure-instance-for-TLS"></a> Explicitly Configure a MySQL instance for TLS
 
 To configure a MySQL instance for TLS without using the `ClusterIssuer` through the Operator, you must first create a TLS
 Secret in the same namespace as the MySQL instance. There are several ways to create the Secret. This topic describes
@@ -173,7 +173,7 @@ and configure the instance with the updated file, as described in
 For general information about TLS secrets,
 see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets).
 
-### <a id='prereq'></a>Prerequisites
+### <a id='prereq'></a> Prerequisites
 
 Before you configure TLS for a MySQL instance, you must have:
 
@@ -183,7 +183,7 @@ Before you configure TLS for a MySQL instance, you must have:
   For more information,
   see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-### <a id='create-tls-secret'></a>Create the TLS Secret Manually
+### <a id='create-tls-secret'></a> Create the TLS Secret Manually
 
 This procedure describes how to create the TLS Secret using kubectl.
 To create the TLS Secret using cert-manager instead,
@@ -198,7 +198,7 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
    `INSTANCE-NAME.DEVELOPMENT-NAMESPACE`, for example, `mysql-sample.my-namespace`.
    + If your app is deployed outside the Kubernetes cluster and you have configured the MySQL `spec.serviceType`
    as `LoadBalancer`:<br>The hostname is the external DNS name of the load balancer.
-   See <a href="accessing.html#off-platform-access">Access the MySQL Server from an External IP Address</a>
+   See <a href="accessing.html#off-platform-access">Access the MySQL Server from an External IP Address</a> 
    in _Accessing MySQL Instances_.
 
 1. Create the TLS Secret by running:
@@ -230,7 +230,7 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
 After completing the steps above, you add the secret to the instance by following the instructions
 in [Configure MySQL for TLS](#use-tls) below.
 
-### <a id='using-cert-manager'></a>Create TLS Secret with cert-manager
+### <a id='using-cert-manager'></a> Create TLS Secret with cert-manager
 
 This procedure describes how to create the TLS Secret using cert-manager.
 
@@ -297,7 +297,7 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
                         that you use to connect to apps deployed outside the cluster.
                         To find the address,
                         see step 4 of <a href="accessing.html#off-platform-access">Access
-                        the MySQL Server from an External IP Address</a>.
+                        the MySQL Server from an External IP Address</a> .
                     </td>
         <td><code>spec.ipAddresses</code></td>
       </tr>
@@ -332,9 +332,11 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
 
     For example:
 
-    ```  kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  ``` 
+    ```  
+    kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  
+    ``` 
 
-### <a id='use-tls'></a>Configure MySQL for TLS
+### <a id='use-tls'></a> Configure MySQL for TLS
 
 To configure TLS for the MySQL instance, using the precreated secret, follow these steps:
 
@@ -352,7 +354,7 @@ of the TLS Secret created in the namespace.
 
 
 
-## <a id='use-tls'></a>Connect to a Load-Balanced MySQL Instance over TLS
+## <a id='use-tls'></a> Connect to a Load-Balanced MySQL Instance over TLS
 
 This section shows how to connect to a MySQL instance configured with a load
 balancing service, `spec.serviceType.LoadBalancer`, from an off-cluster machine

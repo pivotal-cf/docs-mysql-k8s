@@ -5,7 +5,7 @@ owner: MySQL
 
 This topic provides some architectural information about <%= vars.product_full %>.
 
-## <a id='mysql4k8s-architecture'></a><%= vars.product_full %> Architecture
+## <a id='mysql4k8s-architecture'></a> <%= vars.product_full %> Architecture
 
 This section illustrates the two topologies of MySQL instances:
 
@@ -14,19 +14,19 @@ This section illustrates the two topologies of MySQL instances:
 
 [//]: # (Introduce the two kinds of architecture, compare and contrast, discuss how HA is typically only used in a product environment, the general differences in how to set them.)
 
-### <a id='single-node'></a> Architecture of a Single-Node MySQL Instance
+### <a id='single-node'></a>  Architecture of a Single-Node MySQL Instance
 
 The diagram below shows the architecture of a single-node MySQL instance:
 
 <img src="images/mysql4k8s-sn-arch-diagram.jpg" alt="A diagram showing the architecture of a single-node instance, described below" width="350">
 
-<a href="./images/mysql4k8s-sn-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
+<a href="./images/mysql4k8s-sn-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a> 
 
 In a single-node MySQL instance, the app or client makes a request to the MySQL service.
 The service communicates with the single database Pod, named mysql-0.
 The database Pod stores data in a persistent volume claim (PVC).
 
-### <a id='ha-diagram'></a> Architecture of an HA MySQL Instance
+### <a id='ha-diagram'></a>  Architecture of an HA MySQL Instance
 
 High availability offers automatic failover, ensuring that app requests operate continuously
 and without extended downtime.
@@ -43,7 +43,7 @@ The diagram below shows the architecture of an HA MySQL instance:
 <img src="images/mysql4k8s-ha-arch-diagram.jpg" alt="HA MySQL cluster: A diagram showing the high-availability architecture.
 This diagram is described in the text below.">
 
-<a href="./images/mysql4k8s-ha-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
+<a href="./images/mysql4k8s-ha-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a> 
 
 In a high-availability (HA) MySQL instance,
 the topology consists of five Pods:
@@ -66,7 +66,7 @@ and a new secondary MySQL Pod is created to replace the failed Pod.
 If a proxy Pod fails, Kubernetes directs traffic to the remaining proxy Pod
 while re-creating the failed Pod in the background.
 
-## <a id='controllers-crds'></a>Controllers and Custom Resource Definitions (CRDs)
+## <a id='controllers-crds'></a> Controllers and Custom Resource Definitions (CRDs)
 
 <%= vars.product_full %> provides extensions to the Kubernetes API through custom resources.
 The product provides five separate custom resources:
@@ -77,7 +77,7 @@ The product provides five separate custom resources:
 + [MySQLBackupSchedule](#mysqlbackupschedule): Defines a backup schedule
 + [MySQLRestore](#mysqlrestore): Requests a data restore
 
-### <a id="mysql"></a> MySQL
+### <a id="mysql"></a>  MySQL
 
 Applying this resource causes the Kubernetes Operator to create a StatefulSet with a single Pod and three containers. One container runs the MySQL database software, one runs the components to support backups, and the third runs the mysqld_exporter (for monitoring).
 The MySQL Pod mounts a persistent volume claim (PVC) which holds the MySQL data.
@@ -130,7 +130,7 @@ NAME           READY   STATUS    AGE
 mysql-sample   true    Running   27s
 ``` 
 
-### <a id="mysqlbackuplocation"></a> MySQLBackupLocation
+### <a id="mysqlbackuplocation"></a>  MySQLBackupLocation
 
 This resource describes metadata and credentials for storing backups in an S3-compatible object store.
 
@@ -179,7 +179,7 @@ NAME                    AGE
 backuplocation-sample   2m38s
 ``` 
 
-### <a id='mysqlbackup'></a> MySQLBackup
+### <a id='mysqlbackup'></a>  MySQLBackup
 
 This resource triggers the instance to run the Percona XtraBackup utility and
 upload a backup artifact to the blobstore.
@@ -213,7 +213,7 @@ NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLE
 backup-sample   Succeeded   mysql-sample      2020-12-07T15:52:12Z   2020-12-07T15:52:16Z
 ``` 
 
-### <a id="mysqlbackupschedule"></a> MySQLBackupSchedule
+### <a id="mysqlbackupschedule"></a>  MySQLBackupSchedule
 
 This resource defines a schedule to automatically create MySQLBackup resources.
 For example:
@@ -246,7 +246,7 @@ NAME                         AGE
 mysqlbackupschedule-sample   8s
 ``` 
 
-### <a id="mysqlrestore"></a> MySQLRestore
+### <a id="mysqlrestore"></a>  MySQLRestore
 
 This resource instructs the Operator to create a new PVC and a new MySQL instance
 from an existing MySQLBackup resource.

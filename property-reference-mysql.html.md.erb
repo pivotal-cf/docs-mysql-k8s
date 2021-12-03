@@ -4,7 +4,7 @@ title: Tanzu MySQL CRD Property Reference
 
 This topic describes the available fields of the Tanzu MySQL Custom Resource Definition. 
 
-## <a id="synopsis"></a>Synopsis
+## <a id="synopsis"></a> Synopsis
 
 ```
 apiVersion: with.sql.tanzu.vmware.com/v1
@@ -116,7 +116,7 @@ spec:
 #        memory: 75Mi
 ```
 
-## <a id="description"></a>Description
+## <a id="description"></a> Description
 
 Applying this resource causes the Kubernetes Operator to create a StatefulSet with a single Pod and three containers. One container runs the MySQL database software, one runs the components to support backups, and the third runs the mysqld_exporter (for monitoring). The MySQL pod mounts a persistent volume claim (PVC) which holds the MySQL data.
 
@@ -124,7 +124,7 @@ You specify MySQL instance configuration properties to the MySQL operator with a
 
 The list below explains the properties that you can set in your MySQL resource.
 
-## <a id="metadata"></a>Metadata
+## <a id="metadata"></a> Metadata
 
 **`name: <string>`**<br />
 **Required**<br />
@@ -133,7 +133,7 @@ The name of the MySQL instance. Must be unique within a namespace. Cannot be mod
 **Example**: mysql-sample
 
 
-## <a id="spec"></a>Spec
+## <a id="spec"></a> Spec
 
 **`storageSize: <Quantity>`**<br />
 **Optional**<br />
@@ -286,7 +286,7 @@ Configures Kubernetes Tolerations for the MySQL instance's database Pods. For mo
 ```
 
 
-## <a id="resources"></a>Resources
+## <a id="resources"></a> Resources
 
 **`resources.mysql: <limits.cpu, limits.memory>`**<br />
 **Optional**<br />

@@ -18,7 +18,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
 * An application that is deployed to TAS and can access the Kubernetes cluster ingress points.
 
-## <a id='binding-an-application'></a> Binding an Application
+## <a id='binding-an-application'></a>  Binding an Application
 
 To bind a MySQL instance to an application running on TAS:
 
@@ -42,7 +42,7 @@ To bind a MySQL instance to an application running on TAS:
 If autoconnect is supported by the applicatioin buildpack, as is common with data services, the application will automatically connect to the database instance. If
 the buildpack does not support autoconnect, you will need to manually use the `uri` service credentials to connect the application to the database instance.
 
-## <a id='troubleshooting'></a> Troubleshooting
+## <a id='troubleshooting'></a>  Troubleshooting
 
 This procedure, including autowiring, was validated with a Spring Boot application. Autowiring did not work with a Ruby on Rails application, because the version of the MariaDB client library in the Cloud Foundry `cflinuxfs3` stack does not support `sslMode`.
 

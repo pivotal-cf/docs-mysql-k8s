@@ -7,7 +7,7 @@ owner: MySQL
 
 This topic describes how to upgrade a <%= vars.product_short %> instance after [upgrading the operator](./upgrade-operator.html).
 
-## <a id='prereq'></a>Prerequisites
+## <a id='prereq'></a> Prerequisites
 
 Before you upgrade a MySQL instance, you must have:
 
@@ -18,7 +18,7 @@ Before you upgrade a MySQL instance, you must have:
 * **The Kubernetes Command Line Interface (kubectl) installed.**
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-## <a id='list-instances-by-version'></a>List Instances By Version
+## <a id='list-instances-by-version'></a> List Instances By Version
 
 Each MySQL instance has a `version` label containing the version of the instance. The instance version corresponds to a version of <%= vars.product_short %>.
 
@@ -42,7 +42,7 @@ NAME           READY   STATUS    VERSION   AGE
 mysql-sample   true    Running   1.0.0     22m
 ``` 
 
-## <a id='upgrade-steps'></a>Upgrade an Instance
+## <a id='upgrade-steps'></a> Upgrade an Instance
 
 Each <%= vars.product_full %> instance is based on a copy of the `mysql.yaml` deployment template file. The file for the instance should have a unique name (for example, `testdb.yaml`). To upgrade an instance, you must edit this configuration file.
 

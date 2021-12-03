@@ -10,7 +10,7 @@ This topic describes how Kubernetes admins install, configure, and deploy the Ta
 
 - Use [Installing Tanzu MySQL Operator via Downloadable Archive File](install-operator.html#install-via-tar) if your server hosts do not have access to the internet, or if you want to install from a private registry.
 
-## <a id='tanzu-network-prerequisites'></a>Prerequisites 
+## <a id='tanzu-network-prerequisites'></a> Prerequisites 
 
 Before you deploy the Tanzu MySQL Operator, you need:
 
@@ -75,7 +75,7 @@ Before you deploy the Tanzu MySQL Operator, you need:
     For security scenarios setup, see [Configuring TLS for MySQL Instances](configure-tls.html). 
 
 
-## <a id="install-via-tanzu"></a>Install the Operator via the Tanzu Network Registry
+## <a id="install-via-tanzu"></a>  Install the Operator via the Tanzu Network Registry
 
 This section describes how to access the resources, and deploy the Tanzu MySQL Operator using the Tanzu Network Registry. 
 To install the Tanzu MySQL Operator, you must use kubectl to create a namespace and secret.
@@ -83,7 +83,7 @@ Then, use the Helm CLI to install the Operator.
 
 **IMPORTANT**: Helm 3.7.x is currently not supported.
 
-### <a id="access"></a> Access the Resources
+### <a id="access"></a>  Access the Resources
 
 To install the Tanzu MySQL Operator, you must download the Helm chart and images.
 
@@ -120,7 +120,7 @@ To download the resources:
     Status: Downloaded newer chart for registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.2.0
     ```
 
-### <a id="create-namespace-secret"></a> Create Namespace and Secret
+### <a id="create-namespace-secret"></a>  Create Namespace and Secret
 
 To create the namespace and secret:
 
@@ -174,7 +174,7 @@ To create the namespace and secret:
     Exported chart to tanzu-sql-with-mysql-operator/
     ``` 
 
-### <a id="create-overrides"></a> Review values.yaml and Create Overrides If Needed
+### <a id="create-overrides"></a>  Review values.yaml and Create Overrides If Needed
 
 In most situations, the default values supplied in the `values.yaml` file do not need to be changed.
 
@@ -186,7 +186,7 @@ However, if any of the following are true, follow the steps described in [Edit t
 * You want to specify an alternate default version for new MySQL instances.
 
 
-### <a id="install-operator"></a> Use Helm CLI to Install the Operator
+### <a id="install-operator"></a>  Use Helm CLI to Install the Operator
 
 **IMPORTANT**: Helm 3.7.x is currently not supported.
 
@@ -234,7 +234,7 @@ To install the Operator using the Helm CLI:
     
     To review the default TLS configuration for the MySQL Operator, see [Using the Default provided TLS](configure-tls.html#using-default-tls). 
 
-## <a id="install-via-tar"></a>Install the Operator via a Downloaded File
+## <a id="install-via-tar"></a> Install the Operator via a Downloaded File
         
 Choose this method if:
 
@@ -251,7 +251,7 @@ This section covers:
 - Configuring a Kubernetes secret for accessing the private container registry
 - Deploying the MySQL Operator
 
-### <a id="download-archive-prerequisites"></a>Prerequisites 
+### <a id="download-archive-prerequisites"></a>  Prerequisites 
 
 Before you deploy the Tanzu MySQL Operator, review the list of [Prerequisites](#tanzu-network-prerequisites) that apply to both installation methods. 
 
@@ -274,7 +274,7 @@ Before you deploy the Tanzu MySQL Operator, review the list of [Prerequisites](#
     cd ./tanzu-mysql-for-kubernetes-1.2.0
     ``` 
 
-### <a id="docker"></a>Load the Images to a Local Docker Registry
+### <a id="docker"></a>  Load the Images to a Local Docker Registry
 
 1. Load the MySQL instance image to the Docker registry.
 
@@ -299,7 +299,7 @@ Before you deploy the Tanzu MySQL Operator, review the list of [Prerequisites](#
     registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.2.0     eb1458d2e1bd   5 weeks ago    76MB
     ``` 
 
-### <a id="push-to-registry"></a>Push the Images to a Private Container Registry
+### <a id="push-to-registry"></a>  Push the Images to a Private Container Registry
 
 Push the Tanzu MySQL Docker images to the container registry of your choice. Set each image's project and image repo name, tag the images, and then push them using the Docker command `docker push`.
 
@@ -320,7 +320,7 @@ docker tag $(cat ./images/tanzu-mysql-operator-id) ${OPERATOR_IMAGE_NAME}
 docker push ${OPERATOR_IMAGE_NAME}
 ```
 
-### <a id="create-service-accounts"></a>Configure a Kubernetes Secret for Accessing the Private Container Registry
+### <a id="create-service-accounts"></a>  Configure a Kubernetes Secret for Accessing the Private Container Registry
 
 Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private container registry so it can pull images. These examples create a secret named `tanzu-image-registry` using Harbor, Google Cloud Registry (GCR), and Amazon Elastic Container Registry (ECR). 
 
@@ -359,11 +359,11 @@ kubectl create secret docker-registry tanzu-image-registry \
 
 Next follow [Deploying a MySQL Operator](install-operator.html#create-operator). The MySQL Operator will use this secret to allow the Kubernetes cluster to authenticate with the container registry to pull images.
 
-### <a id="create-operator"></a> Deploy the Tanzu MySQL Operator 
+### <a id="create-operator"></a>  Deploy the Tanzu MySQL Operator 
 
 The MySQL Operator is the controller for MySQL instances resources. You install the MySQL Operator using the Helm package manager.
 
-#### <a id="config-file"></a>Edit the Operator Configuration
+#### <a id="config-file"></a>  Edit the Operator Configuration
 
 1.  Go to the directory where you unpacked the Tanzu MySQL distribution.
 
@@ -401,7 +401,7 @@ resources: {}
           <td><code>imagePullSecret</code></td>
           <td>String</td>
           <td>Name of image secret. This value must match the name of the Kubernetes
-            secret you create in <a href="#create-namespace-secret">Create Namespace and Secret</a> above.</td>
+            secret you create in <a href="#create-namespace-secret">Create Namespace and Secret</a>  above.</td>
         </tr>
         <tr>
           <td><code>operatorImage</code></td>
@@ -433,7 +433,7 @@ resources: {}
 1. Delete the sections of the file that you do not change.
 1. Save the `operator-values-overrides.yaml` file in a location of your choice or the same directory as the `values.yaml` file.
 
-#### <a id="create-release"></a>Create the MySQL Operator 
+#### <a id="create-release"></a>  Create the MySQL Operator 
 
 **IMPORTANT**: Helm 3.7.x is currently not supported.
 
