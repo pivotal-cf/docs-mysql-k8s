@@ -29,9 +29,9 @@ To see all MySQL instance settings configured:
 
     For example:
 
-    <pre class="terminal">
-    $ kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
-    </pre>
+    ``` 
+     kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    ``` 
 
 1. Review the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
 
@@ -57,15 +57,15 @@ To connect to the MySQL instance as the MySQL root user:
     <br /><br />
     For example:
 
-    <pre class="terminal">
-    $ kubectl exec -it mysql-sample-0 -c mysql -- bash -c \
+    ``` 
+     kubectl exec -it mysql-sample-0 -c mysql -- bash -c \
           "mysql -B -s --user=root --password=\$(cat $MYSQL_ROOT_PASSWORD_FILE) \
           --execute 'SELECT MEMBER_HOST FROM performance_schema.replication_group_members \
           WHERE (MEMBER_ROLE=\"PRIMARY\")'"
 
     mysql: [Warning] Using a password on the command line interface can be insecure.
     mysql-sample-1.mysql-sample-members.default.svc.cluster.local
-    </pre>
+    ``` 
 
     This command returns the Kubernetes-internal domain name of the primary node.
     The primary Pod name is the first dot-separated component of the command output.
@@ -81,10 +81,10 @@ To connect to the MySQL instance as the MySQL root user:
     <br /><br />
     For example:
 
-    <pre class="terminal">
-    $ kubectl exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    ``` 
+     kubectl exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
     mysql@mysql-sample-0:/$
-    </pre>
+    ``` 
 
 1. Log in to the MySQL server by running:
 
@@ -119,10 +119,10 @@ To access the MySQL server from an external IP address:
     <br /><br />
     For example:
 
-    <pre class="terminal">
-    $ kubectl get service mysql-sample -o jsonpath={.spec.type}
+    ``` 
+     kubectl get service mysql-sample -o jsonpath={.spec.type}
     LoadBalancer
-    </pre>
+    ``` 
 
 1. If the `ServiceType` is not `LoadBalancer`, change the value of the `Spec.ServiceType` property
    to <code>LoadBalancer</code>.<br>
@@ -139,20 +139,20 @@ To access the MySQL server from an external IP address:
     <br /><br />
     For example:
 
-    <pre class="terminal">
-    $ kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
+    ``` 
+     kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
     192.168.64.200
-    </pre>
+    ``` 
 
     This command retrieves either an IP address or a resolvable DNS hostname.
     <br /><br />
     If the command returns a DNS hostname, use the hostname in place of the IP address in the following examples.
     For example, an AWS load balancer returns a domain name instead of an IP address.
 
-    <pre class="terminal">
-    $ kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
+    ``` 
+     kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
     a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
-    </pre>
+    ``` 
 
 1. Log in to the MySQL server.
 
@@ -166,9 +166,9 @@ To access the MySQL server from an external IP address:
 
     For example:
 
-    <pre class="terminal">
-    $ mysql -u report_admin -phunter2 -P 3306 -h a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
-    </pre>
+    ``` 
+     mysql -u report_admin -phunter2 -P 3306 -h a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
+    ``` 
 
 ### <a id='remove-off-platform-access'></a> Turn Off External Access
 

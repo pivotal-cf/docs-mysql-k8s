@@ -5,7 +5,7 @@ title: Monitoring MySQL Instances in Kubernetes
 This topic describes how to collect metrics and monitor <%= vars.product_full %> instances in a Kubernetes cluster.
 
 
-##<a id='overview'></a>Overview
+## <a id='overview'></a>Overview
 
 <%= vars.product_short %> uses the [MySQL Server Exporter](https://github.com/prometheus/mysqld_exporter), a Prometheus exporter for MySQL server metrics.
 The Prometheus exporter provides an endpoint for Prometheus to scrape metrics from different application services. The MySQL Server Exporter shares metrics about the MySQL instances. 
@@ -21,39 +21,39 @@ The diagram below shows the architecture of a single-node MySQL instance with My
 
 [Prometheus](https://prometheus.io/) could be your primary consumer of the metrics, but any monitoring tool can take advantage of the `/metrics` endpoint.
 
-##<a id='prerequisites'></a>Prerequisites
+## <a id='prerequisites'></a>Prerequisites
 
 To take advantage of the metrics endpoint, ensure you have a metrics collector in your environment like Prometheus, or Wavefront.
 For an example installation of Prometheus, see [Using Prometheus Operator to Scrape the <%= vars.product_short %> Metrics](#using_prometheus).
 
-##<a id='monitor-instances'></a>Verifying MySQL Metrics
+## <a id='monitor-instances'></a>Verifying MySQL Metrics
 
 MySQL pods include the exporter that emits metrics by default. To test that the metrics are being emitted, you may use port forwarding (for more details see [Use Port Forwarding to Access Applications in a Cluster](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) in the Kubernetes documentation):
     
 ``` 
-$ kubectl port-forward pod/<mysql-pod-name> 9104:9104
+ kubectl port-forward pod/<mysql-pod-name> 9104:9104
 ```  
 
 And then in another shell, use a tool like `curl` to run:
     
 ```
-$ curl -k https://localhost:9104/metrics
+ curl -k https://localhost:9104/metrics
 ```
     
 The output shows the metrics collection, for example:
     
-<pre class="terminal">mysql_global_status_open_tables 165</pre>
+``` mysql_global_status_open_tables 165``` 
     
 For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Exporter Collector Flag Reference](#collectors).
 
 
-##<a id='using_prometheus'></a>Using Prometheus Operator to Scrape the <%= vars.product_short %> Metrics
+## <a id='using_prometheus'></a>Using Prometheus Operator to Scrape the <%= vars.product_short %> Metrics
 
 [Prometheus Operator](https://github.com/prometheus-operator/prometheus-operator) allows you to define and manage monitoring instances as Kubernetes resources. This section provides an example of installing the Prometheus Operator using Helm, and a example Prometheus `PodMonitor` CRD that is used to scrape the MySQL metrics.
  
 - Use Helm to install the Prometheus Operator, that defines the custom resource definitions (CRDs) such as `PodMonitor`. The `PodMonitor` CRD defines the configuration details for the MySQL pod monitoring.
 
-    <pre class="terminal">$ helm install prometheus-community/kube-prometheus-stack \
+    ```  helm install prometheus-community/kube-prometheus-stack \
       --create-namespace \
       --namespace=prometheus \
       --set prometheus.service.port=80 \
@@ -61,18 +61,18 @@ For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Expor
       --set grafana.enabled=false,alertmanager.enabled=false \
       --set prometheus-node-exporter.hostRootFsMount=false \
       --wait
-    </pre>
+    ``` 
 
 - Confirm the PodMonitor CRD exists using:
 
-    <pre class="terminal">
-    $ kubectl get customresourcedefinitions.apiextensions.k8s.io podmonitors.monitoring.coreos.com
-    </pre>
+    ``` 
+     kubectl get customresourcedefinitions.apiextensions.k8s.io podmonitors.monitoring.coreos.com
+    ``` 
 
 
 - Create a `PodMonitor` that scrapes all MySQL instances every 10 seconds and skips verifying TLS:
 
-    <pre class="terminal">
+    ``` 
     cat &lt;&lt;EOF | kubectl apply -f -
     ---
     apiVersion: monitoring.coreos.com/v1
@@ -96,7 +96,7 @@ For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Expor
           tlsConfig:
             insecureSkipVerify: true
     EOF
-    </pre>
+    ``` 
 
 - To check if Prometheus is successfully monitoring the instances, open the Prometheus UI in the browser and visit the `/targets` URI  to check the status of the `PodMonitor` under
 `podMonitor/prometheus/tanzu-mysql-instances/0 (1/1 up)`. 
@@ -110,14 +110,14 @@ For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Expor
 
     For details on the `PodMonitor` API see [PodMonitor](https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#podmonitor) in the Prometheus Operator documentation. 
 
-##<a id='prometheus_TLS'></a>Using TLS for the Metrics Endpoint
+## <a id='prometheus_TLS'></a>Using TLS for the Metrics Endpoint
 
 During the Tanzu MySQL initialization, the Tanzu MySQL operator creates a metrics related self-signed certificate. The TLS credentials are stored in a Secret named after the MySQL instance name: if the instance name is `mysql-db`, the metrics Secret name is `mysql-db-metrics-tls`.
 
 In order to use TLS for a metrics endpoint, configure Prometheus to use the CA certificate from the Secret. Use the following command to fetch the CA certificate:
 
 ```
-$ kubectl get secret <MYSQL-INSTANCE-NAME>-metrics-tls -o 'go-template={{index .data "ca.crt" | base64decode}}'
+ kubectl get secret <MYSQL-INSTANCE-NAME>-metrics-tls -o 'go-template={{index .data "ca.crt" | base64decode}}'
 ```
 
 where `<MYSQL-INSTANCE-NAME>` is the name of the MySQL instance. 
@@ -125,7 +125,7 @@ where `<MYSQL-INSTANCE-NAME>` is the name of the MySQL instance.
 For details on how to configure Prometheus with TLS, see `tls_config` in the [Prometheus Configuration](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#tls_config) documentation.
 
 
-##<a id='collectors'></a>MySQL Server Exporter Collector Flag Reference
+## <a id='collectors'></a>MySQL Server Exporter Collector Flag Reference
 
 Collectors are logical groups of metrics. Currently, the following collectors are enabled for <%= vars.product_short %>.  
 

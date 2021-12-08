@@ -5,7 +5,7 @@ title: Configuring MySQL Instances for High Availability
 This topic describes how to use <%= vars.product_full %> to create high-availability (HA) MySQL instances.
 
 
-##<a id='overview'></a>Overview
+## <a id='overview'></a>Overview
 
 High-availability (HA) MySQL instances offer automatic failover, ensuring that app requests operate continuously
 and without extended downtime.
@@ -14,7 +14,7 @@ For more information about high availability including an architecture diagram,
 see [Architecture of an HA MySQL Instance](architecture.html#ha-diagram)
 in _Architecture_.
 
-###<a id='planning'></a>About Planning for Long-Lived HA MySQL Instances
+### <a id='planning'></a>About Planning for Long-Lived HA MySQL Instances
 
 HA MySQL instances are often used in production environments.
 Before creating an HA instance that you intend to rely on for a long time,
@@ -27,19 +27,19 @@ as Kubernetes manages resources allocation among its Pods.
 For information about the properties used to set limits and requests,
 see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
-###<a id='node-selection'></a>About Explicit Node Selection and Anti-Affinity
+### <a id='node-selection'></a>About Explicit Node Selection and Anti-Affinity
 
 <%= vars.product_full %> does not support explicit node selection or anti-affinity
 for controlling Pod assignment to Kubernetes nodes.
 Kubernetes distributes Pods according to its regular placement and scheduling policies
 including any resource requests.
 
-###<a id='scale-up'></a>About Scaling Single Node to HA
+### <a id='scale-up'></a>About Scaling Single Node to HA
 
 You can convert a single-node MySQL instance to an HA MySQL instance with a single command.
 See [Convert a Single-Node MySQL Instance to an HA MySQL Instance](#convert-to-ha) below.
 
-###<a id='scale-down'></a>About Scaling HA to Single Node
+### <a id='scale-down'></a>About Scaling HA to Single Node
 
 It is not straightforward to convert an HA instance to a single-node instance.
 To move from an HA instance to a single-node instance,
@@ -128,9 +128,9 @@ To change a single-node instance into an HA instance:
 
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace apply -f testdb.yaml
+    ```  kubectl -n my-namespace apply -f testdb.yaml
     mysql.with.sql.tanzu.vmware.com/mysql-sample created
-    </pre>
+    ``` 
 
 ## <a id="inspect-instance"></a>Inspect an HA MySQL Instance
 
@@ -150,7 +150,7 @@ This inspection procedure can also be used for troubleshooting.
 
     For example:
 
-    <pre class="terminal">$ kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash</pre>
+    ```  kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash``` 
 
 2. On the Pod, log in to the MySQL database by running:
 
@@ -163,9 +163,9 @@ This inspection procedure can also be used for troubleshooting.
 
     For example:
 
-    <pre class="terminal">
-    mysql@mysql-sample-0:/$ mysql --user=root --password=$(cat $MYSQL_ROOT_PASSWORD_FILE)
-    </pre>
+    ``` 
+    mysql@mysql-sample-0:/ mysql --user=root --password=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+    ``` 
 
 3. Query the database by running:
 
@@ -175,7 +175,7 @@ This inspection procedure can also be used for troubleshooting.
     The following example is from
     a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members:
 
-    <pre class="terminal">
+    ``` 
 mysql>SELECT * FROM performance_schema.replication_group_members\G;
 *************************** 1. row ***************************
   CHANNEL_NAME: group_replication_applier
@@ -201,14 +201,14 @@ MEMBER_VERSION: 8.0.22
   MEMBER_STATE: ONLINE
    MEMBER_ROLE: SECONDARY
 MEMBER_VERSION: 8.0.22
-</pre>
+``` 
 
 4. Review the value of `MEMBER_STATE`.
    A healthy cluster shows `ONLINE` for all members.
     For information about the Group Replication server states,
     see the [MySQL documentation](https://dev.mysql.com/doc/refman/8.0/en/group-replication-server-states.html).
 
-##<a id='ha-to-sn'></a>Move an HA MySQL Instance to a Single-Node MySQL Instance
+## <a id='ha-to-sn'></a>Move an HA MySQL Instance to a Single-Node MySQL Instance
 
 To move from an HA MySQL instance to a single-node MySQL instance, you need to back up the HA instance
 and restore the backup to a single-node instance.

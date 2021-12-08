@@ -27,18 +27,18 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
     <br /> <br />
     For example, to connect to a single-node instance named "mysql-sample":
 
-    <pre class="terminal">
-    $ kubectl exec -it mysql-sample-0 -c mysql -- bash
+    ``` 
+     kubectl exec -it mysql-sample-0 -c mysql -- bash
     mysql@mysql-sample-0:/$
-    </pre>
+    ``` 
 
 1. Create any MySQL constructs needed by your app, and create a user with privileges to access those constructs as required by your app.
    <b>NOTE: Older MySQL client libraries (such as those base on 5.6) need an older password encryption method. We show both type of `CREATE USER` commands below.</b>
     <br /> <br />
     For example, the following commands create a `bitnami_wordpress` database and `bn_wordpress` user for the Bitnami WordPress Stack deployment:
 
-    <pre class="terminal">
-    $ mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
+    ``` 
+     mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
     mysql> CREATE DATABASE bitnami_wordpress;
     Query OK, 1 row affected (0.20 sec)
 
@@ -53,7 +53,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
     mysql> FLUSH PRIVILEGES;
     Query OK, 0 rows affected (0.10 sec)
-    </pre>
+    ``` 
 
 ## <a id='config-app-db'></a>Configure Your App with MySQL User and Connectivity Information
 
@@ -67,7 +67,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     <br /><br />
     WordPress authenticates signed certificates within the cluster. The following command generates two Issuers: the first Issuer, `selfsigned-issuer`, generates a certificate, `ca-certificate`, for the second Issuer, `tls-issuer`. That second Issuer generates the `tls-certificate` that MySQL will present to WordPress.
 
-    <pre class="terminal">
+    ``` 
     cat &lt;&lt;EOF | kubectl apply -f -
     ---
     apiVersion: cert-manager.io/v1
@@ -108,7 +108,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
       issuerRef:
         name: tls-issuer
     EOF
-    </pre>
+    ``` 
 
     <p class="note"><strong>Note:</strong> If you are deploying WordPress in the same Kubernetes cluster as the MySQL instance, specify <code>INSTANCE-NAME.INSTANCE-NAMESPACE</code> for <code>spec.dnsNames</code> above.</p>
 
@@ -116,7 +116,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     <br /><br />
     In the MySQL instance YAML file, add the spec property `spec.tls.secret.name`. If you are creating a new MySQL instance, you can edit the original deployment YAML file and then apply that file to create the instance. If you are updating an existing MySQL instance, you can use the `kubectl edit` command to edit the YAML configuration in place. For example:
 
-    <pre class="terminal">$ kubectl edit mysql.with.sql.tanzu.vmware.com/mysql-sample
+    ```  kubectl edit mysql.with.sql.tanzu.vmware.com/mysql-sample
 
     spec:
       ...
@@ -124,14 +124,14 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
         secret:
           name: mysql-tls-secret
       ...
-    </pre>
+    ``` 
 
     For more information about TLS configuration, see [Configuring TLS for MySQL Instances](./configure-tls.html#using-cert-manager).
     <br /><br />
     You can verify that the deployment was successful by inspecting the startup output:
 
-    <pre class="terminal">
-    $ kubectl logs pod/mysql-sample-0 -c mysql
+    ``` 
+     kubectl logs pod/mysql-sample-0 -c mysql
     Initialization complete, now exiting!
     2021-04-06T02:07:02.667789Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.22-13) starting as process 1
     2021-04-06T02:07:02.675491Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
@@ -139,7 +139,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     2021-04-06T02:07:03.055031Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
     2021-04-06T02:07:03.157475Z 0 [Warning] [MY-010068] [Server] CA certificate /etc/mysql/certs/ca.pem is self signed.
     2021-04-06T02:07:03.161660Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
-    </pre>
+    ``` 
 
 1. Deploy the Bitnami WordPress Stack Helm chart, specifying the information for the constructs created in the preceding steps:
     <br />
@@ -150,11 +150,11 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
 
     The following commands mount a volume, which contains the CA secret, onto the Bitnami container, which reads the mount point into the `WORDPRESS_DATABASE_SSL_CA_FILE` environment variable:
 
-    <pre class="terminal">
-    $ helm repo add  bitnami https://charts.bitnami.com/bitnami
+    ``` 
+     helm repo add  bitnami https://charts.bitnami.com/bitnami
     "bitnami" has been added to your repositories
 
-    $ helm install wp bitnami/wordpress -f - &lt;&lt;EOF
+     helm install wp bitnami/wordpress -f - &lt;&lt;EOF
     mariadb:
       enabled: false
 
@@ -190,10 +190,10 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     TEST SUITE: None
     NOTES:
     ** Please be patient while the chart is being deployed **
-    </pre>
+    ``` 
 
     After successful installation, Helm will display WordPress instructions for connecting as a user or admin to the running WordPress server. You can also retrieve the WordPress user password by running the following command:
 
-    <pre class="terminal">
-    $ kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
-    </pre>
+    ``` 
+     kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
+    ``` 

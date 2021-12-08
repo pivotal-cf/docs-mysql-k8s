@@ -21,7 +21,7 @@ To upgrade the Operator using the Helm CLI:
     ```
 
     If you skip this step, the following error message might appear:
-    <pre class="terminal">Error: this feature has been marked as experimental and is not enabled by default.</pre>
+    ``` Error: this feature has been marked as experimental and is not enabled by default.``` 
 
 1. Use Helm to log in to the Tanzu Network Registry by running:
 
@@ -38,11 +38,11 @@ To upgrade the Operator using the Helm CLI:
     ```
     For example:
 
-    <pre class="terminal">
-    $ helm -n tanzu-mysql-for-kubernetes-system ls
+    ``` 
+     helm -n tanzu-mysql-for-kubernetes-system ls
     NAME                    NAMESPACE                               REVISION        UPDATED                                 STATUS          CHART                                   APP VERSION
     tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2021-04-01 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.0.0     1.0.0
-    </pre>
+    ``` 
 
 1. Download the Helm chart to your current working directory on your local machine by running these commands:
 
@@ -81,8 +81,9 @@ The value of `REGISTRY-URL` has the following pattern:
     When you see `deployed` in the `STATUS` column, the <%= vars.product_short %>
     Helm chart has upgraded:
 
-    <pre class="terminal">$ helm -n tanzu-mysql-for-kubernetes-system history tanzu-sql-with-mysql-operator
+    ``` 
+     helm -n tanzu-mysql-for-kubernetes-system history tanzu-sql-with-mysql-operator
     REVISION    UPDATED                     STATUS        CHART                                  APP VERSION    DESCRIPTION
     1           Thu Jan 14 17:47:53 2021    superseded    tanzu-sql-with-mysql-operator-1.0.0     1.0.0          Install complete
     2           Thu Jan 14 18:09:05 2021    deployed      tanzu-sql-with-mysql-operator-1.0.1     1.0.1          Upgrade complete
-    </pre>
+    ``` 

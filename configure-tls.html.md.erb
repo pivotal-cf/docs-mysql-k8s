@@ -81,13 +81,13 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
 
     For example:
 
-    <pre class="terminal">
-      $ kubectl -n my-namespace create secret generic mysql-tls-secret \
+    ``` 
+       kubectl -n my-namespace create secret generic mysql-tls-secret \
           --type kubernetes.io/tls \
           --from-file=tls.crt=/path/server.crt \
           --from-file=tls.key=/path/server.key \
           --from-file=ca.crt=/path/server_ca.crt
-    </pre>
+    ``` 
 
 After completing the steps above, you add the secret to the instance by following the instructions
 in [Configure MySQL for TLS](#use-tls) below.
@@ -198,7 +198,7 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
 
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  </pre>
+    ```  kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  ``` 
 
 
 
@@ -242,9 +242,9 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
 
     For example:
 
-    <pre class="terminal">
-    $ kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
-    </pre>
+    ``` 
+     kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
+    ``` 
 
 2. Create a MySQL username and password to test your connection with.
    You need to connect as a non-root user because MySQL instances prohibit root connection from remote machines.
@@ -273,12 +273,12 @@ mysql -u USERNAME -pPASSWORD -h IP_ADDRESS --ssl-mode=VERIFY_CA --ssl-ca=CA-CERT
 
     For example:
 
-    <pre class="terminal">
-$ mysql -u bn_wordpress -phunter2 -h 192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt <br>
+    ``` 
+ mysql -u bn_wordpress -phunter2 -h 192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt <br>
 mysql: [Warning] Using a password on the command line interface can be insecure.
 Welcome to the MySQL monitor.  Commands end with ; or \g.
 Your MySQL connection id is 7
 ...
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.<br>
 mysql>
-    </pre>
+    ``` 

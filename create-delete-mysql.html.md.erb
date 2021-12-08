@@ -54,8 +54,8 @@ To create a MySQL instance:
     Where `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance.
     <br><br>
     For example:
-    <pre class="terminal">$ kubectl config set-context --current --namespace=my-namespace
-    </pre>
+    ```  kubectl config set-context --current --namespace=my-namespace
+    ``` 
 
 2. From your namespace, Kubernetes must be able to access the registry
    that stores the <%= vars.product_short %> images.
@@ -71,14 +71,14 @@ To create a MySQL instance:
 
     For example:
 
-    <pre class="terminal">$ kubectl create secret --namespace=my-namespace \
+    ```  kubectl create secret --namespace=my-namespace \
     docker-registry tanzu-mysql-image-registry  \
     --docker-server=https://registry.pivotal.io/ \
     --docker-username=sample-username  \
     --docker-password=sample-password
 
     secret/tanzu-mysql-image-registry created
-    </pre>
+    ``` 
 
 3. Find the `mysql.yaml` deployment template that you downloaded
    in the TGZ file from <%= vars.product_network %>.
@@ -88,7 +88,7 @@ To create a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">$ cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml</pre>
+    ```  cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml``` 
 
 
 5. Edit the file.
@@ -104,9 +104,9 @@ To create a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace apply -f testdb.yaml
+    ```  kubectl -n my-namespace apply -f testdb.yaml
     mysql.with.sql.tanzu.vmware.com/mysql-sample created
-    </pre>
+    ``` 
 
 
 7. Verify that the instance was created successfully by running:
@@ -118,10 +118,10 @@ To create a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">$ kubectl -n my-namespace get mysql mysql-sample
+    ```  kubectl -n my-namespace get mysql mysql-sample
 NAME           READY   STATUS    AGE
 mysql-sample   true    Running   2m17s
-    </pre>
+    ``` 
 
 
 ## <a id='delete-instance'></a>Delete a MySQL Instance
@@ -130,7 +130,7 @@ This section provides some conceptual information about persistent volume claims
 and deleting an instance.
 It also provides the procedure for how to delete an instance.
 
-###<a id="about-pvcs"></a> About PVCs
+### <a id="about-pvcs"></a> About PVCs
 
 When you create a MySQL instance, the MySQL Operator also creates PVCs.
 The PVCs are attached to the instance and contain the data for the MySQL database.
@@ -141,7 +141,7 @@ The PVC name is of the form <code>mysql-data-INSTANCE-NAME-N</code>,
 for example, `mysql-data-mysql-sample-0`.
 
 
-###<a id="about-deleting"></a> About Deleting a MySQL Instance
+### <a id="about-deleting"></a> About Deleting a MySQL Instance
 
 There are two steps to deleting an instance.
 The first step is to delete the instance itself, and the second step is to delete the PVCs.
@@ -159,7 +159,7 @@ the old PVCs automatically reattach to the new instance and you have access to y
    as described in step 1 below.
 </p>
 
-###<a id="procedure"></a> Procedure
+### <a id="procedure"></a> Procedure
 
 To delete a MySQL instance:
 
@@ -175,10 +175,10 @@ To delete a MySQL instance:
 
     For example:
 
-    <pre class="terminal">
-    $ kubectl -n my-namespace delete mysql mysql-sample
+    ``` 
+     kubectl -n my-namespace delete mysql mysql-sample
     my-namespace "mysql-sample" deleted
-    </pre>
+    ``` 
 
 2. (Optional) Delete the PVCs by running:
 
@@ -195,9 +195,9 @@ To delete a MySQL instance:
     <br><br>
     For example:
 
-    <pre class="terminal">
-   $ kubectl delete pvc -l app.kubernetes.io/instance=mysql-sample
-persistentvolumeclaim "mysql-data-mysql-sample-0" deleted</pre>
+    ``` 
+    kubectl delete pvc -l app.kubernetes.io/instance=mysql-sample
+persistentvolumeclaim "mysql-data-mysql-sample-0" deleted``` 
 
     <p class="note">
         <strong> Note:</strong> For HA MySQL instances, the command deletes
