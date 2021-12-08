@@ -54,7 +54,8 @@ To create a MySQL instance:
     Where `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance.
     <br><br>
     For example:
-    ```  kubectl config set-context --current --namespace=my-namespace
+    ```  
+    kubectl config set-context --current --namespace=my-namespace
     ``` 
 
 2. From your namespace, Kubernetes must be able to access the registry
@@ -71,12 +72,14 @@ To create a MySQL instance:
 
     For example:
 
-    ```  kubectl create secret --namespace=my-namespace \
+    ```  
+    kubectl create secret --namespace=my-namespace \
     docker-registry tanzu-mysql-image-registry  \
     --docker-server=https://registry.pivotal.io/ \
     --docker-username=sample-username  \
     --docker-password=sample-password
-
+    ```
+    ```
     secret/tanzu-mysql-image-registry created
     ``` 
 
@@ -88,7 +91,9 @@ To create a MySQL instance:
     <br><br>
     For example:
 
-    ```  cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml``` 
+    ```  
+    cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml
+    ``` 
 
 
 5. Edit the file.
@@ -101,10 +106,13 @@ To create a MySQL instance:
     kubectl -n DEVELOPMENT-NAMESPACE apply -f FILENAME
     ```
     Where `FILENAME` is the name of the configuration file you created in Step 4 above.
-    <br><br>
+    <br />
     For example:
 
-    ```  kubectl -n my-namespace apply -f testdb.yaml
+    ```  
+    kubectl -n my-namespace apply -f testdb.yaml
+    ```
+    ```
     mysql.with.sql.tanzu.vmware.com/mysql-sample created
     ``` 
 
@@ -115,12 +123,15 @@ To create a MySQL instance:
     kubectl -n DEVELOPMENT-NAMESPACE get mysql INSTANCE-NAME
     ```
     Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in your file
-    <br><br>
+    <br />
     For example:
 
-    ```  kubectl -n my-namespace get mysql mysql-sample
-NAME           READY   STATUS    AGE
-mysql-sample   true    Running   2m17s
+    ```  
+    kubectl -n my-namespace get mysql mysql-sample
+    ```
+    ```   
+    NAME           READY   STATUS    AGE
+    mysql-sample   true    Running   2m17s
     ``` 
 
 
@@ -176,7 +187,9 @@ To delete a MySQL instance:
     For example:
 
     ``` 
-     kubectl -n my-namespace delete mysql mysql-sample
+    kubectl -n my-namespace delete mysql mysql-sample
+    ```
+    ```
     my-namespace "mysql-sample" deleted
     ``` 
 
@@ -197,9 +210,11 @@ To delete a MySQL instance:
 
     ``` 
     kubectl delete pvc -l app.kubernetes.io/instance=mysql-sample
-persistentvolumeclaim "mysql-data-mysql-sample-0" deleted``` 
+    ```
+    ```
+    persistentvolumeclaim "mysql-data-mysql-sample-0" deleted
+    ``` 
 
-    <p class="note">
-        <strong> Note:</strong> For HA MySQL instances, the command deletes
+    <p class="note"><strong>Note:</strong> For HA MySQL instances, the command deletes
         all three PVCs associated with the MySQL instance.
     </p>

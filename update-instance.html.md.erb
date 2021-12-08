@@ -34,7 +34,8 @@ To scale `storageSize`:
 
     For example:
 
-    ```  kubectl config set-context --current --namespace=my-namespace
+    ```  
+    kubectl config set-context --current --namespace=my-namespace
     ``` 
 
 1. Look up the storage class associated with the MySQL Pod’s Persistent Volume Claim (PVC):
@@ -48,8 +49,11 @@ To scale `storageSize`:
 
     For example:
 
-    ```  kubectl get pvc mysql-data-mysql-sample-0 -o jsonpath={.spec.storageClassName}
-      standard
+    ```  
+    kubectl get pvc mysql-data-mysql-sample-0 -o jsonpath={.spec.storageClassName}
+    ```
+    ```
+    standard
     ``` 
 
 1. Check if the storage class allows volume expansion. Look for the `ALLOWVOLUMEEXPANSION` column by running:
@@ -61,17 +65,22 @@ To scale `storageSize`:
 
     For example:
 
-    ```  kubectl get storageclass standard
+    ```  
+    kubectl get storageclass standard
+    ```
+    ```
     NAME                 PROVISIONER            RECLAIMPOLICY   VOLUMEBINDINGMODE    ALLOWVOLUMEEXPANSION   AGE
     standard (default)   kubernetes.io/gce-pd   Delete          Immediate            true                   91s
     ``` 
 
 1. If the output does not show the `ALLOWVOLUMEEXPANSION` column, run:
-  <pre><code>kubectl get storageclasses.storage.k8s.io standard \
-    -o custom-columns='NAME:.metadata.name,ALLOWVOLUMEEXPANSION:.allowVolumeExpansion'</code>``` 
 
-1. If you are using Kubernetes v1.11 and volume expansion is supported, change the `allowVolumeExpansion` field to `true`
-      in StorageClass objects. Only PVCs created from a StorageClass with `allowVolumeExpansion`
+    ```
+    kubectl get storageclasses.storage.k8s.io standard \
+    -o custom-columns='NAME:.metadata.name,ALLOWVOLUMEEXPANSION:.allowVolumeExpansion'
+    ``` 
+
+1. If you are using Kubernetes v1.11 and volume expansion is supported, change the `allowVolumeExpansion` field to `true` in StorageClass objects. Only PVCs created from a StorageClass with `allowVolumeExpansion`
       set to `true` are allowed to perform volume expansion.
       For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims).
 
@@ -87,7 +96,9 @@ To scale `storageSize`:
     + `NEW-REQUESTED-SIZE` is the increased volume size.
 
     For example:
-    ```  kubectl patch pvc mysql-data-mysql-sample-0 -p '{"spec": {"resources": {"requests": {"storage": "50Gi"}}}}'``` 
+    ```  
+    kubectl patch pvc mysql-data-mysql-sample-0 -p '{"spec": {"resources": {"requests": {"storage": "50Gi"}}}}'
+    ``` 
 
 1. Do one of the following:
     * **If the storageClass supports online expansion:**
@@ -95,13 +106,27 @@ To scale `storageSize`:
       [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#resizing-an-in-use-persistentvolumeclaim).<br><br>
     * **Otherwise:** Wait for the PVC to have the `FileSystemResizePending` condition.
     Delete the MySQL Pod to unmount the PVC and allow it to resize.
-    <pre><code>kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-INSTANCE-NAME-N</code>``` 
-    <pre><code>kubectl rollout restart statefulset INSTANCE-NAME</code>``` 
+    
+    ```
+    kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-INSTANCE-NAME-N
+    ``` 
+    ```
+    kubectl rollout restart statefulset INSTANCE-NAME
+    ``` 
     For example:
-    ```  kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-mysql-sample-0
-    persistentvolumeclaim/mysql-data-mysql-sample-0 condition met <br>
-     kubectl rollout restart statefulset mysql-sample
-    statefulset.apps/mysql-sample restarted``` 
+
+    ```  
+    kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-mysql-sample-0
+    ```
+    ```
+    persistentvolumeclaim/mysql-data-mysql-sample-0 condition met
+    ```
+    ```
+    kubectl rollout restart statefulset mysql-sample
+    ```
+    ```
+    statefulset.apps/mysql-sample restarted
+    ``` 
 
 1. After the StatefulSet controller has automatically re-created the MySQL Pod, and the MySQL Pod
 has successfully restarted, verify that the storage has been resized.
@@ -114,9 +139,13 @@ has successfully restarted, verify that the storage has been resized.
     + `N` is the index of the Pod in the MySQL instance.
 
     For example:
-    ```  kubectl exec mysql-sample-0 -c mysql -- df -h /var/lib/mysql
+    ```
+    kubectl exec mysql-sample-0 -c mysql -- df -h /var/lib/mysql
+    ```
+    ```
     Filesystem      Size  Used Avail Use% Mounted on
-    /dev/sdb        3.0G  346M  2.6G  12% /var/lib/mysql``` 
+    /dev/sdb        3.0G  346M  2.6G  12% /var/lib/mysql
+    ``` 
 
 ### <a id='scale-storage-downtime'></a>Expected Downtime When Scaling storageSize
 
@@ -148,14 +177,17 @@ You can use one of these methods to update the configuration:
     + `SIDECAR-RESOURCES` is a collection of `cpu` and `memory` limits and requests for the `mysql-sidecar` container.
 
     For example:
-    ```  kubectl patch mysql mysql-sample --type merge -p '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "mysqlSidecar": {"limits": {"memory": "64Mi"}}}}}'
+    ```  
+    kubectl patch mysql mysql-sample --type merge -p '{"spec": {"resources": {"mysql": {"requests": {"cpu": "500m"}}, "mysqlSidecar": {"limits": {"memory": "64Mi"}}}}}'
     ``` 
 
 * If you manage MySQL resources with a set of configuration files in source control, you can also
     change the fields in the file and apply the changes.
 
     For example:
-    ```  kubectl apply -f mysql.yaml``` 
+    ```  
+    kubectl apply -f mysql.yaml
+    ``` 
 
 For more information on managing CPU and Memory resources, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 
@@ -193,13 +225,17 @@ update the MySQL configuration by one of the methods below:
     + `VALUE` is the new property value.
 
     For example:
-    ```  kubectl patch mysql mysql-sample -p '{"spec": {"imagePullSecretName": "new-secret-name"}}'``` 
+    ```  
+    kubectl patch mysql mysql-sample -p '{"spec": {"imagePullSecretName": "new-secret-name"}}'
+    ``` 
 
 * If you manage MySQL resources with a set of configuration files in source control, you can
     change the fields in the file and apply the changes.
 
     For example:
-    ```  kubectl apply -f mysql.yaml``` 
+    ```
+    kubectl apply -f mysql.yaml
+    ``` 
 
 For information about the properties,
 see [Property Reference for the MySQL Resource](property-reference-mysql.html).

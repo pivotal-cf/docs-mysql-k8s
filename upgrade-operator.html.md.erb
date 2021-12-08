@@ -14,7 +14,7 @@ the <%= vars.product_short %> Operator using Helm.
 To upgrade the Operator using the Helm CLI:
 
 
-0. Set the environment variable to enable OCI support in the Helm v3 client by running:
+1. Set the environment variable to enable OCI support in the Helm v3 client by running:
 
     ```
     export HELM_EXPERIMENTAL_OCI=1
@@ -39,7 +39,9 @@ To upgrade the Operator using the Helm CLI:
     For example:
 
     ``` 
-     helm -n tanzu-mysql-for-kubernetes-system ls
+    helm -n tanzu-mysql-for-kubernetes-system ls
+    ```
+    ```
     NAME                    NAMESPACE                               REVISION        UPDATED                                 STATUS          CHART                                   APP VERSION
     tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2021-04-01 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.0.0     1.0.0
     ``` 
@@ -53,14 +55,12 @@ To upgrade the Operator using the Helm CLI:
     helm chart export REGISTRY-URL
     ```
     Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart.
-The value of `REGISTRY-URL` has the following pattern:
+    The value of `REGISTRY-URL` has the following pattern:
 
     ```
     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
     ```
-    Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
-
-    <br>This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory
+    Where `VERSION-NUMBER-TAG` is the version of the Helm chart. This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory.
 
 1. Go to where the new release has been downloaded and apply the new CRDs by running:
 
@@ -82,7 +82,9 @@ The value of `REGISTRY-URL` has the following pattern:
     Helm chart has upgraded:
 
     ``` 
-     helm -n tanzu-mysql-for-kubernetes-system history tanzu-sql-with-mysql-operator
+    helm -n tanzu-mysql-for-kubernetes-system history tanzu-sql-with-mysql-operator
+    ```
+    ```
     REVISION    UPDATED                     STATUS        CHART                                  APP VERSION    DESCRIPTION
     1           Thu Jan 14 17:47:53 2021    superseded    tanzu-sql-with-mysql-operator-1.0.0     1.0.0          Install complete
     2           Thu Jan 14 18:09:05 2021    deployed      tanzu-sql-with-mysql-operator-1.0.1     1.0.1          Upgrade complete
