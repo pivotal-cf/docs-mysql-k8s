@@ -27,7 +27,7 @@ To bind a MySQL instance to an application running on TAS:
 1. Create a database and a privileged MySQL user for the application, following the procedure [Create a Database and Privileged MySQL User for the App](./connecting-apps.html#create-app-db).
 1.  Set the environment variables for your newly created user and for the load balancer hostname:
 
-    ```bash
+    ``` 
     export HOSTNAME=$(kubectl get service mysql-sample  -o 'jsonpath={.status.loadBalancer.ingress[].ip}')
     export USER=bn_wordpress
     export PASSWORD=hunter2
@@ -35,7 +35,7 @@ To bind a MySQL instance to an application running on TAS:
     ```
 1.  Create a credentials hash for a TAS user-provided service configuration:
 
-    ```bash
+    ``` 
     cf create-user-provided-service k8s-tanzu-sql -p "{\"uri\":\"mysql://$USER:$PASSWORD@$HOSTNAME:3306/$DATABASE?reconnect=true&sslMode=required&ssl_mode=required\"}"
     ```
 
