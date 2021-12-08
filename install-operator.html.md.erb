@@ -107,7 +107,9 @@ To download the resources:
 1. Download the `tanzu-mysql-operator-chart` using Helm:
 
     ```
-     helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
+    helm chart pull registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
+    ```
+    ```
     1.1.0: Pulling from registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
     ref:     <span style="color: #77bf00;">registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0</span>
     digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
@@ -147,14 +149,14 @@ To create the namespace and secret:
     ```
     Where `REGISTRY-URL` is the reference to the Tanzu MySQL Helm chart.
 
-    <br>The value of `REGISTRY-URL` has the following pattern:
+    The value of `REGISTRY-URL` has the following pattern:
 
     ```
     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
     ```
     Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
 
-    <br>This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory that contains:
+    This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory that contains:
     * The Tanzu MySQL Helm chart
     * Custom Resource Definitions (CRDs)
     * Role-Based Access Control (RBAC) definitions required to install the operator with Helm
@@ -162,7 +164,8 @@ To create the namespace and secret:
     For example:
     ``` 
      helm chart export registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
-    <br>
+    ```
+    ```
     ref:     registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.1.0
     digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
     size:    4.2 KiB
@@ -211,17 +214,21 @@ To install the Operator using the Helm CLI:
     ```
     The Tanzu MySQL Operator has finished installing when you see the value of the `STATUS` column for the
     Tanzu MySQL Operator Pod is `Running`. See example output:
-    ```  kubectl get all
-NAME                                                           READY   STATUS    RESTARTS   AGE
-pod/mysql-for-kubernetes-controller-manager-84d76dfb77-lq5mb   1/1     <span style="color: #77bf00;">Running</span>   0          21s
-<br>NAME                                                      READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/mysql-for-kubernetes-controller-manager   1/1     1            1           23s
-<br>NAME                                                                 DESIRED   CURRENT   READY   AGE
-replicaset.apps/mysql-for-kubernetes-controller-manager-84d76dfb77   1         1         1       23s``` 
 
-    <p class="note">
-      <strong>Note:</strong> You can only have one Tanzu MySQL operator installed in a Kubernetes cluster.
-    </p>
+    ```  
+    kubectl get all
+    ```
+    ```
+    NAME                                                           READY   STATUS    RESTARTS   AGE
+    pod/mysql-for-kubernetes-controller-manager-84d76dfb77-lq5mb   1/1     <span style="color: #77bf00;">Running<span>   0          21s
+    NAME                                                      READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/mysql-for-kubernetes-controller-manager   1/1     1            1           23s
+    NAME                                                                 DESIRED   CURRENT   READY   AGE
+replicaset.apps/mysql-for-kubernetes-controller-manager-84d76dfb77   1         1         1       23s``` 
+    ```
+
+    **Note:** You can only have one Tanzu MySQL operator installed in a Kubernetes cluster.
+
 
 ## <a id="install-via-tar"></a>Install Tanzu Operator via a Downloaded Archive File
         
@@ -278,10 +285,12 @@ Before you deploy the Tanzu MySQL Operator, review the list of [Prerequisites](#
 3.  Verify that the two Docker images are now available.
 
     ``` 
- docker images
-REPOSITORY                                                            TAG       IMAGE ID       CREATED        SIZE
-registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.1.0     5f0ad7bad51b   5 weeks ago    792MB
-registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.1.0     eb1458d2e1bd   5 weeks ago    76MB
+    docker images
+    ```
+    ```
+    REPOSITORY                                                            TAG       IMAGE ID       CREATED        SIZE
+    registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.1.0     5f0ad7bad51b   5 weeks ago    792MB
+    registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.1.0     eb1458d2e1bd   5 weeks ago    76MB
     ``` 
 
 ### <a id="push-to-registry"></a>Push the Images to a Private Container Registry
@@ -348,7 +357,7 @@ Next follow [Deploying a MySQL Operator](install-operator.html#create-operator).
 
 The MySQL Operator is the controller for MySQL instances resources. You install the MySQL Operator using the Helm package manager.
 
-#### <a id="config-file"></a>Edit the Operator Configuration
+#### <a id="config-file"></a> Edit the Operator Configuration
 
 1.  Go to the directory where you unpacked the Tanzu MySQL distribution.
 
@@ -358,12 +367,12 @@ The MySQL Operator is the controller for MySQL instances resources. You install 
     The file `charts/tanzu-sql-with-mysql-operator/values.yaml` in the <%= vars.product_full %> directory specifies the location of the MySQL Operator and instance images. By default it contains the following values:
     
     ```
----
-imagePullSecretName: tanzu-image-registry
-operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0-rc.8
-registry: "registry.pivotal.io/tanzu-mysql-for-kubernetes/"
-defaultInstanceVersion: 1.1.0-rc.8
-resources: {}
+    ---
+    imagePullSecretName: tanzu-image-registry
+    operatorImage: registry.pivotal.io/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.1.0-rc.8
+    registry: "registry.pivotal.io/tanzu-mysql-for-kubernetes/"
+    defaultInstanceVersion: 1.1.0-rc.8
+    resources: {}
     ```
 
 1.  Create a copy of `values.yaml` and name the new file `operator-values-overrides.yaml`. Save this file in the same directory as the `values.yaml` file. In this file, you can specify the custom container registry and secret. For manual changes, you may also set individual parameters using the `--set` flag on the command line. 
@@ -423,7 +432,7 @@ resources: {}
 1.  Use Helm to install the MySQL Operator in your Kubernetes cluster.
 
     ``` 
-     helm install --wait my-mysql-operator Operator/
+    helm install --wait my-mysql-operator Operator/
     ``` 
 
     where:
@@ -434,7 +443,7 @@ resources: {}
     or
 
     ``` 
-     helm install --wait my-mysql-operator -f charts/tanzu-sql-with-mysql-operator/operator-values-overrides.yaml charts/tanzu-sql-with-mysql-operator/
+    helm install --wait my-mysql-operator -f charts/tanzu-sql-with-mysql-operator/operator-values-overrides.yaml charts/tanzu-sql-with-mysql-operator/
     ``` 
     
     Replace `charts/tanzu-sql-with-mysql-operator/operator-values-overrides.yaml` with your custom location.
@@ -443,7 +452,7 @@ resources: {}
     To create the Operator in a namespace different that the default, use:
     
     ``` 
-     helm install --wait my-mysql-operator charts/tanzu-sql-with-mysql-operator/ \
+    helm install --wait my-mysql-operator charts/tanzu-sql-with-mysql-operator/ \
       --values=operator-values-overrides.yaml \
       --namespace=mysql-for-kubernetes-system \
       --create-namespace
@@ -465,27 +474,27 @@ resources: {}
 3.  Use `watch kubectl get all` to monitor the progress of the deployment. The deployment is complete when the MySQL Operator pod status changes to `Running`.
 
     ``` 
-     watch kubectl get all
+    watch kubectl get all
     ``` 
     
     You may also check the logs to confirm the Operator is running properly:
 
     ``` 
-     kubectl logs -l app=tanzu-mysql-operator
+    kubectl logs -l app=tanzu-mysql-operator
     ``` 
     
     Use the label `app=tanzu-mysql-operator` to search across resources created by the MySQL Operator Helm chart:
 
     ``` 
-     kubectl get all -l app=tanzu-mysql-operator -n mysql-for-kubernetes-system
+    kubectl get all -l app=tanzu-mysql-operator -n mysql-for-kubernetes-system
     ``` 
     where `-n mysql-for-kubernetes-system` defines the namespace. The output would be similar to:
 
     ``` 
-    NAME                                           READY       STATUS           RESTARTS      AGE
-    pod/tanzu-mysql-operator-69765b8b74-rtms7            1/1         Running          0             3d19h
-    NAME                                           READY       UP-TO-DATE       AVAILABLE     AGE
-    deployment.apps/tanzu-mysql-operator                 1/1         1                1             3d19h
-    NAME                                           DESIRED     CURRENT          READY         AGE
-    replicaset.apps/tanzu-mysql-operator-69765b8b74      1           1                1             3d19h
+    NAME                                             READY       STATUS           RESTARTS      AGE
+    pod/tanzu-mysql-operator-69765b8b74-rtms7        1/1         Running          0             3d19h
+    NAME                                             READY       UP-TO-DATE       AVAILABLE     AGE
+    deployment.apps/tanzu-mysql-operator             1/1         1                1             3d19h
+    NAME                                             DESIRED     CURRENT          READY         AGE
+    replicaset.apps/tanzu-mysql-operator-69765b8b74  1           1                1             3d19h
     ``` 

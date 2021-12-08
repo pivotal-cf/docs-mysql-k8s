@@ -232,6 +232,8 @@ For example:
 
  ```
  kubectl get mysqlbackupschedules.with.sql.tanzu.vmware.com
+ ```
+ ```
 NAME                         AGE
 mysqlbackupschedule-sample   8s
 ``` 
@@ -266,6 +268,8 @@ For example:
 
  ```
  kubectl get mysqlrestores.with.sql.tanzu.vmware.com
+ ```
+ ```
 NAME             STATUS    SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
 restore-sample   Running   backup-sample   mysql-sample      2020-12-07T15:56:26Z
 ``` 
@@ -276,6 +280,8 @@ For example:
 
  ```
  kubectl get mysqlrestores.with.sql.tanzu.vmware.com
+ ```
+ ```
 NAME             STATUS      SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
 restore-sample   Succeeded   backup-sample   mysql-sample      2020-12-07T15:56:26Z   2020-12-07T15:56:41Z
 ``` 
@@ -287,6 +293,8 @@ For example:
 
  ```
  kubectl get mysqls.with.sql.tanzu.vmware.com
+ ```
+ ```
 NAME           READY   STATUS    AGE
 mysql-sample   true    Running   30s
 ``` 
