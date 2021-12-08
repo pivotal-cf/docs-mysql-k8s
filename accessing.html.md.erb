@@ -120,15 +120,17 @@ To access the MySQL server from an external IP address:
     For example:
 
     ``` 
-     kubectl get service mysql-sample -o jsonpath={.spec.type}
+    kubectl get service mysql-sample -o jsonpath={.spec.type}
+    ```
+    ```
     LoadBalancer
     ``` 
 
 1. If the `ServiceType` is not `LoadBalancer`, change the value of the `Spec.ServiceType` property
-   to <code>LoadBalancer</code>.<br>
+   to `LoadBalancer`.<br>
        For information about updating an instance, see [Updating MySQL Instances](update-instance.html).
        For information about the property,
-       see <a href="./property-reference-mysql.html">Property Reference for the MySQL Resource</a>.
+       see [Property Reference for the MySQL Resource](./property-reference-mysql.html)</a>.
 
 1. Find the external IP address allocated for the service.
 
@@ -140,7 +142,9 @@ To access the MySQL server from an external IP address:
     For example:
 
     ``` 
-     kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
+    kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
+    ```
+    ```
     192.168.64.200
     ``` 
 
@@ -150,7 +154,7 @@ To access the MySQL server from an external IP address:
     For example, an AWS load balancer returns a domain name instead of an IP address.
 
     ``` 
-     kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
+    kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
     a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     ``` 
 
@@ -167,15 +171,14 @@ To access the MySQL server from an external IP address:
     For example:
 
     ``` 
-     mysql -u report_admin -phunter2 -P 3306 -h a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
+    mysql -u report_admin -phunter2 -P 3306 -h a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     ``` 
 
 ### <a id='remove-off-platform-access'></a> Turn Off External Access
 
 To disable off-platform connections:
 
-1. In the YAML file for the instance, change the value of the `Spec.ServiceType` property
-   to <code>ClusterIP</code> and update the MySQL instance.
+In the YAML file for the instance, change the value of the `Spec.ServiceType` property to `ClusterIP` and update the MySQL instance.
    For more information about how to change a property,
    see [Change Other Configurations](./update-instance.html#other-config) in _Updating MySQL Instances_.
 

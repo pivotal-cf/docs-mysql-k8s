@@ -35,9 +35,11 @@ Where `VERSION` is the version of <%= vars.product_full %>.
 For example:
 
 ``` 
- kubectl get mysql -l app.kubernetes.io/version=1.0.0
+kubectl get mysql -l app.kubernetes.io/version=1.1.0
+```
+```
 NAME           READY   STATUS    VERSION   AGE
-mysql-sample   true    Running   1.0.0     22m
+mysql-sample   true    Running   1.1.0     22m
 ``` 
 
 ## <a id='upgrade-steps'></a>Upgrade an Instance
@@ -55,7 +57,8 @@ To upgrade a MySQL instance:
     ``` 
     NAMESPACE        NAME             READY   STATUS    VERSION   AGE
     my-namespace     mysql-sample-2   true    Running   1.0.0     2h31m
-    acceptance       mysql-sample     true    Running   1.1.0     6h42m``` 
+    acceptance       mysql-sample     true    Running   1.1.0     6h42m
+    ``` 
 
 2. Target the namespace of the MySQL instance:
 
@@ -65,7 +68,8 @@ To upgrade a MySQL instance:
     Where `DEVELOPMENT-NAMESPACE` is the namespace in which the instance was created.
     <br><br>
     For example:
-    ```  kubectl config set-context --current --namespace=my-namespace
+    ```  
+    kubectl config set-context --current --namespace=my-namespace
     ``` 
 
 3. Edit the configuration file for the MySQL instance, setting the `spec.version` property to the desired new version. (This property was added in <%= vars.product_full %> version 1.1.0.)
@@ -99,7 +103,7 @@ To upgrade a MySQL instance:
       ...
     ```
 
-    Alternatively, you can remove the property from the configuration file. If you remove the property, the MySQL instance will use the `imagePullSecretName` specified in the `values-override.yaml` or `values.yaml` file for the MySQL operator.</p>
+    Alternatively, you can remove the property from the configuration file. If you remove the property, the MySQL instance will use the `imagePullSecretName` specified in the `values-override.yaml` or `values.yaml` file for the MySQL operator.
 
 5. Apply your changes by running:
 
@@ -110,8 +114,11 @@ To upgrade a MySQL instance:
     <br><br>
     For example:
 
-    ```  kubectl apply -f testdb.yaml
-mysql.with.sql.tanzu.vmware.com/mysql-sample configured
+    ```  
+    kubectl apply -f testdb.yaml
+    ```
+    ```
+    mysql.with.sql.tanzu.vmware.com/mysql-sample configured
     ``` 
 
 6. Verify that the instance was upgraded successfully by running:
@@ -123,7 +130,10 @@ mysql.with.sql.tanzu.vmware.com/mysql-sample configured
     <br><br>
     When the instance has been successfully upgraded, the value of the `READY` column for the instance should be `true` and the value of the `VERSION` column for the instance should report the new version. For example:
 
-    ```  kubectl get mysql mysql-sample
-NAME           READY   STATUS    VERSION   AGE
-mysql-sample   true    Running   1.1.0     24m
+    ```  
+    kubectl get mysql mysql-sample
+    ```
+    ```
+    NAME           READY   STATUS    VERSION   AGE
+    mysql-sample   true    Running   1.1.0     24m
     ``` 
