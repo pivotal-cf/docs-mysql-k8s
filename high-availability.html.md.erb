@@ -75,7 +75,7 @@ To create an HA instance:
 
 2. Edit your uniquely named copy of `mysql.yaml`:
 
-    1. Set the value of `highAvailability.enabled` to `true`:
+    a. Set the value of `highAvailability.enabled` to `true`:
 
         ```
         ---
@@ -90,7 +90,7 @@ To create an HA instance:
             enabled: true
         ```
 
-    2. Edit the other properties for the instance as needed.
+    b. Edit the other properties for the instance as needed.
          For information about the properties that you can set for the MySQL resource,
          see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
@@ -128,7 +128,10 @@ To change a single-node instance into an HA instance:
 
     For example:
 
-    ```  kubectl -n my-namespace apply -f testdb.yaml
+    ```  
+    kubectl -n my-namespace apply -f testdb.yaml
+    ```
+    ```
     mysql.with.sql.tanzu.vmware.com/mysql-sample created
     ``` 
 
@@ -150,7 +153,9 @@ This inspection procedure can also be used for troubleshooting.
 
     For example:
 
-    ```  kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash``` 
+    ```
+    kubectl exec -it mysql-ha-sample-0 --container=mysql -- bash
+    ``` 
 
 2. On the Pod, log in to the MySQL database by running:
 
@@ -176,32 +181,32 @@ This inspection procedure can also be used for troubleshooting.
     a healthy cluster with a single member designated `PRIMARY` and two `SECONDARY` members:
 
     ``` 
-mysql>SELECT * FROM performance_schema.replication_group_members\G;
-*************************** 1. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 157baa2a-8c22-11eb-847c-0242ac110009
-   MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: PRIMARY
-MEMBER_VERSION: 8.0.22
-*************************** 2. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 281ad3c9-8c22-11eb-b3aa-0242ac11000a
-   MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: SECONDARY
-MEMBER_VERSION: 8.0.22
-*************************** 3. row ***************************
-  CHANNEL_NAME: group_replication_applier
-     MEMBER_ID: 3c52bb9a-8c22-11eb-aade-0242ac11000b
-   MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-members.default.svc.cluster.local
-   MEMBER_PORT: 3306
-  MEMBER_STATE: ONLINE
-   MEMBER_ROLE: SECONDARY
-MEMBER_VERSION: 8.0.22
-``` 
+      mysql>SELECT * FROM performance_schema.replication_group_members\G;
+      *************************** 1. row ***************************
+      CHANNEL_NAME: group_replication_applier
+         MEMBER_ID: 157baa2a-8c22-11eb-847c-0242ac110009
+         MEMBER_HOST: mysql-ha-sample-0.mysql-ha-sample-members.default.svc.cluster.local
+         MEMBER_PORT: 3306
+      MEMBER_STATE: ONLINE
+         MEMBER_ROLE: PRIMARY
+      MEMBER_VERSION: 8.0.22
+      *************************** 2. row ***************************
+      CHANNEL_NAME: group_replication_applier
+         MEMBER_ID: 281ad3c9-8c22-11eb-b3aa-0242ac11000a
+         MEMBER_HOST: mysql-ha-sample-1.mysql-ha-sample-members.default.svc.cluster.local
+         MEMBER_PORT: 3306
+      MEMBER_STATE: ONLINE
+         MEMBER_ROLE: SECONDARY
+      MEMBER_VERSION: 8.0.22
+      *************************** 3. row ***************************
+      CHANNEL_NAME: group_replication_applier
+         MEMBER_ID: 3c52bb9a-8c22-11eb-aade-0242ac11000b
+         MEMBER_HOST: mysql-ha-sample-2.mysql-ha-sample-members.default.svc.cluster.local
+         MEMBER_PORT: 3306
+      MEMBER_STATE: ONLINE
+         MEMBER_ROLE: SECONDARY
+      MEMBER_VERSION: 8.0.22
+    ``` 
 
 4. Review the value of `MEMBER_STATE`.
    A healthy cluster shows `ONLINE` for all members.
@@ -234,5 +239,4 @@ Deleting an HA MySQL instance is the same as deleting a single-node instance.
 
 To delete an HA instance:
 
-1. See [Delete a MySQL Instance](create-delete-mysql.html#delete-instance)
-in _Creating and Deleting MySQL Instances_.
+See [Delete a MySQL Instance](create-delete-mysql.html#delete-instance) in _Creating and Deleting MySQL Instances_.
