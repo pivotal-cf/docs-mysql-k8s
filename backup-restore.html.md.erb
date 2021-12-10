@@ -111,6 +111,8 @@ To create a MySQLBackupLocation resource:
 
     ``` 
     kubectl get mysqlbackuplocation backuplocation-sample -o jsonpath={.spec} -n my-namespace
+    ```
+    ```
     {
       "storage": {
         "s3": {
@@ -437,6 +439,8 @@ To restore from a backup:
     For example:
     ```
     kubectl apply -f testrestore.yaml -n my-namespace
+    ```
+    ```
     mysqlrestore.with.sql.tanzu.vmware.com/restore-sample created
     ``` 
 
