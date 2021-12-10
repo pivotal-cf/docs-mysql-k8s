@@ -72,7 +72,9 @@ To create a MySQLBackupLocation resource:
 
     For example:
 
-    ```  cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backuplocation.yaml testbackuplocation.yaml``` 
+    ```
+    cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backuplocation.yaml testbackuplocation.yaml
+    ``` 
 
 2. Edit the file with the configuration for your external blobstore.
    For an explanation of the properties that you can set in this file,
@@ -90,7 +92,10 @@ To create a MySQLBackupLocation resource:
 
     For example:
 
-    ```  kubectl apply -f testbackuplocation.yaml -n my-namespace
+    ```
+    kubectl apply -f testbackuplocation.yaml -n my-namespace
+    ```
+    ```
     mysqlbackuplocation.with.sql.tanzu.vmware.com/backuplocation-sample created
     secret/backuplocation-sample-creds configured
     ``` 
@@ -133,7 +138,9 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
     For example:
 
-    ```  cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backupschedule.yaml testbackupschedule.yaml``` 
+    ```
+    cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backupschedule.yaml testbackupschedule.yaml
+    ``` 
 
 2. Edit the file with the name of the MySQLBackupLocation resource
    that you created in [Create a MySQLBackupLocation Resource](backup-restore.html#create-backuplocation)
@@ -150,7 +157,10 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
     Where `FILENAME` is the name of the configuration file you created in Step 2 above.
 
     For example:
-    ```  kubectl apply -f testbackupschedule.yaml -n my-namespace
+    ```
+    kubectl apply -f testbackupschedule.yaml -n my-namespace
+    ```
+    ```
     mysqlbackupschedule.with.sql.tanzu.vmware.com/backupschedule-sample created
     ``` 
 
@@ -222,7 +232,9 @@ To take a backup:
 
     For example:
 
-    ```  cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backup.yaml testbackup.yaml``` 
+    ```
+    cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/backup.yaml testbackup.yaml
+    ``` 
 
 3. Edit the file.
    For an explanation of the properties that you can set for the MySQLBackup resource,
@@ -236,7 +248,10 @@ To take a backup:
     Where `FILENAME` is the name of the configuration file you created in Step 2 above.
 
     For example:
-    ```  kubectl apply -f testbackup.yaml -n my-namespace
+    ```
+    kubectl apply -f testbackup.yaml -n my-namespace
+    ```
+    ```
     mysqlbackup.with.sql.tanzu.vmware.com/backup-sample created
     ``` 
 
@@ -248,9 +263,11 @@ To take a backup:
 
     For example:
     ```
-     kubectl get mysqlbackup backup-sample -n my-namespace
-NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLETED
-backup-sample   Succeeded   mysql-sample      2020-12-01T21:49:26Z   2020-12-01T21:49:30Z
+    kubectl get mysqlbackup backup-sample -n my-namespace
+    ```
+    ```  
+    NAME            STATUS      SOURCE INSTANCE   TIME STARTED           TIME COMPLETED
+    backup-sample   Succeeded   mysql-sample      2020-12-01T21:49:26Z   2020-12-01T21:49:30Z
     ``` 
 
     For an explanation of what each column means,
@@ -276,8 +293,10 @@ To see a list of existing MySQLBackup resources:
     ```
 
     For example:
-     ```
-     kubectl get mysqlbackup
+    ```
+    kubectl get mysqlbackup
+    ```
+    ```
     NAME            STATUS   SOURCE INSTANCE   TIME STARTED   TIME COMPLETED
     backup-sample   Failed   mysql-sample
     ``` 
@@ -338,7 +357,8 @@ To delete a backup:
 
     For example:
 
-    ``` kubectl delete mysqlbackup backup-sample -n my-namespace
+    ``` 
+    kubectl delete mysqlbackup backup-sample -n my-namespace
     ``` 
 
 
@@ -381,7 +401,9 @@ To restore from a backup:
 
     For example:
 
-    ```  cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/restore.yaml testrestore.yaml``` 
+    ```
+    cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/restore.yaml testrestore.yaml
+    ``` 
 
 
 3. Edit the file.
@@ -420,6 +442,8 @@ To restore from a backup:
     For example:
     ```
     kubectl apply -f testrestore.yaml -n my-namespace
+    ```
+    ```
     mysqlrestore.with.sql.tanzu.vmware.com/restore-sample created
     ``` 
 
@@ -432,6 +456,8 @@ To restore from a backup:
     For example:
     ```
     kubectl get mysqlrestore restore-sample -n my-namespace
+    ```
+    ```
     NAME             STATUS      SOURCE BACKUP   TARGET INSTANCE   TIME STARTED           TIME COMPLETED
     restore-sample   Succeeded   backup-sample   mysql-sample      2020-12-01T21:52:30Z   2020-12-01T21:53:09Z
     ``` 
@@ -524,14 +550,18 @@ To troubleshoot problems with backup and restore:
     In this example, the `kubectl get` command outputs a `Failed` status:
 
     ``` 
-     kubectl get mysqlbackup backup-sample
+    kubectl get mysqlbackup backup-sample
+    ```
+    ```
     NAME            STATUS   SOURCE INSTANCE   TIME STARTED   TIME COMPLETED
     backup-sample   Failed   mysql-sample
-   ``` 
+    ``` 
 
 2. Diagnose the issue by inspecting the Kubernetes events for the resource, for example:
     ``` 
-     kubectl get events --field-selector involvedObject.name=backup-sample
+    kubectl get events --field-selector involvedObject.name=backup-sample
+    ```
+    ```
     LAST SEEN   TYPE      REASON   OBJECT                      MESSAGE
     2m43s       Warning   Failed   mysqlbackup/backup-sample   Secret "backuplocation-sample-creds" not found
     ``` 

@@ -10,7 +10,7 @@ Documentation for VMware Tanzu™ SQL with MySQL for Kubernetes
 | Branch name | Use for… |
 |-------------| -------|
 | main      | the development branch for the doc, publishes to https://docs-pcf-staging.cfapps.io/tanzu-mysql-kubernetes/1-n |
-| 1.0      | v1.0 GA, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/  This app must be `cf push`-ed manually. No concourse jobs or CI as of 2021.04.15.| 
+| 1.0      | v1.0 GA, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/  This application must be `cf push`-ed manually. No concourse jobs or CI as of 2021.04.15.| 
 | 0.2      | v0.2.x beta, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/0-2/|
 | 0.1      | v0.1.x beta, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/0-1/|
 
@@ -28,7 +28,7 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 | Word | Explanation |
 |------|-------------|
 | admin | Use as a person's job description instead of operator. Decided: JD, Kim Bassett, and David Sharp 2020.12.09 and changed to admin because that's our house style. If this specifically refers to the Kubernetes admin, use "Kubernetes admin" in first use on the page. |
-| connect | As in "connect an app to a service instance". Do not use "bind" unless you are referring to creating a [ServiceBinding](https://kubernetes.io/docs/concepts/extend-kubernetes/service-catalog/#binding-to-a-managed-service) resource.  |
+| connect | As in "connect an application to a service instance". Do not use "bind" unless you are referring to creating a [ServiceBinding](https://kubernetes.io/docs/concepts/extend-kubernetes/service-catalog/#binding-to-a-managed-service) resource.  |
 | high-availability MySQL instance | Rather than "MySQL high-availability instance". Shorten to HA MySQL instance after first used. Also okay to shorten to HA instance if using the term a lot on a page.|
 | Kubernetes admin | See "admin" above. |
 | MySQL command-line client | [4.5.1 mysql — The MySQL Command-Line Client](https://dev.mysql.com/doc/refman/8.0/en/mysql.html) instead of the assorted "mysql CLI client" vs "mysql client" vs " local mysql client" |

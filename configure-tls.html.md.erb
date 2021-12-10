@@ -55,10 +55,10 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
    such as OpenSSL, certstrap, or Let's Encrypt.
    <br><br>
    When creating the certificate, supply the server hostname for the subject alternative names (SANs).
-   The server hostname is the DNS name that you use when connecting your app to the MySQL instance:
+   The server hostname is the DNS name that you use when connecting your application to the MySQL instance:
    + If your apps are deployed in the same Kubernetes cluster as your instance:<br>The hostname is
    `INSTANCE-NAME.DEVELOPMENT-NAMESPACE`, for example, `mysql-sample.my-namespace`.
-   + If your app is deployed outside the Kubernetes cluster and you have configured the MySQL `spec.serviceType`
+   + If your application is deployed outside the Kubernetes cluster and you have configured the MySQL `spec.serviceType`
    as `LoadBalancer`:<br>The hostname is the external DNS name of the load balancer.
    See <a href="accessing.html#off-platform-access">Access the MySQL Server from an External IP Address</a>
    in _Accessing MySQL Instances_.
@@ -82,7 +82,7 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
     For example:
 
     ``` 
-       kubectl -n my-namespace create secret generic mysql-tls-secret \
+    kubectl -n my-namespace create secret generic mysql-tls-secret \
           --type kubernetes.io/tls \
           --from-file=tls.crt=/path/server.crt \
           --from-file=tls.key=/path/server.key \
@@ -104,8 +104,14 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
 
     ```
     kubectl create namespace cert-manager
+    ```
+    ```
     helm repo add jetstack https://charts.jetstack.io
+    ```
+    ```
     helm repo update
+    ```
+    ```
     helm install cert-manager jetstack/cert-manager \
     --namespace cert-manager --version v1.0.2 --set installCRDs=true
     ```
@@ -137,15 +143,11 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
         <td><code>spec.secretName</code></td>
       </tr>
       <tr>
-        <td>the name of your <code>ClusterIssuer</code> or <code>Issuer</code>
-                        created in step 2 above</td>
+        <td>the name of your <code>ClusterIssuer</code> or <code>Issuer</code> created in step 2 above</td>
         <td><code>spec.issuerRef.name</code></td>
       </tr>
       <tr>
-        <td>
-                        the DNS name or the fully qualified DNS name
-                        that you use to connect to apps deployed in the same Kubernetes cluster
-                        as the MySQL instance:
+        <td>the DNS name or the fully qualified DNS name that you use to connect to apps deployed in the same Kubernetes cluster as the MySQL instance:
                         <ul>
                           <li><code>INSTANCE-NAME.DEVELOPMENT-NAMESPACE</code>, for example,
                              <code>mysql-sample.my-namespace</code></li>
@@ -154,8 +156,8 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
                               The default <code>CLUSTER-DOMAIN</code> is <code>cluster.local</code>.
                           </li>
                          </ul>
-                    </td>
-        <td><code>spec.dnsNames</code></td>
+         </td>
+         <td><code>spec.dnsNames</code></td>
       </tr>
       <tr>
         <td>
@@ -198,8 +200,9 @@ see [Create the TLS Secret Manually](#create-tls-secret) above.
 
     For example:
 
-    ```  kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  ``` 
-
+    ```
+    kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}"  
+    ``` 
 
 
 ## <a id='use-tls'></a>Configure MySQL for TLS
@@ -243,7 +246,7 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
     For example:
 
     ``` 
-     kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
+    kubectl -n my-namespace get secret mysql-tls-secret -o jsonpath="{.data['ca\.crt']}" | base64 -d > ca.crt
     ``` 
 
 2. Create a MySQL username and password to test your connection with.
@@ -253,16 +256,16 @@ To connect the MySQL command-line client to the MySQL instance over TLS:
     see [Connecting Apps to MySQL Instances](connecting-apps.html#create-app-db).
 
 3. Obtain the IP address that your MySQL instance is listening on for connections.
-  Load-balanced instances expose their IP address through their `status.loadBalancer.ingress` property:
+   Load-balanced instances expose their IP address through their `status.loadBalancer.ingress` property:
 
     ```
     kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
     ```
 
-1. Connect your local MySQL command-line client to your MySQL instance by running:
+4. Connect your local MySQL command-line client to your MySQL instance by running:
 
     ```
-mysql -u USERNAME -pPASSWORD -h IP_ADDRESS --ssl-mode=VERIFY_CA --ssl-ca=CA-CERTPATH
+    mysql -u USERNAME -pPASSWORD -h IP_ADDRESS --ssl-mode=VERIFY_CA --ssl-ca=CA-CERTPATH
     ```
 
     Where:
@@ -274,11 +277,13 @@ mysql -u USERNAME -pPASSWORD -h IP_ADDRESS --ssl-mode=VERIFY_CA --ssl-ca=CA-CERT
     For example:
 
     ``` 
- mysql -u bn_wordpress -phunter2 -h 192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt <br>
-mysql: [Warning] Using a password on the command line interface can be insecure.
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 7
-...
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.<br>
-mysql>
+    mysql -u bn_wordpress -phunter2 -h 192.168.64.200 --ssl-mode=VERIFY_CA --ssl-ca=./ca.crt
+    ```
+    ```
+    mysql: [Warning] Using a password on the command line interface can be insecure.
+    Welcome to the MySQL monitor.  Commands end with ; or \g.
+    Your MySQL connection id is 7
+    ...
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.<br>
+    mysql>
     ``` 

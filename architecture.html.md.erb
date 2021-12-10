@@ -22,13 +22,13 @@ The diagram below shows the architecture of a single-node MySQL instance:
 
 <a href="./images/mysql4k8s-sn-arch-diagram.jpg" target="_blank" aria-hidden="true">Click here to view a larger version of this diagram</a>
 
-In a single-node MySQL instance, the app or client makes a request to the MySQL service.
+In a single-node MySQL instance, the application or client makes a request to the MySQL service.
 The service communicates with the single database Pod, named mysql-0.
 The database Pod stores data in a persistent volume claim (PVC).
 
 ### <a id='ha-diagram'></a> Architecture of an HA MySQL Instance
 
-High availability offers automatic failover, ensuring that app requests operate continuously
+High availability offers automatic failover, ensuring that application requests operate continuously
 and without extended downtime.
 
 <%= vars.product_full %> uses InnoDB Cluster to provide a highly-available MySQL instance on Kubernetes.
@@ -58,9 +58,9 @@ The two secondary databases are read-only and are updated as replicas of the pri
 
 Group Replication ensures that data is synchronously replicated
 from the primary to the secondary database Pods.
-If the primary Pod becomes unresponsive, app requests are redirected to a secondary Pod,
+If the primary Pod becomes unresponsive, application requests are redirected to a secondary Pod,
 which gets promoted to primary.
-All app requests continue to that promoted primary,
+All application requests continue to that promoted primary,
 and a new secondary MySQL Pod is created to replace the failed Pod.
 
 If a proxy Pod fails, Kubernetes directs traffic to the remaining proxy Pod

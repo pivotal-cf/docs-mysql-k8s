@@ -42,7 +42,7 @@ To upgrade the Operator using the Helm CLI:
     helm -n tanzu-mysql-for-kubernetes-system ls
     ```
     ```
-    NAME                    NAMESPACE                               REVISION        UPDATED                                 STATUS          CHART                                   APP VERSION
+    NAME                    NAMESPACE                               REVISION        UPDATED                                 STATUS          CHART                                   application VERSION
     tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2021-04-01 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.0.0     1.0.0
     ``` 
 
@@ -85,7 +85,7 @@ To upgrade the Operator using the Helm CLI:
     helm -n tanzu-mysql-for-kubernetes-system history tanzu-sql-with-mysql-operator
     ```
     ```
-    REVISION    UPDATED                     STATUS        CHART                                  APP VERSION    DESCRIPTION
+    REVISION    UPDATED                     STATUS        CHART                                  application VERSION    DESCRIPTION
     1           Thu Jan 14 17:47:53 2021    superseded    tanzu-sql-with-mysql-operator-1.0.0     1.0.0          Install complete
     2           Thu Jan 14 18:09:05 2021    deployed      tanzu-sql-with-mysql-operator-1.0.1     1.0.1          Upgrade complete
     ``` 

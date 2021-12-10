@@ -155,6 +155,8 @@ To access the MySQL server from an external IP address:
 
     ``` 
     kubectl get service mysql-sample -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
+    ```
+    ```
     a4dc8de1biefe13112-17761231.us-west-2.elb.amazonaws.com
     ``` 
 
@@ -190,11 +192,10 @@ In the YAML file for the instance, change the value of the `Spec.ServiceType` pr
 ## <a id='app-connect'></a> Access MySQL From Cluster-Hosted Applications
 
 Each MySQL instance has a Kubernetes service named after the instance.
-The service is used to connect an app to its MySQL database.
+The service is used to connect an application to its MySQL database.
 
-
-If an app is deployed on the Kubernetes cluster, the app can access the MySQL instance using the DNS name
+If an application is deployed on the Kubernetes cluster, the application can access the MySQL instance using the DNS name
 of the MySQL service. This DNS name is only resolvable within the Kubernetes cluster.
 
-An app should connect to the database using a narrowly-privileged database user created for the specific requirements of the app.
-For information about creating a user for an app and connecting the app to a database using specific user and configuration information, see [Connecting Apps to MySQL Instances](./connecting-apps.html).
+An application should connect to the database using a narrowly-privileged database user created for the specific requirements of the app.
+For information about creating a user for an application and connecting the application to a database using specific user and configuration information, see [Connecting Apps to MySQL Instances](./connecting-apps.html).
