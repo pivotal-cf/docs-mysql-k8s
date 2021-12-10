@@ -172,7 +172,9 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
     For example:
     ``` 
-     kubectl get mysqlbackupschedule mysqlbackupschedule-sample -o jsonpath={.spec} -n my-namespace
+    kubectl get mysqlbackupschedule mysqlbackupschedule-sample -o jsonpath={.spec} -n my-namespace
+    ```
+    ```
     {
       "backupTemplate": {
         "spec": {
@@ -392,19 +394,15 @@ Before you restore from a backup, you must have:
 
 To restore from a backup:
 
-1. Find the `restore.yaml` deployment template that you downloaded
-   in the TGZ file from <%= vars.product_network %>.
+1. Find the `restore.yaml` deployment template in the TGZ file you downloaded from <%= vars.product_network %>.
    For how to download deployment templates, see [Download the Deployment Templates](./create-delete-mysql.html#download-templates)
    in _Creating and Deleting MySQL Instances_.
 
-2. Create a copy of the `restore.yaml` file and give it a unique name.
-
-    For example:
+2. Create a copy of the `restore.yaml` file and give it a unique name. For example:
 
     ```
     cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/restore.yaml testrestore.yaml
     ``` 
-
 
 3. Edit the file.
    For information about the properties that you can set for the MySQLRestore resource,
@@ -566,9 +564,5 @@ To troubleshoot problems with backup and restore:
     2m43s       Warning   Failed   mysqlbackup/backup-sample   Secret "backuplocation-sample-creds" not found
     ``` 
 
-3. Read the message in the `MESSAGE` column to understand why the failure occurred.<br><br>
-
-    In the example above, the `backup-sample` expected a Kubernetes secret called
-   `backuplocation-sample-creds` to exist.
-    Fix this problem by creating the `backuplocation-sample-creds` secret.
+    The message in the `MESSAGE` column helps to understand why the failure occurred. In the above example, the `backup-sample` expected a Kubernetes secret called `backuplocation-sample-creds` to exist. Fix this problem by creating the `backuplocation-sample-creds` secret.
     The template for this secret is located in the `backuplocation.yaml` template.
