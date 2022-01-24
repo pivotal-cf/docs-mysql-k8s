@@ -373,12 +373,12 @@ The MySQL Operator is the controller for MySQL instances resources. You install 
     The file `charts/tanzu-sql-with-mysql-operator/values.yaml` in the Tanzu MySQL directory specifies the location of the MySQL Operator and instance images. By default it contains the following values:
     
     ```
----
-imagePullSecretName: tanzu-image-registry
-operatorImage: registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.2.0
-registry: "registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/"
-defaultInstanceVersion: 1.2.0
-resources: {}
+    ---
+    imagePullSecretName: tanzu-image-registry
+    operatorImage: registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.2.0
+    registry: "registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/"
+    defaultInstanceVersion: 1.2.0
+    resources: {}
     ```
 
 1.  Create a copy of `values.yaml` and name the new file `operator-values-overrides.yaml`. Save this file in the same directory as the `values.yaml` file. In this file, you can specify the custom container registry and secret. For manual changes, you may also set individual parameters using the `--set` flag on the command line. 
