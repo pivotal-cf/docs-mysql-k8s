@@ -1,0 +1,64 @@
+---
+title: Troubleshooting Common Issues
+owner: MySQL
+---
+
+This topic provides information that can help troubleshoot problems you may encounter using <%= vars.product_full %>
+
+## <a id=""></a>Errors while updating a single-node instance to HA
+
+### Symptoms
+
+When updating an existing single-node instance to HA, the instance status stays "Pending" and fails to become "Ready".
+
+```
+$ kubectl get mysql mysql-sample
+NAME                                           READY   STATUS    VERSION  AGE
+mysql.with.sql.tanzu.vmware.com/mysql-sample   false   Pending   1.3.0    13m
+```
+
+You may see Events associated with the instance indicating that InnoDB Cluster failed to initialize.
+
+For example:
+
+```
+$ kubectl describe mysql mysql-sample
+...
+Events:
+  Type     Reason                  Age                    From                       Message
+  ----     ------                  ----                   ----                       -------
+  Warning  ClusterTopologyUnknown  2m3s (x25 over 2m26s)  innodb-cluster-controller  Unable to determine if InnoDB Cluster needs to be created
+  Warning  ClusterInitFailed       17s (x5 over 108s)     innodb-cluster-controller  Failed to initialize InnoDB Cluster
+```
+
+### Diagnosis
+
+Examine the instance's mysql-sidecar container's logs for an error about missing a "Primary Key or equivalent column".
+
+For example:
+
+```
+$ kubectl logs mysql-sample-0 -c mysql-sidecar
+...
+ERROR: The following tables do not have a Primary Key or equivalent column:
+mysqlappuser_data.t1
+...
+```
+
+Your database table was created without a primary key, or a primary-key equivalent (non-null unique key).
+Such a table is compatible with single-node databases, but is incompatible with the MySQL Group Replication technology used by HA instances.
+As a requirement of MySQL Group Replication used by HA instances, all tables must have a primary key or equivalent.
+
+### Remedy
+
+To remedy this, add primary keys, or equivalent, to the tables listed in the error message.
+
+For example:
+
+```
+mysql> ALTER TABLE t1 ADD PRIMARY KEY (a);
+Query OK, 0 rows affected (0.08 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+```
+
+Within a few minutes, without further intervention, the operator should finish updating the instance with HA.
