@@ -46,12 +46,13 @@ mysqlappuser_data.t1
 ```
 
 Your database table was created without a primary key, or a primary-key equivalent (non-null unique key).
-Such a table is compatible with single-node databases, but is incompatible with the MySQL Group Replication technology used by HA instances.
+Such a table is compatible with single-node databases, but is
+[incompatible with the MySQL Group Replication technology used by HA instances](./high-availability.html#about-schema).
 As a requirement of MySQL Group Replication used by HA instances, all tables must have a primary key or equivalent.
 
 ### Remedy
 
-To remedy this, add primary keys, or equivalent, to the tables listed in the error message.
+To remedy this, add primary keys, or equivalent non-null unique keys, to the tables listed in the error message.
 
 For example:
 
