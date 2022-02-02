@@ -77,7 +77,7 @@ You can setup <%=vars.product_name %> using two different methods:
 
 - Use [Installing Tanzu MySQL Operator via Tanzu Network Registry](#install-via-tanzu) for a faster installation process, and if your server hosts have access to the internet. 
 
-- Use [Installing Tanzu MySQL Operator via Downloadable Archive File](install-operator.html#install-via-tar) if your server hosts do not have access to the internet, or if you want to install from a private registry.
+- Use [Installing Tanzu MySQL Operator via Downloadable Archive File](#install-via-tar) if your server hosts do not have access to the internet, or if you want to install from a private registry.
 
 ### <a id="install-via-tanzu"></a>  Setup the Tanzu Operator via the Tanzu Network Registry
 
@@ -238,7 +238,7 @@ Edit the Operator Configuration file:
           <td><code>imagePullSecret</code></td>
           <td>String</td>
           <td>Name of image secret. This value must match the name of the Kubernetes
-            secret you create in <a href="#create-namespace-secret">Create Namespace and Secret</a>  above.</td>
+            secret you create in <a href="#create-service-accounts">Create a Kubernetes Access Secret</a>.</td>
         </tr>
         <tr>
           <td><code>operatorImage</code></td>
@@ -273,9 +273,17 @@ Edit the Operator Configuration file:
 
 ### <a id="create-service-accounts"></a>  Create a Kubernetes Access Secret
 
-Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private container registry, or the Tanzu Registry, so it can pull images. These examples create a secret named `tanzu-image-registry` using Harbor, Google Cloud Registry (GCR), and Amazon Elastic Container Registry (ECR). 
+Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private container registry, or the Tanzu Registry, so it can pull images. These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR.
 
 <p class='note important'><strong>Important:</strong> The commands below create the secret in the current configured namespace for the kubectl context. Only pods created in the same namespace can reference the secret. To create a secret in a different namespace, use the `--namespace` flag. You should create an identical secret in the Operator namespace and in each namespace where you will create Tanzu MySQL instances.</p>
+
+**Tanzu Registry**
+    
+```
+kubectl create secret docker-registry tanzu-image-registry \
+    --docker-server=https://registry.tanzu.vmware.com/ \
+    --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
+```
 
 **Harbor**
 
@@ -297,41 +305,7 @@ kubectl create secret  docker-registry  tanzu-image-registry \
 
 For information about how to obtain the `key.json` service account file, see [Creating service account credentials](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#step_3_create_service_account_credentials) in the GKE documentation. 
 
-**ECR**
-
-``` 
-TOKEN=`aws ecr --region=$REGION get-authorization-token --output text --query authorizationData[].authorizationToken | base64 -d | cut -d: -f2`
-kubectl create secret docker-registry tanzu-image-registry \
-    --docker-server=https://${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com \
-    --docker-username=AWS \
-    --docker-password="${TOKEN}"
-``` 
-
-
-Next follow [Deploying a MySQL Operator](install-operator.html#create-operator). The MySQL Operator will use this secret to allow the Kubernetes cluster to authenticate with the container registry to pull images.
-
-### <a id="create-namespace-secret"></a>  Create Namespace and Secret
-
-To create the namespace and secret:
-
-1. Create the namespace by running:
-
-    ```
-    kubectl create namespace tanzu-mysql-for-kubernetes-system
-    ```
-
-1. Set your kubectl context to the newly-created namespace by running:
-
-    ```
-    kubectl config set-context --current --namespace tanzu-mysql-for-kubernetes-system
-    ```
-
-1. Create a Kubernetes secret for accessing registry containing the Tanzu MySQL images by running:
-
-    ```
-    kubectl create secret docker-registry tanzu-image-registry --docker-server=https://registry.tanzu.vmware.com/ \
-    --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
-    ```
+Next follow [Deploy the Operator](#create-operator). The MySQL Operator will use this secret to allow the Kubernetes cluster to authenticate with the container registry to pull images.
 
 
 ### <a id="create-operator"></a>  Deploy the Operator 
@@ -358,7 +332,6 @@ To create the namespace and secret:
     ``` 
     
     Replace `charts/tanzu-sql-with-mysql-operator/operator-values-overrides.yaml` with your custom location.
-    <br><br>
 
     To create the Operator in a namespace different that the default, use:
     
@@ -409,87 +382,3 @@ To create the namespace and secret:
     NAME                                             DESIRED     CURRENT          READY         AGE
     replicaset.apps/tanzu-mysql-operator-69765b8b74  1           1                1             3d19h
     ``` 
-
-------------------
-
-1. Download the Helm chart to your current working directory on your local machine by running:
-
-    ```
-    helm chart export REGISTRY-URL
-    ```
-    Where `REGISTRY-URL` is the reference to the Tanzu MySQL Helm chart.
-
-    <br>The value of `REGISTRY-URL` has the following pattern:
-
-    ```
-    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
-    ```
-    Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
-
-    <br>This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory that contains:
-    * The Tanzu MySQL Helm chart
-    * Custom Resource Definitions (CRDs)
-    * Role-Based Access Control (RBAC) definitions required to install the operator with Helm
-
-    For example:
-    ``` 
-    helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.2.0
-    ```
-    ```
-    ref:     registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.2.0
-    digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
-    size:    4.2 KiB
-    name:    tanzu-sql-with-mysql-operator
-    version: 1.2.0
-    Exported chart to tanzu-sql-with-mysql-operator/
-    ``` 
-------------------
-
-## <a id="install-operator"></a>  Use Helm CLI to Install the Operator
-
-**IMPORTANT**: Helm 3.7.x is currently not supported.
-
-To install the Operator using the Helm CLI:
-
-1. Verify that you are in the same working directory as where you downloaded the Helm chart in Step 4 of
-[Create Namespace and Secret](#create-namespace-secret) above.
-
-1. By default, the Tanzu MySQL Operator 1.2.0 configures a self-signed `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
-    
-    If you do not require a custom CA, continue with the default installation. If you created a custom `values-override.yaml` in [Review values.yaml and Create Overrides If Needed](#create-overrides) above, then run the following Helm command, including the `--values` flag with the location of your override file:
-
-    ```
-    helm install --values=/your/values-override.yaml tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
-    ```
-
-    Otherwise, omit the `--values` flag:
-
-    ```
-    helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/
-    ```
-
-1. See that the Operator has installed successfully by running:
-
-    ```
-    kubectl get all
-    ```
-    The Tanzu MySQL Operator has finished installing when you see the value of the `STATUS` column for the
-    Tanzu MySQL Operator Pod is `Running`. See example output:
-    ``` 
-    kubectl get all
-    ```
-    ```
-    NAME                                                           READY   STATUS    RESTARTS   AGE
-    pod/mysql-for-kubernetes-controller-manager-84d76dfb77-lq5mb   1/1     Running   0          21s
-    NAME                                                      READY   UP-TO-DATE   AVAILABLE   AGE
-    deployment.apps/mysql-for-kubernetes-controller-manager   1/1     1            1           23s
-    NAME                                                                 DESIRED   CURRENT   READY   AGE
-    replicaset.apps/mysql-for-kubernetes-controller-manager-84d76dfb77   1         1         1       23s
-    ``` 
-
-    <p class="note">
-      <strong>Note:</strong> You can only have one Tanzu MySQL operator installed in a Kubernetes cluster.
-    </p>
-    
-    To review the default TLS configuration for the MySQL Operator, see [Using the Default provided TLS](configure-tls.html#using-default-tls). 
-
