@@ -59,6 +59,11 @@ You can restore the backups from HA instances to either single-node or HA instan
 For information about backup and restore,
 see [Backing Up and Restoring MySQL Instances](backup-restore.html).
 
+### <a id='about-schema'></a> About HA Schema Compatibility
+
+Tables in an HA database must be compatible with MySQL Group Replication.
+Group Replication [requires](https://dev.mysql.com/doc/refman/8.0/en/group-replication-requirements.html)
+that each table have a `PRIMARY KEY` or Equivalent (non-null unique key).
 
 ## <a id='prerequisites'></a>  Prerequisites
 
@@ -113,6 +118,8 @@ and then redeploy the instance.
 Ensure that you want an HA instance before following this procedure.
 You cannot easily change an HA instance back to a single-node one.
 </p>
+
+Before converting to HA, ensure that your database schema satisfies the [Schema Compatability for HA](#about-schema) requirements.
 
 To change a single-node instance into an HA instance:
 

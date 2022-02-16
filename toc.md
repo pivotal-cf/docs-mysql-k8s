@@ -17,3 +17,4 @@
 * [Backing Up and Restoring MySQL Instances](./backup-restore.html)
 * [Property Reference for MySQL Resource](./property-reference-mysql.html)
 * [Property Reference for Backup and Restore](./property-reference-backup-restore.html)
+* [Troubleshooting Common Issues](./troubleshooting.html)
