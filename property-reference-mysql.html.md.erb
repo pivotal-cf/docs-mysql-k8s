@@ -192,23 +192,23 @@ kind: MySQL
 metadata:
     name: my-instance
 spec:
-    storageSize: 1Gi
-      databasePodConfig:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-            - topologyKey: "kubernetes.io/hostname"
-               labelSelector:
-                 matchExpressions:
-                   - key: "app.kubernetes.io/component"
-                   operator: In
-                   values:
-                     - database
-                   - key: "app.kubernetes.io/instance"
-                   operator: In
-                   values:
-                     - <instance.name>
+  databasePodConfig:
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchExpressions:
+                  - key: "app.kubernetes.io/component"
+                    operator: In
+                    values:
+                      - database
+                  - key: "app.kubernetes.io/instance"
+                    operator: In
+                    values:
+                      - <instance.name>
 ```
 
 **`databasePodConfig.tolerations: <corev1.Toleration>`**<br />
@@ -219,18 +219,17 @@ Configures Kubernetes Tolerations for the MySQL instance's database Pods. The To
 
 ```
 ---
-  apiVersion: with.sql.tanzu.vmware.com/v1
-  kind: MySQL
-  metadata:
-      name: my-instance
-  spec:
-      storageSize: 1Gi
-      databasePodConfig:
-        tolerations:
-        - key: node.kubernetes.io/memory-pressure
-          operator: "Exists"
-            effect: "NoExecute"
-              tolerationSeconds: 3600
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+    name: my-instance
+spec:
+  databasePodConfig:
+    tolerations:
+    - key: node.kubernetes.io/memory-pressure
+      operator: "Exists"
+      effect: "NoExecute"
+      tolerationSeconds: 3600
 ```
 
 **`proxyPodConfig.affinity: <corev1.Affinity>`**<br />
@@ -245,24 +244,23 @@ kind: MySQL
 metadata:
     name: my-instance
 spec:
-    storageSize: 1Gi
-      databasePodConfig:
-      affinity:
-        affinity:
-        podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-            - topologyKey: "kubernetes.io/hostname"
-                labelSelector:
-                matchExpressions:
-                    - key: "app.kubernetes.io/component"
-                    operator: In
-                    values:
-                        - proxy
-                    - key: "app.kubernetes.io/instance"
-                    operator: In
-                    values:
-                        - <instance.name>
+  databasePodConfig:
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            topologyKey: "kubernetes.io/hostname"
+            labelSelector:
+              matchExpressions:
+                - key: "app.kubernetes.io/component"
+                  operator: In
+                  values:
+                    - proxy
+                - key: "app.kubernetes.io/instance"
+                  operator: In
+                  values:
+                    - <instance.name>
 ```
 
 **`proxyPodConfig.tolerations: <corev1.Toleration>`**<br />
@@ -273,19 +271,17 @@ Configures Kubernetes Tolerations for the MySQL instance's database Pods. For mo
 
 ```
 ---
-  apiVersion: with.sql.tanzu.vmware.com/v1
-  kind: MySQL
-  metadata:
-      name: my-instance
-  spec:
-      storageSize: 1Gi
-      databasePodConfig:
-        tolerations:
-        tolerations:
-        - key: node.kubernetes.io/memory-pressure
-            operator: "Exists"
-              effect: "NoExecute"
-                tolerationSeconds: 3600
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQL
+metadata:
+    name: my-instance
+spec:
+  databasePodConfig:
+    tolerations:
+    - key: node.kubernetes.io/memory-pressure
+      operator: "Exists"
+      effect: "NoExecute"
+      tolerationSeconds: 3600
 ```
 
 
