@@ -62,7 +62,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 ### <a id="13_features"></a> Features
 
 * This release supports Percona Server 8.0.26, Percona XtraBackup 8.0.26, and MySQL Router 8.0.26. 
-* Tanzu MySQL Operator 1.3.0 introduces the ability for applications to bind to MySQL instances using a specification-conformant Service Binding Controller. For more information, see [Creating Service Bindings](creating-service-bindings.html).
+* Tanzu MySQL Operator 1.3.0 introduces the ability for applications to bind to MySQL instances using a specification-conformant Service Binding Controller. For more information, see [Connecting an Application to a MySQL Instance](creating-service-bindings.html).
 
 ### <a id="13_resolved"></a> Resolved Issues
 
@@ -75,7 +75,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="13_limits"></a> Limitations
 
-* The Tanzu SQL release supports Helm 3.6.3 and lower. Helm 3.7.x is not supported.
+* The Tanzu SQL release supports Helm 3.6.3 and lower, or Helm 3.7.1 and later. Helm 3.7.0 is not supported.
 * Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).

@@ -4,7 +4,7 @@ owner: MySQL
 ---
 
 
-This topic describes how connect applications to a Tanzu MySQL instance. This topic describes 3 methods:
+This topic describes how connect applications to a Tanzu MySQL instance. This topic describes three methods:
 
 - [Binding an Application to a MySQL Instance using TAP workflow](#tap_apps)
 - [Binding Tanzu MySQL to a TAS Application](#tas_apps)
@@ -56,7 +56,7 @@ and then run `kubectl apply -f mysql-service-binding-rbac.yaml`
 ### <a id="tap_new_workloads"></a> Bind a new TAP workload to a MySQL instance
 
 
-1. Name the workload, specify a source code location to create the workload from, and reference the mysql instance name that you have deployed. Run:
+Name the workload, specify a source code location to create the workload from, and reference the mysql instance name that you have deployed. Run:
 
 ```
 tanzu apps workload create WORKLOAD-NAME [create flags] --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample" 
@@ -75,7 +75,7 @@ tanzu apps workload create pet-clinic --git-repo https://github.com/sample-accel
 
 ### <a id="tap_existing_workloads"></a>Bind an existing TAP workload to a MySQL instance
 
-1. Run below command to update an existing TAP workload to connect and utilize a MySQL database instance:
+Run below command to update an existing TAP workload to connect and utilize a MySQL database instance:
 
 ```
 tanzu apps workload update WORKLOAD-NAME [update flags] --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample"
@@ -83,7 +83,7 @@ tanzu apps workload update WORKLOAD-NAME [update flags] --service-ref "db=with.s
 
 where,
 - `WORKLOAD-NAME` is the name of the workload.
-- [update flags] are the appropriate flags to build the workload from source control, registry image, or local file. See [Tanzu apps workload update](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/0.4/tap/GUID-cli-plugins-apps-command-reference-tanzu_apps_workload_update.html) for more information on different flags available.
+- [update flags] are the appropriate flags to build the workload from source control, registry image, or local file. See [Tanzu apps workload update](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.0/tap/GUID-cli-plugins-apps-command-reference-tanzu_apps_workload_update.html) for more information on different flags available.
 - `--service-ref` is the reference to the service using the format {name}={apiVersion}:{kind}:{name}. In this case, `mysql-sample` is the MySQL instance CR name that you have deployed.
 
 For example,
@@ -111,7 +111,7 @@ tanzu apps workload update pet-clinic --service-ref "db=with.sql.tanzu.vmware.co
            group: with.sql.tanzu.vmware.com
            kind: MySQL
     ```
-  Where * indicates this policy permits any namespace to claim a MySQL resource from the `default` namespace.
+    Where * indicates this policy permits any namespace to claim a MySQL resource from the `default` namespace.
 
 2. Save the above yaml content in `resource-claim-policy.yaml` file and apply it:
 
@@ -124,7 +124,7 @@ tanzu apps workload update pet-clinic --service-ref "db=with.sql.tanzu.vmware.co
     ```
     tanzu apps workload update WORKLOAD-NAME [update flags] -n app --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample"
     ```
-  Where `service-ref` specifies the service instance's namespace. In this example, it is `default`.
+    Where `service-ref` specifies the service instance's namespace. In this example, it is `default`.
 
 ### <a id="tap_verify"></a>Verify a TAP Workload Service Binding
 
