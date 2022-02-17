@@ -68,7 +68,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     WordPress authenticates signed certificates within the cluster. The following command generates two Issuers: the first Issuer, `selfsigned-issuer`, generates a certificate, `ca-certificate`, for the second Issuer, `tls-issuer`. That second Issuer generates the `tls-certificate` that MySQL will present to WordPress.
 
     ``` 
-    cat &lt;&lt;EOF | kubectl apply -f -
+    cat << EOF | kubectl apply -f -
     ---
     apiVersion: cert-manager.io/v1
     kind: Issuer
@@ -155,7 +155,7 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
     helm repo add  bitnami https://charts.bitnami.com/bitnami
     "bitnami" has been added to your repositories
 
-    helm install wp bitnami/wordpress -f - &lt;&lt;EOF
+    cat << EOF | helm install wp bitnami/wordpress -f -
     mariadb:
       enabled: false
 
