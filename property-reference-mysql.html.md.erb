@@ -12,7 +12,10 @@ kind: MySQL
 metadata:
   name: mysql-sample
 spec:
-  storageSize: 1Gi
+
+#### Set the storage size for the database persistent storage volume
+#  storageSize: 1Gi
+
 #  imagePullSecretName: tanzu-image-registry
 
 #### Set the storage class name to change storage class of the PVC associated with this resource
@@ -137,7 +140,7 @@ The name of the MySQL instance. Must be unique within a namespace. Cannot be mod
 
 **`storageSize: <Quantity>`**<br />
 **Optional**<br />
-**Default**: n/a<br />
+**Default**: 1Gi<br />
 The size of the persistent volume claims (PVCs) for MySQL instance Pods. Specify a suffix for the units (for example: 100G, 1T). After being set, cannot be reduced, but can be increased. For information about allowed size units, see discussion about resource quantities in the [kubernetes community](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities) GitHub repository.<br />
 **Example**: 50Gi
 

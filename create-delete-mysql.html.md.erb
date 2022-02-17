@@ -97,7 +97,7 @@ To create a MySQL instance:
 
 5. Edit the file and customize the instance according to your requirements. 
     <br>
-    You may customize your Tanzu MySQL instance version, instance resources, instance storage class, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For more details on all the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
+    You may customize your Tanzu MySQL instance version, instance resources, instance storage class, storage size, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For more details on all the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
     <br><br>
     When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form `mysql-data-INSTANCE-NAME-N`, for example `mysql-data-mysql-sample-0`.
 
