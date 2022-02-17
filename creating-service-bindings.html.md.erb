@@ -1,0 +1,438 @@
+---
+title: Connecting an Application to a MySQL Instance
+owner: MySQL
+---
+
+
+This topic describes how connect applications to a Tanzu MySQL instance. This topic describes 3 methods:
+
+- [Binding an Application to a MySQL Instance using TAP workflow](#tap_apps)
+- [Binding Tanzu Postgres to a TAS Application](#tas_apps)
+- [Connecting an Application to a MySQL Instance](#generic_app)
+
+Users may use Tanzu Application Platform (TAP), or Tanzu Application Services (TAS) applications, or a different application platform, to connect and utilize <%=vars.product_name %> database services. 
+
+## <a id="tap_apps"></a> Binding an Application to a MySQL Instance using TAP workflow
+
+The Tanzu MySQL Operator 1.3 supports Service Binding with Tanzu Application Platform (TAP). This feature eliminates the manual management of the configuration steps needed to securely and successfuly bind a TAP application to a Tanzu MySQL deployment. For more information on Service Binding, see [Service Binding Specification for Kubernetes](https://github.com/servicebinding/spec) in the Kubernetes documentation. 
+
+For more information on how to create or update TAP workloads, see [Working with Workloads](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/0.4/tap/GUID-cli-plugins-apps-working-with-workloads.html) in the TAP documentation.
+
+### <a id="tap_prereqs"></a> Prerequisites
+
+- TAP v1.0.0 has been installed. See [Installing Tanzu Application Platform](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-overview.html) for instructions.
+- Tanzu MySQL Operator has been successfully installed on a Kubernetes cluster. See [Installing a MySQL Operator for instructions](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.3/tanzu-mysql-k8s/GUID-install-operator.html).
+- MySQL instance has been deployed. See [Deploying a MySQL Instance](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.3/tanzu-mysql-k8s/GUID-create-delete-mysql.html) for instructions.
+
+- TAP services-toolkit will need correct permissions to access MySQL instances. For this, you need a ClusterRole and ClusterRoleBinding that binds the role to `services-toolkit-controller-manager`  service account in `services-toolkit` namespace. Save the below contents in `mysql-service-binding-rbac.yaml`
+
+```
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    resourceclaims.services.apps.tanzu.vmware.com/controller: "true"
+  name: mysql-for-kubernetes-mysqls-service-bindings-role
+rules:
+  - apiGroups:
+      - with.sql.tanzu.vmware.com
+    resources:
+      - mysqls
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - with.sql.tanzu.vmware.com
+    resources:
+      - mysqls/status
+    verbs:
+      - get
+```
+
+and then run `kubectl apply -f mysql-service-binding-rbac.yaml`
+
+### <a id="tap_new_workloads"></a> Bind a new TAP workload to a MySQL instance
+
+
+1. Name the workload, specify a source code location to create the workload from, and reference the mysql instance name that you have deployed. Run:
+
+```
+tanzu apps workload create WORKLOAD-NAME [create flags] --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample" 
+```
+
+where,
+- `WORKLOAD-NAME` is the name that will be given to the workload.
+- [create flags] are the appropriate flags to build the workload from source control, registry image, or local file. See [Tanzu apps workload create](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/0.4/tap/GUID-cli-plugins-apps-command-reference-tanzu_apps_workload_create.html) for more information on different flags available.
+- `--service-ref` is the reference to the service using the format {name}={apiVersion}:{kind}:{name}. In this case, `mysql-sample` is the MySQL instance CR name that you have deployed.
+
+For example,
+
+```
+tanzu apps workload create pet-clinic --git-repo https://github.com/sample-accelerators/spring-petclinic --git-branch main --type web  --git-tag=tap-1.0 --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample --env=SPRING_PROFILES_ACTIVE=mysql"
+```
+
+### <a id="tap_existing_workloads"></a>Bind an existing TAP workload to a MySQL instance
+
+1. Run below command to update an existing TAP workload to connect and utilize a MySQL database instance:
+
+```
+tanzu apps workload update WORKLOAD-NAME [update flags] --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample"
+```
+
+where,
+- `WORKLOAD-NAME` is the name of the workload.
+- [update flags] are the appropriate flags to build the workload from source control, registry image, or local file. See [Tanzu apps workload update](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/0.4/tap/GUID-cli-plugins-apps-command-reference-tanzu_apps_workload_update.html) for more information on different flags available.
+- `--service-ref` is the reference to the service using the format {name}={apiVersion}:{kind}:{name}. In this case, `mysql-sample` is the MySQL instance CR name that you have deployed.
+
+For example,
+
+```
+tanzu apps workload update pet-clinic --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample"
+```
+
+**NOTE** The workload and MySQL instance should exist in the same namespace.
+
+### <a id="tap_binding_different_ns"></a> Bind a TAP workload in a different namespace
+
+1. To enable cross-namespace binding, create a `ResourceClaimPolicy` resource in the namespace where the MySQL instance is deployed. In this example, the `mysql-sample` is deployed in the `default` namespace.
+
+    ```
+    ---
+      apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+      kind: ResourceClaimPolicy
+      metadata:
+        name: mysql-cross-namespace
+      spec:
+        consumingNamespaces:
+        - '*'
+        subject:
+           group: with.sql.tanzu.vmware.com
+           kind: MySQL
+    ```
+  Where * indicates this policy permits any namespace to claim a MySQL resource from the `default` namespace.
+
+2. Save the above yaml content in `resource-claim-policy.yaml` file and apply it:
+
+    ```
+    kubectl -n default apply -f resource-claim-policy.yaml
+    ```
+
+3. If you have a TAP workload deployed in a separate namespace called `app`, bind the workload to the MySQL service instance by running:
+
+    ```
+    tanzu apps workload update WORKLOAD-NAME [update flags] -n app --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample"
+    ```
+  Where `service-ref` specifies the service instance's namespace. In this example, it is `default`.
+
+### <a id="tap_verify"></a>Verify a TAP Workload Service Binding
+
+To check if your application has been successfully bound to the MySQL instance, you can query the database using the MySQL application user named `mysqlappuser` and connection details provided in `mysql-sample-app-user-db-secret` and verify that the expected data exists in the `mysqlappuser_data` database.
+
+```
+$ dbname=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.database}' | base64 -D)
+$ username=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.username}' | base64 -D)
+$ password=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.password}' | base64 -D)
+
+$ host=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.host}' | base64 -D)
+$ port=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.port}' | base64 -D)
+```
+
+For example, in case of a spring-petclinic application, on running a mysql query:
+
+```
+$ mysql -u$username -p $password
+```
+```
+mysql: [Warning] Using a password on the command line interface can be insecure.
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 22
+Server version: 8.0.26-17 Percona Server (GPL), Release '17', Revision 'd7119cd'
+
+Copyright (c) 2009-2021 Percona LLC and/or its affiliates
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+```
+
+```
+mysql> use mysqlappuser_data;
+Database changed
+mysql> show tables;
++-----------------------------+
+| Tables_in_mysqlappuser_data |
++-----------------------------+
+| owners                      |
+| pets                        |
+| specialties                 |
+| types                       |
+| vet_specialties             |
+| vets                        |
+| visits                      |
++-----------------------------+
+7 rows in set (0.01 sec)
+```
+```
+mysql> select * from owners;
++----+------------+-----------+-----------------------+-------------+------------+
+| id | first_name | last_name | address               | city        | telephone  |
++----+------------+-----------+-----------------------+-------------+------------+
+|  1 | George     | Franklin  | 110 W. Liberty St.    | Madison     | 6085551023 |
+|  2 | Betty      | Davis     | 638 Cardinal Ave.     | Sun Prairie | 6085551749 |
+|  3 | Eduardo    | Rodriquez | 2693 Commerce St.     | McFarland   | 6085558763 |
+|  4 | Harold     | Davis     | 563 Friendly St.      | Windsor     | 6085553198 |
+|  5 | Peter      | McTavish  | 2387 S. Fair Way      | Madison     | 6085552765 |
+|  6 | Jean       | Coleman   | 105 N. Lake St.       | Monona      | 6085552654 |
+|  7 | Jeff       | Black     | 1450 Oak Blvd.        | Monona      | 6085555387 |
+|  8 | Maria      | Escobito  | 345 Maple St.         | Madison     | 6085557683 |
+|  9 | David      | Schroeder | 2749 Blackhawk Trail  | Madison     | 6085559435 |
+| 10 | Carlos     | Estaban   | 2335 Independence La. | Waunakee    | 6085555487 |
++----+------------+-----------+-----------------------+-------------+------------+
+10 rows in set (0.01 sec)```
+```
+
+## <a id="tas_apps"></a>Binding Tanzu Postgres to a TAS Application
+
+### <a id="tas_prereqs"></a>Prerequisites
+
+Before you can connect an application running on TAS to a <%= vars.product_short %> instance, you must have:
+
+* The Kubernetes Command Line Interface (kubectl) installed.
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+
+* A <%= vars.product_short %> instance installed on a Kubernetes cluster that supports a form of external ingress, for example a `LoadBalancer`. For more details see [Creating and Deleting MySQL Instances](create-delete-mysql.html).
+
+* An application that is deployed to TAS and can access the Kubernetes cluster ingress points.
+
+### <a id='binding-an-application'></a>  Binding an Application
+
+To bind a MySQL instance to an application running on TAS:
+
+1. Deploy an instance of <%=vars.product_full %> that uses a public ingress method, such as `LoadBalancer`.
+1. Enable TLS for the instance, following the instructions in [Configuring TLS for MySQL Instances](./configure-tls.html).
+1. Create a database and a privileged MySQL user for the application, following the procedure [Create a Database and Privileged MySQL User for the App](./connecting-apps.html#create-app-db).
+1.  Set the environment variables for your newly created user and for the load balancer hostname:
+
+    ```bash
+    export HOSTNAME=$(kubectl get service mysql-sample  -o 'jsonpath={.status.loadBalancer.ingress[].ip}')
+    export USER=bn_wordpress
+    export PASSWORD=hunter2
+    export DATABASE=for_my_app
+    ```
+1.  Create a credentials hash for a TAS user-provided service configuration:
+
+    ```bash
+    cf create-user-provided-service k8s-tanzu-sql -p "{\"uri\":\"mysql://$USER:$PASSWORD@$HOSTNAME:3306/$DATABASE?reconnect=true&sslMode=required&ssl_mode=required\"}"
+    ```
+
+If autoconnect is supported by the applicatioin buildpack, as is common with data services, the application will automatically connect to the database instance. If
+the buildpack does not support autoconnect, you will need to manually use the `uri` service credentials to connect the application to the database instance.
+
+### <a id='troubleshooting'></a>  Troubleshooting
+
+This procedure, including autowiring, was validated with a Spring Boot application. Autowiring did not work with a Ruby on Rails application, because the version of the MariaDB client library in the Cloud Foundry `cflinuxfs3` stack does not support `sslMode`.
+
+* If your application cannot make SSL connections, start by properly consuming the connection information components and making a manual connection from the application.
+* Some techniques for connecting non-Spring applications are provided in the [Activate TLS for Non-Spring Apps](https://docs.pivotal.io/p-mysql/2-10/using-tls.html#activate-non-spring) section of the MySQL for VMs documentation. The credentials hash created in the [Binding an Application](#binding-an-application) procedure above does not include individual components of connection information, such as `username` and `hostname`, but you can derive these components by parsing the `uri` in the hash.
+* As a last resort, you can disable TLS on the MySQL instance and remove the `ssl_mode` and `sslMode` parameters from the credentials hash.
+
+## <a id='generic_app'></a> Connecting an Application to a MySQL Instance
+
+This topic demonstrates how to connect an application to a <%= vars.product_full %> instance. The instructions show how to create a MySQL database and privileged user, and then deploy the Bitnami WordPress Stack Helm chart configured to use your database and user.
+
+### <a id='prereq'></a> Prerequisites
+
+Before connecting an app to a MySQL instance, you must have:
+
+* The Kubernetes Command Line Interface (kubectl) installed.
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
+
+* A MySQL instance running in the same Kubernetes cluster as the app. The MySQL instance can be in a different namespace from the app. For information about creating an instance, see [Creating and Deleting MySQL Instances](create-delete-mysql.html).
+
+<p class="note">
+    <strong>Note:</strong> To avoid Kubernetes permissions issues,
+    <%= vars.product_full %> recommends that you grant developers admin access to their target namespace.
+</p>
+
+### <a id='create-app-db'></a> Create a Database and Privileged MySQL User for the App
+
+1. Log in to the MySQL server as the root user, following the instructions in [Get Root Access to the MySQL Server](./accessing.html#server-login).
+    <br /> <br />
+    For example, to connect to a single-node instance named "mysql-sample":
+
+    ``` 
+    kubectl exec -it mysql-sample-0 -c mysql -- bash
+    mysql@mysql-sample-0:/$
+    ``` 
+
+1. Create any MySQL constructs needed by your app, and create a user with privileges to access those constructs as required by your app.
+   <b>NOTE:</b> Older MySQL client libraries (such as those base on 5.6) need an older password encryption method. We show both type of `CREATE USER` commands below.
+    <br /> <br />
+    For example, the following commands create a `bitnami_wordpress` database and `bn_wordpress` user for the Bitnami WordPress Stack deployment:
+
+    ``` 
+    mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
+    mysql> CREATE DATABASE bitnami_wordpress;
+    Query OK, 1 row affected (0.20 sec)
+
+    mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED BY 'hunter2';
+    Query OK, 0 rows affected (0.08 sec)
+    --- OR, for broader compatibility with older client libraries ---
+    mysql> CREATE USER 'bn_wordpress'@'%' IDENTIFIED WITH mysql_native_password BY 'hunter2';
+    Query OK, 0 rows affected (0.08 sec)
+
+    mysql> GRANT ALL PRIVILEGES ON bitnami_wordpress.* TO 'bn_wordpress'@'%';
+    Query OK, 0 rows affected (0.03 sec)
+
+    mysql> FLUSH PRIVILEGES;
+    Query OK, 0 rows affected (0.10 sec)
+    ``` 
+
+### <a id='config-app-db'></a> Configure Your App with MySQL User and Connectivity Information
+
+Application configuration will be specific to the app being deployed. This section shows how to deploy the Helm chart for the Bitnami WordPress Stack using TLS certificates generated by cert-manager, the user and database information created in the previous section, and the cluster-internal domain name for the MySQL service.
+
+This section assumes that the MySQL instance is named `mysql-sample` and is deployed to the `default` Kubernetes namespace.
+
+1. Install cert-manager if it is not already present in the cluster, following the details in [Prerequisites for Installing via the Tanzu Network Registry](./install-operator.html#tanzu-network-prerequisites).
+
+1. Generate a certificate for MySQL to present to WordPress. The certificate must meet the WordPress authentication requirements.
+    <br /><br />
+    WordPress authenticates signed certificates within the cluster. The following command generates two Issuers: the first Issuer, `selfsigned-issuer`, generates a certificate, `ca-certificate`, for the second Issuer, `tls-issuer`. That second Issuer generates the `tls-certificate` that MySQL will present to WordPress.
+
+    ``` 
+    cat &lt;&lt;EOF | kubectl apply -f -
+    ---
+    apiVersion: cert-manager.io/v1
+    kind: Issuer
+    metadata:
+      name: selfsigned-issuer
+    spec:
+      selfSigned: {}
+    ---
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: ca-certificate
+    spec:
+      isCA: true
+      issuerRef:
+        name: selfsigned-issuer
+      secretName: ca-secret
+      commonName: ca-cert
+    ---
+    apiVersion: cert-manager.io/v1
+    kind: Issuer
+    metadata:
+      name: tls-issuer
+    spec:
+      ca:
+        secretName: ca-secret
+    ---
+    apiVersion: cert-manager.io/v1
+    kind: Certificate
+    metadata:
+      name: tls-certificate
+    spec:
+      isCA: false
+      dnsNames:
+        - mysql-sample.default # See note after the code excerpt
+      secretName: mysql-tls-secret
+      issuerRef:
+        name: tls-issuer
+    EOF
+    ``` 
+
+    <p class="note"><strong>Note:</strong> If you are deploying WordPress in the same Kubernetes cluster as the MySQL instance, specify <code>INSTANCE-NAME.INSTANCE-NAMESPACE</code> for <code>spec.dnsNames</code> above.</p>
+
+1. Edit the YAML file for the MySQL instance so that the instance presents the `tls-certificate` when receiving a client connection request. Then apply the updated YAML file.
+    <br /><br />
+    In the MySQL instance YAML file, add the spec property `spec.tls.secret.name`. If you are creating a new MySQL instance, you can edit the original deployment YAML file and then apply that file to create the instance. If you are updating an existing MySQL instance, you can use the `kubectl edit` command to edit the YAML configuration in place. For example:
+
+    ``` 
+    kubectl edit mysql.with.sql.tanzu.vmware.com/mysql-sample
+
+    spec:
+      ...
+      tls:
+        secret:
+          name: mysql-tls-secret
+      ...
+    ``` 
+
+    For more information about TLS configuration, see [Configuring TLS for MySQL Instances](./configure-tls.html#using-cert-manager).
+    <br /><br />
+    You can verify that the deployment was successful by inspecting the startup output:
+
+    ``` 
+    kubectl logs pod/mysql-sample-0 -c mysql
+    Initialization complete, now exiting!
+    2021-04-06T02:07:02.667789Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.22-13) starting as process 1
+    2021-04-06T02:07:02.675491Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+    2021-04-06T02:07:02.907693Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+    2021-04-06T02:07:03.055031Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+    2021-04-06T02:07:03.157475Z 0 [Warning] [MY-010068] [Server] CA certificate /etc/mysql/certs/ca.pem is self signed.
+    2021-04-06T02:07:03.161660Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+    ``` 
+
+1. Deploy the Bitnami WordPress Stack Helm chart, specifying the information for the constructs created in the preceding steps:
+    <br />
+    * Database username `bn_wordpress`
+    * Database user password `hunter2`
+    * Database name `bitnami_wordpress`
+    * Secret `mysql-tls-secret` (containing the MySQL signed certificate)
+
+    The following commands mount a volume, which contains the CA secret, onto the Bitnami container, which reads the mount point into the `WORDPRESS_DATABASE_SSL_CA_FILE` environment variable:
+
+    ``` 
+    helm repo add  bitnami https://charts.bitnami.com/bitnami
+    "bitnami" has been added to your repositories
+
+    helm install wp bitnami/wordpress -f - &lt;&lt;EOF
+    mariadb:
+      enabled: false
+
+    externalDatabase:
+      host: mysql-sample.default.svc.cluster.local
+      user: bn_wordpress
+      password: hunter2
+      database: bitnami_wordpress
+
+    extraEnvVars:
+    - name: "WORDPRESS_DATABASE_SSL_CA_FILE"
+      value: "/etc/mysql/tls/ca.crt"
+
+    extraVolumes:
+    - name: mysql-ca
+      secret:
+        secretName: "mysql-tls-secret"
+        items:
+        - key: ca.crt
+          path: ca.crt
+
+    extraVolumeMounts:
+      - name: mysql-ca
+        mountPath: /etc/mysql/tls/
+    EOF
+
+
+    NAME: wp
+    LAST DEPLOYED: Tue Dec 8 14:32:08 2020
+    NAMESPACE: default
+    STATUS: deployed
+    REVISION: 1
+    TEST SUITE: None
+    NOTES:
+    ** Please be patient while the chart is being deployed **
+    ``` 
+
+    After successful installation, Helm will display WordPress instructions for connecting as a user or admin to the running WordPress server. You can also retrieve the WordPress user password by running the following command:
+
+    ``` 
+    kubectl get secret wp-wordpress -o go-template='{{index .data "wordpress-password" | base64decode}}'
+    ``` 
