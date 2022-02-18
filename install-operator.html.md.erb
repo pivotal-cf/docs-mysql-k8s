@@ -140,7 +140,7 @@ To create the namespace and secret:
 
     ```
     kubectl create secret docker-registry tanzu-image-registry --docker-server=https://registry.tanzu.vmware.com/ \
-    --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
+    --docker-username=$DOCKER-USERNAME --docker-password=$DOCKER-PASSWORD
     ```
 
 1. Download the Helm chart to your current working directory on your local machine by running:
