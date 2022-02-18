@@ -1,0 +1,210 @@
+---
+title: Network Policy Configuration
+---
+
+<%=vars.product_name %> requires communication between different Kubernetes pods, DNS services, and the Kubernetes API server.
+
+This topic describes how to configure Network Policies in Kubernetes clusters that use a Container Network Interface (CNI) type
+[Network Plugin](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/) that is configured with restrictive policies. For more information on different types of policies see [Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) in the Kubernetes documentation.
+
+The following example yaml file shows a strict policy that is the recommended best-practice for some CNIs like [Calico](https://docs.projectcalico.org/security/kubernetes-network-policy#best-practice-create-deny-all-default-network-policy):
+
+```yaml
+---
+apiVersion: networking.k8s.io/v1
+  kind: NetworkPolicy
+  metadata:
+    name: default-deny
+    namespace: MY-NAMESPACE
+  spec:
+    podSelector: {}
+    policyTypes:
+      - Ingress
+      - Egress
+```
+
+This policy denies ingress and egress for all pods in the namespace called `MY-NAMESPACE`.
+
+To successfully deploy Tanzu MySQL you need to allow communication between pods, Operator, API server and services. For details see [Allowing Operator Communication](#operator_configuration) and [Allowing Instance Communication](#instance_configuration).
+
+## <a id="operator_configuration"></a> Allowing Operator Communication
+
+The Operator pods need to communicate with the Kubernetes service, in order to reconcile MySQL instances. This example shows how to amend a strict network policy to permit that communication.
+
+Get the Cluster IP and the port number of the Kubernetes service, that will be used in the NetworkPolicy specification. Use the following command to display this information for the `default` namespace:
+
+```
+$ kubectl get endpoints --namespace default kubernetes
+NAME         ENDPOINTS            AGE
+kubernetes   192.168.64.38:8443   42h
+```
+
+Where `192.168.64.38` is the IP address and `8443` the port number in the example scenario.
+
+Using the IP address and port, create the following NetworkPolicy:
+
+```yaml
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: operator-to-apiserver-egress
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: tanzu-mysql-operator
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 192.168.64.38/32
+      ports:
+        - port: 8443
+          protocol: TCP
+```
+
+Apply the policy to your cluster, in the namespace that the Operator is deployed in:
+
+```
+$ kubectl apply -n OPERATOR-NAMESPACE -f sample-network-policy.yaml
+networkpolicy.networking.k8s.io/operator-to-apiserver-egress created
+```
+
+## <a id="instance_configuration"></a> Allowing Instance Communication
+
+To ensure that the database and operator pods can communicate for replication and failover, follow these steps:
+
+1. Allow access to the [DNS server](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/) for DNS lookup of
+the other pods' addresses.
+
+    It is recommended to label the `kube-system` namespace to easily use the `namespaceSelector` section of the NetworkPolicy spec.
+    For example:
+
+    ```
+    $ kubectl label namespace kube-system networking/namespace=kube-system
+    namespace/kube-system labeled
+    ```
+
+    The following NetworkPolicy allows all pods in `NAMESPACE` access to the DNS server:
+
+    ```yaml
+    ---
+    apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-dns-access
+    spec:
+      podSelector:
+        matchLabels: {}
+      policyTypes:
+        - Egress
+      egress:
+        - to:
+          - namespaceSelector:
+              matchLabels:
+                    networking/namespace: kube-system
+        - ports:
+            - port: 53
+              protocol: UDP
+            - port: 53
+              protocol: TCP
+    ```
+
+    Save this sample to a file, and apply it to your cluster:
+
+    ```
+    $ kubectl apply -n INSTANCE-NAMESPACE -f dns-policy-sample.yaml
+    networkpolicy.networking.k8s.io/allow-dns-access created
+    ```
+
+2.  Allow inter-MySQL cluster communication. The following NetworkPolicy allows the proxy and database pods to communicate (assuming the default MySQL port of `3306`).
+
+	```yaml
+	---
+	apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: proxy-to-service-ingress-egress
+    spec:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/component: proxy
+      policyTypes:
+        - Egress
+        - Ingress
+      egress:
+        - to:
+            - ipBlock:
+                cidr: 192.168.64.28/32
+          ports:
+            - port: 8443
+              protocol: TCP
+      ingress:
+        - from:
+          - ipBlock:
+              cidr: 192.168.64.28/32
+          ports:
+            - port: 8443
+              protocol: TCP
+	```
+
+	Save this sample to a file, and apply it to your cluster:
+	```
+	$ kubectl apply -n INSTANCE-NAMESPACE -f proxy-database-ingress-egress.yaml
+	networkpolicy.networking.k8s.io/database-proxy-ingress-egress created
+	```
+
+3. The MySQL monitor pod needs to communicate with the Kubernetes service to facilitate communication between the client and the database pods.
+
+    Use the following command to note the Cluster IP and the port number of the Kubernetes service:
+
+    ```
+    $ kubectl get endpoints --namespace default kubernetes
+    NAME         ENDPOINTS            AGE
+    kubernetes   192.168.64.38:8443   42h
+    ```
+
+    where `192.168.64.38` is the IP address and `8443` the port number that will be used to specify the NetworkPolicy for the service.
+
+    Using the IP address and port, create the following NetworkPolicy:
+
+
+    ```yaml
+    ---
+    apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: database-proxy-ingress-egress
+    spec:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/component: proxy
+      policyTypes:
+        - Ingress
+        - Egress
+      egress:
+        - to:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/component: database
+          ports:
+          - port: 3306
+            protocol: TCP
+      ingress:
+        - from:
+          - podSelector:
+              matchLabels:
+                app.kubernetes.io/component: database
+          ports:
+            - port: 3306
+              protocol: TCP
+    ```
+
+    Save this sample to a file, and apply it to your cluster:
+
+    ```
+    $ kubectl apply -n INSTANCE-NAMESPACE -f proxy-to-service-ingress-egress.yaml
+    networkpolicy.networking.k8s.io/proxy-to-service-ingress-egress created
+    ```
+    where `INSTANCE-NAMESPACE` is the MySQL instance namespace and `proxy-to-service-ingress-egress.yaml` is your policy yaml.

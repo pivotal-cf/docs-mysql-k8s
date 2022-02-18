@@ -27,7 +27,9 @@ Before you deploy the Tanzu MySQL Operator, you need:
 
 - `cluster-admin` ClusterRole access to the Kubernetes cluster. For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
 
-* [Cert Manager](https://github.com/jetstack/cert-manager) installed on the Kubernetes cluster. 
+- review the [Network Policies Configuration](network-policies.html) topic if you have any network plugins (for example [Network Plugin](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/)) in your Kubernetes cluster.
+
+* [Cert Manager](https://github.com/jetstack/cert-manager) installed on the Kubernetes cluster.
     
     Install cert-manager by running these commands from your local client:
 
