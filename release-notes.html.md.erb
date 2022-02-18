@@ -75,6 +75,9 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="12_resolved"></a> Resolved Issues
 
+* ### <a id="13_resolved"></a> Resolved Issues
+
+* This release addresses a vulnerability [CVE-2020-14040](https://nvd.nist.gov/vuln/detail/CVE-2020-14040) in the mysqld_exporter process.
 * **The Tanzu MySQL Operator 1.2.0 can now create 1.0.0 Tanzu MySQL instances**: New Tanzu MySQL 1.0.0 instances, or existing 1.0.0 instances that restart, do not require an upgrade to the latest Tanzu MySQL version.
 * **Proxy connection limitation**: The proxy in an HA instance will no longer block further connections after 100 failed connection attempts.
 * **`imagePullSecretName` no longer required for restores**: MySQLRestore required `imagePullSecretName` to be provided in the `instanceTemplate`. MySQLRestore now defaults to using the `imagePullSecretName` that is configured in the Helm chart if the user does not provide the secret. 
