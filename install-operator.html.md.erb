@@ -20,7 +20,9 @@ Before you deploy the Tanzu MySQL Operator, you need:
 - The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) command-line tool, configured and authenticated to communicate with your Kubernetes cluster.
 
 - The Helm v3 command-line tool installed. For more information, see [Installing Helm](https://helm.sh/docs/intro/install/) from the Helm documentation. <br>
-    **IMPORTANT**: Helm 3.7.x is currently not supported.
+    <p class="note">
+       <strong>Note:</strong> Helm CLI 3.7.0 is not supported. Please use 3.7.1 and later.
+    </p>
 
 - `cluster-admin` ClusterRole access to the Kubernetes cluster. For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
 
@@ -81,8 +83,6 @@ You can setup <%=vars.product_name %> using two different methods:
 
 ### <a id="install-via-tanzu"></a>  Setup the Tanzu Operator via the Tanzu Network Registry
 
-**IMPORTANT**: Helm 3.7.x is currently not supported.
-
 1. Set the environment variable to enable OCI support in the Helm v3 client by running:
 
     ```
@@ -104,18 +104,28 @@ You can setup <%=vars.product_name %> using two different methods:
 
 
 1. Download the `tanzu-mysql-operator-chart` using Helm:
+    
+    If you're using Helm CLI 3.6 and earlier:
 
     ```
     helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.2.0
     ```
     ```
-    1.2.0: Pulling from registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
+    1.3.0: Pulling from registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart
     ref:     <span style="color: #77bf00;">registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.2.0</span>
     digest:  2b6e1d010ab1737dcc5a426b223a06db1c616107d2ceaf368db6fda48d96a61a
     size:    4.2 KiB
     name:    tanzu-sql-with-mysql-operator
-    version: 1.2.0
-    Status: Downloaded newer chart for registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.2.0
+    version: 1.3.0
+    Status: Downloaded newer chart for registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.3.0
+    ```
+    ```
+    helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:v1.3.0 --destination=/tmp/
+    ```
+
+    If you're using Helm CLI 3.7.1 and later:
+    ```
+    helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart --version v1.3.0 --untar --untardir /tmp
     ```
 
 ### <a id="install-via-tar"></a> Setup the Tanzu Operator via a Downloaded Archive File
@@ -125,7 +135,7 @@ Choose this method if:
 - The installation destination (for example an air-gapped network) cannot access the [VMware Tanzu Network](https://network.pivotal.io).
 - Or you wish to load the Operator and instance images to a private Docker registry.
 
-**IMPORTANT**: Helm 3.7.x is currently not supported.
+**IMPORTANT**: Helm 3.7.0 is not supported. Use Helm 3.7.1 and above.
 
 1. Download the Tanzu MySQL distribution from [VMware Tanzu Network](https://network.pivotal.io). The download filename has the format: `tanzu-mysql-for-kubernetes-<version>.tgz`.
 
@@ -136,7 +146,7 @@ Choose this method if:
     tar xzf tanzu-mysql-for-kubernetes-<version>.tgz
     ``` 
 
-    This command unpacks the distribution into a new directory named `tanzu-mysql-for-kubernetes-<version>`, for example `tanzu-mysql-for-kubernetes-1.2.0`.
+    This command unpacks the distribution into a new directory named `tanzu-mysql-for-kubernetes-<version>`, for example `tanzu-mysql-for-kubernetes-1.3.0`.
 
 1.  Change to the new `tanzu-mysql-for-kubernetes-<version>` directory. For example:
 
@@ -164,8 +174,8 @@ Choose this method if:
     ```
     ```
     REPOSITORY                                                                  TAG       IMAGE ID       CREATED        SIZE
-    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.2.0     5f0ad7bad51b   5 weeks ago    792MB
-    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.2.0     eb1458d2e1bd   5 weeks ago    76MB
+    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.3.0     5f0ad7bad51b   5 weeks ago    792MB
+    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.3.0     eb1458d2e1bd   5 weeks ago    76MB
     ``` 
 
 1.  Push the Tanzu MySQL Docker images to the container registry of your choice. Set each image's project and image repo name, tag the images, and then push them using the Docker command `docker push`.
@@ -310,9 +320,9 @@ Next follow [Deploy the Operator](#create-operator). The MySQL Operator will use
 
 ### <a id="create-operator"></a>  Deploy the Operator 
 
-**IMPORTANT**: Helm 3.7.x is currently not supported.
+**IMPORTANT**: Helm 3.7.0 is not supported. Use Helm 3.7.1 and above.
 
-1.  By default, the Tanzu MySQL Operator 1.2.0 configures a `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
+1.  By default, the Tanzu MySQL Operator 1.3.0 configures a `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
 
     To continue with the default installation, use Helm to install the MySQL Operator in your Kubernetes cluster:
 
