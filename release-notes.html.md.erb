@@ -67,7 +67,7 @@ The <%= vars.product_short %> releases support the components listed below:
 
 * ### <a id="13_resolved"></a> Resolved Issues
 
-* This release addresses a vulnerability CVE-2020-14040 in the mysqld_exporter process.
+* This release addresses a vulnerability [CVE-2020-14040](https://nvd.nist.gov/vuln/detail/CVE-2020-14040) in the mysqld_exporter process.
 * [177801601] - Users are now prevented from scaling down an existing HA cluster to a single node instance. If users set the `spec.highAvailability.enabled` to `false` in a running HA cluster, the operation fails and returns an error. 
 * [177369907] - When a user creates a backup with `spec.storageArtifactName`, when the backup starts, the`timeStarted` is now correctly updated.
 * [177648443] - The <%= vars.product_short %> Operator now checks that the DNS name resolution is consistent before repairing an offline cluster.
