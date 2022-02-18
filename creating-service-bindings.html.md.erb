@@ -26,32 +26,32 @@ For more information on how to create or update TAP workloads, see [Working with
 
 - TAP services-toolkit will need correct permissions to access MySQL instances. For this, you need a ClusterRole and ClusterRoleBinding that binds the role to `services-toolkit-controller-manager`  service account in `services-toolkit` namespace. Save the below contents in `mysql-service-binding-rbac.yaml`
 
-```
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  labels:
-    resourceclaims.services.apps.tanzu.vmware.com/controller: "true"
-  name: mysql-for-kubernetes-mysqls-service-bindings-role
-rules:
-  - apiGroups:
-      - with.sql.tanzu.vmware.com
-    resources:
-      - mysqls
-    verbs:
-      - get
-      - list
-      - watch
-      - update
-  - apiGroups:
-      - with.sql.tanzu.vmware.com
-    resources:
-      - mysqls/status
-    verbs:
-      - get
-```
+    ```
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      labels:
+        resourceclaims.services.apps.tanzu.vmware.com/controller: "true"
+      name: mysql-for-kubernetes-mysqls-service-bindings-role
+    rules:
+      - apiGroups:
+          - with.sql.tanzu.vmware.com
+        resources:
+          - mysqls
+        verbs:
+          - get
+          - list
+          - watch
+          - update
+      - apiGroups:
+          - with.sql.tanzu.vmware.com
+        resources:
+          - mysqls/status
+        verbs:
+          - get
+    ```
 
-and then run `kubectl apply -f mysql-service-binding-rbac.yaml`
+    and then run `kubectl apply -f mysql-service-binding-rbac.yaml`
 
 ### <a id="tap_new_workloads"></a> Bind a new TAP workload to a MySQL instance
 
@@ -70,7 +70,13 @@ where,
 For example,
 
 ```
-tanzu apps workload create pet-clinic --git-repo https://github.com/sample-accelerators/spring-petclinic --git-branch main --type web  --git-tag=tap-1.0 --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample --env=SPRING_PROFILES_ACTIVE=mysql"
+tanzu apps workload create pet-clinic \
+      --git-repo https://github.com/sample-accelerators/spring-petclinic \
+      --git-branch main \
+      --type web  \
+      --git-tag=tap-1.0 \
+      --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample 
+      --env=SPRING_PROFILES_ACTIVE=mysql"
 ```
 
 ### <a id="tap_existing_workloads"></a>Bind an existing TAP workload to a MySQL instance
@@ -270,9 +276,9 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
     mysql@mysql-sample-0:/$
     ``` 
 
-1. Create any MySQL constructs needed by your app, and create a user with privileges to access those constructs as required by your app.
-   <b>NOTE:</b> Older MySQL client libraries (such as those base on 5.6) need an older password encryption method. We show both type of `CREATE USER` commands below.
-    <br /> <br />
+1. Create any MySQL constructs needed by your app, and create a user with privileges to access those constructs as required by your app.</br>
+   **NOTE:** Older MySQL client libraries (such as those base on 5.6) need an older password encryption method. We show both type of `CREATE USER` commands below.
+
     For example, the following commands create a `bitnami_wordpress` database and `bn_wordpress` user for the Bitnami WordPress Stack deployment:
 
     ``` 
