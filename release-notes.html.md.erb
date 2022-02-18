@@ -61,12 +61,19 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="13_features"></a> Features
 
-* This release supports Percona Server 8.0.26, Percona XtraBackup 8.0.26, and MySQL Router 8.0.26. 
-* Tanzu MySQL Operator 1.3.0 introduces the ability for applications to bind to MySQL instances using a specification-conformant Service Binding Controller. For more information, see [Connecting an Application to a MySQL Instance](creating-service-bindings.html).
+* Tanzu MySQL Operator 1.3.0 introduces the ability for applications to bind to MySQL instances using a [specification](https://github.com/servicebinding/spec#service-binding-specification-for-kubernetes)-conformant Service Binding Controller. For more information see [Binding an Application to a MySQL Instance using TAP workflow](creating-service-bindings.html#tap_apps). 
+
+### <a id="13_changes"></a> Changes
+
+- This release relaxes a requirement that all tables must have primary keys. Now only HA instances require primary keys or equivalent non-null unique keys, and single-node instances have no such requirement.
+
+- Release 1.3.0 improves secure defaults by restricting MySQL connections from using insecure, deprecated TLSv1.0 and TLSv1.1 protocols. From this release, only TLSv1.2 and TLSv1.3 connections are supported.
+
 
 ### <a id="13_resolved"></a> Resolved Issues
 
 * This release addresses a vulnerability CVE-2020-14040 in the mysqld_exporter process.
+* In certain scenarios, kubectl validation errors were being repeated. This issue has been resolved, and the user is presented with a single list of validation errors.
 
 
 ### <a id="13_issues"></a> Known Issues
