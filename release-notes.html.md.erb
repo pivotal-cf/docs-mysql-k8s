@@ -72,7 +72,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="13_resolved"></a> Resolved Issues
 
-* This release addresses a vulnerability CVE-2020-14040 in the mysqld_exporter process.
+* This release addresses a vulnerability [CVE-2020-14040](https://nvd.nist.gov/vuln/detail/CVE-2020-14040) in the mysqld_exporter process.
 * In certain scenarios, kubectl validation errors were being repeated. This issue has been resolved, and the user is presented with a single list of validation errors.
 
 
@@ -130,6 +130,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="12_resolved"></a> Resolved Issues
 
+* This release addresses a vulnerability [CVE-2020-14040](https://nvd.nist.gov/vuln/detail/CVE-2020-14040) in the mysqld_exporter process.
 * **The Tanzu MySQL Operator 1.2.0 can now create 1.0.0 Tanzu MySQL instances**: New Tanzu MySQL 1.0.0 instances, or existing 1.0.0 instances that restart, do not require an upgrade to the latest Tanzu MySQL version.
 * **Proxy connection limitation**: The proxy in an HA instance will no longer block further connections after 100 failed connection attempts.
 * **`imagePullSecretName` no longer required for restores**: MySQLRestore required `imagePullSecretName` to be provided in the `instanceTemplate`. MySQLRestore now defaults to using the `imagePullSecretName` that is configured in the Helm chart if the user does not provide the secret. 
@@ -184,6 +185,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="11_resolved"></a> Resolved Issues
 
+* This release addresses a vulnerability [CVE-2020-14040](https://nvd.nist.gov/vuln/detail/CVE-2020-14040) in the mysqld_exporter process.
 * [177801601] - Users are now prevented from scaling down an existing HA cluster to a single node instance. If users set the `spec.highAvailability.enabled` to `false` in a running HA cluster, the operation fails and returns an error. 
 * [177369907] - When a user creates a backup with `spec.storageArtifactName`, when the backup starts, the`timeStarted` is now correctly updated.
 * [177648443] - The <%= vars.product_short %> Operator now checks that the DNS name resolution is consistent before repairing an offline cluster.
