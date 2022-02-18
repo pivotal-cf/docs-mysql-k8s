@@ -45,7 +45,7 @@ This is a word list for terminology and word usage specific to the VMware Tanzu 
 ## Placeholder Table
 
 This is a place to keep track of the placeholder we use.
-We want to use placeholders consistently througout the doc.
+We want to use placeholders consistently throughout the doc.
 
 | Placeholder | Sample | Explanation | Used in |
 |-------------|--------|-------------|---------|
