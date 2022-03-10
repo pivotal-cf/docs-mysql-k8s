@@ -98,7 +98,7 @@ spec:
 #        memory: 50Mi
 #      limits:
 #        cpu: 250m
-#        memory: 75Mi
+#        memory: 256Mi
 
 #### This is the container that proxies connections to MySQL
 #    proxy:
@@ -275,7 +275,7 @@ Configures Kubernetes Tolerations for the MySQL instance's database Pods. For mo
 apiVersion: with.sql.tanzu.vmware.com/v1
 kind: MySQL
 metadata:
-    name: my-instance
+  name: my-instance
 spec:
   databasePodConfig:
     tolerations:
@@ -298,10 +298,10 @@ for this container. For more information about managing resources for containers
 ```
 ...
 resources:
-   mysql:
-     limits:
-       cpu: '1.0'
-       memory: 800Mi
+  mysql:
+    limits:
+      cpu: '1.0'
+      memory: 1Gi
 ...
 ```
 
@@ -314,10 +314,10 @@ The minimum CPU and memory allowed for the MySQL container. If not specified, de
 ```
 ...
 resources:
-   mysql:
-     requests:
-       cpu: 750m
-       memory: 500Mi
+  mysql:
+    requests:
+      cpu: 750m
+      memory: 500Mi
 ...
 ```
 
@@ -330,10 +330,11 @@ The minimum CPU and memory allowed for the MySQL Sidecar container. This sidecar
 ```
 ...
 resources:
-   mysqlSidecar:
+  mysqlSidecar:
     limits:
-       cpu: 250m
-       memory: 256Mi
+      cpu: 250m
+      memory: 256Mi
+
 ...
 ```
 
@@ -346,10 +347,10 @@ The minimum CPU and memory allowed for the MySQL Sidecar container. This sidecar
 ```
 ...
 resources:
-   mysqlSidecar:
-     requests:
-       cpu: 100m
-       memory: 50Mi
+  mysqlSidecar:
+    requests:
+      cpu: 100m
+      memory: 50Mi
 ...
 ```
 **`resources.metrics: <limits.cpu, limits.memory>`**<br />
@@ -361,10 +362,10 @@ The minimum CPU and memory allowed for the MySQL metrics container. This contain
 ```
 ...
 resources:
-   metrics:
+  metrics:
     limits:
-       cpu: 250m
-       memory: 75Mi
+      cpu: 250m
+      memory: 75Mi
 ...
 ```
 
@@ -377,10 +378,10 @@ The minimum CPU and memory allowed for the MySQL metrics container. This contain
 ```
 ...
 resources:
-   metrics:
-     requests:
-       cpu: 100m
-       memory: 32Mi
+  metrics:
+    requests:
+      cpu: 100m
+      memory: 32Mi
 ...
 ```
 
@@ -393,10 +394,10 @@ The minimum CPU and memory allowed for the MySQL proxy container that handles co
 ```
 ...
 resources:
-   proxy:
+  proxy:
     limits:
-       cpu: '1.0'
-       memory: 256Mi
+      cpu: '1.0''
+      memory: 256Mi
 ...
 ```
 
@@ -409,10 +410,11 @@ The minimum CPU and memory allowed for the MySQL proxy container that handles co
 ```
 ...
 resources:
-   proxy:
-     requests:
-       cpu: 200m
-       memory: 48Mi
+  proxy:
+    requests:
+      cpu: 200m
+      memory: 48Mi
+
 ...
 ```
 
