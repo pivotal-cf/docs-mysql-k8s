@@ -395,8 +395,8 @@ The minimum CPU and memory allowed for the MySQL proxy container that handles co
 resources:
    proxy:
     limits:
-       cpu: 200m
-       memory: 48Mi
+       cpu: '1.0'
+       memory: 256Mi
 ...
 ```
 
@@ -411,8 +411,8 @@ The minimum CPU and memory allowed for the MySQL proxy container that handles co
 resources:
    proxy:
      requests:
-       cpu: '1.0''
-       memory: 256Mi
+       cpu: 200m
+       memory: 48Mi
 ...
 ```
 
