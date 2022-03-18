@@ -228,10 +228,10 @@ Choose this method if:
     kubectl create namespace tanzu-mysql-for-kubernetes-system
     ```
 
-1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private image registry, or the Tanzu Registry, so it can pull images. These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR.
+1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private image registry, or the Tanzu Registry, so it can pull images. These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR. The following commands create the secret in the Operator's default namespace <code>tanzu-mysql-for-kubernetes-system</code> (created above).
 
-    <p class='note important'><strong>IMPORTANT:</strong> The following commands create the secret in the Operator's default namespace <code>tanzu-mysql-for-kubernetes-system</code> (created above). <strong>Create identical or equivalent secrets in every namespace in which users will create Tanzu MySQL instances</strong>, by re-running the below commands, replacing the Operator namespace </code>tanzu-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
-    If these secrets are not created, the users will receive "ImagePullBackOff" errors when creating instances, as their MySQL pods fail to pull instance images from the image registry.</p>
+    <p class='note important'><strong>IMPORTANT:</strong> Re-run the commands below to create identical or equivalent secrets in every namespace in which users will create Tanzu MySQL instances</strong>, and replace the Operator namespace <code>tanzu-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
+    If these secrets are not created in the instance namespace, the users will receive "ImagePullBackOff" errors when creating instances, as their MySQL pods fail to pull instance images from the image registry.</p>
     
     **Tanzu Registry**
     
