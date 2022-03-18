@@ -230,7 +230,7 @@ Choose this method if:
 
 1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private image registry, or the Tanzu Registry, so it can pull images. These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR.
 
-    <p class='note important'><strong>IMPORTANT:</strong> The following commands create the secret in the Operator's default namespace <code>tanzu-mysql-for-kubernetes-system</code> (created above). <strong>Create identical or equivalent secrets in every namespace in which users will create Tanzu MySQL instances, for example the namespace <code>default</code>, by re-running the below commands, replacing the Operator namespace </code>tanzu-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
+    <p class='note important'><strong>IMPORTANT:</strong> The following commands create the secret in the Operator's default namespace <code>tanzu-mysql-for-kubernetes-system</code> (created above). <strong>Create identical or equivalent secrets in every namespace in which users will create Tanzu MySQL instances</strong>, by re-running the below commands, replacing the Operator namespace </code>tanzu-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
     If these secrets are not created, the users will receive "ImagePullBackOff" errors when creating instances, as their MySQL pods fail to pull instance images from the image registry.</p>
     
     **Tanzu Registry**
@@ -264,9 +264,9 @@ Choose this method if:
     --namespace tanzu-mysql-for-kubernetes-system
     ```
 
-For information about how to obtain the `key.json` service account file, see [Creating service account credentials](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#step_3_create_service_account_credentials) in the GKE documentation.
+    For information about how to obtain the `key.json` service account file, see [Creating service account credentials](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#step_3_create_service_account_credentials) in the GKE documentation.
 
-When you [deploy the operator](#create-operator), the MySQL Operator will use this secret to authenticate the Kubernetes cluster with the container registry and to then pull images.
+    When you [deploy the operator](#create-operator), the MySQL Operator will use this secret to authenticate the Kubernetes cluster with the container registry and to then pull images.
 
 
 ### <a id="create-overrides"></a> Review the Operator Values
