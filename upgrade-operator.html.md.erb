@@ -42,15 +42,21 @@ To upgrade the Operator using the Helm CLI:
     helm -n tanzu-mysql-for-kubernetes-system ls
     NAME                    NAMESPACE                               REVISION        UPDATED                                 STATUS          CHART                                   APP VERSION
     tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2021-04-01 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.0.0     1.0.0
-    ``` 
+    ```
+
+1.  Create a temporary directory to export the chart by running:
+
+	```
+	CHART_DIR=$(mktemp -d /tmp/tanzu-mysql-operator-chart:${VERSION-NUMBER-TAG}.XXXXX)
+	```
 
 1. Download the Helm chart to your current working directory on your local machine by running these commands:
 
     ```
-    helm chart pull REGISTRY-URL
+    helm chart pull ${REGISTRY-URL}
     ```
     ```
-    helm chart export REGISTRY-URL
+    helm chart export ${REGISTRY-URL} -d ${CHART_DIR}
     ```
     Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart.
 The value of `REGISTRY-URL` has the following pattern:
@@ -89,3 +95,8 @@ The value of `REGISTRY-URL` has the following pattern:
     1           Thu Jan 14 17:47:53 2021    superseded    tanzu-sql-with-mysql-operator-1.0.0     1.0.0          Install complete
     2           Thu Jan 14 18:09:05 2021    deployed      tanzu-sql-with-mysql-operator-1.0.1     1.0.1          Upgrade complete
     ``` 
+
+1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
+	```
+	rm ${CHART_DIR}
+	```
