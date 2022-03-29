@@ -80,6 +80,13 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 * **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
 
+* The following CVEs exist in this release:
+
+- [CVE-2022-25235](https://nvd.nist.gov/vuln/detail/CVE-2022-25235)
+- [CVE-2022-25236](https://nvd.nist.gov/vuln/detail/CVE-2022-25236)
+- [CVE-2022-24407](https://nvd.nist.gov/vuln/detail/CVE-2022-24407)
+- [CVE-2021-3538](https://nvd.nist.gov/vuln/detail/CVE-2021-3538)
+
 ### <a id="13_limits"></a> Limitations
 
 * The Tanzu SQL release supports Helm 3.6.3 and lower, or Helm 3.7.1 and later. Helm 3.7.0 is not supported.
@@ -138,6 +145,14 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 ### <a id="11_issues"></a> Known Issues
 
 * **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
+
+* The following CVEs exist in this release:
+
+- [CVE-2022-25235](https://nvd.nist.gov/vuln/detail/CVE-2022-25235)
+- [CVE-2022-25236](https://nvd.nist.gov/vuln/detail/CVE-2022-25236)
+- [CVE-2022-24407](https://nvd.nist.gov/vuln/detail/CVE-2022-24407)
+- [CVE-2021-3538](https://nvd.nist.gov/vuln/detail/CVE-2021-3538)
+
 
 ### <a id="11_limits"></a> Limitations
 
@@ -199,6 +214,13 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * **Proxy connection limitation**: The proxy in an HA instance supports up to 100 connection errors from the same source IP. When the limit is reached, the proxy does not process any further connection requests. For a workaround, restart the proxy pod in order to reset the connection error counter. 
 * **`imagePullSecretName` required for restores**: MySQLRestore requires `imagePullSecretName` to be provided in the `instanceTemplate`.
 * **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
+
+* The following CVEs exist in this release:
+
+- [CVE-2022-25235](https://nvd.nist.gov/vuln/detail/CVE-2022-25235)
+- [CVE-2022-25236](https://nvd.nist.gov/vuln/detail/CVE-2022-25236)
+- [CVE-2022-24407](https://nvd.nist.gov/vuln/detail/CVE-2022-24407)
+- [CVE-2021-3538](https://nvd.nist.gov/vuln/detail/CVE-2021-3538)
 
 ### <a id="11_limits"></a> Limitations
 
@@ -274,6 +296,13 @@ For an overview of this product, see [About <%= vars.product_short %>](index.htm
   If the pods for an HA instance crash while the cluster and its metadata are still being created, the cluster may not recover automatically.
 * **Pods may restart when creating a HA instance**: Proxy pods may spontaneously restart while the cluster is being initialized.
 * **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
+
+* The following CVEs exist in this release:
+
+- [CVE-2022-25235](https://nvd.nist.gov/vuln/detail/CVE-2022-25235)
+- [CVE-2022-25236](https://nvd.nist.gov/vuln/detail/CVE-2022-25236)
+- [CVE-2022-24407](https://nvd.nist.gov/vuln/detail/CVE-2022-24407)
+
 
 ### <a id="10_limits"></a> Limitations
 
