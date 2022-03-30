@@ -63,7 +63,7 @@ To create a MySQL instance:
    To allow this, create an imagePullSecret by running:
 
     ```
-    kubectl --namespace=DEVELOPMENT-NAMESPACE create secret docker-registry tanzu-mysql-image-registry --docker-server=REGISTRY-SERVER-URL --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
+    kubectl --namespace=DEVELOPMENT-NAMESPACE create secret docker-registry tanzu-image-registry --docker-server=REGISTRY-SERVER-URL --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
     ```
     Where:
     * `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance
@@ -74,12 +74,12 @@ To create a MySQL instance:
 
     ``` 
     kubectl create secret --namespace=my-namespace \
-    docker-registry tanzu-mysql-image-registry  \
+    docker-registry tanzu-image-registry  \
     --docker-server=https://registry.tanzu.vmware.com/ \
     --docker-username=sample-username  \
     --docker-password=sample-password
 
-    secret/tanzu-mysql-image-registry created
+    secret/tanzu-image-registry created
     ``` 
 
 3. Find the `mysql.yaml` deployment template that you downloaded

@@ -47,7 +47,7 @@ The <%= vars.product_short %> releases support the components listed below:
 
 **Release Date: February 18th, 2022**
 
-### <a id="supported_platforms"></a> Supported Platforms
+### <a id="13_supported_platforms"></a> Supported Platforms
 
 This version of Tanzu MySQL is supported on the following platforms:
 
@@ -104,7 +104,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 **Release Date: November 5, 2021**
 
-### <a id="supported_platforms"></a> Supported Platforms
+### <a id="12_supported_platforms"></a> Supported Platforms
 
 This version of Tanzu MySQL is supported on the following platforms:
 
@@ -142,7 +142,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * **Proxy connection limitation**: The proxy in an HA instance will no longer block further connections after 100 failed connection attempts.
 * **`imagePullSecretName` no longer required for restores**: MySQLRestore required `imagePullSecretName` to be provided in the `instanceTemplate`. MySQLRestore now defaults to using the `imagePullSecretName` that is configured in the Helm chart if the user does not provide the secret. 
 
-### <a id="11_issues"></a> Known Issues
+### <a id="12_issues"></a> Known Issues
 
 * **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
 
@@ -154,7 +154,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
     - [CVE-2021-3538](https://nvd.nist.gov/vuln/detail/CVE-2021-3538)
 
 
-### <a id="11_limits"></a> Limitations
+### <a id="12_limits"></a> Limitations
 
 * The Tanzu SQL release supports Helm 3.6.3 and lower. Helm 3.7.x is not supported.
 * Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  

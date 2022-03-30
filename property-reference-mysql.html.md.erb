@@ -149,7 +149,7 @@ The size of the persistent volume claims (PVCs) for MySQL instance Pods. Specify
 **Default**: Defaults to the `imagePullSecretName:` used during Operator deployment, as set in the Operator''s values.yaml (See [Configure a Kubernetes Secret for Accessing the Private Container Registry](GUID-install-operator.html#configure-a-kubernetes-secret-for-accessing-the-private-container-registry).)
 Note the secret may need to be recreated within your pod''s namespace in order for your pod to access it.<br />
 An existing Kubernetes docker-registry secret that can access the registry containing the MySQL image.<br />
-**Example**: tanzu-mysql-image-registry
+**Example**: tanzu-image-registry
 
 **`storageClassName: <string>`**<br />
 **Optional**<br />
