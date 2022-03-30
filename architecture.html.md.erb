@@ -99,7 +99,7 @@ with a service type of `ClusterIP` which routes connections to the MySQL Pod.
         requests:
           memory: 1Gi
     storageSize: 1Gi
-    imagePullSecretName: tanzu-mysql-image-registry
+    imagePullSecretName: tanzu-image-registry
   ```
 
 After applying this resource, the Operator creates
@@ -270,7 +270,7 @@ spec:
       name: mysql-sample
     spec:
       storageSize: 1Gi
-      imagePullSecretName: tanzu-mysql-image-registry
+      imagePullSecretName: tanzu-image-registry
 ```
 
 You can see the status of the restore using kubectl.
