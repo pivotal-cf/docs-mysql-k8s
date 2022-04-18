@@ -86,19 +86,16 @@ To create a MySQL instance:
    in the TGZ file from <%= vars.product_network %>.
    For how to download deployment templates, see [Download the Deployment Templates](#download-templates).
 
-4. Create a copy of the `mysql.yaml` file and give it a unique name.
-    <br><br>
-    For example:
+4. Create a copy of the `mysql.yaml` file and give it a unique name. For example:
 
     ``` 
     cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml
     ``` 
 
-
 5. Edit the file and customize the instance according to your requirements. 
     <br>
     You may customize your Tanzu MySQL instance version, instance resources, instance storage class, storage size, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For more details on all the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
-    <br><br>
+    <br/>
     When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form `mysql-data-INSTANCE-NAME-N`, for example `mysql-data-mysql-sample-0`.
 
 
@@ -107,9 +104,7 @@ To create a MySQL instance:
     ```
     kubectl -n DEVELOPMENT-NAMESPACE apply -f FILENAME
     ```
-    Where `FILENAME` is the name of the configuration file you created in Step 4 above.
-    <br><br>
-    For example:
+    Where `FILENAME` is the name of the configuration file you created in Step 4 above. For example:
 
     ``` 
     kubectl -n my-namespace apply -f testdb.yaml
@@ -124,8 +119,7 @@ To create a MySQL instance:
     ```
     kubectl -n DEVELOPMENT-NAMESPACE get mysql INSTANCE-NAME
     ```
-    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in your file
-    <br><br>
+    Where `INSTANCE-NAME` is the value that you configured for `metadata.name` in your file.
     For example:
 
     ``` 
