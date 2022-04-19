@@ -13,6 +13,10 @@ metadata:
   name: mysql-sample
 spec:
 
+#### Specify the MySQL Version
+#  mysqlVersion:
+#    name: mysql-8.0.26
+
 #### Set the storage size for the database persistent storage volume
 #  storageSize: 1Gi
 
@@ -137,6 +141,13 @@ The name of the MySQL instance. Must be unique within a namespace. Cannot be mod
 
 
 ## <a id="spec"></a> Spec
+
+**`mysqlversion: <String>`**<br />
+**Optional**<br />
+**Default**: <latest MySQL release supported><br />
+Indicates the MySQL version installed. By default it installs the latest supported version of MySQL. For example, ff the Operator supports {mysql-8.0.25, mysql-8.0.26, mysql-8.0.27}, then this value will default to mysql-8.0.27.
+After Tanzu MySQL Operator 1.4.0 release, each Operator supports three MySQL versions. Tanzu MySQL Operator 1.4.0 supports  <br />
+**Example**: 50Gi
 
 **`storageSize: <Quantity>`**<br />
 **Optional**<br />
