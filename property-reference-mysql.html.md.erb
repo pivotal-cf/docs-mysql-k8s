@@ -145,9 +145,12 @@ The name of the MySQL instance. Must be unique within a namespace. Cannot be mod
 **`mysqlversion: <String>`**<br />
 **Optional**<br />
 **Default**: <latest MySQL release supported><br />
-Indicates the MySQL version installed. By default it installs the latest supported version of MySQL. For example, ff the Operator supports {mysql-8.0.25, mysql-8.0.26, mysql-8.0.27}, then this value will default to mysql-8.0.27.
-After Tanzu MySQL Operator 1.4.0 release, each Operator supports three MySQL versions. Tanzu MySQL Operator 1.4.0 supports  <br />
-**Example**: 50Gi
+Indicates the MySQL version that will be deployed. By default it installs the latest supported version. For example, if the Tanzu MySQL Operator supports mysql-8.0.25, mysql-8.0.26, mysql-8.0.27, this value defaults to mysql-8.0.27.<br/>
+From Tanzu MySQL Operator 1.4.0 release, three MySQL versions are supported at any time. Only the permitted version strings are valid input for the field. Entries that do not match a supported version generate an error. Use `kubectl get mysqlVersion` to verify the MySQL versions of your Operator release.  <br />
+Use the "floating version tag" `mysql-latest` to configure your instance to always upgrade to the latest MySQL version supported by future Operator upgrades.<br/>
+**WARNING**: Instances with `mysql-latest` version will automatically reboot and upgrade when the Operator gets upgraded.
+**Example**:<br/>
+`mysql-8.0.26`
 
 **`storageSize: <Quantity>`**<br />
 **Optional**<br />

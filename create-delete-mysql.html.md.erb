@@ -44,6 +44,8 @@ You do not need to download the **Artifact References** from the Tanzu MySQL for
 
 [//]: # (Note to authors: if you change step numbers in this procedure, edit high-availability topic.)
 
+When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form `mysql-data-INSTANCE-NAME-N`, for example `mysql-data-mysql-sample-0`.
+
 ### <a id='create-inst-proc'></a> Procedure 
 
 To create a MySQL instance:
@@ -53,19 +55,21 @@ To create a MySQL instance:
     ```
     kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
     ```
-    Where `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance.
-    <br><br>
-    For example:
+    Where `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance. For example:
+
     ``` 
     kubectl config set-context --current --namespace=my-namespace
     ``` 
 
-2. From your namespace, Kubernetes must be able to access the registry
-   that stores the <%= vars.product_short %> images.
-   To allow this, create an imagePullSecret by running:
+2. From your namespace, Kubernetes must be able to access the registry that stores the <%= vars.product_short %> images.
+   To allow this, create an `imagePullSecret` by running:
 
     ```
-    kubectl --namespace=DEVELOPMENT-NAMESPACE create secret docker-registry tanzu-image-registry --docker-server=REGISTRY-SERVER-URL --docker-username=DOCKER-USERNAME --docker-password=DOCKER-PASSWORD
+    kubectl create secret --namespace=DEVELOPMENT-NAMESPACE \
+    docker-registry tanzu-image-registry \
+        --docker-server=REGISTRY-SERVER-URL \
+        --docker-username=DOCKER-USERNAME \
+        --docker-password=DOCKER-PASSWORD
     ```
     Where:
     * `DEVELOPMENT-NAMESPACE` is the namespace in which you want to create the instance
@@ -84,9 +88,8 @@ To create a MySQL instance:
     secret/tanzu-image-registry created
     ``` 
 
-3. Find the `mysql.yaml` deployment template that you downloaded
-   in the TGZ file from <%= vars.product_network %>.
-   For how to download deployment templates, see [Download the Deployment Templates](#download-templates).
+3. Locate the `mysql.yaml` deployment template in the TGZ file you downloaded from <%= vars.product_network %>.
+   For details on downloading deployment template, see [Download the Deployment Templates](#download-templates).
 
 4. Create a copy of the `mysql.yaml` file and give it a unique name. For example:
 
@@ -95,10 +98,10 @@ To create a MySQL instance:
     ``` 
 
 5. Edit the file and customize the instance according to your requirements. 
-    <br>
-    You may customize your Tanzu MySQL instance version, instance resources, instance storage class, storage size, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For more details on all the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
-    <br/>
-    When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form `mysql-data-INSTANCE-NAME-N`, for example `mysql-data-mysql-sample-0`.
+
+    You may customize your Tanzu MySQL instance version, instance resources, instance storage class, storage size, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For details on the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
+
+    To customize the Tanzu MySQL instance version, refer to [Specifying the Tanzu MySQL Version](#version).
 
 
 6. Deploy a MySQL instance to Kubernetes by running:
@@ -106,7 +109,7 @@ To create a MySQL instance:
     ```
     kubectl -n DEVELOPMENT-NAMESPACE apply -f FILENAME
     ```
-    Where `FILENAME` is the name of the configuration file you created in Step 4 above. For example:
+    Where `FILENAME` is the name of the configuration file you created. For example:
 
     ``` 
     kubectl -n my-namespace apply -f testdb.yaml
@@ -136,40 +139,62 @@ By default, the MySQL servers created by Tanzu Operator 1.2.0 (and later) use TL
 
 ### <a id="version"></a> Specifying the Tanzu MySQL Version
 
-The Tanzu MySQL Operator by default deploys the latest MySQL version.  (for Tanzu Operator 1.6.0 and 1.7.0, the MySQL version is 14.2). To view the available Tanzu MySQL versions for your Operator, run the command:
+The Tanzu MySQL Operator by default deploys the latest MySQL version. The Tanzu Operator 1.4.0 supports mysql-8.0.25, mysql-8.0.26, and mysql-8.0.27. To view the available Tanzu MySQL versions for your Operator, run the command:
 
 ```
-kubectl get MySQLversion
+kubectl get mysqlversions
 ```
 
 The command displays:
 
 ```
-NAME          DB VERSION   
-MySQL-11   11.15        
-MySQL-12   12.10         
-MySQL-13   13.6         
-MySQL-14   14.2         
+NAME           DB VERSION
+mysql-8.0.25   8.0.25
+mysql-8.0.26   8.0.26
+mysql-8.0.27   8.0.27
+mysql-latest   8.0.27     
 ```
 
 where:
-- `NAME` denotes the `MySQLVersion` CR name. Each MySQL major version has one CR. This value can be used in the MySQL manifest file to choose the MySQL version.
-- `DB VERSION` displayes the minor version supported for that particular MySQL major version.
+- `NAME` denotes the 
+- `DB VERSION` displays the Percona MySQL version supported for that particular `mysql.spec.mysqlVersion` version.
 
-Use the values under the column `NAME`  to specify the `spec.MySQLVersion.name` field in the MySQL instance manifest if you require a specific version of MySQL, for example:
-
+Use the values under the column `NAME`  to uncomment and specify the `mysql.spec.mysqlVersion.name` field in the MySQL instance manifest:
 ```
 ...
-MySQLVersion:
-  name: MySQL-13 
+metadata:
+  name: mysql-sample
+spec:
+
+#### Specify the MySQL Version
+  mysqlVersion:
+    name: mysql-8.0.27
 ...
+
 ```
 
-See [Deploying a MySQL Instance](#instance_request) on how to deploy your MySQL instance. 
+After editing the instance yaml, continue with the deployment steps in [Create a MySQL Instance](#create-instance) topic.
 
-When upgrading the Tanzu MySQL Operator, the operator will ensure that existing MySQL instances have the appropriate reference added to the object. Specifically, the operator will set `spec.MySQLVersion.name` to `MySQL-11`. If you are tracking manifest files in source control, update those manifests files to reflect the change.
-
-**IMPORTANT**: Existing MySQL instances cannot be upgraded to a different major version. 
+To list the versions of your deployed instances, use:
+```
+$ kubectl get mysql
+```
+with an output similar to:
+```
+NAME          READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION
+DBUPDALW-12   true    Running   41m    1.4.0           8.0.27       
+instance-11   true    Running   41m    1.4.0           8.0.26       
+instance-10   true    Running   41m    1.4.0           8.0.25       
+DBUPDONC-9    true    Running   20d    1.3.0           8.0.26       UpdateRequired      Annotate “update=once” 
+instance-8    true    Running   21d    1.3.0           8.0.25       UpdateRequired      Annotate “update=once” 
+instance-7    true    Running   22d    1.3.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+DBAUTOUPG-6   true    Running   120d   1.2.0           8.0.26       UpdateRequired      Annotate “update=once” 
+instance-5    true    Running   121d   1.2.0           8.0.25       UpdateRequired      Annotate “update=once”         
+instance-4    true    Running   122d   1.2.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+DBAUTOUPG-3   true    Running   150d   1.1.0           8.0.25       UpdateRequired      Annotate “update=once”           
+instance-2    true    Running   151d   1.1.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+instance-1    true    Running   202d   1.0.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+```
 
     
 ## <a id='delete-instance'></a> Delete a Tanzu MySQL Instance
