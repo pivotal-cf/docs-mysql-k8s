@@ -175,7 +175,8 @@ spec:
 
 After editing the instance yaml, continue with the deployment steps in [Create a MySQL Instance](#create-instance) topic.
 
-To list the versions of your deployed instances, use:
+To list the versions of all deployed instances, and their compatibility with the latest Operator, use:
+
 ```
 $ kubectl get mysql
 ```
@@ -195,6 +196,17 @@ DBAUTOUPG-3   true    Running   150d   1.1.0           8.0.25       UpdateRequir
 instance-2    true    Running   151d   1.1.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
 instance-1    true    Running   202d   1.0.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
 ```
+
+Where:
+
+- `TANZU VERSION` column refers to the Operator version that the instance last reconciled with.
+- `DB VERSION` column refers to the instance's current mysql DB version.
+- `UPDATE STATUS` refers to whether the instance needs an update or a DB upgrade. 
+    - An instance needs an update (value = "UpdateRequired"), if the last reconciled operator version <> current operator version. 
+    - An instance needs a DB upgrade (value = "DBUpgradeRequired"), if the current mysql version is not supported by the current operator
+- `USER ACTION` specifies the action that a user will need to take, to reconcile the instance to the current operator. 
+    - If `UPDATE STATUS`=`UpdateRequired` then `USER ACTION` should be `Annotate "mysql.with.sql.tanzu.vmware.com/update=once"`
+    - If `UPDATE STATUS`=`DBUpgradeRequired` then `USER ACTION`  should be `Set spec.mysqlVersion.name to a supported DB version`
 
     
 ## <a id='delete-instance'></a> Delete a Tanzu MySQL Instance
