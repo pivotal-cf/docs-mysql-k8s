@@ -18,6 +18,11 @@ The <%= vars.product_short %> releases support the components listed below:
     <th>Percona XtraBackup</th>
   </tr>
   <tr>
+    <td>1.4.0</td>
+    <td>8.0.25<br/>8.0.26<br/>8.0.27</td>
+    <td>8.0.25<br/>8.0.26<br/>8.0.27</td>
+  </tr>
+  <tr>
     <td>1.3.0</td>
     <td>8.0.26</td>
     <td>8.0.26</td>
@@ -43,6 +48,68 @@ The <%= vars.product_short %> releases support the components listed below:
      <strong>IMPORTANT:</strong> VMware does not support deployments that have been modified by adding layers to the packaged Docker images, or deployments that reference images other than the VMware MySQL Operator. VMware does not support changing the contents of the deployed containers and pods in any way.
  </p>
 
+## <a id="1-4-0"></a>  Version 1.4.0
+
+**Release Date: May 5th, 2022**
+
+### <a id="14_supported_platforms"></a> Supported Platforms
+
+This version of Tanzu MySQL is supported on the following platforms:
+
+- [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI), version 1.9.x - 1.12.x
+- [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKGm) on AWS, version 1.2.x - 1.4.x
+- Google Kubernetes Engine (GKE) 
+- Amazon Elastic Kubernetes Service (EKS)
+- Kubernetes version 1.19+
+
+Additional Kubernetes environments, such as Minikube, can be used for testing or demonstration purposes.
+
+
+### <a id="14_features"></a> Features
+
+* Tanzu MySQL Operator 1.4.0 supports 3 different MySQL versions. Tanzu MySQL Operator 1.4.0 supports:
+    - 8.0.25
+    - 8.0.26
+    - 8.0.27
+* This release allows the users to list all three MySQL versions supported by the Operator. Users can use the command `kubectl explain mysqlVersion` and view the supported versions. Similar information can be obtained by using `kubectl get mysqlVersion`. 
+* This release supports a new Tanzu MySQL CRD field, `mysql.spec.mysqlVersion`. Users can specify a version number for that field, or use `mysql-latest` to keep their instances at the latest supported version. For more information, see [Tanzu MySQL CRD Property Reference](property-reference-mysql.html#spec).
+* Users on Tanzu Operator 1.4.0 can upgrade their MySQL instances from one version to another. The upgrade can use one of the three supported MySQL versions. For information on the upgrade steps see [Upgrading MySQL Instances](upgrade-instance.html).
+* To assist with instance updates and upgrades, this release introduces two new columns in the output of the `kubectl get mysql` command. The new columns are 'UPDATE STATUS` and 'USER ACTION'. For more information see [Updating Instances](update-instance.html) and [Upgrading MySQL Instances](upgrade-instance.html).
+* The Tanzu Operator 1.4.0 does not initiate instance upgrades the moment a user upgrades to 1.4.0. This allows the users to plan their instance upgrades during a suitable maintenance window.
+* This release adds Amazon Elastic Kubernetes Service (EKS) to the supported Platforms.
+
+### <a id="14_changes"></a> Changes
+
+- This release renames the `VERSION` column of the command output `kubectl get mysql` to `TANZU VERSION`.
+- The `spec.version` property is deprecated and replaced with `spec.mysqlVersion.name`. 
+
+### <a id="14_resolved"></a> Resolved Issues
+
+* This release addresses the following CVEs:
+    - [CVE-2022-25235](https://nvd.nist.gov/vuln/detail/CVE-2022-25235)
+    - [CVE-2022-25236](https://nvd.nist.gov/vuln/detail/CVE-2022-25236)
+    - [CVE-2022-24407](https://nvd.nist.gov/vuln/detail/CVE-2022-24407)
+
+### <a id="14_issues"></a> Known Issues
+
+* **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
+
+* The following CVEs exist in this release:
+    - [CVE-2021-3538](https://nvd.nist.gov/vuln/detail/CVE-2021-3538)
+
+### <a id="13_limits"></a> Limitations
+
+* The Tanzu SQL release supports Helm 3.6.3 and lower, or Helm 3.7.1 and later. Helm 3.7.0 is not supported.
+* Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
+* Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
+* To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
+* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
+   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
+   * Configuring schemas and users for an application.
+* Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
+
+-----------------------------------------
 ## <a id="1-3-0"></a>  Version 1.3.0
 
 **Release Date: February 18th, 2022**
