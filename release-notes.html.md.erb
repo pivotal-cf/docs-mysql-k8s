@@ -67,15 +67,15 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="14_features"></a> Features
 
-* Tanzu MySQL Operator 1.4.0 supports 3 different MySQL versions. Tanzu MySQL Operator 1.4.0 supports:
+* Tanzu MySQL Operator 1.4.0 supports three different MySQL versions:
     - 8.0.25
     - 8.0.26
     - 8.0.27
 * This release allows the users to list all three MySQL versions supported by the Operator. Users can use the command `kubectl explain mysqlVersion` and view the supported versions. Similar information can be obtained by using `kubectl get mysqlVersion`. 
 * This release supports a new Tanzu MySQL CRD field, `mysql.spec.mysqlVersion`. Users can specify a version number for that field, or use `mysql-latest` to keep their instances at the latest supported version. For more information, see [Tanzu MySQL CRD Property Reference](property-reference-mysql.html#spec).
 * Users on Tanzu Operator 1.4.0 can upgrade their MySQL instances from one version to another. The upgrade can use one of the three supported MySQL versions. For information on the upgrade steps see [Upgrading MySQL Instances](upgrade-instance.html).
-* To assist with instance updates and upgrades, this release introduces two new columns in the output of the `kubectl get mysql` command. The new columns are 'UPDATE STATUS` and 'USER ACTION'. For more information see [Updating Instances](update-instance.html) and [Upgrading MySQL Instances](upgrade-instance.html).
-* The Tanzu Operator 1.4.0 does not initiate instance upgrades the moment a user upgrades to 1.4.0. This allows the users to plan their instance upgrades during a suitable maintenance window.
+* To assist with instance updates and upgrades, this release introduces two new columns in the output of the `kubectl get mysql` command. The new columns are `UPDATE STATUS` and `USER ACTION`. For more information see [Updating Instances](update-instance.html) and [Upgrading MySQL Instances](upgrade-instance.html).
+* The Tanzu Operator 1.4.0 does not initiate instance version upgrades the moment a user upgrades to version 1.4.0. Users have the flexibility to plan their instance upgrades and updates during a suitable maintenance window.
 * This release adds Amazon Elastic Kubernetes Service (EKS) to the supported Platforms.
 
 ### <a id="14_changes"></a> Changes
