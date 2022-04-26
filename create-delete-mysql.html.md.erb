@@ -14,20 +14,16 @@ Before you can create or delete MySQL instances, you must have:
 
 ## <a id='download-templates'></a>  Download the Deployment Templates
 
-In order to create <%= vars.product_full %> instances, you must first download the deployment templates from Tanzu Network.
-You use these templates to create configuration files that specify the Tanzu MySQL for Kubernetes resources that you wish to create.
-
-<p class='note'><strong>Note:</strong> You only need to download the templates once (before you first create a MySQL instance).</p>
+Download the deployment templates from Tanzu Network, and use them to customize the Tanzu MySQL for Kubernetes resources that you will deploy.
 
 To access the templates:
 
-1. Log in to [<%= vars.product_network %>](https://network.pivotal.io).
+1. Log in to [<%= vars.product_network %>](https://network.pivotal.io) and visit the [Tanzu MySQL](https://network.pivotal.io/products/tanzu-mysql-for-kubernetes/) product page.
 
-1. Visit the **<%= vars.product_full %>** product page.
+1. Select **VMware Tanzu SQL with MySQL for Kubernetes v1.4.0** and download the .tgz archive file to your local machine.<br/>
+   **Note:** You do not need to download the **Artifact References** from the Tanzu MySQL for Kubernetes product page.
 
-1. Click **VMware Tanzu SQL with MySQL for Kubernetes v1.3.0**. This will download a .tgz archive file to your local machine.
-
-1. Expand the downloaded .tgz file. Open the directory `tanzu-mysql-for-kubernetes-1.3.0`. The templates are located in the `samples` subdirectory.
+1. Expand the downloaded .tgz file. Open the directory `tanzu-mysql-for-kubernetes-1.4.0`. The templates are located in the `samples` subdirectory.
 
 The templates include the following:
 
@@ -38,7 +34,8 @@ The templates include the following:
 * `restore.yaml` (for the MySQLRestore resource)
 * `tls-secret.yaml` (for a [TLS Secret](https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets))
 
-You do not need to download the **Artifact References** from the Tanzu MySQL for Kubernetes product page.
+Use these templates as a starting point for the instance creation, and backup/restore.
+
 
 ## <a id='create-instance'></a> Create a MySQL Instance
 
@@ -99,9 +96,9 @@ To create a MySQL instance:
 
 5. Edit the file and customize the instance according to your requirements. 
 
-    You may customize your Tanzu MySQL instance version, instance resources, instance storage class, storage size, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For details on the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
-
     To customize the Tanzu MySQL instance version, refer to [Specifying the Tanzu MySQL Version](#version).
+    
+    You may also customize your Tanzu MySQL instance resources, instance storage class, storage size, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For details on the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
 
 6. Deploy a MySQL instance to Kubernetes by running:
@@ -139,7 +136,7 @@ By default, the MySQL servers created by Tanzu Operator 1.2.0 (and later) use TL
 
 ### <a id="version"></a> Specifying the Tanzu MySQL Version
 
-The Tanzu MySQL Operator by default deploys the latest MySQL version. The Tanzu Operator 1.4.0 supports mysql-8.0.25, mysql-8.0.26, and mysql-8.0.27. To view the available Tanzu MySQL versions for your Operator, run the command:
+The Tanzu MySQL Operator by default deploys the latest MySQL version. From version 1.4.0, the Tanzu Operator supports three versions: mysql-8.0.25, mysql-8.0.26, and mysql-8.0.27. To view the available Tanzu MySQL versions for your Operator, run the command:
 
 ```
 kubectl get mysqlversions
@@ -156,8 +153,8 @@ mysql-latest   8.0.27
 ```
 
 where:
-- `NAME` denotes the 
-- `DB VERSION` displays the Percona MySQL version supported for that particular `mysql.spec.mysqlVersion` version.
+- `NAME` denotes the Tanzu MySQL version. The label `mysql-latest` deploys the latest version supported by the Tanzu MySQL Operator. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
+- `DB VERSION` displays the Percona MySQL version supported for that particular `mysql.spec.mysqlVersion` version. 
 
 Use the values under the column `NAME`  to uncomment and specify the `mysql.spec.mysqlVersion.name` field in the MySQL instance manifest:
 ```
@@ -168,12 +165,12 @@ spec:
 
 #### Specify the MySQL Version
   mysqlVersion:
-    name: mysql-8.0.27
+    name: mysql-8.0.26
 ...
 
 ```
 
-After editing the instance yaml, continue with the deployment steps in [Create a MySQL Instance](#create-instance) topic.
+After editing and saving the instance yaml, continue with the deployment steps in [Create a MySQL Instance](#create-instance) topic.
 
 To list the versions of all deployed instances, and their compatibility with the latest Operator, use:
 
