@@ -196,11 +196,11 @@ instance-1    true    Running   202d   1.0.0           8.0.23       DBUpgradeReq
 
 Where:
 
-- `TANZU VERSION` column refers to the Operator version that the instance last reconciled with.
-- `DB VERSION` column refers to the instance's current mysql DB version.
-- `UPDATE STATUS` refers to whether the instance needs an update or a DB upgrade. 
-    - An instance needs an update (value = "UpdateRequired"), if the last reconciled operator version <> current operator version. 
-    - An instance needs a DB upgrade (value = "DBUpgradeRequired"), if the instance's mysql version is not supported by the current operator
+- `TANZU VERSION` column refers to the Operator version that the instance was last reconciled with.
+- `DB VERSION` column refers to the instance's current MySQL database version.
+- `UPDATE STATUS` refers to whether the instance needs an update or a database version upgrade. 
+    - An instance needs an update (value = "UpdateRequired"), if the last reconciled Operator version is different to the current Operator version. 
+    - An instance needs a MySQL version upgrade (value = "DBUpgradeRequired"), if the instance's MySQL version is not supported by the current Operator.
 - `USER ACTION` specifies the action that a user will need to take, to reconcile the instance to the current operator. 
     - If `UPDATE STATUS`=`UpdateRequired` then `USER ACTION` will display the text `Annotate "mysql.with.sql.tanzu.vmware.com/update=once"`
     - If `UPDATE STATUS`=`DBUpgradeRequired` then `USER ACTION`  will display the text `Set spec.mysqlVersion.name to a supported DB version`
