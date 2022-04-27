@@ -13,6 +13,10 @@ metadata:
   name: mysql-sample
 spec:
 
+#### Specify the MySQL Version
+#  mysqlVersion:
+#    name: mysql-8.0.26
+
 #### Set the storage size for the database persistent storage volume
 #  storageSize: 1Gi
 
@@ -138,6 +142,16 @@ The name of the MySQL instance. Must be unique within a namespace. Cannot be mod
 
 ## <a id="spec"></a> Spec
 
+**`mysqlversion: <String>`**<br />
+**Optional**<br />
+**Default**: <latest MySQL release supported><br />
+The MySQL version that will be used for creating an instance. If the user does not specify a value, the latest supported version will be used as the default. For example, if the Tanzu MySQL Operator supports mysql-8.0.25, mysql-8.0.26, mysql-8.0.27, this value defaults to mysql-8.0.27.<br/>
+From Tanzu MySQL Operator 1.4.0 release, three MySQL versions are supported at any time. Only the permitted version strings are valid input for the field. Entries that do not match a supported version generate an error. Use `kubectl get mysqlVersion` to verify the MySQL versions of your Operator release.  <br />
+Use the "floating version tag" `mysql-latest` to configure your instance to always upgrade to the latest MySQL version supported by future Operator upgrades.<br/>
+**Example**:<br/>
+`mysql-8.0.26`
+**WARNING**: After an Operator upgrade, instances with `mysqlVersion.name` as`mysql-latest` will automatically reboot and upgrade to the latest supported MySQL version for that Operator. 
+  
 **`storageSize: <Quantity>`**<br />
 **Optional**<br />
 **Default**: 1Gi<br />
@@ -162,12 +176,6 @@ The StorageClass used for PVCs associated with MySQL instance Pods. Cannot be mo
 **Default**: ClusterIP<br />
 The type of Service used to provide access to the MySQL database. Only `ClusterIP` and `LoadBalancer` are supported. For more information about Kubernetes ServiceTypes, see the [Service Types](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) in the Kubernetes documentation.<br />
 **Example**: LoadBalancer
-
-**`version: <string>`**<br />
-**Optional**<br />
-**Default**: The value of `defaultInstanceVersion` set by the service administrator in the Tanzu MySQL Helm chart. <br />
-The version of the MySQL instance installed. Can be any of '1.0.0', '1.3.0', or '1.2.0'. See [List Instances By Version](upgrade-instance.html#list-instances-by-version).<br />
-**Example**: 1.3.0
 
 **`tls.secret.name: <string>`**<br />
 **Optional**<br />
