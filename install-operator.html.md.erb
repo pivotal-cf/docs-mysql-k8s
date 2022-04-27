@@ -184,10 +184,12 @@ Choose this method if:
     ``` 
     where <version> is the release you selected.
 
-1.  Load the MySQL instance image to the Docker registry:
+1.  Load the MySQL instance images to the Docker registry:
 
     ``` 
-    docker load -i ./images/tanzu-mysql-instance
+    docker load -i ./images/tanzu-mysql-instance-8.0.25
+    docker load -i ./images/tanzu-mysql-instance-8.0.26
+    docker load -i ./images/tanzu-mysql-instance-8.0.27
     ``` 
 
 1.  Load the MySQL Operator image to the Docker registry:
@@ -196,16 +198,18 @@ Choose this method if:
     docker load -i ./images/tanzu-mysql-operator
     ``` 
 
-1.  Verify that the two Docker images are now available.
+1.  Verify that the four Docker images are now available.
 
     ``` 
     docker images
     ```
-    ```
-    REPOSITORY                                                                  TAG       IMAGE ID       CREATED        SIZE
-    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance   1.3.0     5f0ad7bad51b   5 weeks ago    841MB
-    registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   1.3.0     eb1458d2e1bd   5 weeks ago    76.8MB
-    ``` 
+	```
+	   REPOSITORY                                                                  	       TAG       IMAGE ID       CREATED        SIZE
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.25    1.4.0     e8eb899f5df6   5 weeks ago    793MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.26    1.4.0     110f35a9006d   5 weeks ago    842MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.27    1.4.0     b2767c434c61   5 weeks ago    907MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   	       1.4.0     8b46a4d26aa0   5 weeks ago    76.9MB
+	```
 
 1.  Push the Tanzu MySQL Docker images to the container registry of your choice. Set each image's project and image repo name, tag the images, and then push them using the Docker command `docker push`.
 
@@ -217,8 +221,16 @@ Choose this method if:
     PROJECT=$(gcloud config list core/project --format='value(core.project)')
     REGISTRY="gcr.io/${PROJECT}"
 
-    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-tag)"
-    docker tag $(cat ./images/tanzu-mysql-instance-id) ${INSTANCE_IMAGE_NAME}
+    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.25-tag)"
+    docker tag $(cat ./images/tanzu-mysql-instance-8.0.25-id) ${INSTANCE_IMAGE_NAME}
+    docker push ${INSTANCE_IMAGE_NAME}
+
+    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.26-tag)"
+    docker tag $(cat ./images/tanzu-mysql-instance-8.0.26-id) ${INSTANCE_IMAGE_NAME}
+    docker push ${INSTANCE_IMAGE_NAME}
+
+    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.27-tag)"
+    docker tag $(cat ./images/tanzu-mysql-instance-8.0.27-id) ${INSTANCE_IMAGE_NAME}
     docker push ${INSTANCE_IMAGE_NAME}
 
     OPERATOR_IMAGE_NAME="${REGISTRY}/tanzu-mysql-operator:$(cat ./images/tanzu-mysql-operator-tag)"
@@ -317,9 +329,8 @@ Edit the Operator Configuration file:
     ```
     ---
     imagePullSecretName: tanzu-image-registry
-    operatorImage: registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.3.0
+    operatorImage: registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator:1.4.0
     registry: "registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/"
-    defaultInstanceVersion: 1.3.0
     resources: {}
     certManagerClusterIssuerName: ""
     ```
@@ -357,11 +368,6 @@ Edit the Operator Configuration file:
           <td><code>registry</code></td>
           <td>URI</td>
           <td>The registry from which to download Tanzu MySQL images.</td>
-        </tr>
-        <tr>
-          <td><code>defaultInstanceVersion</code></td>
-          <td>String</td>
-          <td>The default version of Tanzu MySQL to use when creating new instances.</td>
         </tr>
         <tr>
           <td><code>resources</code></td>
