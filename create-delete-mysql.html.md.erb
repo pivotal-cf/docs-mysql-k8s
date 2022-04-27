@@ -136,7 +136,7 @@ By default, the MySQL servers created by Tanzu Operator 1.2.0 (and later) use TL
 
 ### <a id="version"></a> Specifying the Tanzu MySQL Version
 
-The Tanzu MySQL Operator by default deploys the latest MySQL version. From version 1.4.0, the Tanzu Operator supports three versions: mysql-8.0.25, mysql-8.0.26, and mysql-8.0.27. To view the available Tanzu MySQL versions for your Operator, run the command:
+The Tanzu MySQL Operator by default deploys the latest MySQL version. Beginning with version 1.4.0, the Tanzu Operator supports three versions: mysql-8.0.25, mysql-8.0.26, and mysql-8.0.27. To view the available Tanzu MySQL versions for your Operator, run the command:
 
 ```
 kubectl get mysqlversions
@@ -153,7 +153,7 @@ mysql-latest   8.0.27
 ```
 
 where:
-- `NAME` denotes the Tanzu MySQL version. The label `mysql-latest` deploys the latest version supported by the Tanzu MySQL Operator. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
+- `NAME` denotes the Tanzu MySQL version . The label `mysql-latest` deploys the latest version supported by the Tanzu MySQL Operator. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
 - `DB VERSION` displays the Percona MySQL version supported for that particular `mysql.spec.mysqlVersion` version. 
 
 Use the values under the column `NAME`  to uncomment and specify the `mysql.spec.mysqlVersion.name` field in the MySQL instance manifest:
@@ -183,15 +183,15 @@ NAME          READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATU
 DBUPDALW-12   true    Running   41m    1.4.0           8.0.27       
 instance-11   true    Running   41m    1.4.0           8.0.26       
 instance-10   true    Running   41m    1.4.0           8.0.25       
-DBUPDONC-9    true    Running   20d    1.3.0           8.0.26       UpdateRequired      Annotate “update=once” 
-instance-8    true    Running   21d    1.3.0           8.0.25       UpdateRequired      Annotate “update=once” 
+DBUPDONC-9    true    Running   20d    1.3.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
+instance-8    true    Running   21d    1.3.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
 instance-7    true    Running   22d    1.3.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-DBAUTOUPG-6   true    Running   120d   1.2.0           8.0.26       UpdateRequired      Annotate “update=once” 
-instance-5    true    Running   121d   1.2.0           8.0.25       UpdateRequired      Annotate “update=once”         
+DBAUTOUPG-6   true    Running   120d   1.2.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
+instance-5    true    Running   121d   1.2.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”         
 instance-4    true    Running   122d   1.2.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-DBAUTOUPG-3   true    Running   150d   1.1.0           8.0.25       UpdateRequired      Annotate “update=once”           
+DBAUTOUPG-3   true    Running   150d   1.1.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”           
 instance-2    true    Running   151d   1.1.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-instance-1    true    Running   202d   1.0.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+instance-1    true    Running   202d   1.0.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version                              
 ```
 
 Where:
@@ -200,10 +200,10 @@ Where:
 - `DB VERSION` column refers to the instance's current mysql DB version.
 - `UPDATE STATUS` refers to whether the instance needs an update or a DB upgrade. 
     - An instance needs an update (value = "UpdateRequired"), if the last reconciled operator version <> current operator version. 
-    - An instance needs a DB upgrade (value = "DBUpgradeRequired"), if the current mysql version is not supported by the current operator
+    - An instance needs a DB upgrade (value = "DBUpgradeRequired"), if the instance's mysql version is not supported by the current operator
 - `USER ACTION` specifies the action that a user will need to take, to reconcile the instance to the current operator. 
-    - If `UPDATE STATUS`=`UpdateRequired` then `USER ACTION` should be `Annotate "mysql.with.sql.tanzu.vmware.com/update=once"`
-    - If `UPDATE STATUS`=`DBUpgradeRequired` then `USER ACTION`  should be `Set spec.mysqlVersion.name to a supported DB version`
+    - If `UPDATE STATUS`=`UpdateRequired` then `USER ACTION` will display the text `Annotate "mysql.with.sql.tanzu.vmware.com/update=once"`
+    - If `UPDATE STATUS`=`DBUpgradeRequired` then `USER ACTION`  will display the text `Set spec.mysqlVersion.name to a supported DB version`
 
     
 ## <a id='delete-instance'></a> Delete a Tanzu MySQL Instance
