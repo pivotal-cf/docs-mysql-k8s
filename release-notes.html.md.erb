@@ -71,8 +71,8 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
     - 8.0.25
     - 8.0.26
     - 8.0.27
-* This release allows the users to list all three MySQL versions supported by the Operator. Users can use the command `kubectl explain mysqlVersion` to understand the new custom resource that enables multiple MySQL version support. The list of supported MySQL versions can be obtained by using `kubectl get mysqlVersion`. 
-* This release supports a new Tanzu MySQL property, `mysql.spec.mysqlVersion.name`. Users can specify a version number for that field, or use `mysql-latest` to keep their instances at the latest supported version. For more information, see [Tanzu MySQL CRD Property Reference](property-reference-mysql.html#spec).
+* This release introduces a resource `mysqlVersion` managing the Operator's supported MySQL versions and instance upgrade behaviors. Users can list supported MySQL versions by using `kubectl get mysqlVersion`.
+* This release supports a new Tanzu MySQL property, `mysql.spec.mysqlVersion.name`. Users can specify the MySQL version to run in their instance, and can specify `mysql-latest` to keep an instance automatically upgraded to the latest supported version. For more information, see [Tanzu MySQL CRD Property Reference](property-reference-mysql.html#spec).
 * Users on Tanzu Operator 1.4.0 can upgrade individual MySQL instances from one version to another. The upgrade can use one of the three supported MySQL versions. For information on the upgrade steps see [Upgrading MySQL Instances](upgrade-instance.html).
 * To assist with instance updates and upgrades, this release introduces three new columns in the output of the `kubectl get mysql` command. The new columns are `DB VERSION`, `UPDATE STATUS` and `USER ACTION`. For more information see [Updating Instances](update-instance.html) and [Upgrading MySQL Instances](upgrade-instance.html).
 * Upgrading to the new Tanzu Operator 1.4.0 will not disrupt currently running instances that were created by an older Tanzu operator. Users have the flexibility to plan their individual instance upgrades and updates during a later convenient time.
