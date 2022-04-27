@@ -150,7 +150,7 @@ From Tanzu MySQL Operator 1.4.0 release, three MySQL versions are supported at a
 Use the "floating version tag" `mysql-latest` to configure your instance to always upgrade to the latest MySQL version supported by future Operator upgrades.<br/>
 **Example**:<br/>
 `mysql-8.0.26`
-**WARNING**: Instances with `mysql-latest` version will automatically reboot and upgrade when the Operator gets upgraded in the future.
+**WARNING**: After an Operator upgrade, instances with `mysqlVersion.name` as`mysql-latest` will automatically reboot and upgrade to the latest supported MySQL version for that Operator. 
   
 **`storageSize: <Quantity>`**<br />
 **Optional**<br />
