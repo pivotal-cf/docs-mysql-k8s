@@ -170,6 +170,8 @@ spec:
 
 ```
 
+Warning: Only specify `mysql-latest` for your instance if you can tolerate occasional unscheduled database outages triggered by future Operator ugprades. (Upgraded Operators immediately upgrade all `mysql-latest` instances to run any newer "latest" supported MySQL version.) If you want your instance to run the latest MySQL version without those Operator-induced unscheduled outages, select the highest-numbered `NAME` value, e.g. `mysql-8.0.27`.)
+
 After editing and saving the instance yaml, continue with the deployment steps in [Create a MySQL Instance](#create-instance) topic.
 
 To list the versions of all deployed instances, and their compatibility with the latest Operator, use:
