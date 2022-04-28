@@ -58,17 +58,14 @@ To upgrade the Operator using the Helm CLI:
     ```
     helm chart export ${REGISTRY-URL} -d ${CHART_DIR}
     ```
-    Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart.
-The value of `REGISTRY-URL` has the following pattern:
+    Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart. The value of `REGISTRY-URL` has the following pattern:
 
     ```
     registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
     ```
-    Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
+    Where `VERSION-NUMBER-TAG` is the version of the Helm chart. This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory.
 
-    <br>This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory
-
-1. Go to where the new release has been downloaded and apply the new CRDs by running:
+1. In the location where the new release has been downloaded, apply the new CRDs by running:
 
     ```
     kubectl apply -f ./tanzu-sql-with-mysql-operator/crds/
@@ -101,4 +98,6 @@ The value of `REGISTRY-URL` has the following pattern:
 	rm ${CHART_DIR}
 	```
 
-1. After upgradeding the Operator, check the status of your existing instances and plan for an upgrade or an update. Review [Upgrading an Instance]() and [Updating an Instance Version](update-instance.html#update-instance). 
+1. Check the status of your existing instances, and plan for an upgrade or an update. 
+
+    Use the command `kubectl get mysqls` and review [Upgrading an Instance](upgrade-instance.html#upgrade-steps) and [Updating an Instance Version](update-instance.html#update-instance). 
