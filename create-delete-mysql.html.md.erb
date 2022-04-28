@@ -153,8 +153,8 @@ mysql-latest   8.0.27
 ```
 
 where:
-- `NAME` denotes the Tanzu MySQL version . The label `mysql-latest` deploys the latest version supported by the Tanzu MySQL Operator. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
-- `DB VERSION` displays the Percona MySQL version supported for that particular `mysql.spec.mysqlVersion` version. 
+- `NAME` denotes the Tanzu MySQL version.
+- `DB VERSION` displays the Percona MySQL version an instance runs when that Tanzu MySQL version is named in the instance's spec. Note the special Tanzu MySQL version named `mysql-latest` runs the latest Operator-supported MySQL version (8.0.27), plus configures the instance to automatically upgrade its MySQL whenever future Operator upgrades add support for newer MySQL versions. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
 
 Use the values under the column `NAME`  to uncomment and specify the `mysql.spec.mysqlVersion.name` field in the MySQL instance manifest:
 ```
