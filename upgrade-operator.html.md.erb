@@ -4,15 +4,12 @@ owner: MySQL
 ---
 
 
-This topic describes how operators upgrade the <%= vars.product_full %> Operator.
+This topic describes how to upgrade the <%= vars.product_full %> Operator.
 
-## <a id="upgrade-operator"></a>  Use the Helm CLI to Upgrade the Operator
+## <a id="upgrade-operator"></a>  Upgrade the Operator using Helm CLI
 
-To upgrade <%= vars.product_short %>, you must download resources and upgrade
+To upgrade <%= vars.product_short %>, you must download the resources, and upgrade
 the <%= vars.product_short %> Operator using Helm.
-
-To upgrade the Operator using the Helm CLI:
-
 
 1. Set the environment variable to enable OCI support in the Helm v3 client by running:
 
@@ -58,17 +55,14 @@ To upgrade the Operator using the Helm CLI:
     ```
     helm chart export ${REGISTRY-URL} -d ${CHART_DIR}
     ```
-    Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart.
-The value of `REGISTRY-URL` has the following pattern:
+    Where `REGISTRY-URL` is the reference to the <%= vars.product_short %> Helm chart. The value of `REGISTRY-URL` has the following pattern:
 
     ```
     registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:VERSION-NUMBER-TAG
     ```
-    Where `VERSION-NUMBER-TAG` is the version of the Helm chart.
+    Where `VERSION-NUMBER-TAG` is the version of the Helm chart. This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory.
 
-    <br>This downloads a directory named `tanzu-sql-with-mysql-operator/` into your current working directory
-
-1. Go to where the new release has been downloaded and apply the new CRDs by running:
+1. In the location where the new release has been downloaded, apply the new CRDs by running:
 
     ```
     kubectl apply -f ./tanzu-sql-with-mysql-operator/crds/
@@ -100,3 +94,7 @@ The value of `REGISTRY-URL` has the following pattern:
 	```
 	rm ${CHART_DIR}
 	```
+
+1. Check the status of your existing instances, and plan for an upgrade or an update. 
+
+    Use the command `kubectl get mysqls` and review [List Instance Versions](upgrade-instance.html#upgrade-steps), [Upgrade an Instance](upgrade-instance.html#upgrade-steps) and [Updating an Instance](update-instance.html#update-instance). 

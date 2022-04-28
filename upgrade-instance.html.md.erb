@@ -5,7 +5,7 @@ owner: MySQL
 
 <strong><%= modified_date %></strong>
 
-This topic describes how to upgrade a <%= vars.product_short %> instance after [upgrading the operator](./upgrade-operator.html).
+This topic describes how to upgrade a <%= vars.product_short %> instance after [Upgrading the Operator](./upgrade-operator.html).
 
 ## <a id='prereq'></a> Prerequisites
 
@@ -18,122 +18,116 @@ Before you upgrade a MySQL instance, you must have:
 * **The Kubernetes Command Line Interface (kubectl) installed.**
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
-## <a id='list-instances-by-version'></a> List Instances By Version
+## <a id='list-instances-by-version'></a> List Instance Versions 
 
-Each MySQL instance has a `version` label containing the version of the instance. The instance version corresponds to a version of <%= vars.product_short %>.
+Tanzu MySQL Operator 1.4.0 supports a new MySQL instance property `spec.mysqlVersion.name`, that can be used to specify a MySQL version that a user needs. Every Tanzu MySQL Operator after 1.4.0 release supports three MySQL versions, giving the customers the flexibility to specify their preference, and upgrade to a later MySQL version. 
 
-<p class='note'><strong>Note:</strong> The <code>version</code> label was added in Tanzu MySQL for Kubernetes version 1.1.0. Upgrading the MySQL operator to version 1.1.0 or later causes the <code>version</code> label to be applied to existing MySQL instances automatically.</p>
+<p class='note'><strong>NOTE:</strong>  Upgrading the MySQL Operator does not automatically upgrade any existing MySQL instances. Any instance upgrades require user intervention.</p>
 
-To list all MySQL instances at a specific version, run:
+To list the supported MySQL versions for a specific Operator, run:
 
 ```
-kubectl get mysql -l app.kubernetes.io/version=VERSION
+kubectl get mysqlversions
 ```
 
-Where `VERSION` is the version of <%= vars.product_full %>.
+The command displays an ouput similar to:
 
-For example:
-
-``` 
-kubectl get mysql -l app.kubernetes.io/version=1.0.0
 ```
+NAME           DB VERSION
+mysql-8.0.25   8.0.25
+mysql-8.0.26   8.0.26
+mysql-8.0.27   8.0.27
+mysql-latest   8.0.27     
 ```
-NAME           READY   STATUS    VERSION   AGE
-mysql-sample   true    Running   1.0.0     22m
-``` 
+For a mapping of the Tanzu Operator version, with the corresponding instance version(s) supported with that Operator, review the table under [Software Component Versions](release-notes.html#components) in the release notes.
 
 ## <a id='upgrade-steps'></a> Upgrade an Instance
 
-Each <%= vars.product_full %> instance is based on a copy of the `mysql.yaml` deployment template file. The file for the instance should have a unique name (for example, `testdb.yaml`). To upgrade an instance, you must edit this configuration file.
+Tanzu Operator 1.4.0 supports two additional columns to help users identify upgrade actions for existing instances. 
 
-To upgrade a MySQL instance:
+**WARNING**: User actions specified under the `USER ACTION` column result in instance reboot. Ensure these actions are executed during an agreed maintenance window.
 
-1. List all the instances across all namespaces in the cluster:
-   
+1. List the versions of all deployed instances, and their compatibility with the latest Operator by running:
+
     ```
-    kubectl get mysql -A
+    $ kubectl get mysql
     ```
-    which returns an output similar to:
-    ``` 
-    NAMESPACE        NAME             READY   STATUS    VERSION   AGE
-    my-namespace     mysql-sample-2   true    Running   1.0.0     2h31m
-    acceptance       mysql-sample     true    Running   1.1.0     6h42m
-    ``` 
+    with an output similar to:
+    ```
+    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION      
+    mysql-sample   true    Running   41m    1.4.0           8.0.26       NoUpdateRequired       
+    DBUPDONC-9     true    Running   20d    1.3.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
+    instance-8     true    Running   21d    1.3.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
+    instance-7     true    Running   22d    1.3.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    DBAUTOUPG-6    true    Running   120d   1.2.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
+    instance-5     true    Running   121d   1.2.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”         
+    instance-4     true    Running   122d   1.2.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    DBAUTOUPG-3    true    Running   150d   1.1.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”           
+    instance-2     true    Running   151d   1.1.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    instance-1     true    Running   202d   1.0.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version                              
+    ```
+    
+    Where:
+    
+    - `TANZU VERSION` column refers to the Operator version that the instance was last reconciled (synchronized) with. 
+    - `DB VERSION` column refers to the instance's current MySQL database version.
+    - `UPDATE STATUS` refers to whether the instance needs an update or a database version upgrade. 
+        - "UpdateRequired" indicates that the instance's last reconciled Operator version is different to the current Operator version. For more details, see [Updating an Instance](update-instance.html#update-instance).
+        - "DBUpgradeRequired" indicates that an instance needs a MySQL database version upgrade. The instance's current MySQL version is not supported by the current Operator. Follow the remaining steps in this topic.
+    - `USER ACTION` specifies the user action required to ensure the MySQL instances are under a supported version, or the need for reconciliation.
 
-2. Target the namespace of the MySQL instance:
+1. For each of the instances with `UPDATE STATUS`=`DBUpgradeRequired`, target the namespace of the MySQL instance:
 
     ```
     kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
     ```
-    Where `DEVELOPMENT-NAMESPACE` is the namespace in which the instance was created.
-    <br><br>
-    For example:
+    Where `DEVELOPMENT-NAMESPACE` is the namespace in which the instance was created. For example:
     ``` 
     kubectl config set-context --current --namespace=my-namespace
     ``` 
 
-3. Edit the configuration file for the MySQL instance, setting the `spec.version` property to the desired new version. (This property was added in <%= vars.product_full %> version 1.1.0.)
-    <br><br>
-    For example:
+1. Edit the configuration file for the MySQL instance, setting the `spec.mysqlVersion.name` property to the desired new version. For example:
 
     ```
     ---
     apiVersion: with.sql.tanzu.vmware.com/v1
     kind: MySQL
     metadata:
-      name: mysql-sample
+      name: instance-7
     spec:
-      version: 1.3.0
+      mysqlVersion:
+        name: mysql-8.0.26
       ...
     ```
 
-4. If you are upgrading the instance from <%= vars.product_full %> version 1.0 to version 1.1, you may need to update the `spec.imagePullSecret` property. In version 1.1.0, this property was renamed to `imagePullSecretName`, and the default secret name was changed from `tanzu-mysql-image-registry` to `tanzu-image-registry`. Make sure that you use the correct property name and value in the configuration file for the MySQL instance.
-    <br /><br />
-    For example, if you wish to continue using a secret named `tanzu-mysql-image-registry`:
-
-    ```
-    ---
-    apiVersion: with.sql.tanzu.vmware.com/v1
-    kind: MySQL
-    metadata:
-      name: mysql-sample
-    spec:
-      version: 1.3.0
-      imagePullSecretName: tanzu-mysql-image-registry
-      ...
-    ```
-
-    Alternatively, you can remove the property from the configuration file. If you remove the property, the MySQL instance will use the `imagePullSecretName` specified in the `values-override.yaml` or `values.yaml` file for the MySQL operator.</p>
-
-5. Apply your changes by running:
+1. Apply the changes by running:
 
     ```
     kubectl apply -f FILENAME
     ```
-    Where `FILENAME` is the name of the configuration file.
-    <br><br>
-    For example:
+    Where `FILENAME` is the name of the configuration file. For example:
 
     ``` 
-    kubectl apply -f testdb.yaml
+    kubectl apply -f instance-7-db.yaml
     ```
     ```
     mysql.with.sql.tanzu.vmware.com/mysql-sample configured
     ``` 
 
-6. Verify that the instance was upgraded successfully by running:
+1. Verify that the instance was upgraded successfully by running:
 
     ```
-    kubectl get mysql INSTANCE-NAME
+    kubectl get mysql 
     ```
-    Where `INSTANCE-NAME` is the value configured for `metadata.name` in the configuration file.
-    <br><br>
-    When the instance has been successfully upgraded, the value of the `READY` column for the instance should be `true` and the value of the `VERSION` column for the instance should report the new version. For example:
+    The `UPDATE STATUS` column of the instance should display `NoUpdateRequired`. The `TANZU VERSION` should display the latest Operator.
 
-    ``` 
-    kubectl get mysql mysql-sample
     ```
+    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION      
+    mysql-sample   true    Running   41m    1.4.0           8.0.26              
+    DBUPDONC-9     true    Running   20d    1.3.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
+    instance-8     true    Running   21d    1.3.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
+    instance-7     true    Running   22d    1.4.0           8.0.26       NoUpdateRequired   
     ```
-    NAME           READY   STATUS    VERSION   AGE
-    mysql-sample   true    Running   1.3.0     24m
-    ``` 
+    
+    For instances requiring an update (`UPDATE STATUS`="UpdateRequired"), refer to [Updating an Instance](update-instance.html#update-instance).
+    
