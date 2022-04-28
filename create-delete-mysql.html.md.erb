@@ -126,8 +126,8 @@ To create a MySQL instance:
     kubectl -n my-namespace get mysql mysql-sample
     ```
     ```
-    NAME           READY   STATUS    AGE
-    mysql-sample   true    Running   2m17s
+    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION
+    mysql-sample   true    Running   162m   1.4.0           8.0.27       NoUpdateRequired
     ``` 
 8. Review [Configuring TLS for MySQL Instances](configure-tls.html) if you need to configure a custom `ClusterIssuer`. By default, the MySQL instances created by Tanzu Operator 1.2.0 (and later) use TLS certificates provided by the cert-manager `ClusterIssuer`, using a self-signed certificate authority (CA). 
 
@@ -154,7 +154,7 @@ where:
 - `NAME` denotes the Tanzu MySQL version. The label `mysql-latest` deploys the latest version supported by the Tanzu MySQL Operator. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
 - `DB VERSION` displays the Percona MySQL version supported for that particular `mysql.spec.mysqlVersion` version. 
 
-Use one of the values under the column `NAME` to uncomment, and specify the `mysql.spec.mysqlVersion.name` field in the MySQL instance manifest:
+Use one of the values under the column `NAME`, and specify the `mysql.spec.mysqlVersion.name` field in the MySQL instance manifest:
 ```
 ...
 metadata:
