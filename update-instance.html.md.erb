@@ -39,7 +39,7 @@ After an Operator upgrade, instances created under an older Operator require rec
     mysql-latest   8.0.27     
     ```
     
-    The list indicates the three versions the Operator supports. 
+    The list indicates the three distinct database versions the Operator supports. 
 
 1. Check the status of your existing instances, to identify any recommended reconciliations. From Tanzu Operator 1.4.0 the output of `kubectl get mysql` command has been enhanced to include an `UPDATE STATUS`, and an `USER ACTION` column. 
 
@@ -65,7 +65,7 @@ After an Operator upgrade, instances created under an older Operator require rec
 
 1. Check the `UPDATE STATUS` column and note the instances with an update value = "UpdateRequired". These instances need to be brought up-to-date or reconciled, to take advantage of new Operator features, and the self-healing capabilities that are native to Kubernetes. 
 
-1. As per the `USER ACTION` column, use the Kubernetes method of Annotations to push a one time action. 
+1. For instances that require an update, as indicated by the `USER ACTION` column, use Kubernetes' standard annotation command to mark the instance to be updated/reconciled to the current operator. 
 
     **WARNING**: Annotating an instance will cause instance reboot. Plan your instance annotations according to your applications maintenance windows. 
     
@@ -75,7 +75,7 @@ After an Operator upgrade, instances created under an older Operator require rec
     kubectl annotate mysql instance-8 mysql.with.sql.tanzu.vmware.com/update=once
     ```
 
-    The annotation is removed the moment the instance update is complete. You may rerun the command `kubectl get mysql` to verify that the reconciliation is complete. After the annotate action, these instances can use all the new features of the latest Operator.
+    NOTE: The annotation is removed the moment the instance update is complete. You may rerun the command `kubectl get mysql` to verify that the reconciliation is complete. After the annotate action, the newly updated instances can use all the new features of the latest Operator.
 
 ## <a id='scale-storage'></a> Scale storageSize
 
