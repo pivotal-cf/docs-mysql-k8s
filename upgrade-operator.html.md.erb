@@ -11,6 +11,8 @@ This topic describes how to upgrade the <%= vars.product_full %> Operator.
 To upgrade <%= vars.product_short %>, you must download the resources, and upgrade
 the <%= vars.product_short %> Operator using Helm.
 
+<p class="note"><strong>IMPORTANT:</strong> From version 1.4.0, upgrading the Operator does not disrupt or upgrade the existing instances. Be advised that the owners of the instances might be encouraged to upgrade or update their instances. </p>
+
 1. Set the environment variable to enable OCI support in the Helm v3 client by running:
 
     ```
@@ -95,6 +97,8 @@ the <%= vars.product_short %> Operator using Helm.
 	rm ${CHART_DIR}
 	```
 
-1. Check the status of your existing instances, and plan for an upgrade or an update. 
+## <a id="next-steps"></a>Next Steps
 
-    Use the command `kubectl get mysqls` and review [List Instance Versions](upgrade-instance.html#upgrade-steps), [Upgrade an Instance](upgrade-instance.html#upgrade-steps) and [Updating an Instance](update-instance.html#update-instance). 
+Check the status of your existing instances, and plan for an upgrade or an update. 
+
+Use the command `kubectl get mysqls` and review [List Instance Versions](upgrade-instance.html#upgrade-steps), [Upgrade an Instance](upgrade-instance.html#upgrade-steps) and [Updating an Instance](update-instance.html#update-instance). 
