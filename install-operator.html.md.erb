@@ -468,3 +468,5 @@ Edit the Operator Configuration file:
 	```
 	rm ${CHART_DIR}
 	```
+
+    If you created an Operator Values Override file, it is recommended you save that file for reference during subsequent Operator upgrades. By default, Helm will re-apply those override values when you later `helm upgrade` your Operator, unless you perform the upgrade with other overrides or with the `--reset-values` flag. See <A HREF="https://helm.sh/docs/helm/helm_upgrade/">Helm Upgrade documentation</A> for details.
