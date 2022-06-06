@@ -240,15 +240,20 @@ Choose this method if:
 
 ## <a id="installing_operator"></a>Installing the Operator
 
-### Create Operator Namespace and Secrets
+### <a id="create-namespace-and-secrets"></a>Create Operator Namespace and Secrets
 
-1. Create the default Operator namespace `tanzu-mysql-for-kubernetes-system` by running:
+1. Create the Operator namespace. By default this documentation
+    uses namespace `tanzu-mysql-for-kubernetes-system`:
 
     ```
     kubectl create namespace tanzu-mysql-for-kubernetes-system
     ```
 
-1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private image registry, or the Tanzu Registry, so it can pull images. These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR. The following commands create the secret in the Operator's default namespace <code>tanzu-mysql-for-kubernetes-system</code> (created above).
+    To install your Operator into a different namespace, replace "tanzu-mysql-for-kubernetes-system"
+    with your own namespace in the above command, and in all below commands which
+    identify the Operator namespace via `--namespace tanzu-mysql-for-kubernetes-system`.
+
+1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private image registry, or the Tanzu Registry, so it can pull images. These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR. The following commands create the secret in the default Operator namespace <code>tanzu-mysql-for-kubernetes-system</code> (created above).
 
     <p class='note important'><strong>IMPORTANT:</strong> Re-run the commands below to create identical or equivalent secrets in every namespace in which users will create Tanzu MySQL instances</strong>, and replace the Operator namespace <code>tanzu-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
     If these secrets are not created in the instance namespace, the users will receive "ImagePullBackOff" errors when creating instances, as their MySQL pods fail to pull instance images from the image registry.</p>
@@ -314,14 +319,14 @@ Chart.yaml      crds/      templates/      values.schema.json      values.yaml
 
 In most situations, the default values supplied in the Operator configuration file `values.yaml` do not need to be changed.
 
-However, you will need edit that file if any of the following are true:
+However, you will need to create an Operator Values Override file to replace those values with your own if any of the following are true:
 
 * You deployed the Tanzu SQL for Kubernetes images from a registry other than registry.tanzu.vmware.com.
 * You named your registry secret something other than the default `tanzu-image-registry` in <strong>Create Operator Namespace and Secrets</strong> above.
 * You want to allocate different CPU or memory resources for your Operator.
 * You want to specify an alternate default version for new MySQL instances.
 
-Edit the Operator Configuration file:
+Create an Operator Values Override file:
 
 1.  The file `values.yaml` specifies the location of the MySQL
     Operator and instance images. By default it contains the following values:
@@ -354,8 +359,8 @@ Edit the Operator Configuration file:
         <tr>
           <td><code>imagePullSecret</code></td>
           <td>String</td>
-          <td>Name of image secret. This value must match the name of the Kubernetes
-            secret you create in <a href="#create-service-accounts">Create a Kubernetes Access Secret</a>.</td>
+          <td>Name of image pull secret. This value must match the name of the Kubernetes
+            docker-registry type secret you created in <a href="#create-namespace-and-secrets">Create Operator Namespace and Secrets</a>.</td>
         </tr>
         <tr>
           <td><code>operatorImage</code></td>
@@ -386,7 +391,7 @@ Edit the Operator Configuration file:
 
 1. Edit the values that you want to change.
 1. Delete the sections of the file that you do not change.
-1. Save the `operator-values-overrides.yaml` file in a location of your choice or the same directory as the `values.yaml` file.
+1. Save the `operator-values-overrides.yaml` file in a location of your choice or the same directory as the `values.yaml` file. You will reference this file during upcoming deployment steps.
 
 
 ### <a id="create-operator"></a>  Deploy the Operator 
@@ -398,48 +403,43 @@ Edit the Operator Configuration file:
     To continue with the default installation, use Helm to install the MySQL Operator in your Kubernetes cluster:
 
     ``` 
-    helm install --wait my-mysql-operator tanzu-sql-with-mysql-operator/
-    ``` 
+    helm install --wait my-mysql-operator tanzu-sql-with-mysql-operator/ \
+        --namespace=tanzu-mysql-for-kubernetes-system
+    ```
 
     where:
     * `--wait` flag waits for the Operator deployment to complete before any image installation starts
     * `my-mysql-operator` is the custom name you provide for your MySQL Operator
     * `tanzu-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
+    *  `tanzu-mysql-for-kubernetes-system` is the Operator namespace you created in <strong>Create Operator Namespace and Secrets</strong> above.
 
-    or
+    If you performed the above steps to <strong>Create an Operator Values Override file</strong>, add your override file to the command line:
 
-    ``` 
-    helm install --wait my-mysql-operator -f tanzu-sql-with-mysql-operator/operator-values-overrides.yaml tanzu-sql-with-mysql-operator/
-    ``` 
-    
-    Replace `tanzu-sql-with-mysql-operator/operator-values-overrides.yaml` with your custom location.
-
-    To create the Operator in a namespace different than the default, use:
-    
     ``` 
     helm install --wait my-mysql-operator tanzu-sql-with-mysql-operator/ \
-      --values=operator-values-overrides.yaml \
-      --namespace=mysql-for-kubernetes-system \
-      --create-namespace
-    ``` 
+      -f tanzu-sql-with-mysql-operator/operator-values-overrides.yaml \
+      --namespace=tanzu-mysql-for-kubernetes-system
+    ```
+
+    Replace `tanzu-sql-with-mysql-operator/operator-values-overrides.yaml` with the location of your override values file.
 
     The command displays a message similar to:
 
     ```
     NAME: my-mysql-operator
     LAST DEPLOYED: Wed Jun 16 13:28:05 2021
-    NAMESPACE: default
+    NAMESPACE: tanzu-mysql-for-kubernetes-system
     STATUS: deployed
     REVISION: 1
     TEST SUITE: None
     ```
     
-    **Note**: The secret namespace in step [Create a Kubernetes Access Secret](#create-service-accounts) must match the Operator namespace.  
+    **Note**: Your secrets must be created in the same namespace that you are installing your Operator into, as described in [Create Operator Namespace and Secrets](#create-namespace-and-secrets).
 
 1.  Use `watch kubectl get all` to monitor the progress of the deployment. The deployment is complete when the MySQL Operator pod status changes to `Running`.
 
     ``` 
-    watch kubectl get all
+    watch kubectl get all --namespace=tanzu-mysql-for-kubernetes-system
     ``` 
     
     You may also check the logs to confirm the Operator is running properly:
@@ -451,20 +451,25 @@ Edit the Operator Configuration file:
     Use the label `app=tanzu-mysql-operator` to search across resources created by the MySQL Operator Helm chart:
 
     ``` 
-    kubectl get all -l app=tanzu-mysql-operator -n mysql-for-kubernetes-system
-    ``` 
-    where `-n mysql-for-kubernetes-system` defines the namespace. The output would be similar to:
+    kubectl get all -l app=tanzu-mysql-operator --namespace=tanzu-mysql-for-kubernetes-system
+    ```
+
+    The output would be similar to:
 
     ``` 
     NAME                                             READY       STATUS           RESTARTS      AGE
-    pod/tanzu-mysql-operator-69765b8b74-rtms7        1/1         Running          0             3d19h
+    pod/tanzu-mysql-operator-69765b8b74-rtms7        1/1         Running          0             6m
+    NAME                                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+    service/tanzu-mysql-webhook-service   ClusterIP   10.97.127.198   none          443/TCP   6m
     NAME                                             READY       UP-TO-DATE       AVAILABLE     AGE
-    deployment.apps/tanzu-mysql-operator             1/1         1                1             3d19h
+    deployment.apps/tanzu-mysql-operator             1/1         1                1             6m
     NAME                                             DESIRED     CURRENT          READY         AGE
-    replicaset.apps/tanzu-mysql-operator-69765b8b74  1           1                1             3d19h
+    replicaset.apps/tanzu-mysql-operator-69765b8b74  1           1                1             6m
     ```
 
 1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
 	```
 	rm ${CHART_DIR}
 	```
+
+    It is recommended you save any Operator Values Override file you created, for reference during upgrades.
