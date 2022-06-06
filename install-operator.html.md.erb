@@ -429,9 +429,9 @@ Create an Operator Values Override file:
     replicaset.apps/tanzu-mysql-operator-69765b8b74  1           1                1             6m
     ```
 
-1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
+1. Clean up the temporary directory if the exported chart is no longer needed by running:
 	```
 	rm ${CHART_DIR}
 	```
 
-    It is recommended you save any Operator Values Override file you created, for reference during upgrades.
+1. If you used an Operator values override file, consider saving if future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
