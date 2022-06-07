@@ -154,7 +154,8 @@ Choose this method if:
     docker load -i ./images/tanzu-mysql-instance-8.0.25
     docker load -i ./images/tanzu-mysql-instance-8.0.26
     docker load -i ./images/tanzu-mysql-instance-8.0.27
-    ``` 
+    docker load -i ./images/tanzu-mysql-instance-8.0.28
+    ```
 
 1.  Load the MySQL Operator image to the Docker registry:
 
@@ -172,6 +173,7 @@ Choose this method if:
 	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.25    1.5.0     e8eb899f5df6   5 weeks ago    793MB
 	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.26    1.5.0     110f35a9006d   5 weeks ago    842MB
 	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.27    1.5.0     b2767c434c61   5 weeks ago    907MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.28    1.5.0     b2767c434c61   5 weeks ago    907MB
 	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   	       1.5.0     8b46a4d26aa0   5 weeks ago    76.9MB
 	```
 
@@ -195,6 +197,10 @@ Choose this method if:
 
     INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.27-tag)"
     docker tag $(cat ./images/tanzu-mysql-instance-8.0.27-id) ${INSTANCE_IMAGE_NAME}
+    docker push ${INSTANCE_IMAGE_NAME}
+
+    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.28-tag)"
+    docker tag $(cat ./images/tanzu-mysql-instance-8.0.28-id) ${INSTANCE_IMAGE_NAME}
     docker push ${INSTANCE_IMAGE_NAME}
 
     OPERATOR_IMAGE_NAME="${REGISTRY}/tanzu-mysql-operator:$(cat ./images/tanzu-mysql-operator-tag)"
