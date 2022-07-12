@@ -4,10 +4,16 @@ owner: MySQL
 ---
 
 
-This topic describes how Kubernetes admins install, configure, and deploy the Tanzu MySQL using two different methods, via the Tanzu Network Registry or a downloadable file. 
+This topic describes how to install <%=vars.product_name %>. 
+
+The primary method for installing Tanzu MySQL Operator is via Helm. For install instructions using the Tanzu Network Registry or a downloadable file, see [Installing using Helm](#helm_install).
+
+For Tanzu Application Platform (TAP) customers, the Tanzu Postgres Operator can be installed using the Tanzu CLI. For more details, see [Installing using the Tanzu CLI](#tanzu_cli_install).
 
 
-## <a id='tanzu-network-prerequisites'></a> Prerequisites 
+## <a id="helm_install"></a> Installing using Helm
+
+### <a id='tanzu-network-prerequisites'></a> Prerequisites 
 
 Before you deploy the Tanzu MySQL Operator, you need:
 
@@ -75,7 +81,7 @@ Before you deploy the Tanzu MySQL Operator, you need:
     
     For security scenarios setup, see [Configuring TLS for MySQL Instances](configure-tls.html). 
 
-## <a id="access"></a> Accessing the Resources
+### <a id="access"></a> Accessing the Resources
 
 You can access and install <%=vars.product_name %> using two different methods: 
 
@@ -83,7 +89,7 @@ You can access and install <%=vars.product_name %> using two different methods:
 
 - Use [Setup the Tanzu MySQL Operator via Downloadable Archive File](#install-via-tar) if your server hosts do not have access to the internet, or if you want to install from a private registry.
 
-### <a id="install-via-tanzu"></a>  Setup the Tanzu Operator via the Tanzu Network Registry
+#### <a id="install-via-tanzu"></a>  Setup the Tanzu Operator via the Tanzu Network Registry
 
 1. Set the environment variable to enable OCI support in the Helm v3 client by running:
 
@@ -121,7 +127,7 @@ You can access and install <%=vars.product_name %> using two different methods:
     helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart --version 1.5.0 --untar --untardir /tmp
     ```
 
-### <a id="install-via-tar"></a> Setup the Tanzu Operator via a Downloaded Archive File
+#### <a id="install-via-tar"></a> Setup the Tanzu Operator via a Downloaded Archive File
         
 Choose this method if:
 
@@ -208,9 +214,9 @@ Choose this method if:
     docker push ${OPERATOR_IMAGE_NAME}
     ```
 
-## <a id="installing_operator"></a>Installing the Operator
+### <a id="installing_operator"></a>Installing the Operator
 
-### <a id="create-namespace-and-secrets"></a>Create Operator Namespace and Secrets
+#### <a id="create-namespace-and-secrets"></a>Create Operator Namespace and Secrets
 
 1. Create the Operator namespace. By default this documentation
     uses namespace `tanzu-mysql-for-kubernetes-system`:
@@ -264,7 +270,7 @@ Choose this method if:
     When you [deploy the operator](#create-operator), the MySQL Operator will use this secret to authenticate the Kubernetes cluster with the container registry and to then pull images.
 
 
-### <a id="create-overrides"></a> Review the Operator Values
+#### <a id="create-overrides"></a> Review the Operator Values
 
 The below Operator configuration files are in the helm chart directory `tanzu-sql-with-mysql-operator`.
 
@@ -364,25 +370,13 @@ Create an Operator Values Override file:
 1. Save the `operator-values-overrides.yaml` file in a location of your choice or the same directory as the `values.yaml` file. You will reference this file during upcoming deployment steps.
 
 
-### <a id="create-operator"></a>  Deploy the Operator 
+#### <a id="create-operator"></a>  Deploy the Operator 
 
 **IMPORTANT**: Helm 3.7.0 is not supported. Use Helm 3.7.1 and above, or Helm 3.6 and earlier.
 
 1.  By default, the Tanzu MySQL Operator 1.3.0 configures a `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
 
-    To continue with the default installation, use Helm to install the MySQL Operator in your Kubernetes cluster:
-
-    ``` 
-    helm install --wait my-mysql-operator /tmp/tanzu-sql-with-mysql-operator/
-    ``` 
-
-    where:
-    * `--wait` flag waits for the Operator deployment to complete before any image installation starts
-    * `my-mysql-operator` is the custom name you provide for your MySQL Operator
-    * `tanzu-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
-    *  `tanzu-mysql-for-kubernetes-system` is the Operator namespace you created in <strong>Create Operator Namespace and Secrets</strong> above.
-
-    If you performed the above steps to <strong>Create an Operator Values Override file</strong>, add your override file to the command line:
+    Use Helm to install the MySQL Operator in your Kubernetes cluster:
 
     ``` 
     helm install --wait my-mysql-operator /tmp/tanzu-sql-with-mysql-operator/ \
@@ -391,18 +385,27 @@ Create an Operator Values Override file:
       --create-namespace
     ``` 
 
+    where:
+    * `--wait` flag waits for the Operator deployment to complete before any image installation starts
+    * `my-mysql-operator` is the custom name you provide for your MySQL Operator
+    * `tanzu-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
+    * `tanzu-mysql-for-kubernetes-system` is the Operator namespace you created in <strong>Create Operator Namespace and Secrets</strong> above
+    * `operator-values-overrides.yaml` is the overrides file with your custom values, as per [Review the Operator Values](#create-overrides)
+
     The command displays a message similar to:
 
     ```
     NAME: my-mysql-operator
-    LAST DEPLOYED: Wed Jun 16 13:28:05 2021
+    LAST DEPLOYED: Wed Jun 16 13:28:05 2022
     NAMESPACE: tanzu-mysql-for-kubernetes-system
     STATUS: deployed
     REVISION: 1
     TEST SUITE: None
     ```
     
-    **Note**: Your secrets must be created in the same namespace that you are installing your Operator into, as described in [Create Operator Namespace and Secrets](#create-namespace-and-secrets).
+    **Note**: Install the Operator in the same namespace as the secrets, as described in [Create Operator Namespace and Secrets](#create-namespace-and-secrets).
+
+    If you used an Operator values override file, save it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
 
 1.  Use `watch kubectl get all` to monitor the progress of the deployment. The deployment is complete when the MySQL Operator pod status changes to `Running`.
 
@@ -427,20 +430,18 @@ Create an Operator Values Override file:
     ``` 
     NAME                                             READY       STATUS           RESTARTS      AGE
     pod/tanzu-mysql-operator-69765b8b74-rtms7        1/1         Running          0             6m
-    NAME                                  TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
-    service/tanzu-mysql-webhook-service   ClusterIP   10.97.127.198   none          443/TCP   6m
+    NAME                                             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+    service/tanzu-mysql-webhook-service              ClusterIP   10.97.127.198    none          443/TCP   6m
     NAME                                             READY       UP-TO-DATE       AVAILABLE     AGE
     deployment.apps/tanzu-mysql-operator             1/1         1                1             6m
     NAME                                             DESIRED     CURRENT          READY         AGE
     replicaset.apps/tanzu-mysql-operator-69765b8b74  1           1                1             6m
     ```
 
-1. Clean up the temporary directory if the exported chart is no longer needed by running:
+1. Clean up the temporary directory if you no longer need the exported chart:
 	```
 	rm ${CHART_DIR}
 	```
-
-1. If you used an Operator values override file, consider saving it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
 
 ## <a id="tanzu_cli_install"></a> Installing using the Tanzu CLI
 
@@ -523,7 +524,7 @@ where:
 - `TDS-VERSION` is the tag for the image bundle (e.g. `1.1.0`)
 - `NAMESPACE` is the namespace where the Package and PackageInstall will be created
 
-List the available packages to confirm the addition:
+List the latest packages to confirm the addition:
 ```
 tanzu package available list -n <NAMESPACE>
 ```
@@ -563,7 +564,7 @@ resources:
 
 ### <a id="install_op_cli"></a> Installing the Operator
 
-1. **Install the operator package**
+1. Install the operator package.
 
    Install the MySQL operator package, using the overrides file you created:
 
@@ -592,7 +593,7 @@ resources:
     Added installed package 'tanzu-mysql-operator'
     ```
 
-2. **Verify PackageInstall has been created**
+2. Verify PackageInstall has been created.
 
     ```
     tanzu package installed list -n <NAMESPACE>
