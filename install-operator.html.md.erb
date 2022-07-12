@@ -4,7 +4,7 @@ owner: MySQL
 ---
 
 
-This topic describes how to install <%=vars.product_name %>. 
+This topic describes how to install the Tanzu MySQL Operator. 
 
 The primary method for installing Tanzu MySQL Operator is via Helm. For install instructions using the Tanzu Network Registry or a downloadable file, see [Installing using Helm](#helm_install).
 
@@ -81,7 +81,7 @@ Before you deploy the Tanzu MySQL Operator, you need:
     
     For security scenarios setup, see [Configuring TLS for MySQL Instances](configure-tls.html). 
 
-### <a id="access"></a> Accessing the Resources
+### <a id="access"></a> Access the Resources
 
 You can access and install <%=vars.product_name %> using two different methods: 
 
@@ -214,26 +214,25 @@ Choose this method if:
     docker push ${OPERATOR_IMAGE_NAME}
     ```
 
-### <a id="installing_operator"></a>Installing the Operator
+### <a id="installing_operator"></a>Install the Operator
 
 #### <a id="create-namespace-and-secrets"></a>Create Operator Namespace and Secrets
 
-1. Create the Operator namespace. By default this documentation
-    uses namespace `tanzu-mysql-for-kubernetes-system`:
+1. Create the Operator namespace: 
 
     ```
     kubectl create namespace tanzu-mysql-for-kubernetes-system
     ```
+    where `tanzu-mysql-for-kubernetes-system` is an example namespace. 
+    
 
-    To install your Operator into a different namespace, replace "tanzu-mysql-for-kubernetes-system"
-    with your own namespace in the above command, and in all below commands which
-    identify the Operator namespace via `--namespace tanzu-mysql-for-kubernetes-system`.
-
-1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with the private image registry, or the Tanzu Registry, so it can pull images. These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR. The following commands create the secret in the default Operator namespace <code>tanzu-mysql-for-kubernetes-system</code> (created above).
+1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with a private image registry, or the Tanzu Registry, so it can pull images. 
 
     <p class='note important'><strong>IMPORTANT:</strong> Re-run the commands below to create identical or equivalent secrets in every namespace in which users will create Tanzu MySQL instances</strong>, and replace the Operator namespace <code>tanzu-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
     If these secrets are not created in the instance namespace, the users will receive "ImagePullBackOff" errors when creating instances, as their MySQL pods fail to pull instance images from the image registry.</p>
     
+    These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR. 
+
     **Tanzu Registry**
     
     ```
@@ -265,9 +264,7 @@ Choose this method if:
     --namespace tanzu-mysql-for-kubernetes-system
     ```
 
-    For information about how to obtain the `key.json` service account file, see [Creating service account credentials](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#step_3_create_service_account_credentials) in the GKE documentation.
-
-    When you [deploy the operator](#create-operator), the MySQL Operator will use this secret to authenticate the Kubernetes cluster with the container registry and to then pull images.
+    For GKE information on how to obtain the `key.json` service account file, refer to [Creating service account credentials](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#step_3_create_service_account_credentials) in the GKE documentation.
 
 
 #### <a id="create-overrides"></a> Review the Operator Values
