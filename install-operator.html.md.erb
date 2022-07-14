@@ -34,52 +34,15 @@ Before you deploy the Tanzu MySQL Operator, you need:
 
 - review the [Network Policies Configuration](network-policies.html) topic if you have any network plugins (for example [Network Plugin](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/)) in your Kubernetes cluster.
 
-* [Cert Manager](https://github.com/jetstack/cert-manager) installed on the Kubernetes cluster.
+* [Cert Manager](https://github.com/jetstack/cert-manager) installed on the Kubernetes cluster. Use the latest verion. 
     
-    Install cert-manager by running these commands from your local client:
-
-    ``` 
-    kubectl create namespace cert-manager
-    helm repo add jetstack https://charts.jetstack.io
-    helm repo update
-    helm install cert-manager jetstack/cert-manager --namespace cert-manager  --version <1.latest> --set installCRDs=true
-    ``` 
-    where:
-    - `--namespace cert-manager` is the namespace used for cert manager in the Kubernetes cluster
-    - `--version <1.latest>` is the latest cert-manager version available (minimum above 1.0.2)
-    - `--set installCRDs=true` ensures cert manager installs all types necessary to create certificates
-
-    To verify the installation run:
+    To verify the cert manager installation run:
 
     ``` 
     kubectl get all --namespace=cert-manager
     ``` 
     
-    The output should be similar to:
-
-    ```
-    NAME                                           READY   STATUS    RESTARTS   AGE
-    pod/cert-manager-57b65b7fc-x8vjt               1/1     Running   5          4d19h
-    pod/cert-manager-cainjector-5f988f74c6-tgk25   1/1     Running   15         4d19h
-    pod/cert-manager-webhook-7cf554f879-b5ss9      1/1     Running   4          4d19h
-
-    NAME                           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-    service/cert-manager           ClusterIP   10.106.253.7    <none>        9402/TCP   4d19h
-    service/cert-manager-webhook   ClusterIP   10.108.17.113   <none>        443/TCP    4d19h
-
-    NAME                                      READY   UP-TO-DATE   AVAILABLE   AGE
-    deployment.apps/cert-manager              1/1     1            1           4d19h
-    deployment.apps/cert-manager-cainjector   1/1     1            1           4d19h
-    deployment.apps/cert-manager-webhook      1/1     1            1           4d19h
-
-    NAME                                                 DESIRED   CURRENT   READY   AGE
-    replicaset.apps/cert-manager-57b65b7fc               1         1         1       4d19h
-    replicaset.apps/cert-manager-cainjector-5f988f74c6   1         1         1       4d19h
-    replicaset.apps/cert-manager-webhook-7cf554f879      1         1         1       4d19h
-    ```
-    
-    
-    For security scenarios setup, see [Configuring TLS for MySQL Instances](configure-tls.html). 
+    For TLS security scenario setup, refer to [Configuring TLS for MySQL Instances](configure-tls.html). 
 
 ### <a id="access"></a> Access the Resources
 
@@ -128,11 +91,6 @@ You can access and install <%=vars.product_name %> using two different methods:
     ```
 
 #### <a id="install-via-tar"></a> Setup the Tanzu Operator via a Downloaded Archive File
-        
-Choose this method if:
-
-- The installation destination (for example an air-gapped network) cannot access the [VMware Tanzu Network](https://network.pivotal.io).
-- Or you wish to load the Operator and instance images to a private Docker registry.
 
 **IMPORTANT**: Helm 3.7.0 is not supported. Use Helm 3.7.1 and above, or Helm 3.6 and earlier.
 
@@ -367,7 +325,7 @@ Create an Operator Values Override file:
 1. Save the `operator-values-overrides.yaml` file in a location of your choice or the same directory as the `values.yaml` file. You will reference this file during upcoming deployment steps.
 
 
-#### <a id="create-operator"></a>  Deploy the Operator 
+#### <a id="create-operator"></a> Deploy the Operator 
 
 **IMPORTANT**: Helm 3.7.0 is not supported. Use Helm 3.7.1 and above, or Helm 3.6 and earlier.
 
@@ -408,33 +366,29 @@ Create an Operator Values Override file:
 
     ``` 
     watch kubectl get all --namespace=tanzu-mysql-for-kubernetes-system
-    ``` 
+    ```
+    The output would be similar to: 
     
+    ```
+    NAME                                       READY   STATUS    RESTARTS   AGE
+    pod/tanzu-mysql-operator-d8545b9c6-pwbxd   1/1     Running   0          20s
+    
+    NAME                                  TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+    service/tanzu-mysql-webhook-service   ClusterIP   10.8.2.19    <none>        443/TCP   22s
+    
+    NAME                                   READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/tanzu-mysql-operator   1/1     1            1           22s
+    
+    NAME                                             DESIRED   CURRENT   READY   AGE
+    replicaset.apps/tanzu-mysql-operator-d8545b9c6   1         1         1       22s
+    ```
+
     You may also check the logs to confirm the Operator is running properly:
 
     ``` 
     kubectl logs -l app=tanzu-mysql-operator
     ``` 
     
-    Use the label `app=tanzu-mysql-operator` to search across resources created by the MySQL Operator Helm chart:
-
-    ``` 
-    kubectl get all -l app=tanzu-mysql-operator --namespace=tanzu-mysql-for-kubernetes-system
-    ```
-
-    The output would be similar to:
-
-    ``` 
-    NAME                                             READY       STATUS           RESTARTS      AGE
-    pod/tanzu-mysql-operator-69765b8b74-rtms7        1/1         Running          0             6m
-    NAME                                             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
-    service/tanzu-mysql-webhook-service              ClusterIP   10.97.127.198    none          443/TCP   6m
-    NAME                                             READY       UP-TO-DATE       AVAILABLE     AGE
-    deployment.apps/tanzu-mysql-operator             1/1         1                1             6m
-    NAME                                             DESIRED     CURRENT          READY         AGE
-    replicaset.apps/tanzu-mysql-operator-69765b8b74  1           1                1             6m
-    ```
-
 1. Clean up the temporary directory if you no longer need the exported chart:
 	```
 	rm ${CHART_DIR}
@@ -560,7 +514,7 @@ resources:
     memory: 300Mi
 ```
 
-### <a id="install_op_cli"></a> Installing the Operator
+### <a id="install_op_cli"></a> Install the Operator
 
 1. Install the operator package.
 
