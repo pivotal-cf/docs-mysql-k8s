@@ -76,7 +76,8 @@ To create a MySQLBackupLocation resource:
     cp ~/Downloads/tanzu-mysql-deployment-templates-1.3.0/samples/backuplocation.yaml testbackuplocation.yaml
     ``` 
 
-2. Edit the file with the configuration for your external blobstore.
+2. Edit the file with the configuration for your external blobstore. Optionally, a CA bundle can be provided for storage endpoints using custom TLS certificates.
+
    For an explanation of the properties that you can set in this file,
    see [Properties for the MySQLBackupLocation Resource](property-reference-backup-restore.html#backuplocation)
    and [Properties for the Secret](property-reference-backup-restore.html#secret).
