@@ -343,8 +343,8 @@ Create an Operator Values Override file:
     where:
     * `--wait` flag waits for the Operator deployment to complete before any image installation starts
     * `my-mysql-operator` is the custom name you provide for your MySQL Operator
-    * `tanzu-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
-    * `tanzu-mysql-for-kubernetes-system` is the Operator namespace you created in <strong>Create Operator Namespace and Secrets</strong> above
+    * `/tmp/tanzu-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
+    * `mysql-for-kubernetes-system` is the Operator namespace you created in [Create Operator Namespace and Secrets](#create-namespace-and-secrets)
     * `operator-values-overrides.yaml` is the overrides file with your custom values, as per [Review the Operator Values](#create-overrides)
 
     The command displays a message similar to:
@@ -360,7 +360,7 @@ Create an Operator Values Override file:
     
     **Note**: Install the Operator in the same namespace as the secrets, as described in [Create Operator Namespace and Secrets](#create-namespace-and-secrets).
 
-    If you used an Operator values override file, save it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
+1.  If you used an Operator values override file, save it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
 
 1.  Use `watch kubectl get all` to monitor the progress of the deployment. The deployment is complete when the MySQL Operator pod status changes to `Running`.
 
@@ -405,7 +405,7 @@ Create an Operator Values Override file:
 
 ### <a id="relocate"></a> Relocate Images to a Private Registry
 
-Relocate the images from VMware Tanzu Network registry to a private registry before attempting installation. The VMware Tanzu Network registry does not offer uptime guarantees for installations. Skipping image relocation should only occur when configuring an evaluation, testing, or proof-of-concept environment.
+Relocate the images from VMware Tanzu Network registry to a private registry before attempting the installation. The VMware Tanzu Network registry does not offer uptime guarantees for installations. Skipping image relocation should only occur when configuring an evaluation, testing, or proof-of-concept environment.
 
 To relocate images from the VMware Tanzu Network registry to a private registry:
 
@@ -467,7 +467,9 @@ where:
 Add the package repository for VMware Tanzu Data Services:
 
 ```
-tanzu package repository add tanzu-data-services-repository --url <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages:<TDS-VERSION> -n <NAMESPACE> --create-namespace
+tanzu package repository add tanzu-data-services-repository \
+     --url <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages:<TDS-VERSION> 
+     --n <NAMESPACE> --create-namespace
 ```
 
 where:
