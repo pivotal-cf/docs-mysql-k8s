@@ -115,10 +115,10 @@ You can access and install <%=vars.product_name %> using two different methods:
 1.  Load the MySQL instance images to the Docker registry:
 
     ``` 
-    docker load -i ./images/tanzu-mysql-instance-8.0.25
     docker load -i ./images/tanzu-mysql-instance-8.0.26
     docker load -i ./images/tanzu-mysql-instance-8.0.27
     docker load -i ./images/tanzu-mysql-instance-8.0.28
+    docker load -i ./images/tanzu-mysql-instance-8.0.29
     ```
 
 1.  Load the MySQL Operator image to the Docker registry:
@@ -134,11 +134,11 @@ You can access and install <%=vars.product_name %> using two different methods:
     ```
 	```
 	   REPOSITORY                                                                  	       TAG       IMAGE ID       CREATED        SIZE
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.25    1.5.0     e8eb899f5df6   5 weeks ago    793MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.26    1.5.0     110f35a9006d   5 weeks ago    842MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.27    1.5.0     b2767c434c61   5 weeks ago    907MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.28    1.5.0     b2767c434c61   5 weeks ago    907MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   	       1.5.0     8b46a4d26aa0   5 weeks ago    76.9MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.26    1.6.0     110f35a9006d   2 weeks ago    842MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.27    1.6.0     b2767c434c61   2 weeks ago    907MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.28    1.6.0     3j2h83j93msl   2 weeks ago    917MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.29    1.6.0     19j38fj20xk3   2 weeks ago    902MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   	       1.6.0     8b46a4d26aa0   2 weeks ago    76.9MB
 	```
 
 1.  Push the Tanzu MySQL Docker images to the container registry of your choice. Set each image's project and image repo name, tag the images, and then push them using the Docker command `docker push`.
@@ -151,10 +151,6 @@ You can access and install <%=vars.product_name %> using two different methods:
     PROJECT=$(gcloud config list core/project --format='value(core.project)')
     REGISTRY="gcr.io/${PROJECT}"
 
-    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.25-tag)"
-    docker tag $(cat ./images/tanzu-mysql-instance-8.0.25-id) ${INSTANCE_IMAGE_NAME}
-    docker push ${INSTANCE_IMAGE_NAME}
-
     INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.26-tag)"
     docker tag $(cat ./images/tanzu-mysql-instance-8.0.26-id) ${INSTANCE_IMAGE_NAME}
     docker push ${INSTANCE_IMAGE_NAME}
@@ -165,6 +161,10 @@ You can access and install <%=vars.product_name %> using two different methods:
 
     INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.28-tag)"
     docker tag $(cat ./images/tanzu-mysql-instance-8.0.28-id) ${INSTANCE_IMAGE_NAME}
+    docker push ${INSTANCE_IMAGE_NAME}
+
+    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.29-tag)"
+    docker tag $(cat ./images/tanzu-mysql-instance-8.0.29-id) ${INSTANCE_IMAGE_NAME}
     docker push ${INSTANCE_IMAGE_NAME}
 
     OPERATOR_IMAGE_NAME="${REGISTRY}/tanzu-mysql-operator:$(cat ./images/tanzu-mysql-operator-tag)"
@@ -343,8 +343,8 @@ Create an Operator Values Override file:
     where:
     * `--wait` flag waits for the Operator deployment to complete before any image installation starts
     * `my-mysql-operator` is the custom name you provide for your MySQL Operator
-    * `tanzu-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
-    * `tanzu-mysql-for-kubernetes-system` is the Operator namespace you created in <strong>Create Operator Namespace and Secrets</strong> above
+    * `/tmp/tanzu-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
+    * `mysql-for-kubernetes-system` is the Operator namespace you created in [Create Operator Namespace and Secrets](#create-namespace-and-secrets)
     * `operator-values-overrides.yaml` is the overrides file with your custom values, as per [Review the Operator Values](#create-overrides)
 
     The command displays a message similar to:
@@ -360,7 +360,7 @@ Create an Operator Values Override file:
     
     **Note**: Install the Operator in the same namespace as the secrets, as described in [Create Operator Namespace and Secrets](#create-namespace-and-secrets).
 
-    If you used an Operator values override file, save it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
+1.  If you used an Operator values override file, save it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
 
 1.  Use `watch kubectl get all` to monitor the progress of the deployment. The deployment is complete when the MySQL Operator pod status changes to `Running`.
 
@@ -405,7 +405,7 @@ Create an Operator Values Override file:
 
 ### <a id="relocate"></a> Relocate Images to a Private Registry
 
-Relocate the images from VMware Tanzu Network registry to a private registry before attempting installation. The VMware Tanzu Network registry does not offer uptime guarantees for installations. Skipping image relocation should only occur when configuring an evaluation, testing, or proof-of-concept environment.
+Relocate the images from VMware Tanzu Network registry to a private registry before attempting the installation. The VMware Tanzu Network registry does not offer uptime guarantees for installations. Skipping image relocation should only occur when configuring an evaluation, testing, or proof-of-concept environment.
 
 To relocate images from the VMware Tanzu Network registry to a private registry:
 
@@ -467,7 +467,9 @@ where:
 Add the package repository for VMware Tanzu Data Services:
 
 ```
-tanzu package repository add tanzu-data-services-repository --url <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages:<TDS-VERSION> -n <NAMESPACE> --create-namespace
+tanzu package repository add tanzu-data-services-repository \
+     --url <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages:<TDS-VERSION> 
+     --n <NAMESPACE> --create-namespace
 ```
 
 where:
