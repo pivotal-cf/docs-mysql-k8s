@@ -115,10 +115,10 @@ You can access and install <%=vars.product_name %> using two different methods:
 1.  Load the MySQL instance images to the Docker registry:
 
     ``` 
-    docker load -i ./images/tanzu-mysql-instance-8.0.25
     docker load -i ./images/tanzu-mysql-instance-8.0.26
     docker load -i ./images/tanzu-mysql-instance-8.0.27
     docker load -i ./images/tanzu-mysql-instance-8.0.28
+    docker load -i ./images/tanzu-mysql-instance-8.0.29
     ```
 
 1.  Load the MySQL Operator image to the Docker registry:
@@ -134,11 +134,11 @@ You can access and install <%=vars.product_name %> using two different methods:
     ```
 	```
 	   REPOSITORY                                                                  	       TAG       IMAGE ID       CREATED        SIZE
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.25    1.5.0     e8eb899f5df6   5 weeks ago    793MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.26    1.5.0     110f35a9006d   5 weeks ago    842MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.27    1.5.0     b2767c434c61   5 weeks ago    907MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.28    1.5.0     b2767c434c61   5 weeks ago    907MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   	       1.5.0     8b46a4d26aa0   5 weeks ago    76.9MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.26    1.6.0     110f35a9006d   2 weeks ago    842MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.27    1.6.0     b2767c434c61   2 weeks ago    907MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.28    1.6.0     3j2h83j93msl   2 weeks ago    917MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-instance-8.0.29    1.6.0     19j38fj20xk3   2 weeks ago    902MB
+	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   	       1.6.0     8b46a4d26aa0   2 weeks ago    76.9MB
 	```
 
 1.  Push the Tanzu MySQL Docker images to the container registry of your choice. Set each image's project and image repo name, tag the images, and then push them using the Docker command `docker push`.
@@ -151,10 +151,6 @@ You can access and install <%=vars.product_name %> using two different methods:
     PROJECT=$(gcloud config list core/project --format='value(core.project)')
     REGISTRY="gcr.io/${PROJECT}"
 
-    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.25-tag)"
-    docker tag $(cat ./images/tanzu-mysql-instance-8.0.25-id) ${INSTANCE_IMAGE_NAME}
-    docker push ${INSTANCE_IMAGE_NAME}
-
     INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.26-tag)"
     docker tag $(cat ./images/tanzu-mysql-instance-8.0.26-id) ${INSTANCE_IMAGE_NAME}
     docker push ${INSTANCE_IMAGE_NAME}
@@ -165,6 +161,10 @@ You can access and install <%=vars.product_name %> using two different methods:
 
     INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.28-tag)"
     docker tag $(cat ./images/tanzu-mysql-instance-8.0.28-id) ${INSTANCE_IMAGE_NAME}
+    docker push ${INSTANCE_IMAGE_NAME}
+
+    INSTANCE_IMAGE_NAME="${REGISTRY}/tanzu-mysql-instance:$(cat ./images/tanzu-mysql-instance-8.0.29-tag)"
+    docker tag $(cat ./images/tanzu-mysql-instance-8.0.29-id) ${INSTANCE_IMAGE_NAME}
     docker push ${INSTANCE_IMAGE_NAME}
 
     OPERATOR_IMAGE_NAME="${REGISTRY}/tanzu-mysql-operator:$(cat ./images/tanzu-mysql-operator-tag)"
