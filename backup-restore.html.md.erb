@@ -58,8 +58,9 @@ you want to perform scheduled backups.
 
 ### <a id="create-backuplocation"></a>  Create a MySQLBackupLocation Resource
 
-The purpose of creating this MySQLBackupLocation Resource is to configure the namespace
-with the location of the blobstore and the credentials to access it.
+The MySQLBackupLocation Resource is used to configure the namespace with the location of the blobstore, and the credentials to access it. If your storage endpoint uses custom TLS certificates, provide your CA bundle in the MySQLBackupLocation Resource. 
+
+For details on the backup location CR and its properties, refer to [Properties for the MySQLBackupLocation Resource](property-reference-backup-restore.html#backuplocation), and [Properties for the Secret](property-reference-backup-restore.html#secret).
 
 To create a MySQLBackupLocation resource:
 
@@ -76,11 +77,8 @@ To create a MySQLBackupLocation resource:
     cp ~/Downloads/tanzu-mysql-deployment-templates-1.3.0/samples/backuplocation.yaml testbackuplocation.yaml
     ``` 
 
-2. Edit the file with the configuration for your external blobstore. Optionally, a CA bundle can be provided for storage endpoints using custom TLS certificates.
+2. Edit the file with the configuration details of your external blobstore. 
 
-   For an explanation of the properties that you can set in this file,
-   see [Properties for the MySQLBackupLocation Resource](property-reference-backup-restore.html#backuplocation)
-   and [Properties for the Secret](property-reference-backup-restore.html#secret).
 
 3. Create the MySQLBackupLocation resource in the same namespace as the MySQL instances that
    you want to back up by running:
