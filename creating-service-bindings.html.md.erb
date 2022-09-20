@@ -44,11 +44,11 @@ Review [Service Resource Claims] for details on `ResourceClaim`,
     metadata:
       name: resource-claims-mysql
       labels:
-        resourceclaims.services.apps.tanzu.vmware.com/controller: "true"
+        servicebinding.io/controller: "true"
     rules:
     - apiGroups: ["with.sql.tanzu.vmware.com"]
       resources: ["mysqls"]
-      verbs: ["get", "list", "watch", "update"]
+      verbs: ["get", "list", "watch"]
     ```
 
     and then run:
@@ -66,7 +66,7 @@ Review [Service Resource Claims] for details on `ResourceClaim`,
     ```
     ---
     apiVersion: services.apps.tanzu.vmware.com/v1alpha1
-    kind: ClusterInstanceClasse
+    kind: ClusterInstanceClass
     metadata:
       name: mysql
     spec:
@@ -138,10 +138,8 @@ To claim a MySQL instance:
   
     where `MYSQL-NAME` is the name of the previously created MySQL instance.
   
-    See [Discover claimable service instances] for more information on the
+    See [Discover claimable service instances](https://docs.vmware.com/en/Services-Toolkit-for-VMware-Tanzu-Application-Platform/0.7/svc-tlk/GUID-tanzu-services-plugin.html#discover-claimable-service-instances-2) for more information on the
     different flags and options available.
-
-[Discover claimable serices instances]: https://docs.vmware.com/en/Services-Toolkit-for-VMware-Tanzu-Application-Platform/0.7/svc-tlk/GUID-tanzu-services-plugin.html#discover-claimable-service-instances-2
 
 1. Create a claim for the MySQL instance from the namespace of your `Workload` by running:
 
@@ -188,10 +186,8 @@ To create an application `Workload` bound to a MySQL instance:
   
     Where `CLAIM-NAME` is the name of the previously created resource claim instance.
   
-    See [Listing and getting Resource Claims] for more information on the
+    See [Listing and getting Resource Claims](https://docs.vmware.com/en/Services-Toolkit-for-VMware-Tanzu-Application-Platform/0.7/svc-tlk/GUID-tanzu-services-plugin.html#list-and-get-resource-claims-4) for more information on the
     different flags and options available.
-
-[Listing and getting Resource Claims]: https://docs.vmware.com/en/Services-Toolkit-for-VMware-Tanzu-Application-Platform/0.7/svc-tlk/GUID-tanzu-services-plugin.html#list-and-get-resource-claims-4
 
 1. Retrieve detailed information about the claim by running:
 
@@ -207,7 +203,7 @@ To create an application `Workload` bound to a MySQL instance:
     Name: CLAIM-NAME
     Status:
       Ready: True
-    Namespace: pg
+    Namespace: app-namespace
     Claim Reference: services.apps.tanzu.vmware.com/v1alpha1:ResourceClaim:CLAIM-NAME
     Resource to Claim:
       Name: MYSQL-NAME
@@ -220,9 +216,6 @@ To create an application `Workload` bound to a MySQL instance:
     Where:
     * `MYSQL-NAME` is the name of the previously created MySQL instance.
     * `CLAIM-NAME` is the name of the previously created resource claim instance.
-  
-    See [Listing and getting Resource Claims] for more information on the
-    different flags and options available.
   
 1. Record the value of `Claim Reference` and pass it to `--service-ref` to create the application `Workload` by running:
 
@@ -241,9 +234,7 @@ To create an application `Workload` bound to a MySQL instance:
       - `key-name` is a unique name given to service binding for the Workload.
     - `--annotation` value of `autoscaling.knative.dev/minScale: "1"` prevents the auto-scaling down of pods done by the TAP components. This can help with debugging the `Workload`.
   
-    See [Tanzu apps workload create] for more information on the different flags and options available.
-
-[Tanzu apps workload create]: https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.2/tap/GUID-cli-plugins-apps-command-reference-tanzu-apps-workload-create.html
+    See [Tanzu apps workload create](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.2/tap/GUID-cli-plugins-apps-command-reference-tanzu-apps-workload-create.html) for more information on the different flags and options available.
 
 #### Example Workload
 
@@ -299,8 +290,7 @@ where:
 
 Save the above content in `workload.yaml` file and then run `kubectl apply -f workload.yaml`
 
-**IMPORTANT:** This example creates a workload with the sample Spring application spring-petclinic that is available on [GitHub](https://github.com/spring-projects/spring-petclinic).
-The sample application is subject to change and may face issues during build and run steps in the TAP workflow.
+**IMPORTANT:** This example creates a workload with the sample Spring application spring-petclinic that is available on [GitHub](https://github.com/spring-projects/spring-petclinic). The sample application is subject to change and may face issues during build and run steps in the TAP workflow. 
 Consider specifying a commit sha to use an older state of the sample application as needed for demo and test purposes.
 
 #### <a id="tap_existing_workloads"></a>Bind an existing TAP workload
