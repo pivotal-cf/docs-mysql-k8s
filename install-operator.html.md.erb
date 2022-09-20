@@ -357,8 +357,9 @@ Create an Operator Values Override file:
     REVISION: 1
     TEST SUITE: None
     ```
-    
-    **Note**: Install the Operator in the same namespace as the secrets, as described in [Create Operator Namespace and Secrets](#create-namespace-and-secrets).
+    <p class="note">
+       <strong>Note:</strong> Install the Operator in the same namespace as the secrets, as described in <a href="#create-namespace-and-secrets">Create Operator Namespace and Secrets</a>.
+    </p>
 
 1.  If you used an Operator values override file, save it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
 
