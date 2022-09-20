@@ -137,13 +137,14 @@ The name of the MySQL instance. Must be unique within a namespace. Cannot be mod
 
 **`storageSize: <Quantity>`**<br />
 **Optional**<br />
-**Default**: n/a<br />
-The size of the persistent volume claims (PVCs) for MySQL instance Pods. Specify a suffix for the units (for example: 100G, 1T). After being set, cannot be reduced, but can be increased. For information about allowed size units, see discussion about resource quantities in the [kubernetes community](https://github.com/kubernetes/community/blob/master/contributors/design-proposals/scheduling/resources.md#resource-quantities) GitHub repository.<br />
+**Default**: 1Gi<br />
+The size of the persistent volume claims (PVCs) for MySQL instance Pods. Specify a suffix for the units (for example: 100G, 1T). After being set, cannot be reduced, but can be increased. For information about allowed size units, see discussion about resource quantities in the [The Kubernetes resource model](https://github.com/kubernetes/design-proposals-archive/blob/main/scheduling/resources.md) in the community GitHub repository.<br />
 **Example**: 50Gi
 
 **`imagePullSecretName: <string>`**<br />
-**Required**<br />
-**Default**: n/a<br />
+**Optional**<br />
+**Default**: Defaults to the `imagePullSecretName:` used during Operator deployment, as set in the Operator's `values.yaml`. See [Configure a Kubernetes Secret for Accessing the Private Container Registry](./install-operator.html#configure-a-kubernetes-secret-for-accessing-the-private-container-registry). <br/>
+Note that the secret may need to be recreated within your pod's namespace in order for your pod to access it.<br />
 An existing Kubernetes docker-registry secret that can access the registry containing the MySQL image.<br />
 **Example**: tanzu-mysql-image-registry
 
