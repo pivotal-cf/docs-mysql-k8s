@@ -10,191 +10,413 @@ This topic describes how to connect applications to a Tanzu MySQL instance. This
 
 The Tanzu MySQL Operator 1.3 supports Service Binding with Tanzu Application Platform (TAP). This feature eliminates the manual management of the configuration steps needed to securely and successfuly bind a TAP application to a Tanzu MySQL deployment. For more information on Service Binding, see [Service Binding Specification for Kubernetes](https://github.com/servicebinding/spec) in the Kubernetes documentation. 
 
-For more information on how to create or update TAP workloads, see [Working with Workloads](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/0.4/tap/GUID-cli-plugins-apps-working-with-workloads.html) in the TAP documentation.
+For more information on how to create or update TAP workloads, see [Working with Workloads] in the TAP documentation.
+
+[Working with Workloads]: https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.2/tap/GUID-cli-plugins-apps-create-workload.html
 
 ### <a id="tap_prereqs"></a> Prerequisites
 
-- TAP v1.0.0 has been installed. See [Installing Tanzu Application Platform](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-overview.html) for instructions.
+[Installing Tanzu Application Platform]: https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.2/tap/GUID-install-intro.html
+
+- TAP v1.2.0 or higher has been installed. See [Installing Tanzu Application Platform] for instructions.
 - Tanzu MySQL Operator has been successfully installed on a Kubernetes cluster. See [Installing a MySQL Operator for instructions](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.3/tanzu-mysql-k8s/GUID-install-operator.html).
 - MySQL instance has been deployed. See [Deploying a MySQL Instance](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.3/tanzu-mysql-k8s/GUID-create-delete-mysql.html) for instructions.
 
-- TAP services-toolkit will need correct permissions to access MySQL instances. For this, you need a ClusterRole and ClusterRoleBinding that binds the role to `services-toolkit-controller-manager`  service account in `services-toolkit` namespace. Save the below contents in `mysql-service-binding-rbac.yaml`
+### <a id="tap_setup_mysql_with_stk"></a> Setup MySQL with Services Toolkit
 
-    ```
-    apiVersion: rbac.authorization.k8s.io/v1
-    kind: ClusterRole
-    metadata:
-      labels:
-        resourceclaims.services.apps.tanzu.vmware.com/controller: "true"
-      name: mysql-for-kubernetes-mysqls-service-bindings-role
-    rules:
-      - apiGroups:
-          - with.sql.tanzu.vmware.com
-        resources:
-          - mysqls
-        verbs:
-          - get
-          - list
-          - watch
-          - update
-      - apiGroups:
-          - with.sql.tanzu.vmware.com
-        resources:
-          - mysqls/status
-        verbs:
-          - get
-    ```
+The Services Toolkit offers a set of modular tools used to provide a
+self-service experience to application owners, who require Service Resources
+running on Tanzu.
 
-    and then run `kubectl apply -f mysql-service-binding-rbac.yaml`
+Review [Service Resource Claims] for details on `ResourceClaim`,
+`ResourceClaimPolicy`, and RBAC `ClusterRole`.
 
-### <a id="tap_new_workloads"></a> Bind a new TAP workload to a MySQL instance
+[Service Resource Claims]: https://docs.vmware.com/en/Services-Toolkit-for-VMware-Tanzu-Application-Platform/0.7/svc-tlk/GUID-resource_claims-api_docs.html#resourceclaim-2
 
+- The Services Toolkit controller manager requires permissions to access MySQL resources.
 
-Name the workload, specify a source code location to create the workload from, and reference the mysql instance name that you have deployed. Run:
-
-```
-tanzu apps workload create WORKLOAD-NAME [create flags] --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample" 
-```
-
-where,
-- `WORKLOAD-NAME` is the name that will be given to the workload.
-- [create flags] are the appropriate flags to build the workload from source control, registry image, or local file. See [Tanzu apps workload create](https://docs.vmware.com/en/Tanzu-Application-Platform/1.1/tap/GUID-cli-plugins-apps-command-reference-tanzu-apps-workload-create.html) for more information on different flags available.
-- `--service-ref` is the reference to the service using the format {name}={apiVersion}:{kind}:{name}. In this case, `mysql-sample` is the MySQL instance CR name that you have deployed.
-
-For example,
-
-```
-tanzu apps workload create pet-clinic \
-      --git-repo https://github.com/sample-accelerators/spring-petclinic \
-      --git-branch main \
-      --type web  \
-      --git-tag=tap-1.0 \
-      --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample 
-      --env=SPRING_PROFILES_ACTIVE=mysql"
-```
-
-### <a id="tap_existing_workloads"></a>Bind an existing TAP workload to a MySQL instance
-
-Run below command to update an existing TAP workload to connect and utilize a MySQL database instance:
-
-```
-tanzu apps workload update WORKLOAD-NAME [update flags] --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample"
-```
-
-where,
-- `WORKLOAD-NAME` is the name of the workload.
-- [update flags] are the appropriate flags to build the workload from source control, registry image, or local file. See [Tanzu apps workload update](https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.0/tap/GUID-cli-plugins-apps-command-reference-tanzu_apps_workload_update.html) for more information on different flags available.
-- `--service-ref` is the reference to the service using the format {name}={apiVersion}:{kind}:{name}. In this case, `mysql-sample` is the MySQL instance CR name that you have deployed.
-
-For example,
-
-```
-tanzu apps workload update pet-clinic --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample"
-```
-
-**NOTE** The workload and MySQL instance should exist in the same namespace.
-
-### <a id="tap_binding_different_ns"></a> Bind a TAP workload in a different namespace
-
-1. To enable cross-namespace binding, create a `ResourceClaimPolicy` resource in the namespace where the MySQL instance is deployed. In this example, the `mysql-sample` is deployed in the `default` namespace.
+  Create a `ClusterRole` with the Role-based access control (RBAC), and save it in a file like `resource-claims-mysql.yaml`:
 
     ```
     ---
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRole
+    metadata:
+      name: resource-claims-mysql
+      labels:
+        resourceclaims.services.apps.tanzu.vmware.com/controller: "true"
+    rules:
+    - apiGroups: ["with.sql.tanzu.vmware.com"]
+      resources: ["mysqls"]
+      verbs: ["get", "list", "watch", "update"]
+    ```
+
+    and then run:
+
+    ```
+    kubectl apply -f resource-claims-mysql.yaml
+    ```
+
+    The Services Toolkit will now be able to claim MySQL instances.
+
+- To make the MySQL instances discoverable via the Services Toolkit, create a
+  `ClusterInstanceClass` that refers to the MySQL API and save it in a file like
+  `cluster-instance-class-mysql.yaml`:
+
+    ```
+    ---
+    apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+    kind: ClusterInstanceClasse
+    metadata:
+      name: mysql
+    spec:
+      description:
+        short: It's a MySQL database!
+      pool:
+        group: with.sql.tanzu.vmware.com
+        kind: MySQL
+    ```
+  
+    and then run:
+
+    ```
+    kubectl apply -f cluster-instance-class-mysql.yaml
+    ```
+
+    Use the Services Toolkit plugin command `tanzu services instances list` to
+    return the previously created MySQL instance.
+
+- (Optional) If you are consuming the MySQL instance from a `Workload` in
+  another namespace, you will have to enable cross-namespace claims via a
+  `ResourceClaimPolicy`.
+  
+  If your MySQL instance resides in the `default` namespace, save the following
+  in a file like `resource-claim-policy-mysql.yaml`:
+  
+    ```
+    ---
+    apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+    kind: ResourceClaimPolicy
+    metadata:
+      name: mysql-cross-namespace
+      namespace: default
+    spec:
+      consumingNamespaces:
+      - '*' # consumable from all namespaces
+      subject:
+        group: with.sql.tanzu.vmware.com
+        kind: MySQL
+    ```
+  
+    and then run:
+  
+    ```
+    kubectl apply -f resource-claim-policy-mysql.yaml
+    ```
+
+### <a id="tap_claim_mysql"></a> Create a MySQL Claim
+
+Resource Claims allow Application teams to "claim" resources, and Service
+Operators to provide resources to be "claimed". This provides a self-service
+experience for the developer, but gives the Service Operators ultimate control
+of the Service Resources.
+
+To claim a MySQL instance:
+
+1. Find the information needed to make a resource claim by running:
+
+    ```
+    tanzu service claimable list --class mysql
+    #! `--class` is the name of the ClusterInstanceClass defined in the previous step
+    ```
+    With an output similar to:
+
+    ```
+    NAME        NAMESPACE  KIND   APIVERSION
+    MYSQL-NAME  default    MySQL  with.sql.tanzu.vmware.com/v1
+    ```
+  
+    where `MYSQL-NAME` is the name of the previously created MySQL instance.
+  
+    See [Discover claimable service instances] for more information on the
+    different flags and options available.
+
+[Discover claimable serices instances]: https://docs.vmware.com/en/Services-Toolkit-for-VMware-Tanzu-Application-Platform/0.7/svc-tlk/GUID-tanzu-services-plugin.html#discover-claimable-service-instances-2
+
+1. Create a claim for the MySQL instance from the namespace of your `Workload` by running:
+
+    ```
+    tanzu service claims create CLAIM-NAME \
+      --resource-name MYSQL-NAME \
+      --resource-namespace default \
+      --resource-kind MySQL \
+      --resource-api-version with.sql.tanzu.vmware.com/v1
+    ```
+  
+    where:
+    * `MYSQL-NAME` is the name of the previously created MySQL instance.
+    * `CLAIM-NAME` is the name you want to give to the resource claim instance.
+  
+    The next section shows how to inspect the claim and use it to bind to an application `Workload`.
+  
+    Use `tanzu service claims create --help` for further usage and help information.
+
+### <a id="tap_new_workloads"></a> Bind a TAP Workload with MySQL
+
+This topic covers:
+
+- [Bind a new TAP workload](#new_workloads)
+- [Bind an existing TAP workload](#tap_existing_workloads)
+
+
+#### <a id="new_workloads"></a> Bind a new TAP Workload
+
+To create an application `Workload` bound to a MySQL instance:
+
+1. Inspect the claims in your workload namespace to find the value to pass to `--service-ref` command by running:
+
+    ```
+    tanzu services claims list -n default
+    ```
+  
+    Expected output:
+  
+    ```
+    NAME           READY  REASON
+    CLAIM-NAME     True   Ready
+    ```
+  
+    Where `CLAIM-NAME` is the name of the previously created resource claim instance.
+  
+    See [Listing and getting Resource Claims] for more information on the
+    different flags and options available.
+
+[Listing and getting Resource Claims]: https://docs.vmware.com/en/Services-Toolkit-for-VMware-Tanzu-Application-Platform/0.7/svc-tlk/GUID-tanzu-services-plugin.html#list-and-get-resource-claims-4
+
+1. Retrieve detailed information about the claim by running:
+
+    ```
+    tanzu services claims get CLAIM-NAME
+    ```
+  
+    where `CLAIM-NAME` is the name of the previously created resource claim instance.
+  
+    The output is similar to:
+  
+    ```
+    Name: CLAIM-NAME
+    Status:
+      Ready: True
+    Namespace: pg
+    Claim Reference: services.apps.tanzu.vmware.com/v1alpha1:ResourceClaim:CLAIM-NAME
+    Resource to Claim:
+      Name: MYSQL-NAME
+      Namespace: default
+      Group: with.sql.tanzu.vmware.com
+      Version: v1
+      Kind: MySQL
+    ```
+  
+    Where:
+    * `MYSQL-NAME` is the name of the previously created MySQL instance.
+    * `CLAIM-NAME` is the name of the previously created resource claim instance.
+  
+    See [Listing and getting Resource Claims] for more information on the
+    different flags and options available.
+  
+1. Record the value of `Claim Reference` and pass it to `--service-ref` to create the application `Workload` by running:
+
+    ```
+    tanzu apps workload create WORKLOAD-NAME [create flags] \
+      --service-ref "db=services.apps.tanzu.vmware.com/v1alpha1:ResourceClaim:CLAIM-NAME" \
+      --annotation autoscaling.knative.dev/minScale=1
+    ```
+  
+    where:
+  
+    - `WORKLOAD-NAME` is the name that will be given to the workload.
+    - [create flags] are the appropriate flags to build the workload from source control, registry image, or local file.
+    - `--service-ref` is the reference to the service using the format `{key-name}={apiVersion}:{kind}:{instance-name}`.
+      - `CLAIM-NAME` is the name of the previously created resource claim instance.
+      - `key-name` is a unique name given to service binding for the Workload.
+    - `--annotation` value of `autoscaling.knative.dev/minScale: "1"` prevents the auto-scaling down of pods done by the TAP components. This can help with debugging the `Workload`.
+  
+    See [Tanzu apps workload create] for more information on the different flags and options available.
+
+[Tanzu apps workload create]: https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.2/tap/GUID-cli-plugins-apps-command-reference-tanzu-apps-workload-create.html
+
+#### Example Workload
+
+You can also create a `Workload` yaml file where you can specify environment
+variables, build parameters, etc. that are required by your application to be
+built and run successfully.
+The example `Workload` yaml below shows a spring-petclinic application that
+binds to a claim of a MySQL instance via a resource claim `claim-1`.
+
+```
+---
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  name: pet-clinic
+  labels:
+    apps.tanzu.vmware.com/workload-type: web
+    app.kubernetes.io/part-of: pet-clinic
+spec:
+  params:
+  - name: annotations
+    value:
+      autoscaling.knative.dev/minScale: "1"
+  build:
+    env:
+    - name: BP_MAVEN_POM_FILE
+      value: skip-pom.xml
+  env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: mysql
+  serviceClaims:
+  - name: db
+    ref:
       apiVersion: services.apps.tanzu.vmware.com/v1alpha1
-      kind: ResourceClaimPolicy
-      metadata:
-        name: mysql-cross-namespace
-      spec:
-        consumingNamespaces:
-        - '*'
-        subject:
-           group: with.sql.tanzu.vmware.com
-           kind: MySQL
-    ```
-    Where * indicates this policy permits any namespace to claim a MySQL resource from the `default` namespace.
+      kind: ResourceClaim
+      name: claim-1
+  source:
+    git:
+      ref:
+        branch: main
+      url: https://github.com/spring-projects/spring-petclinic
+```
 
-2. Save the above yaml content in `resource-claim-policy.yaml` file and apply it:
+where:
 
-    ```
-    kubectl -n default apply -f resource-claim-policy.yaml
-    ```
+- `BP_MAVEN_POM_FILE` needs to be set to some non-existent value (in this
+  example, `skip-pom.xml`) in order to build the upstream spring-petclinic app
+  correctly. Refer to this [open issue](https://github.com/paketo-buildpacks/java/issues/423) for more details.
+- `SPRING_PROFILES_ACTIVE` is set to MySQL to override the default application configuration.
+- The annotation `autoscaling.knative.dev/minScale: "1"` prevents the
+  auto-scaling down of `Pod`s done by the TAP components. This can help with
+  debugging the `Workload`.
 
-3. If you have a TAP workload deployed in a separate namespace called `app`, bind the workload to the MySQL service instance by running:
+Save the above content in `workload.yaml` file and then run `kubectl apply -f workload.yaml`
 
-    ```
-    tanzu apps workload update WORKLOAD-NAME [update flags] -n app --service-ref "db=with.sql.tanzu.vmware.com/v1:MySQL:mysql-sample"
-    ```
-    Where `service-ref` specifies the service instance's namespace. In this example, it is `default`.
+**IMPORTANT:** This example creates a workload with the sample Spring application spring-petclinic that is available on [GitHub](https://github.com/spring-projects/spring-petclinic).
+The sample application is subject to change and may face issues during build and run steps in the TAP workflow.
+Consider specifying a commit sha to use an older state of the sample application as needed for demo and test purposes.
+
+#### <a id="tap_existing_workloads"></a>Bind an existing TAP workload
+
+To update an existing TAP `Workload` to connect and utilize a MySQL database instance, run a command similar to:
+
+```
+tanzu apps workload update WORKLOAD-NAME [update flags] --service-ref "db=services.apps.tanzu.vmware.com/v1alpha1:ResourceClaim:CLAIM-NAME"
+```
+where:
+
+- `WORKLOAD-NAME` is the name of the `Workload`.
+- [update flags] are the appropriate flags to build the `Workload` from source control, registry image, or local file.
+- `--service-ref` is the reference to the service using the format `{key-name}={apiVersion}:{kind}:{name}`.
+  - `CLAIM-NAME` is the name of the previously created resource claim instance.
+  - `key-name` is a unique name given to service binding for the `Workload`.
+
+For example:
+
+```
+tanzu apps workload update pet-clinic --service-ref "db=services.apps.tanzu.vmware.com/v1alpha1:ResourceClaim:claim-1"
+```
+
+See [Tanzu apps workload update] for more information on the different flags available.
+
+[Tanzu apps workload update]: https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.2/tap/GUID-cli-plugins-apps-command-reference-tanzu-apps-workload-update.html
 
 ### <a id="tap_verify"></a>Verify a TAP Workload Service Binding
 
-To check if your application has been successfully bound to the MySQL instance, you can query the database using the MySQL application user named `mysqlappuser` and connection details provided in `mysql-sample-app-user-db-secret` and verify that the expected data exists in the `mysqlappuser_data` database.
+To check if your application has been successfully bound to the MySQL instance:
 
-```
-$ dbname=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.database}' | base64 -D)
-$ username=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.username}' | base64 -D)
-$ password=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.password}' | base64 -D)
+- Check that the corresponding `ResourceClaim` object is ready. The
+  `ResourceClaim` name follows the format
+  `<.metadata.name>-<.spec.serviceClaim[0].name>` as given in the `Workload` yaml
+  as shown above. In this example, it would be `pet-clinic-db`.
 
-$ host=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.host}' | base64 -D)
-$ port=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.port}' | base64 -D)
-```
+    ```
+    kubectl get resourceclaims pet-clinic-db
+    ```
+    ```
+    NAME                                                         READY   REASON
+    resourceclaim.services.apps.tanzu.vmware.com/pet-clinic-db   True
+    ```
+- Query the database using the MySQL application user named `mysqlappuser`.
 
-For example, in case of a spring-petclinic application, on running a mysql query:
+  Fetch the corresponding credentials and connection details from the Secret
+  referenced in `.status.binding.name` field in the MySQL instance CR. With a
+  MySQL called `mysql-sample`, the
+  Secret would be `mysql-sample-app-user-db-secret` and the data can be
+  verified in the `mysql-sample` database.
 
-```
-$ mysql -u$username -p $password
-```
-```
-mysql: [Warning] Using a password on the command line interface can be insecure.
-Welcome to the MySQL monitor.  Commands end with ; or \g.
-Your MySQL connection id is 22
-Server version: 8.0.26-17 Percona Server (GPL), Release '17', Revision 'd7119cd'
-
-Copyright (c) 2009-2021 Percona LLC and/or its affiliates
-Copyright (c) 2000, 2021, Oracle and/or its affiliates.
-
-Oracle is a registered trademark of Oracle Corporation and/or its
-affiliates. Other names may be trademarks of their respective
-owners.
-
-Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
-```
-
-```
-mysql> use mysqlappuser_data;
-Database changed
-mysql> show tables;
-+-----------------------------+
-| Tables_in_mysqlappuser_data |
-+-----------------------------+
-| owners                      |
-| pets                        |
-| specialties                 |
-| types                       |
-| vet_specialties             |
-| vets                        |
-| visits                      |
-+-----------------------------+
-7 rows in set (0.01 sec)
-```
-```
-mysql> select * from owners;
-+----+------------+-----------+-----------------------+-------------+------------+
-| id | first_name | last_name | address               | city        | telephone  |
-+----+------------+-----------+-----------------------+-------------+------------+
-|  1 | George     | Franklin  | 110 W. Liberty St.    | Madison     | 6085551023 |
-|  2 | Betty      | Davis     | 638 Cardinal Ave.     | Sun Prairie | 6085551749 |
-|  3 | Eduardo    | Rodriquez | 2693 Commerce St.     | McFarland   | 6085558763 |
-|  4 | Harold     | Davis     | 563 Friendly St.      | Windsor     | 6085553198 |
-|  5 | Peter      | McTavish  | 2387 S. Fair Way      | Madison     | 6085552765 |
-|  6 | Jean       | Coleman   | 105 N. Lake St.       | Monona      | 6085552654 |
-|  7 | Jeff       | Black     | 1450 Oak Blvd.        | Monona      | 6085555387 |
-|  8 | Maria      | Escobito  | 345 Maple St.         | Madison     | 6085557683 |
-|  9 | David      | Schroeder | 2749 Blackhawk Trail  | Madison     | 6085559435 |
-| 10 | Carlos     | Estaban   | 2335 Independence La. | Waunakee    | 6085555487 |
-+----+------------+-----------+-----------------------+-------------+------------+
-10 rows in set (0.01 sec)```
-```
+   ```
+   $ dbname=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.database}' | base64 -D)
+   $ username=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.username}' | base64 -D)
+   $ password=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.password}' | base64 -D)
+   
+   $ host=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.host}' | base64 -D)
+   $ port=$(kubectl get secrets mysql-sample-app-user-db-secret -o jsonpath='{.data.port}' | base64 -D)
+   ```
+   
+   For example, in case of a spring-petclinic application, on running a mysql query:
+   
+   ```
+   $ mysql -u$username -p $password
+   ```
+   ```
+   mysql: [Warning] Using a password on the command line interface can be insecure.
+   Welcome to the MySQL monitor.  Commands end with ; or \g.
+   Your MySQL connection id is 22
+   Server version: 8.0.26-17 Percona Server (GPL), Release '17', Revision 'd7119cd'
+   
+   Copyright (c) 2009-2021 Percona LLC and/or its affiliates
+   Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+   
+   Oracle is a registered trademark of Oracle Corporation and/or its
+   affiliates. Other names may be trademarks of their respective
+   owners.
+   
+   Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+   ```
+   
+   ```
+   mysql> use mysqlappuser_data;
+   Database changed
+   mysql> show tables;
+   +-----------------------------+
+   | Tables_in_mysqlappuser_data |
+   +-----------------------------+
+   | owners                      |
+   | pets                        |
+   | specialties                 |
+   | types                       |
+   | vet_specialties             |
+   | vets                        |
+   | visits                      |
+   +-----------------------------+
+   7 rows in set (0.01 sec)
+   ```
+   ```
+   mysql> select * from owners;
+   +----+------------+-----------+-----------------------+-------------+------------+
+   | id | first_name | last_name | address               | city        | telephone  |
+   +----+------------+-----------+-----------------------+-------------+------------+
+   |  1 | George     | Franklin  | 110 W. Liberty St.    | Madison     | 6085551023 |
+   |  2 | Betty      | Davis     | 638 Cardinal Ave.     | Sun Prairie | 6085551749 |
+   |  3 | Eduardo    | Rodriquez | 2693 Commerce St.     | McFarland   | 6085558763 |
+   |  4 | Harold     | Davis     | 563 Friendly St.      | Windsor     | 6085553198 |
+   |  5 | Peter      | McTavish  | 2387 S. Fair Way      | Madison     | 6085552765 |
+   |  6 | Jean       | Coleman   | 105 N. Lake St.       | Monona      | 6085552654 |
+   |  7 | Jeff       | Black     | 1450 Oak Blvd.        | Monona      | 6085555387 |
+   |  8 | Maria      | Escobito  | 345 Maple St.         | Madison     | 6085557683 |
+   |  9 | David      | Schroeder | 2749 Blackhawk Trail  | Madison     | 6085559435 |
+   | 10 | Carlos     | Estaban   | 2335 Independence La. | Waunakee    | 6085555487 |
+   +----+------------+-----------+-----------------------+-------------+------------+
+   10 rows in set (0.01 sec)```
+   ```
 
 ## <a id="tas_apps"></a>Binding Tanzu MySQL to a TAS Application
 
