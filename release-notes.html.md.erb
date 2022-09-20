@@ -103,7 +103,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
-* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* TLS is required for external connections to the database. There is no supported option to remove this requirement.
 * Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
@@ -192,7 +192,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
-* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* TLS is required for external connections to the database. There is no supported option to remove this requirement.
 * Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
@@ -249,7 +249,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
-* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* TLS is required for external connections to the database. There is no supported option to remove this requirement.
 * Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
@@ -316,7 +316,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
-* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* TLS is required for external connections to the database. There is no supported option to remove this requirement.
 * Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
@@ -384,7 +384,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * HA instances have no anti-affinity capability, so the pods of an HA instance may be scheduled to the same Kubernetes node.
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
-* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* TLS is required for external connections to the database. There is no supported option to remove this requirement.
 * Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
@@ -466,7 +466,7 @@ For an overview of this product, see [About <%= vars.product_short %>](index.htm
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * Changing `spec.storageSize` in a MySQL object to scale the PersistentVolume is not supported. See [Scale storageSize](./update-instance.html#scale-storage) for a workaround that expands the PersistentVolume.
 * To rotate MySQL system account passwords, you must manually restart pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
-* TLS is required for external connections to the database. There is no supported option to disable this requirement.
+* TLS is required for external connections to the database. There is no supported option to remove this requirement.
 * Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
