@@ -22,7 +22,7 @@ The Tanzu MySQL TLS configuration provides various options:
 
 ## <a id="using-default-tls"></a> Using the Default Provided TLS
 
-From Tanzu MySQL 1.2.0, the MySQL Operator deploys the instances with TLS from the self-signed `ClusterIssuer` configured during Operator install.
+The MySQL Operator deploys the instances with TLS from the self-signed `ClusterIssuer` configured during Operator install.
 
 By default, the Operator will create a `ClusterIssuer` named `tanzu-sql-with-mysql-operator-ca-certificate-clusterissuer` and will retrieve MySQL instance certificates issued via this resource. 
 
