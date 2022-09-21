@@ -57,7 +57,7 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
 
 1. Download the Helm chart to your temporary working directory on your local machine by running these commands:
 
-	If you're using Helm CLI 3.6 and earlier:
+	  If you're using Helm CLI 3.6 and earlier:
 
     ```
     helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.0
@@ -67,11 +67,11 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
     ```
 
 
-	If you're using Helm CLI 3.7.1 and later:
-	```
-	helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart \
-	  --version 1.6.0 --untar --untardir ${CHART_DIR}
-	```
+	  If you're using Helm CLI 3.7.1 and later:
+	  ```
+	  helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart \
+	    --version 1.6.0 --untar --untardir ${CHART_DIR}
+	  ```
 
 
 1. In the location where the new release has been downloaded, apply the new CRDs by running:
@@ -98,12 +98,12 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
     helm history tanzu-sql-with-mysql-operator -n tanzu-mysql-for-kubernetes-system
 		```
 
-  If your Operator was previously installed using an Operator Values Override file (or other command-line values overrides, then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or with the `--reset-values` flag. See <A HREF="https://helm.sh/docs/helm/helm_upgrade/">Helm Upgrade documentation</A> for details.
+    If your Operator was previously installed using an Operator values override file (or other command-line values overrides), then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
 
 1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
-	```
-	rm ${CHART_DIR}
-	```
+	  ```
+	  rm ${CHART_DIR}
+	  ```
 
 ## <a id="next-steps"></a>Next Steps
 
