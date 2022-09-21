@@ -336,7 +336,7 @@ Create an Operator Values Override file:
     ``` 
     helm install --wait my-mysql-operator /tmp/tanzu-sql-with-mysql-operator/ \
       --values=operator-values-overrides.yaml \
-      --namespace=mysql-for-kubernetes-system \
+      --namespace=tanzu-mysql-for-kubernetes-system \
       --create-namespace
     ``` 
 
@@ -344,7 +344,7 @@ Create an Operator Values Override file:
     * `--wait` flag waits for the Operator deployment to complete before any image installation starts
     * `my-mysql-operator` is the custom name you provide for your MySQL Operator
     * `/tmp/tanzu-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
-    * `mysql-for-kubernetes-system` is the Operator namespace you created in [Create Operator Namespace and Secrets](#create-namespace-and-secrets)
+    * `tanzu-mysql-for-kubernetes-system` is the Operator namespace you created in [Create Operator Namespace and Secrets](#create-namespace-and-secrets)
     * `operator-values-overrides.yaml` is the overrides file with your custom values, as per [Review the Operator Values](#create-overrides)
 
     The command displays a message similar to:
@@ -387,12 +387,12 @@ Create an Operator Values Override file:
     You may also check the logs to confirm the Operator is running properly:
 
     ``` 
-    kubectl logs -l app=tanzu-mysql-operator
+    kubectl logs -n tanzu-mysql-for-kubernetes-system -l app.kubernetes.io/name=tanzu-sql-with-mysql-operator
     ``` 
     
 1. Clean up the temporary directory if you no longer need the exported chart:
 	```
-	rm ${CHART_DIR}
+	rm -rf ${CHART_DIR}
 	```
 
 ## <a id="tanzu_cli_install"></a> Installing using the Tanzu CLI
