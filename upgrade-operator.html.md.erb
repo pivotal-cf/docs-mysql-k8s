@@ -96,7 +96,7 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
 
     ``` 
     helm history tanzu-sql-with-mysql-operator -n tanzu-mysql-for-kubernetes-system
-		```
+    ```
 
     If your Operator was previously installed using an Operator values override file (or other command-line values overrides), then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
 
@@ -109,4 +109,4 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
 
 Check the status of your existing instances, and plan for an upgrade or an update. 
 
-Use the command `kubectl get mysqls` and review [List Instance Versions](upgrade-instance.html#upgrade-steps), [Upgrade an Instance](upgrade-instance.html#upgrade-steps) and [Updating an Instance](update-instance.html#update-instance). 
+Use the command `kubectl get mysqls` and review [List Instance Versions](upgrade-instance.html#upgrade-steps), [Upgrade an Instance](upgrade-instance.html#upgrade-steps) and [Updating an Instance](update-instance.html#update-instance).
