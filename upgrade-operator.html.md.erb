@@ -46,13 +46,13 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
     ```
     ```
     NAME                    NAMESPACE                               REVISION        UPDATED                                 STATUS          CHART                                   APP VERSION
-    tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2022-09-11 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.6.0     1.6.0
+    tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2022-09-11 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.6.1     1.6.0
     ```
 
 1.  Create a temporary working directory to export the chart into by running:
 
 	```
-	CHART_DIR=$(mktemp -d /tmp/tanzu-mysql-operator-chart:1.6.0.XXXXX)
+	CHART_DIR=$(mktemp -d /tmp/tanzu-mysql-operator-chart:1.6.1.XXXXX)
 	```
 
 1. Download the Helm chart to your temporary working directory on your local machine by running these commands:
@@ -60,10 +60,10 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
 	  If you're using Helm CLI 3.6 and earlier:
 
     ```
-    helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.0
+    helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.1
     ```
     ```
-    helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.0 -d ${CHART_DIR}
+    helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.1 -d ${CHART_DIR}
     ```
 
 
