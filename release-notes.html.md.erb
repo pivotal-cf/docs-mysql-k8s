@@ -23,6 +23,11 @@ The <%= vars.product_short %> releases support the components listed below:
     <td>8.0.26<br/>8.0.27<br/>8.0.28<br/>8.0.29</td>
   </tr>
   <tr>
+    <td>1.6.0 (RETRACTED)</td>
+    <td>8.0.26<br/>8.0.27<br/>8.0.28<br/>8.0.29</td>
+    <td>8.0.26<br/>8.0.27<br/>8.0.28<br/>8.0.29</td>
+  </tr>
+  <tr>
     <td>1.5.0</td>
     <td>8.0.25<br/>8.0.26<br/>8.0.27<br/>8.0.28</td>
     <td>8.0.25<br/>8.0.26<br/>8.0.27<br/>8.0.28</td>
@@ -60,6 +65,17 @@ The <%= vars.product_short %> releases support the components listed below:
 
 ## <a id="1-6-1"></a>  Version 1.6.1
 
+**Release Date: September 26th, 2022**
+
+Release 1.6.1 matches 1.6.0, but adds the following change:
+
+### <a id=16_changes></a> Changes
+
+* This release changes the field `spec.storage.caBundle` to `spec.storage.s3.caBundle`, to create the ability to configure a CA bundle for storage endpoints using custom TLS certificates. For details, refer to [Tanzu MySQL Property Reference](./property-reference-backup-restore.html).
+
+
+## <a id="1-6-0"></a>  Version 1.6.0 (RETRACTED)
+
 **Release Date: September 21st, 2022**
 
 ### <a id="16_supported_platforms"></a> Supported Platforms
@@ -76,15 +92,15 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 ### <a id="16_features"></a> Features
 
-* Tanzu MySQL Operator 1.6.1 supports four different MySQL versions:
+* Tanzu MySQL Operator 1.6.0 supports four different MySQL versions:
   - 8.0.26
   - 8.0.27
   - 8.0.28
   - 8.0.29
 
-* Release 1.6.1 is included in the VMware Tanzu Data Services package version 1.4.0: `registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.4.0`. For more information on installing Tanzu MySQL using the Tanzu CLI, refer to [Installing using the Tanzu CLI](install-operator.html#installing-using-the-tanzu-cli).
+* Release 1.6.0 is included in the VMware Tanzu Data Services package version 1.3.0: `registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.3.0`. For more information on installing Tanzu MySQL using the Tanzu CLI, refer to [Installing using the Tanzu CLI](install-operator.html#installing-using-the-tanzu-cli).
 
-* This release adds the field `spec.storage.s3.caBundle`, to create the ability to configure a CA bundle for storage endpoints using custom TLS certificates. For details, refer to [Tanzu MySQL Property Reference](./property-reference-backup-restore.html).
+* This release adds the field `spec.storage.caBundle`, to create the ability to configure a CA bundle for storage endpoints using custom TLS certificates. For details, refer to [Tanzu MySQL Property Reference](./property-reference-backup-restore.html). 
 
 ### <a id=16_changes></a> Changes
 
