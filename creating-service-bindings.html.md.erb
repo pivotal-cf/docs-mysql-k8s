@@ -450,5 +450,5 @@ This procedure, including autowiring, was validated with a Spring Boot applicati
 
 * If your application cannot make SSL connections, start by properly consuming the connection information components and making a manual connection from the application.
 * Some techniques for connecting non-Spring applications are provided in the [Activate TLS for Non-Spring Apps](https://docs.pivotal.io/p-mysql/2-10/using-tls.html#activate-non-spring) section of the MySQL for VMs documentation. The credentials hash created in the [Binding an Application](#binding-an-application) procedure above does not include individual components of connection information, such as `username` and `hostname`, but you can derive these components by parsing the `uri` in the hash.
-* As a last resort, you can disable TLS on the MySQL instance and remove the `ssl_mode` and `sslMode` parameters from the credentials hash.
+* As a last resort, you can deactivate TLS on the MySQL instance and remove the `ssl_mode` and `sslMode` parameters from the credentials hash.
 
