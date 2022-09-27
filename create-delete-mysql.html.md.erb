@@ -20,10 +20,13 @@ To access the templates:
 
 1. Log in to [<%= vars.product_network %>](https://network.pivotal.io) and visit the [Tanzu MySQL](https://network.pivotal.io/products/tanzu-mysql-for-kubernetes/) product page.
 
-1. Select **VMware Tanzu SQL with MySQL for Kubernetes v1.5.0** and download the .tgz archive file to your local machine.<br/>
-   **Note:** You do not need to download the **Artifact References** from the Tanzu MySQL for Kubernetes product page.
+1. Select **VMware Tanzu SQL with MySQL for Kubernetes v1.6.0** and download the .tgz archive file to your local machine.<br/>
+   
+   <p class="note">
+       <strong>Note:</strong> You do not need to download the <b>Artifact References</b> from the Tanzu MySQL for Kubernetes product page.
+    </p>
 
-1. Expand the downloaded .tgz file. Open the directory `tanzu-mysql-for-kubernetes-1.5.0`. The templates are located in the `samples` subdirectory.
+1. Expand the downloaded .tgz file. Open the directory `tanzu-mysql-for-kubernetes-1.6.0`. The templates are located in the `samples` subdirectory.
 
 The templates include the following:
 
@@ -45,7 +48,7 @@ When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs
 
 ### <a id="version"></a> Selecting the Tanzu MySQL Version
 
-The Tanzu MySQL Operator by default deploys the latest supported MySQL database version. Beginning with version 1.5.0, the Tanzu Operator supports four versions: mysql-8.0.25, mysql-8.0.26, mysql-8.0.27, and mysql-8.0.28. To view your Operator's available Tanzu MySQL versions, run the command:
+The Tanzu MySQL Operator by default deploys the latest supported MySQL database version. The Tanzu Operator supports four versions: mysql-8.0.26, mysql-8.0.27, mysql-8.0.28, and mysql-8.0.29. To view your Operator's available Tanzu MySQL versions, run the command:
 
 ```
 kubectl get mysqlversions
@@ -55,15 +58,15 @@ The command displays:
 
 ```
 NAME           DB VERSION
-mysql-8.0.25   8.0.25
 mysql-8.0.26   8.0.26
 mysql-8.0.27   8.0.27
 mysql-8.0.28   8.0.28
-mysql-latest   8.0.28
+mysql-8.0.29   8.0.29
+mysql-latest   8.0.29
 ```
 
 where:
-- `NAME` denotes the Tanzu MySQL version. The special Tanzu MySQL version named `mysql-latest` runs the latest Operator-supported MySQL version (for example, in 1.5.0 that is 8.0.28). It also configures the instance to automatically upgrade its MySQL version whenever any future Operator upgrades add support for newer MySQL versions. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
+- `NAME` denotes the Tanzu MySQL version. The special Tanzu MySQL version named `mysql-latest` runs the latest Operator-supported MySQL version (for example, in 1.6.0 that is 8.0.29). It also configures the instance to automatically upgrade its MySQL version whenever any future Operator upgrades add support for newer MySQL versions. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
 - `DB VERSION` displays the Percona MySQL version an instance runs when that Tanzu MySQL version is named in the instance's spec. 
 
 Note which value in the `DB VERSION` column you wish to deploy with your instance, if different than the default. 
@@ -167,7 +170,7 @@ To create a MySQL instance:
     ```
     ```
     NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION
-    mysql-sample   true    Running   162m   1.5.0           8.0.26       NoUpdateRequired
+    mysql-sample   true    Running   162m   1.6.0           8.0.29       NoUpdateRequired
     ``` 
 8. Review [Configuring TLS for MySQL Instances](configure-tls.html) if you need to configure a custom `ClusterIssuer`. By default, the MySQL instances created by Tanzu Operator 1.2.0 (and later) use TLS certificates provided by the cert-manager `ClusterIssuer`, using a self-signed certificate authority (CA). 
 

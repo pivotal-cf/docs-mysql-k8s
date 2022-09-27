@@ -20,7 +20,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
 ## <a id='update-instance'></a> Updating an Instance 
 
-After an Operator upgrade, instances created under an older Operator require reconciliation. Reconciliation allows the older instances to take advantage of the new features of the upgraded Operator. 
+After an Operator upgrade, instances created under an older Tanzu MySQL Operator require reconciliation. Reconciliation allows the older instances to take advantage of the new features of the upgraded Operator. 
 
 
  1. Review the Operator's supported MySQL versions by running:
@@ -33,16 +33,16 @@ After an Operator upgrade, instances created under an older Operator require rec
     
     ```
     NAME           DB VERSION
-    mysql-8.0.25   8.0.25
     mysql-8.0.26   8.0.26
     mysql-8.0.27   8.0.27
     mysql-8.0.28   8.0.28
-    mysql-latest   8.0.28
+    mysql-8.0.29   8.0.29
+    mysql-latest   8.0.29
     ```
     
     The list indicates the four distinct database versions the Operator supports. 
 
-1. Check the status of your existing instances, to identify any recommended reconciliations. From Tanzu Operator 1.4.0 the output of `kubectl get mysql` command has been enhanced to include an `UPDATE STATUS`, and an `USER ACTION` column. 
+1. Check the status of your existing instances, to identify any recommended reconciliations. The output of `kubectl get mysql` command includes an `UPDATE STATUS`, and an `USER ACTION` column. 
 
     ```
     $ kubectl get mysql
@@ -50,18 +50,21 @@ After an Operator upgrade, instances created under an older Operator require rec
     The output is similar to:
     
     ```
-    NAME          READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION
+    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS      USER ACTION
+    mysql-sample   true    Running   6m5s   1.6.0           8.0.29       NoUpdateRequired
+ 
+    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION
          
-    instance-10   true    Running   41m    1.4.0           8.0.25       NoUpdateRequired
-    DBUPDONC-9    true    Running   20d    1.3.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
-    instance-8    true    Running   21d    1.3.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
-    instance-7    true    Running   22d    1.3.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-    DBAUTOUPG-6   true    Running   120d   1.2.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
-    instance-5    true    Running   121d   1.2.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”         
-    instance-4    true    Running   122d   1.2.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-    DBAUTOUPG-3   true    Running   150d   1.1.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”           
-    instance-2    true    Running   151d   1.1.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-    instance-1    true    Running   202d   1.0.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version                              
+    mysql-sample   true    Running   6m5s   1.6.0           8.0.29       NoUpdateRequired
+    DBUPDONC-9     true    Running   20d    1.5.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”
+    instance-10    true    Running   41m    1.4.0           8.0.25       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    instance-8     true    Running   21d    1.3.0           8.0.25       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version 
+    instance-7     true    Running   22d    1.3.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    DBAUTOUPG-6    true    Running   120d   1.2.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
+    instance-5     true    Running   121d   1.2.0           8.0.25       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version         
+    instance-4     true    Running   122d   1.2.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    DBAUTOUPG-3    true    Running   150d   1.1.0           8.0.25       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version           
+    instance-2     true    Running   151d   1.1.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version                              
     ```
 
 1. Check the `UPDATE STATUS` column and note the instances with an update value = "UpdateRequired". These instances need to be brought up-to-date or reconciled, to take advantage of new Operator features, and the self-healing capabilities that are native to Kubernetes. 
