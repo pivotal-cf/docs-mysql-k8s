@@ -18,7 +18,7 @@ The <%= vars.product_short %> releases support the components listed below:
     <th>Percona XtraBackup</th>
   </tr>
   <tr>
-    <td>1.6.0</td>
+    <td>1.6.1</td>
     <td>8.0.26<br/>8.0.27<br/>8.0.28<br/>8.0.29</td>
     <td>8.0.26<br/>8.0.27<br/>8.0.28<br/>8.0.29</td>
   </tr>
@@ -58,9 +58,9 @@ The <%= vars.product_short %> releases support the components listed below:
      <strong>IMPORTANT:</strong> VMware does not support deployments that have been modified by adding layers to the packaged Docker images, or deployments that reference images other than the VMware MySQL Operator. VMware does not support changing the contents of the deployed containers and pods in any way.
  </p>
 
-## <a id="1-6-0"></a>  Version 1.6.0
+## <a id="1-6-1"></a>  Version 1.6.1
 
-**Release Date: September 21st, 2022**
+**Release Date: September 29th, 2022**
 
 ### <a id="16_supported_platforms"></a> Supported Platforms
 
@@ -82,9 +82,9 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   - 8.0.28
   - 8.0.29
 
-* Release 1.6.0 is included in the VMware Tanzu Data Services package version 1.3.0: `registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.3.0`. For more information on installing Tanzu MySQL using the Tanzu CLI, refer to [Installing using the Tanzu CLI](install-operator.html#installing-using-the-tanzu-cli).
+* Release 1.6.1 is included in the VMware Tanzu Data Services package version 1.4.0: `registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.4.0`. For more information on installing Tanzu MySQL using the Tanzu CLI, refer to [Installing using the Tanzu CLI](install-operator.html#installing-using-the-tanzu-cli).
 
-* This release adds the field `spec.storage.caBundle`, to create the ability to configure a CA bundle for storage endpoints using custom TLS certificates. For details, refer to [Tanzu MySQL Property Reference](./property-reference-backup-restore.html). 
+* This release changes the field `spec.storage.caBundle` to `spec.storage.s3.caBundle`, to create the ability to configure a CA bundle for storage endpoints using custom TLS certificates. For details, refer to [Tanzu MySQL Property Reference](./property-reference-backup-restore.html). 
 
 ### <a id=16_changes></a> Changes
 
@@ -108,6 +108,12 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
+
+
+## <a id="1-6-0"></a>  Version 1.6.0 (RETRACTED)
+
+**Release Date: September 21st, 2022**
+
 
 ## <a id="1-5-0"></a>  Version 1.5.0
 
