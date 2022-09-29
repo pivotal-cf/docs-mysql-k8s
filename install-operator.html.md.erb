@@ -431,7 +431,7 @@ To relocate images from the VMware Tanzu Network registry to a private registry:
    where:
     - `MY-REGISTRY` is your own image registry
     - `TARGET-REPOSITORY` is your target repository
-    - `TDS-VERSION` is the tag for the image bundle (e.g `1.2.0`). Each Tanzu MySQL release corresponds to a TDS package version. For instance, MySQL Operator version 1.6.1 is part of TDS version 1.3.0. Insert the right version for your Tanzu MySQL Operator release.
+    - `TDS-VERSION` is the tag for the image bundle (e.g `1.4.0`). Each Tanzu MySQL release corresponds to a TDS package version. For instance, MySQL Operator version 1.6.1 is part of TDS version 1.4.0. Insert the right version for your Tanzu MySQL Operator release.
 
 ### <a id="secret_cli"></a> Create a Kubernetes Secret
 
@@ -476,7 +476,7 @@ tanzu package repository add tanzu-data-services-repository \
 where:
 - `MY-REGISTRY` is your own image registry
 - `TARGET-REPOSITORY` is your target repository
-- `TDS-VERSION` is the tag for the image bundle (e.g. `1.3.0`)
+- `TDS-VERSION` is the tag for the image bundle (e.g. `1.4.0`)
 - `NAMESPACE` is the namespace where the Package and PackageInstall will be created
 
 List the latest packages to confirm the addition:
