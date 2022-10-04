@@ -92,8 +92,6 @@ You can access and install <%=vars.product_name %> using two different methods:
 
 #### <a id="install-via-tar"></a> Setup the Tanzu Operator via a Downloaded Archive File
 
-**IMPORTANT**: Helm 3.7.0 is not supported. Use Helm 3.7.1 and above, or Helm 3.6 and earlier.
-
 1. Download the Tanzu MySQL distribution from [VMware Tanzu Network](https://network.tanzu.vmware.com). The download filename has the format: `tanzu-mysql-for-kubernetes-<version>.tgz`.
 
 1.  Unpack the downloaded software:
@@ -426,7 +424,7 @@ To relocate images from the VMware Tanzu Network registry to a private registry:
 3. Relocate the images with the Carvel tool `imgpkg` by running:
     ```
     imgpkg copy -b registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:<TDS-VERSION> \
-    --to-repo <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages
+      --to-repo <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages
     ```
    where:
     - `MY-REGISTRY` is your own image registry

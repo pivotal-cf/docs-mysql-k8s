@@ -8,105 +8,232 @@ This topic describes how to upgrade the <%= vars.product_full %> Operator.
 
 <p class='note'><strong>NOTE:</strong>  Upgrading the MySQL Operator does not automatically upgrade any existing MySQL instances. Any instance upgrades require user intervention. The owners of the instances might be encouraged to upgrade or update their instances to a later supported version.</p>
 
-## <a id="upgrade-operator"></a>  Upgrade the Operator using Helm CLI
+## <a id="helm-upgrade"></a>Upgrading the Operator using Helm
 
-To upgrade <%= vars.product_short %>, you must download the resources, and upgrade
-the <%= vars.product_short %> Operator using Helm.
+Ensure you have access to [Tanzu Network](https://network.tanzu.vmware.com) and [Tanzu Network Registry](https://registry.tanzu.vmware.com/). You can use the same credentials for both sites.
 
-These instructions assume your Operator is installed in the Operator namespace `tanzu-mysql-for-kubernetes-system`
-as described in Operator Installation documentation. If your Operator is installed in a different  namespace,
-replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below commands.
+<p class="note">
+    <strong>Note:</strong> Use Helm CLI 3.8.0 and later.
+ </p>
 
-1. Set the environment variable to enable OCI support in the Helm v3 client by running:
+### <a id="access"></a> Access the Resources
 
-    ```
-    export HELM_EXPERIMENTAL_OCI=1
-    ```
+You can access and install the new Tanzu MySQL Operator using any of the two different methods used during the initial installation.
 
-    If you skip this step, the following error message might appear:
-    ``` Error: this feature has been marked as experimental and is not enabled by default.``` 
+- Use [Setup the Tanzu MySQL Operator via Tanzu Network Registry](install-operator.html#install-via-tanzu) for a faster installation process, and if your server hosts have access to the internet.
 
-1. Use Helm to log in to the Tanzu Network Registry by running:
+- Use [Setup the Tanzu MySQL Operator via Downloadable Archive File](install-operator.html#install-via-tar) if your server hosts do not have access to the internet, or if you want to install from a private registry.
 
-    ```
-    helm registry login registry.tanzu.vmware.com
-    ```
 
-    Follow the prompts to enter the email address and password for your <%= vars.product_network %> account.
+### <a id="upgrading_operator"></a>Upgrade the Operator
 
-1. Verify that you have a running <%= vars.product_short %> Operator by running:
+After downloading the Helm chart, upgrade the operator following these steps:
+
+1. Set the environment variable `CHART_DIR` to the location of the downloaded helm chart. 
+
+1. Update the existing Tanzu MySQL Custom Resource Definitions (CRDs) with the new values:
 
     ```
-    helm ls -n tanzu-mysql-for-kubernetes-system
-    ```
-    For example:
-
-    ``` 
-    helm ls -n tanzu-mysql-for-kubernetes-system
-    ```
-    ```
-    NAME                    NAMESPACE                               REVISION        UPDATED                                 STATUS          CHART                                   APP VERSION
-    tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2022-09-11 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.6.1     1.6.0
+    kubectl apply -f ${CHART_DIR}/crds/
     ```
 
-1.  Create a temporary working directory to export the chart into by running:
+1. Update an existing overrides file or create an `operator_overrides_values.yaml` file at a location of your choice. 
+Refer to [Review the Operator Values](install-operator.html#create-overrides) for details on setting the appropriate overrides.
 
-	```
-	CHART_DIR=$(mktemp -d /tmp/tanzu-mysql-operator-chart:1.6.1.XXXXX)
-	```
+    If your Operator was previously installed using an Operator values override file (or other command-line values overrides), 
+then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or 
+with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
 
-1. Download the Helm chart to your temporary working directory on your local machine by running these commands:
-
-	  If you're using Helm CLI 3.6 and earlier:
-
-    ```
-    helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.1
-    ```
-    ```
-    helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.1 -d ${CHART_DIR}
-    ```
-
-
-	  If you're using Helm CLI 3.7.1 and later:
-	  ```
-	  helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart \
-	    --version 1.6.0 --untar --untardir ${CHART_DIR}
-	  ```
-
-
-1. In the location where the new release has been downloaded, apply the new CRDs by running:
+1. Target the namespace where you installed the Helm release:
 
     ```
-    kubectl apply -f ${CHART_DIR}/tanzu-sql-with-mysql-operator/crds/
+    kubectl config set-context --current --namespace=<MYSQL-OPERATOR-NAMESPACE>
     ```
+    where `MYSQL-OPERATOR-NAMESPACE` is the namespace where the previous operator version is installed.
 
-    <p class="note">
-      <strong>Note:</strong> You can ignore the warnings in the output.
-    </p>
-
-1. Upgrade the Operator by running:
+    List the Helm releases using:
+    
+    ```
+    helm ls
+    ```
+    ```
+    NAME                NAMESPACE                           REVISION	UPDATED                             	STATUS  	CHART                              	APP VERSION
+    my-mysql-operator   tanzu-mysql-for-kubernetes-system	4       	2022-07-13 07:19:04.877537 -0700 PDT	deployed	tanzu-sql-with-mysql-operator-1.5.0	1.5.0
+    ```
+    
+1. Upgrade the Operator using:
 
     ```
-    helm upgrade tanzu-sql-with-mysql-operator ${CHART_DIR}/tanzu-sql-with-mysql-operator \
-      -n tanzu-mysql-for-kubernetes-system
+    helm upgrade <RELEASE-NAME> ${CHART_DIR} -f /<path-to-your-file>/operator_overrides_values.yaml --wait
     ```
+    where 
 
-    When you see `deployed` in the `STATUS` column, the <%= vars.product_short %>
-    Helm chart has upgraded:
+     - `RELEASE-NAME` is the Helm release value under the `NAME` column of the list output
+     - `operator_overrides_values.yaml` is the overrides file
 
-    ``` 
-    helm history tanzu-sql-with-mysql-operator -n tanzu-mysql-for-kubernetes-system
+    The output is similar to:
+
     ```
+    Release "my-mysql-operator" has been upgraded. Happy Helming!
+    NAME: my-mysql-operator 
+    LAST DEPLOYED: Mon Oct 3 15:31:43 2022
+    NAMESPACE: tanzu-mysql-for-kubernetes-system
+    STATUS: deployed
+    REVISION: 5
+    TEST SUITE: None
+    ```
+    where `REVISION` is a counter for the number of Operator upgrades you have performed. If you have upgraded from 1.0 to 1.1, and from 1.1 to 1.2, the REVISION number would be 3.
 
-    If your Operator was previously installed using an Operator values override file (or other command-line values overrides), then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
 
 1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
-	  ```
-	  rm ${CHART_DIR}
-	  ```
+	```
+	rm -rf ${CHART_DIR}
+	```
+
+## <a id="tanzu-upgrade"></a>Upgrading the Operator using the Tanzu CLI
+
+1. Relocate the images from the VMware Tanzu Network registry to a private registry with the Carvel tool `imgpkg` by running:
+    ```
+    imgpkg copy -b registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:<TDS-VERSION> \
+      --to-repo <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages
+    ```
+   where:
+   - `MY-REGISTRY` is your own image registry
+   - `TARGET-REPOSITORY` is your target repository
+   - `TDS-VERSION` is the tag for the image bundle (e.g `1.4.0`). Each Tanzu MySQL release corresponds to a TDS package version. For instance, MySQL Operator version 1.6.1 is part of TDS version 1.4.0. Insert the right version for your Tanzu MySQL Operator release.
+
+1. Find the package repository name of the VMware Tanzu Data Services package repository:
+    ```
+    tanzu package repository list -A
+    ```
+    ```
+    / Retrieving repositories...
+    NAME                 REPOSITORY                                                                          TAG    STATUS               DETAILS  NAMESPACE
+    tds-repo             registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages      1.3.0  Reconcile succeeded           data-services-operators
+    tanzu-rabbitmq-repo  registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo     1.3.0  Reconcile succeeded           rabbitmq-operator
+    ```
+   where column `NAME` represents the name of the package repository.
+
+   Note the namespace where `registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages` repository is located.
+
+1. Update the package repository to reflect the new target version:
+    ```
+    tanzu package repository update <PACKAGE-REPOSITORY-NAME> \
+        --url <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages:<TDS-VERSION> \
+        --namespace=<OPERATOR-NAMESPACE>
+    ```
+   where:
+   - `PACKAGE-REPOSITORY-NAME` is the name listed for the installed package repository
+   - `MY-REGISTRY` is your own image registry
+   - `TARGET-REPOSITORY` is your target repository
+   - `TDS-VERSION` is the target version you'll like to upgrade to (e.g. `1.4.0`)
+   - `OPERATOR-NAMESPACE` is the namespace of the package repository
+
+    ```
+    | Updating package repository 'tds-repo'
+    - Getting package repository 'tds-repo' 
+    / Getting package repository 'tds-repo'
+    | Validating provided settings for the package repository
+    | Updating package repository resource
+    - Waiting for 'PackageRepository' reconciliation for 'tds-repo'
+    / 'PackageRepository' resource install status: Reconciling
+    
+    Updated package repository 'tds-repo' in namespace 'data-services-operators'
+    ```
+
+1. Verify you have updated the package repository
+    ```
+    tanzu package repository get <PACKAGE-REPOSITORY-NAME> --namespace=<OPERATOR-NAMESPACE>
+    ```
+   where:
+   - `PACKAGE-REPOSITORY-NAME` is your chosen name for the installed package repository/
+   - `OPERATOR-NAMESPACE` is the namespace of the package repository.
+
+    ```
+    / Retrieving repository tds-repo...
+    NAME:          tds-repo
+    VERSION:       2571192
+    REPOSITORY:    registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages
+    TAG:           1.4.0
+    STATUS:        Reconcile succeeded
+    REASON:
+    ```
+
+1. Select your desired version of the available MySQL Operator version
+    ```
+    tanzu package available list mysql-operator.with.sql.tanzu.vmware.com --namespace=<OPERATOR-NAMESPACE> 
+    ```
+   where `OPERATOR-NAMESPACE` is the namespace of the package repository.
+
+    ```
+    / Retrieving package versions for mysql-operator.with.sql.tanzu.vmware.com...
+    NAME                                      VERSION  RELEASED-AT
+    mysql-operator.with.sql.tanzu.vmware.com  1.5.0    2022-07-07 17:26:16 -0700 PDT
+    mysql-operator.with.sql.tanzu.vmware.com  1.6.0    2022-09-16 12:59:05 -0700 PDT
+    mysql-operator.with.sql.tanzu.vmware.com  1.6.1    2022-09-29 09:49:15 -0700 PDT
+    ```
+   
+1. List the installed packages.
+
+   ```
+   tanzu package installed list --namespace=<OPERATOR-NAMESPACE>
+   ```
+   where `OPERATOR-NAMESPACE` is the namespace of the package repository.
+
+   ```
+   / Retrieving installed packages...
+     NAME                  PACKAGE-NAME                              PACKAGE-VERSION  STATUS
+     tanzu-mysql-operator  mysql-operator.with.sql.tanzu.vmware.com  1.5.0            Reconcile succeeded
+    ```
+
+1. Update the MySQL Operator installed package to your desired version:
+
+    ```
+    tanzu package installed update <PACKAGE-NAME> \ 
+      --package-name mysql-operator.with.sql.tanzu.vmware.com \
+      --version <MYSQL-OPERATOR-VERSION> \
+      -f <YOUR-OVERRIDES-FILE-PATH> \
+      --namespace <OPERATOR-NAMESPACE>
+    ```
+   where:
+
+   - `PACKAGE-NAME` is the name shown from the installed package list
+   - `MYSQL-OPERATOR-VERSION` is the Operator version you choose in the step above
+   - `YOUR-OVERRIDES-FILE-PATH` is your custom overrides path and file, for example `overrides.yaml`.
+   - `OPERATOR-NAMESPACE` is the namespace of the packagerepository
+
+    ```
+    | Updating installed package 'tanzu-mysql-operator'
+    - Getting package install for 'tanzu-mysql-operator' 
+    / Getting package install for 'tanzu-mysql-operator'
+    / Getting package metadata for 'mysql-operator.with.sql.tanzu.vmware.com'
+    | Updating package install for 'tanzu-mysql-operator'
+    / Waiting for 'PackageInstall' reconciliation for 'tanzu-mysql-operator'
+    / 'PackageInstall' resource install status: Reconciling
+    
+    Updated installed package 'tanzu-mysql-operator' in namespace 'data-services-operators'
+    ```
+
+1. Verify the MySQL Operator package was updated successfully:
+    ```
+    tanzu package installed get tanzu-mysql-operator --namespace=<OPERATOR-NAMESPACE>
+    ```
+   where `OPERATOR-NAMESPACE` is the namespace of the package repository.
+
+    ```
+    - Retrieving installation details for tanzu-mysql-operator... 
+    / Retrieving installation details for tanzu-mysql-operator...
+    NAME:                    tanzu-mysql-operator
+    PACKAGE-NAME:            mysql-operator.with.sql.tanzu.vmware.com
+    PACKAGE-VERSION:         1.6.1
+    STATUS:                  Reconcile succeeded
+    CONDITIONS:              [{ReconcileSucceeded True  }]
+    USEFUL-ERROR-MESSAGE:
+    ```
+
 
 ## <a id="next-steps"></a>Next Steps
 
-Check the status of your existing instances, and plan for an upgrade or an update. 
+Check the status of your existing MySQL instances, and plan for an upgrade or an update. 
 
 Use the command `kubectl get mysqls` and review [List Instance Versions](upgrade-instance.html#upgrade-steps), [Upgrade an Instance](upgrade-instance.html#upgrade-steps) and [Updating an Instance](update-instance.html#update-instance).
