@@ -81,7 +81,8 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 ### <a id="14_changes"></a> Changes
 
 - This release renames the `VERSION` column of the command output `kubectl get mysql` to `TANZU VERSION`.
-- The `spec.version` property is deprecated and replaced with `spec.mysqlVersion.name`. 
+- The `spec.version` property is deprecated and replaced with `spec.mysqlVersion.name`.
+- The helm chart value `defaultInstanceVersion` is removed. On operator upgrade, make sure to remove the key from the helm overrides file or use command line option `--reset-values`.
 
 ### <a id="14_resolved"></a> Resolved Issues
 
