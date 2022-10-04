@@ -44,6 +44,8 @@ Refer to [Review the Operator Values](install-operator.html#create-overrides) fo
 then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or 
 with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
 
+  For customers upgrading from Operator 1.4.0, the Helm chart value `defaultInstanceVersion` has been removed. On Operator upgrade, remove this key from the Helm overrides file, or use the command line option `--reset-values`.
+
 1. Target the namespace where you installed the Helm release:
 
     ```
@@ -86,9 +88,9 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
 
 
 1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
-	```
-	rm -rf ${CHART_DIR}
-	```
+	  ```
+	  rm -rf ${CHART_DIR}
+	  ```
 
 ## <a id="tanzu-upgrade"></a>Upgrading the Operator using the Tanzu CLI
 
