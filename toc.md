@@ -1,4 +1,4 @@
-* [Version 1.6](./index.html.md)
+* [Version 1.5](./index.html.md)
 * [Release Notes](./release-notes.html)
 * [Overview](./index.html)
 * [Architecture](./architecture.html)
