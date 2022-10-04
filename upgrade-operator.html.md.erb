@@ -46,32 +46,32 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
     ```
     ```
     NAME                    NAMESPACE                               REVISION        UPDATED                                 STATUS          CHART                                   APP VERSION
-    tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2022-09-11 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.6.0     1.6.0
+    tanzu-mysql-operator    tanzu-mysql-for-kubernetes-system       1               2022-09-11 12:15:07.16966 -0500 CDT     deployed        tanzu-sql-with-mysql-operator-1.4.0     1.4.0
     ```
 
 1.  Create a temporary working directory to export the chart into by running:
 
-	```
-	CHART_DIR=$(mktemp -d /tmp/tanzu-mysql-operator-chart:1.6.0.XXXXX)
-	```
+	  ```
+	  CHART_DIR=$(mktemp -d /tmp/tanzu-mysql-operator-chart:1.5.0.XXXXX)
+	  ```
 
 1. Download the Helm chart to your temporary working directory on your local machine by running these commands:
 
-	If you're using Helm CLI 3.6 and earlier:
+	  If you're using Helm CLI 3.6 and earlier:
 
     ```
-    helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.0
+    helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.5.0
     ```
     ```
-    helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.6.0 -d ${CHART_DIR}
+    helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart:1.5.0 -d ${CHART_DIR}
     ```
 
 
-	If you're using Helm CLI 3.7.1 and later:
-	```
-	helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart \
-	  --version 1.6.0 --untar --untardir ${CHART_DIR}
-	```
+	  If you're using Helm CLI 3.7.1 and later:
+	  ```
+	  helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart \
+	    --version 1.5.0 --untar --untardir ${CHART_DIR}
+	  ```
 
 
 1. In the location where the new release has been downloaded, apply the new CRDs by running:
@@ -91,22 +91,23 @@ replace `tanzu-mysql-for-kubernetes-system` with that namespace in the below com
       -n tanzu-mysql-for-kubernetes-system
     ```
 
-    When you see `deployed` in the `STATUS` column, the <%= vars.product_short %>
-    Helm chart has upgraded:
+    When you see `deployed` in the `STATUS` column, the Operator Helm chart has upgraded:
 
     ``` 
     helm history tanzu-sql-with-mysql-operator -n tanzu-mysql-for-kubernetes-system
     ```
 
-  If your Operator was previously installed using an Operator Values Override file (or other command-line values
-  overrides), then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other
-  overrides or with the `--reset-values` flag.
-  See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
+    If your Operator was previously installed using an Operator values override file (or other command-line values
+    overrides), then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other
+    overrides or with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
+
+    For customers upgrading from Operator 1.4.0, the Helm chart value `defaultInstanceVersion` has been removed. On Operator upgrade, remove this key from the Helm overrides file, or use the command line option `--reset-values`.
+    
 
 1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
-	```
-	rm ${CHART_DIR}
-	```
+	  ```
+	  rm ${CHART_DIR}
+	  ```
 
 ## <a id="next-steps"></a>Next Steps
 
