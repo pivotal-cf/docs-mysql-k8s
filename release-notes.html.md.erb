@@ -18,11 +18,6 @@ The <%= vars.product_short %> releases support the components listed below:
     <th>Percona XtraBackup</th>
   </tr>
   <tr>
-    <td>1.6.0</td>
-    <td>8.0.26<br/>8.0.27<br/>8.0.28<br/>8.0.29</td>
-    <td>8.0.26<br/>8.0.27<br/>8.0.28<br/>8.0.29</td>
-  </tr>
-  <tr>
     <td>1.5.0</td>
     <td>8.0.25<br/>8.0.26<br/>8.0.27<br/>8.0.28</td>
     <td>8.0.25<br/>8.0.26<br/>8.0.27<br/>8.0.28</td>
@@ -57,57 +52,6 @@ The <%= vars.product_short %> releases support the components listed below:
 <p class="note">
      <strong>IMPORTANT:</strong> VMware does not support deployments that have been modified by adding layers to the packaged Docker images, or deployments that reference images other than the VMware MySQL Operator. VMware does not support changing the contents of the deployed containers and pods in any way.
  </p>
-
-## <a id="1-6-0"></a>  Version 1.6.0
-
-**Release Date: September 20, 2022**
-
-### <a id="16_supported_platforms"></a> Supported Platforms
-
-This version of Tanzu MySQL is supported on the following platforms:
-
-- [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI), version 1.12.x - 1.14.x
-- [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKG) on AWS, version 1.4.x - 1.6.x
-- Google Kubernetes Engine (GKE)
-- Amazon Elastic Kubernetes Service (EKS)
-- Kubernetes version 1.21+
-
-Additional Kubernetes environments, such as Minikube, can be used for testing or demonstration purposes.
-
-### <a id="16_features"></a> Features
-
-* Tanzu MySQL Operator 1.6.0 supports four different MySQL versions:
-  - 8.0.26
-  - 8.0.27
-  - 8.0.28
-  - 8.0.29
-
-* Release 1.6.0 is included in the VMware Tanzu Data Services package version 1.3.0: `registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.3.0`. For more information on installing Tanzu MySQL using the Tanzu CLI, refer to [Installing using the Tanzu CLI](install-operator.html#installing-using-the-tanzu-cli).
-
-* This release adds the field `spec.storage.caBundle`, to create the ability to configure a CA bundle for storage endpoints using custom TLS certificates. For details, refer to [Tanzu MySQL Property Reference](./property-reference-backup-restore.html). 
-
-### <a id=16_changes></a> Changes
-
-* This version updates the minimun supported Kubernetes version to 1.21+.
-
-### <a id="16_issues"></a> Known Issues
-
-* **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
-
-* The following CVEs exist in this release:
-    - [CVE-2021-3538](https://nvd.nist.gov/vuln/detail/CVE-2021-3538)
-
-### <a id="16_limits"></a> Limitations
-
-* The Tanzu SQL release supports Helm 3.6.3 and lower, or Helm 3.7.1 and later. Helm 3.7.0 is not supported.
-* Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
-* Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
-* To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
-* TLS is required for external connections to the database. There is no supported option to remove this requirement.
-* Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
-   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
-   * Configuring schemas and users for an application.
-* Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
 
 ## <a id="1-5-0"></a>  Version 1.5.0
 
