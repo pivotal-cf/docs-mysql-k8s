@@ -18,16 +18,16 @@ Ensure you have access to [Tanzu Network](https://network.tanzu.vmware.com) and 
 
 ### <a id="access"></a> Access the Resources
 
-You can access and install <%=vars.product_name %> using two different methods:
+You can access and install the new Tanzu MySQL Operator using any of the two different methods used during the initial installation.
 
 - Use [Setup the Tanzu MySQL Operator via Tanzu Network Registry](install-operator.html#install-via-tanzu) for a faster installation process, and if your server hosts have access to the internet.
 
 - Use [Setup the Tanzu MySQL Operator via Downloadable Archive File](install-operator.html#install-via-tar) if your server hosts do not have access to the internet, or if you want to install from a private registry.
 
 
-### <a id="upgrading_operator"></a>Upgrading the Operator
+### <a id="upgrading_operator"></a>Upgrade the Operator
 
-The following steps assume that you have followed one of the two methods above to download the Helm chart.
+After downloading the Helm chart, upgrade the operator following these steps:
 
 1. Set the environment variable `CHART_DIR` to the location of the downloaded helm chart. 
 
@@ -37,23 +37,21 @@ The following steps assume that you have followed one of the two methods above t
     kubectl apply -f ${CHART_DIR}/crds/
     ```
 
-1. Create an `operator_overrides_values.yaml` file at a location of your choice or update an existing overrides file.
-[Review the Operator Values](install-operator.html#create-overrides) to set the appropriate overrides.
+1. Update an existing overrides file or create an `operator_overrides_values.yaml` file at a location of your choice. 
+Refer to [Review the Operator Values](install-operator.html#create-overrides) for details on setting the appropriate overrides.
 
-If your Operator was previously installed using an Operator values override file (or other command-line values overrides), 
+    If your Operator was previously installed using an Operator values override file (or other command-line values overrides), 
 then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or 
 with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
 
-1. Upgrade the operator.
-
-   Target the namespace where you have installed the helm release.
+1. Target the namespace where you installed the Helm release:
 
     ```
     kubectl config set-context --current --namespace=<MYSQL-OPERATOR-NAMESPACE>
     ```
-    where `MYSQL-OPERATOR-NAMESPACE` is the namespace.
+    where `MYSQL-OPERATOR-NAMESPACE` is the namespace where the previous operator version is installed.
 
-    List the helm releases using:
+    List the Helm releases using:
     
     ```
     helm ls
@@ -63,13 +61,14 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     my-mysql-operator   tanzu-mysql-for-kubernetes-system	4       	2022-07-13 07:19:04.877537 -0700 PDT	deployed	tanzu-sql-with-mysql-operator-1.5.0	1.5.0
     ```
     
-    Upgrade using:
+1. Upgrade the Operator using:
 
     ```
     helm upgrade <RELEASE-NAME> ${CHART_DIR} -f /<path-to-your-file>/operator_overrides_values.yaml --wait
     ```
     where 
-     - `RELEASE-NAME` is the name of the helm release listed from the list output
+
+     - `RELEASE-NAME` is the Helm release value under the `NAME` column of the list output
      - `operator_overrides_values.yaml` is the overrides file
 
     The output is similar to:
@@ -87,13 +86,13 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
 
 
 1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
-	  ```
-	  rm -rf ${CHART_DIR}
-	  ```
+	```
+	rm -rf ${CHART_DIR}
+	```
 
 ## <a id="tanzu-upgrade"></a>Upgrading the Operator using the Tanzu CLI
 
-1. Relocate images from the VMware Tanzu Network registry to a private registry with the Carvel tool `imgpkg` by running:
+1. Relocate the images from the VMware Tanzu Network registry to a private registry with the Carvel tool `imgpkg` by running:
     ```
     imgpkg copy -b registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:<TDS-VERSION> \
       --to-repo <MY-REGISTRY>/<TARGET-REPOSITORY>/tds-packages
@@ -110,8 +109,8 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     ```
     / Retrieving repositories...
     NAME                 REPOSITORY                                                                          TAG    STATUS               DETAILS  NAMESPACE
-    tds-repo             registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages      1.3.0  Reconcile succeeded           data-services-operators
-    tanzu-rabbitmq-repo  registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo     1.3.0  Reconcile succeeded           rabbitmq-operator
+    tds-repo             registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages      1.4.0  Reconcile succeeded           data-services-operators
+    tanzu-rabbitmq-repo  registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo     1.4.0  Reconcile succeeded           rabbitmq-operator
     ```
    where column `NAME` represents the name of the package repository.
 
@@ -170,7 +169,6 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     / Retrieving package versions for mysql-operator.with.sql.tanzu.vmware.com...
     NAME                                      VERSION  RELEASED-AT
     mysql-operator.with.sql.tanzu.vmware.com  1.5.0    2022-07-07 17:26:16 -0700 PDT
-    mysql-operator.with.sql.tanzu.vmware.com  1.6.0    2022-09-16 12:59:05 -0700 PDT
     mysql-operator.with.sql.tanzu.vmware.com  1.6.1    2022-09-29 09:49:15 -0700 PDT
     ```
    
