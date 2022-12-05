@@ -5,7 +5,7 @@ owner: MySQL
 
 ## <a id='overview'></a>  Overview
 
-This topic describes how to migrate data from [VMware Tanzu SQL with MySQL for VMs](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-VMs/index.html) to VMware MySQL for Kubernetes. MySQL for VMs is installed alongside [Tanzu Application Service (TAS) for VMs](https://docs.pivotal.io/application-service/3-0/concepts/overview.html), similar to Redis, RabbitMQ, or Gemfire. TAS users to use the Cloud Foundry Command-Line Interface (cf CLI) or a GUI, to deploy applications or services in a few minutes, from a cloud platform. 
+This topic describes how to migrate data from [VMware Tanzu SQL with MySQL for VMs](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-VMs/index.html) on [Tanzu Application Service (TAS) for VMs](https://docs.pivotal.io/application-service/3-0/concepts/overview.html) to VMware MySQL for Kubernetes. 
 
 The migration process involves backing up the MySQL for VMs instances using the utility `mysqldump`, and restoring them under MySQL for Kubernetes. 
 
@@ -15,15 +15,15 @@ The migration process involves backing up the MySQL for VMs instances using the 
 
 ## <a id='prerequisites'></a>  Prerequisites
 
-Before you can back up MySQL service instances and restore them to MySQL for Kubernetes, you must:
+Before following the migration steps, you must:
 
 * Refer to the changes relating to MySQL 8. For details refer to [What Is New in MySQL 8.0](https://dev.mysql.com/doc/refman/8.0/en/mysql-nutshell.html).
 * Have a local machine with the following utilities installed, and ensure you have familiarity with these utilities:
   * `mysqldump` 5.7, to connect to MySQL service instances externally, take a logical backup, and store the backup. Refer to [How to install & run mysqldump](https://mysqldump.guru/how-to-install-and-run-mysqldump.html#how-to-install-run-mysqldump) for an example installation procedure. Install the utility relevant to your local machine operating system. 
   * `mysql` 8, to connect to MySQL on Kubernetes externally, and load the backup.
   * The Cloud Foundry Command-Line Interface (cf CLI). See [Installing the cf CLI](https://docs.pivotal.io/application-service/2-10/cf-cli/install-go-cli.html). 
-* Have access credentials to access the TAS service instances. 
-* Review which schemas you wish to migrate. The default schema created for MySQL for VMs service instances is named `service_instance_db`. For details on schemas and databases to backup and restore, refer to [Create a Tanzu SQL for VMs Logical Backup](Create a Tanzu SQL for VMs Logical Backup).
+* Have access credentials to access the TAS service instances you will be migrating. 
+* Review which schemas you wish to migrate. The default schema created for MySQL for VMs service instances is named `service_instance_db`. For details on schemas and databases to backup and restore, refer to [Create a Tanzu SQL for VMs Logical Backup](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-VMs/2.10/tanzu-mysql-vms/GUID-backup-mysqldump.html#create-a-tanzu-sql-for-vms-logical-backup-2).
 * Review and complete the prerequisites for [Creating and Deleting MySQL Instances in Kubernetes](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.6/tanzu-mysql-k8s/GUID-create-delete-mysql.html).
 
 
@@ -41,12 +41,13 @@ For each MySQL for VMs service instance, use `mysqldump` to create a logical bac
 
 ## <a id='existing-users'></a>  List existing users
 
-1. Log into TAS, and list the service keys for the MySQL service instance:
+1. Log in to TAS, and list the service keys for the MySQL service instance:
 
     ```
     cf service-keys <SERVICE_INSTANCE_NAME>
     ```
-    Where
+    where:
+
     - `SERVICE_INSTANCE_NAME` is the name of the MySQL service instance
 
 1. Fetch the database, username, and password for each service key:
@@ -54,7 +55,8 @@ For each MySQL for VMs service instance, use `mysqldump` to create a logical bac
     ```
     cf service-key <SERVICE_INSTANCE_NAME> <SERVICE_KEY_NAME> | tail -n +3 | jq '{database: .name, username: .username, password: .password}'
     ```
-    Where
+    where:
+
     - `SERVICE_INSTANCE_NAME` is the name of the MySQL service instance
     - `SERVICE_KEY_NAME` is the name of the MySQL service key
 
@@ -78,31 +80,35 @@ Create the  MySQL instances. For details, refer to [Creating and Deleting MySQL 
 ## <a id='create-users'></a>  Create existing users
 
 
-1. Access the `mysql` container:
+1. Access the `mysql` container on the Kubernetes cluster:
+
     ```
     kubectl exec -it <POD_NAME> -c mysql -- bash
     ```
-    Where:
+    where:
+
     - `POD_NAME` is the name of the MySQL pod
 
 2. Log in as root in order to create objects as needed:
+
     ```
     mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     ```
     
-3. Create all necessary databases and a user for each:
+3. Create all necessary databases, and a user for each:
+
     ```
     CREATE DATABASE <DATABASE_NAME>;
     CREATE USER '<USERNAME>'@'%' IDENTIFIED BY '<PASSWORD>';
     GRANT ALL PRIVILEGES ON <DATABASE_NAME>;.* TO '<USERNAME>'@'%';
     FLUSH PRIVILEGES;
     ```
-    
+
     Where:
+
     - `DATABASE_NAME` is the name of the database
     - `USERNAME` is the mysql username
     - `PASSWORD` is the password for the user
-    
     
     Example:
     ```
