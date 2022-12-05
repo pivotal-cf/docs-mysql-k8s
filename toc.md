@@ -15,6 +15,7 @@
 * [Connecting Applications](./connecting-apps.html)
 * [Creating Service Bindings](./creating-service-bindings.html)
 * [Backing Up and Restoring MySQL Instances](./backup-restore.html)
+* [Migrating MySQL for VMs to MySQL for Kubernetes](./migrate-mysql.html)
 * [Property Reference for MySQL Resource](./property-reference-mysql.html)
 * [Property Reference for Backup and Restore](./property-reference-backup-restore.html)
 * [Troubleshooting Common Issues](./troubleshooting.html)
