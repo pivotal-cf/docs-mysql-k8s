@@ -1,20 +1,22 @@
 ---
-title: Migrating from TAS to Kubernetes
+title: Migrating from MySQL for VMs to MySQL for Kubernetes
 owner: MySQL
 ---
 
-This topic describes how to migrate data from VMware Tanzu SQL with MySQL for VMs to VMware MySQL for Kubernetes.
+## <a id='overview'></a>  Overview
 
-Tanzu SQL for VMs only supports MySQL 5.7 while MySQL for Kubernetes only supports MySQL 8.
+This topic describes how to migrate data from [VMware Tanzu SQL with MySQL for VMs](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-VMs/index.html) to VMware MySQL for Kubernetes.
 
-Before upgrading using a logical dump, please 
+MySQL for VMs is a product that is installed alongside Tanzu Application Service for VMs so that users can use the Cloud Foundry Command-Line Interface (cf CLI) or a GUI to allow users to deploy applications or services and make them available to the world in a few minutes from a cloud platform.
+
+MySQL for VMs only supports MySQL 5.7 while MySQL for Kubernetes only supports MySQL 8.
 
 ## <a id='prerequisites'></a>  Prerequisites
 
-Before you can back up MySQL service instances and restore to MySQL for Kubernetes, you must have:
+Before you can back up MySQL service instances and restore to MySQL for Kubernetes, you must:
 
 * Refer to the [documentation](https://dev.mysql.com/doc/refman/8.0/en/mysql-nutshell.html) for all the changes in MySQL 8.
-* Take note of which schemas you wish to migrate. The default schema for every instance is `service_instance_db`.
+* Take note of which schemas you wish to migrate. The default schema created for MySQL for VMs service instances is named `service_instance_db`.
 * Have a local machine with the following installed:
   * `mysqldump` 5.7 to connect to MySQL service instances externally, take a logical backup, and store the backup
   * `mysql` 8 to connect to MySQL on Kubernetes externally and load the backup
@@ -22,7 +24,7 @@ Before you can back up MySQL service instances and restore to MySQL for Kubernet
 
 ## <a id='backing-up'></a>  Backing up with mysqldump
 
-For each MySQL for VMs service instance, follow the steps from [this documentation](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-VMs/2.10/tanzu-mysql-vms/GUID-backup-mysqldump.html#back-up-and-restore-a-tanzu-sql-for-vms-logical-backup-1) how to manually create a logical backup with `mysqldump`. 
+For each MySQL for VMs service instance, use `mysqldump` to [create a logical backup](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-VMs/2.10/tanzu-mysql-vms/GUID-backup-mysqldump.html#back-up-and-restore-a-tanzu-sql-for-vms-logical-backup-1) how to manually create a logical backup with `mysqldump`. 
 
 Reminders:
 - The MySQL service instance must be configured for external access (either using service gateway or CF SSH).
@@ -94,21 +96,25 @@ Example:
 ```bash
 CREATE DATABASE service_instance_db;
 CREATE USER 'c67a09469fd349b5ac600893dff4cee0'@'%' IDENTIFIED BY 'apv1wll5zzv470w1';
-GRANT ALL PRIVILEGES ON service_instance_db.* to 'mysqlappuser'@'%';
+GRANT ALL PRIVILEGES ON service_instance_db.* to 'c67a09469fd349b5ac600893dff4cee0'@'%';
 FLUSH PRIVILEGES;
 ```
 
 See [MySQL for Kubernetes documentation](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.6/tanzu-mysql-k8s/GUID-connecting-apps.html#create-a-database-and-privileged-mysql-user-for-the-app) for more information on creating a user for the associated database.
 
-4. Ensure the MySQL pod can be access external and connect with the newly created user to load the backup file
+4. Ensure the MySQL server can be accessed and connect with the newly created user to load the backup file
 
 > Note: Make sure to use a mysql 8.0 client from your workstation when connecting to the MySQL service
 
-See [Access the MySQL Server from an External IP Address](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.6/tanzu-mysql-k8s/GUID-accessing.html#access-the-mysql-server-from-an-external-ip-address) to configure the MySQL instance for external access.
+There are several methods to connect to the MySQL server:
+- Change the MySQL Kubernetes service to use an external IP. See [Access the MySQL Server from an External IP Address](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.6/tanzu-mysql-k8s/GUID-accessing.html#access-the-mysql-server-from-an-external-ip-address). Once the restore is done, remember to remove external access.
+- [Use Port Forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) to access the MySQL pod from a local port.
+- Use `kubectl copy` to copy the backup onto a pod that has the `mysql` 8 client. This method also requires `kubectl exec` permissions to get a shell for a running container on that pod.
+- If the backup is too large to send over a local port through the Kubernetes API server or copy onto a pod, the backup could be stored on cloud storage and streamed to `mysql` client.
 
 ## <a id='restore'></a>  Load backup
 
-Connect to the MySQL instance externally and load the backup file for each database with the appropriate credentials 
+Connect to the MySQL instance and load the backup file for each database with the appropriate credentials
 ```
 mysql -h <HOSTNAME> -u <USERNAME> -P 3306 -p<PASSWORD> < <BACKUP_FILE>
 ```
