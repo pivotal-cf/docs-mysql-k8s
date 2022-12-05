@@ -118,16 +118,16 @@ Create the  MySQL instances. For details, refer to [Creating and Deleting MySQL 
     FLUSH PRIVILEGES;
     ```
     
-    For more information on creating a user for the associated database refer to [MySQL for Kubernetes](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.6/tanzu-mysql-k8s/GUID-connecting-apps.html#create-a-database-and-privileged-mysql-user-for-the-app). 
+    For more information on creating a user for the associated database refer to [Create a Database and Privileged MySQL User for the App](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.6/tanzu-mysql-k8s/GUID-connecting-apps.html#create-a-database-and-privileged-mysql-user-for-the-app). 
     
-4. Ensure the MySQL server can be accessed and connect with the newly created user to load the backup file
+4. Ensure the MySQL server can be accessed, and connect with the newly created user to load the backup file:
 
     <p class="note">
       <strong>Note:</strong> Make sure to use a mysql 8.0 client from your workstation when connecting to the MySQL service.
     </p>
     
     There are several methods to connect to the MySQL server:
-    - Change the MySQL Kubernetes service to use an external IP. See [Access the MySQL Server from an External IP Address](https://docs.vmware.com/en/    VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.6/tanzu-mysql-k8s/GUID-accessing.html#access-the-mysql-server-from-an-external-ip-address). Once the restore is done, remember to remove external access.
+    - Change the MySQL Kubernetes service to use an external IP. See [Access the MySQL Server from an External IP Address](https://docs.vmware.com/en/ VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.6/tanzu-mysql-k8s/GUID-accessing.html#access-the-mysql-server-from-an-external-ip-address). Once the restore is done, remember to remove external access.
     - [Use Port Forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) to access the MySQL pod from a local port.
     - Use `kubectl copy` to copy the backup onto a pod that has the `mysql` 8 client. This method also requires `kubectl exec` permissions to get a shell for a running container on that pod.
     - If the backup is too large to send over a local port through the Kubernetes API server or copy onto a pod, the backup could be stored on cloud storage and streamed  to `mysql` client.
