@@ -34,13 +34,24 @@ Before you deploy the Tanzu MySQL Operator, you need:
 
 - review the [Network Policies Configuration](network-policies.html) topic if you have any network plugins (for example [Network Plugin](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/)) in your Kubernetes cluster.
 
-* [Cert Manager](https://github.com/jetstack/cert-manager) installed on the Kubernetes cluster. Use the latest verion. 
+* [Cert Manager](https://github.com/jetstack/cert-manager) installed on the Kubernetes cluster.
     
     To verify the cert manager installation run:
 
     ``` 
-    kubectl get all --namespace=cert-manager
+    kubectl api-resources --api-group=cert-manager.io
     ``` 
+
+    You should see the following resources:
+    ```
+    NAME                  SHORTNAMES   APIVERSION           NAMESPACED   KIND
+    certificaterequests   cr,crs       cert-manager.io/v1   true         CertificateRequest
+    certificates          cert,certs   cert-manager.io/v1   true         Certificate
+    clusterissuers                     cert-manager.io/v1   false        ClusterIssuer
+    issuers                            cert-manager.io/v1   true         Issuer
+    ```
+
+    If you see nothing, then you need to install cert-manager by following one of their [installation options](https://cert-manager.io/docs/installation/).
     
     For TLS security scenario setup, refer to [Configuring TLS for MySQL Instances](configure-tls.html). 
 
