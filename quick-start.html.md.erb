@@ -1,0 +1,55 @@
+---
+title: Quick Start for Tanzu MySQL Operator
+---
+
+This topic provides steps to install the Tanzu MySQL Operator using a quick-start script.
+
+The script will deploy the Tanzu MySQL Operator from the Tanzu Network Registry, in the `tanzu-mysql-for-kubernetes-system` namespace.
+
+## <a id="prerequisites"></a> Prerequisites
+
+- A running Kubernetes cluster (check supported providers in [Platform Requirements](prerequisites.html)) - and the [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) command-line tool, configured and authenticated to communicate with your Kubernetes cluster.
+- The Helm v3 command-line tool installed (v3.8.0 and above). For more information, see [Installing Helm](https://helm.sh/docs/intro/install/) in the Helm documentation.
+- Username and password credentials to access the [Tanzu Network Registry](https://registry.tanzu.vmware.com/).
+
+## <a id="install_procedure"></a> Install the Operator
+
+1. Copy [the script](./quick-start-script.bash) on your local machine, and rename it, for example `operator-install-script.bash`.
+1. Make this file executable using:
+
+   ```
+   chmod +x operator-install-script.bash
+   ```
+1. Retrieve your Tanzu Network credentials that allow you to access the VMware Tanzu registry.
+1. Choose the version of the Tanzu Operator you wish to install, and run the script using:
+
+   ```
+   ./operator-install-script.bash <MYSQL_OPERATOR_VERSION> <TANZU_REGISTRY_USERNAME> <TANZU_REGISTRY_PASSWORD>
+   ```
+
+   For example, to deploy a 1.6.1 Tanzu MySQL Operator run:
+
+   ```
+   ./operator-install-script.bash 1.6.1 <your-tanzu-registry-username> <your-tanzu-registry-password>
+   ```
+1. To watch the operator deployment, run a command similar to:
+
+   ```
+   watch kubectl get all -n tanzu-mysql-for-kubernetes-system
+   ```
+
+After the Operator deployment, to create an instance refer to [Creating MySQL Instances](./create-delete-mysql.html).
+
+## <a id="uninstall_procedure"></a> Uninstall the Operator
+
+If you want to uninstall the operator, run the following commands:
+
+```
+helm uninstall tanzu-sql-with-mysql-operator -n tanzu-mysql-for-kubernetes-system
+```
+```
+kubectl get crds -o name | grep with.sql.tanzu.vmware.com | xargs kubectl delete
+```
+```
+kubectl delete namespace tanzu-mysql-for-kubernetes-system
+```
