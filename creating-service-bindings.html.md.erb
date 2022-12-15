@@ -33,32 +33,6 @@ Review [Service Resource Claims] for details on `ResourceClaim`,
 
 [Service Resource Claims]: https://docs.vmware.com/en/Services-Toolkit-for-VMware-Tanzu-Application-Platform/0.7/svc-tlk/GUID-resource_claims-api_docs.html#resourceclaim-2
 
-- The Services Toolkit controller manager requires permissions to access MySQL resources.
-
-  Create a `ClusterRole` with the Role-based access control (RBAC), and save it in a file like `resource-claims-mysql.yaml`:
-
-    ```
-    ---
-    apiVersion: rbac.authorization.k8s.io/v1
-    kind: ClusterRole
-    metadata:
-      name: resource-claims-mysql
-      labels:
-        servicebinding.io/controller: "true"
-    rules:
-    - apiGroups: ["with.sql.tanzu.vmware.com"]
-      resources: ["mysqls"]
-      verbs: ["get", "list", "watch"]
-    ```
-
-    and then run:
-
-    ```
-    kubectl apply -f resource-claims-mysql.yaml
-    ```
-
-    The Services Toolkit will now be able to claim MySQL instances.
-
 - To make the MySQL instances discoverable via the Services Toolkit, create a
   `ClusterInstanceClass` that refers to the MySQL API and save it in a file like
   `cluster-instance-class-mysql.yaml`:
