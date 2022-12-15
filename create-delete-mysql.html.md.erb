@@ -12,14 +12,13 @@ Before you can create or delete MySQL instances, you must have:
 [//]: # (This partial contains a standard set of prereqs. Also used in high-availability topic.)
 <%= partial '/prerequisites' %>
 
-* Make sure there is a storage class created that can provision persistent volumes
-
-  Check for existing storage classes by running:
+* Ensure that your storage class can provision persistent volumes. Check for existing storage classes by running:
+  
   ```
   kubectl get storageclass
   ```
 
-  If there are none, then you must create one accordingly for your underlying infrastructure. For more on storage classes, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/storage-classes/).
+  If you don't have one, create or request one accordingly, based on your underlying infrastructure. For details on storage classes, refer to [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/storage-classes/).
 
 ## <a id='download-templates'></a>  Download the Deployment Templates
 
