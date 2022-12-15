@@ -2,6 +2,7 @@
 * [Release Notes](./release-notes.html)
 * [Overview](./index.html)
 * [Architecture](./architecture.html)
+* [Quick Start](./quick-start.html)
 * [Installing the Operator](./install-operator.html)
 * [Upgrading the Operator](upgrade-operator.html)
 * [Creating and Deleting Instances](./create-delete-mysql.html)

@@ -12,6 +12,15 @@ Before you can create or delete MySQL instances, you must have:
 [//]: # (This partial contains a standard set of prereqs. Also used in high-availability topic.)
 <%= partial '/prerequisites' %>
 
+* Make sure there is a storage class created that can provision persistent volumes
+
+  Check for existing storage classes by running:
+  ```
+  kubectl get storageclass
+  ```
+
+  If there are none, then you must create one accordingly for your underlying infrastructure. For more on storage classes, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/storage-classes/).
+
 ## <a id='download-templates'></a>  Download the Deployment Templates
 
 Download the deployment templates from Tanzu Network, and use them to customize the Tanzu MySQL for Kubernetes resources that you will deploy.
@@ -92,7 +101,7 @@ To create a MySQL instance:
 
     ```
     kubectl create secret --namespace=DEVELOPMENT-NAMESPACE \
-    docker-registry tanzu-image-registry \
+        docker-registry tanzu-image-registry \
         --docker-server=REGISTRY-SERVER-URL \
         --docker-username=DOCKER-USERNAME \
         --docker-password=DOCKER-PASSWORD
@@ -106,10 +115,10 @@ To create a MySQL instance:
 
     ``` 
     kubectl create secret --namespace=my-namespace \
-    docker-registry tanzu-image-registry  \
-    --docker-server=https://registry.tanzu.vmware.com/ \
-    --docker-username=sample-username  \
-    --docker-password=sample-password
+        docker-registry tanzu-image-registry  \
+        --docker-server=https://registry.tanzu.vmware.com/ \
+        --docker-username=sample-username  \
+        --docker-password=sample-password
 
     secret/tanzu-image-registry created
     ``` 
@@ -120,7 +129,7 @@ To create a MySQL instance:
 4. Create a copy of the `mysql.yaml` file and give it a unique name. For example:
 
     ``` 
-    cp ~/Downloads/tanzu-mysql-deployment-templates-1.0.0/samples/mysql.yaml testdb.yaml
+    cp ~/Downloads/tanzu-mysql-deployment-templates-1.6.1/samples/mysql.yaml testdb.yaml
     ``` 
 
 5. Edit the file and customize the instance according to your requirements. 
