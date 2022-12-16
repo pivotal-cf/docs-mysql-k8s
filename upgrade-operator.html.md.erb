@@ -44,7 +44,7 @@ Refer to [Review the Operator Values](install-operator.html#create-overrides) fo
 then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or 
 with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
 
-    Customers upgrading from Operator 1.4.0, where the Helm chart value `defaultInstanceVersion` was removed, need to remove this key from the Helm overrides file, or use the command line option `--reset-values`.
+    Customers upgrading from Operator 1.3.0, where the Helm chart value `defaultInstanceVersion` was removed, need to remove this key from the Helm overrides file, or use the command line option `--reset-values`.
 
 1. Target the namespace where you installed the Helm release:
 

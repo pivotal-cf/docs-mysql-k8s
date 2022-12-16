@@ -42,7 +42,7 @@ Before you deploy the Tanzu MySQL Operator, you need:
     kubectl api-resources --api-group=cert-manager.io
     ``` 
 
-    You should see the following resources:
+    You should see an output similar to:
     ```
     NAME                  SHORTNAMES   APIVERSION           NAMESPACED   KIND
     certificaterequests   cr,crs       cert-manager.io/v1   true         CertificateRequest
@@ -51,9 +51,9 @@ Before you deploy the Tanzu MySQL Operator, you need:
     issuers                            cert-manager.io/v1   true         Issuer
     ```
 
-    If you see nothing, then you need to install cert-manager by following one of their [installation options](https://cert-manager.io/docs/installation/).
+    To install cert-manager, if it is not already installed, refer to [installation options](https://cert-manager.io/docs/installation/) in the cert-manager documentation.
     
-    For TLS security scenario setup, refer to [Configuring TLS for MySQL Instances](configure-tls.html). 
+    To setup TLS security, refer to [Configuring TLS for MySQL Instances](configure-tls.html). 
 
 ### <a id="access"></a> Access the Resources
 
