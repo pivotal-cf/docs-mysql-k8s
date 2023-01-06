@@ -64,14 +64,16 @@ Records: 0  Duplicates: 0  Warnings: 0
 
 Without further intervention, the operator should finish updating the instance with HA.
 
-## <a id=""></a>Pod not Ready because MySQL server is not online in the HA topology
+## <a id=""></a>Pod READY status is 2/3 in a HA topology 
 
 ### Symptoms
 
-When you list the pods, you may see `2/3` Ready containers for a data pod.
+When you list the pods, a pod's containers might not all be READY. For example, you may see `2/3` containers instead of `3/3` for a data pod:
 
 ```
 $ kubectl get pods
+```
+```
 NAME                   READY   STATUS    RESTARTS       AGE
 mysql-sample-0         2/3     Running   0              2m13s
 mysql-sample-1         3/3     Running   1 (100s ago)   2m49s
@@ -80,9 +82,12 @@ mysql-sample-proxy-0   1/1     Running   0              2m48s
 mysql-sample-proxy-1   1/1     Running   0              68s
 ```
 
-When you describe the pod, there may be events describing the Readiness probe that is failing.
+When you describe the pod, under Events, the Message might include the cause, for example a failing Readiness probe:
+
 ```
 $ kubectl describe pod mysql-sample-0
+```
+```
 ...
 Events:
   Type     Reason     Age                From               Message
@@ -91,27 +96,30 @@ Events:
   Warning  Unhealthy  13s (x3 over 20s)  kubelet            Readiness probe failed: HTTP probe failed with statuscode: 500
 ```
 
-When you check the logs of the `mysql-sidecar` container, you may see an error message describing the cause.
+Check for any error causes in the logs of the pod's `mysql-sidecar` container: 
 
 ```
 $ kubectl logs pod mysql-sample-0 -c mysql-sidecar
+```
+```
 ...
 2022-12-22T18:56:16.371Z	DEBUG	controller-runtime.healthz	healthz check failed	{"checker": "cluster-member-online", "error": "not online"}
 ```
 
-Let's check the view of the HA topology from the affected pod.
+In the affected pod, check the HA topology view:
 
 ```
 $ kubectl exec pod/mysql-sample-0 -c mysql-sidecar -- \
-    mysqlsh --credential-store-helper=tanzumysql innodb-cluster-admin@localhost --sql --table \
-      --execute="select MEMBER_HOST, MEMBER_STATE, MEMBER_ROLE from performance_schema.replication_group_members;"
+     mysqlsh --credential-store-helper=tanzumysql \
+     innodb-cluster-admin@localhost --sql --table \
+     --execute="select MEMBER_HOST, MEMBER_STATE, MEMBER_ROLE from performance_schema.replication_group_members;"
 ```
 
-See more on [Group Replication Server States](https://dev.mysql.com/doc/refman/8.0/en/group-replication-server-states.html).
+If the output table indicates that a `MEMBER_STATE` is recovering or unreachable, refer to the appropriate section below.
 
-If you see a member is recovering or unreachable, see the appropriate section below.
+For more details on server states refer to [Group Replication Server States](https://dev.mysql.com/doc/refman/8.0/en/group-replication-server-states.html).
 
-### Diagnosis: MySQL server is recovering
+### Diagnosis: MEMBER_STATE recovering
 
 ```
 +---------------------------------------------------------------+------------------+-------------+
@@ -123,11 +131,7 @@ If you see a member is recovering or unreachable, see the appropriate section be
 +---------------------------------------------------------------+------------------+-------------+
 ```
 
-This table shows that the MySQL server on pod 0 is still an active member and is currently recovering.
-
-Let's check that the MySQL server on pod 0 is actually catching up on missed transactions.
-
-<p class='note'>Note: Set INSTANCE_NAME to the name of the MySQL instance in the command below</p>
+This table shows that the MySQL server on pod 0 is still an active member and is currently recovering. Check that it is actually catching up on missed transactions. In the example below, set `INSTANCE_NAME` to your MySQL instance name.
 
 ```
 $ INSTANCE_NAME=mysql-sample
@@ -154,9 +158,9 @@ $ for i in 0 1 2; do kubectl exec pod/$INSTANCE_NAME-$i -c mysql-sidecar -- \
 +--------------------------------------------------------------------------------------+
 ```
 
-We see that MySQL server on pod 0 does not yet contain all the transactions executed on the primary (`509125` is about 1000 transactions behind `510231`). Assuming there is no replication lag or other issue affecting replication recovery, the MySQL server will eventually fully recover and the readiness probe will stop reporting errors.
+Note that the MySQL server on pod 0 does not yet contain all the transactions executed on the primary (`509125` is about 1000 transactions behind `510231`). Assuming there is no replication lag or other issue affecting replication recovery, the MySQL server will eventually fully recover and the Readiness probe will stop reporting errors.
 
-### Diagnosis: MySQL server is unreachable
+### Diagnosis: MEMBER_STATE unreachable
 
 ```
 +---------------------------------------------------------------+------------------+-------------+
@@ -171,6 +175,7 @@ We see that MySQL server on pod 0 does not yet contain all the transactions exec
 This table shows that the MySQL server on pod 0 is unreachable.
 
 The MySQL servers are configured to use the following settings for recovery:
+
 ```
 group_replication_unreachable_majority_timeout = 30
 group_replication_autorejoin_tries             = 1
@@ -178,10 +183,10 @@ group_replication_exit_state_action            = ABORT_SERVER
 group_replication_member_expel_timeout         = 5
 ```
 
-See more on [Failure Detection and Network Partitioning](https://dev.mysql.com/doc/refman/8.0/en/group-replication-responses-failure.html)
+For more details refer to [Failure Detection and Network Partitioning](https://dev.mysql.com/doc/refman/8.0/en/group-replication-responses-failure.html)
 
-We set the unreachable majority timeout to 30 seconds so that a MySQL server with no quorum will exit the group after 30 seconds
-and set itself to be read-only and report `MEMBER_STATE` as `ERROR` in the `performance_schema.replication_group_members` table.
+The VMware MySQL for Kubernetes sets the unreachable majority timeout to 30 seconds so that a MySQL server with no quorum will exit the group after 30 seconds.
+The server will set itself to be read-only, and report `MEMBER_STATE` as `ERROR` in the `performance_schema.replication_group_members` table.
 It will stay in this state independent of the configured exit state action until the number of auto rejoin attempts has been exhausted, at which point
 the server will evaluate the exit state action. Since the exit state action is set to `ABORT_SERVER`,
 the `mysql` container will be terminated and recreated.
@@ -226,7 +231,7 @@ $ kubectl exec pod/mysql-sample-2 -c mysql-sidecar -- \
 +---------------------------------------------------------------+--------------+-------------+
 ```
 
-Here we see pod 0 has rejoined and is currently recovering. Observe the table to wait for recovery to finish. The readiness probe will stop reporting errors once the member is online. 
+Note that the pod 0 has rejoined and is currently recovering. Observe the table to wait for recovery to finish. The Readiness probe will stop reporting errors once the member is online. 
 
 ### Remedy
 
@@ -262,4 +267,4 @@ Fetch the MySQL logs on the pod that is affected. Errors in the logs can help tr
 $ kubectl logs pod/mysql-sample-0
 ```
 
-If recovery is urgent, delete the pod so that the container can restart and start the MySQL server along with group replication.
+If recovery is urgent, delete the pod so that the container can restart, and start the MySQL server along with group replication.
