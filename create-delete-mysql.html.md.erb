@@ -56,7 +56,9 @@ When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs
 
 ### <a id="version"></a> Selecting the Tanzu MySQL Version
 
-The Tanzu MySQL Operator by default deploys the latest supported MySQL database version. The Tanzu Operator supports four versions: mysql-8.0.26, mysql-8.0.27, mysql-8.0.28, and mysql-8.0.29. To view your Operator's available Tanzu MySQL versions, run the command:
+The Tanzu MySQL Operator by default deploys the latest supported MySQL database version. The Tanzu Operator supports
+four versions: mysql-8.0.27, mysql-8.0.28, mysql-8.0.29, and mysql-8.0.30. To view your Operator's available Tanzu MySQL
+versions, run the command:
 
 ```
 kubectl get mysqlversions
@@ -66,11 +68,11 @@ The command displays:
 
 ```
 NAME           DB VERSION
-mysql-8.0.26   8.0.26
 mysql-8.0.27   8.0.27
 mysql-8.0.28   8.0.28
 mysql-8.0.29   8.0.29
-mysql-latest   8.0.29
+mysql-8.0.30   8.0.30
+mysql-latest   8.0.30
 ```
 
 where:
@@ -142,7 +144,7 @@ To create a MySQL instance:
     
     #### Specify the MySQL Version
       mysqlVersion:
-        name: mysql-8.0.26
+        name: mysql-8.0.30
     ...
     
     ```
