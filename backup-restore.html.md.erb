@@ -1,5 +1,5 @@
 ---
-title: Backing Up and Restoring MySQL Instances
+title: Backing Up and Restoring VMware SQL with MySQL for Kubernetes Instances
 owner: MySQL
 ---
 
@@ -337,10 +337,10 @@ To see a list of existing MySQLBackup resources:
 
 ## <a id="delete-backups"></a>  Delete Old Backup Artifacts
 
-Tanzu SQL for Kubernetes does not natively support retention policies for backup artifacts.
+VMware SQL with MySQL for Kubernetes does not natively support retention policies for backup artifacts.
 You can configure retention policies on your external blobstore.
 If you do, you must also delete the associated MySQLBackup resources in the Kubernetes cluster,
-because those are not automatically deleted by Tanzu SQL for Kubernetes.
+because those are not automatically deleted by VMware SQL with MySQL for Kubernetes.
 
 To delete a backup:
 

@@ -1,5 +1,5 @@
 ---
-title: Creating and Deleting MySQL Instances
+title: Creating and Deleting VMware SQL with MySQL for Kubernetes Instances
 owner: MySQL
 ---
 
@@ -22,16 +22,16 @@ Before you can create or delete MySQL instances, you must have:
 
 ## <a id='download-templates'></a>  Download the Deployment Templates
 
-Download the deployment templates from Tanzu Network, and use them to customize the Tanzu MySQL for Kubernetes resources that you will deploy.
+Download the deployment templates from Tanzu Network, and use them to customize the VMware SQL with MySQL for Kubernetes resources that you will deploy.
 
 To access the templates:
 
-1. Log in to [<%= vars.product_network %>](https://network.pivotal.io) and visit the [Tanzu MySQL](https://network.pivotal.io/products/tanzu-mysql-for-kubernetes/) product page.
+1. Log in to [<%= vars.product_network %>](https://network.pivotal.io) and visit the [VMware MySQL Operator](https://network.pivotal.io/products/tanzu-mysql-for-kubernetes/) product page.
 
-1. Select **VMware Tanzu SQL with MySQL for Kubernetes v1.6.2** and download the .tgz archive file to your local machine.<br/>
+1. Select **VMware SQL with MySQL for Kubernetes v1.6.2** and download the .tgz archive file to your local machine.<br/>
    
    <p class="note">
-       <strong>Note:</strong> You do not need to download the <b>Artifact References</b> from the Tanzu MySQL for Kubernetes product page.
+       <strong>Note:</strong> You do not need to download the <b>Artifact References</b> from the VMware SQL with MySQL for Kubernetes product page.
     </p>
 
 1. Expand the downloaded .tgz file. Open the directory `tanzu-mysql-for-kubernetes-1.6.2`. The templates are located in the `samples` subdirectory.
@@ -54,11 +54,11 @@ Use these templates as a starting point for the instance creation, and backup/re
 
 When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form `mysql-data-INSTANCE-NAME-N`, for example `mysql-data-mysql-sample-0`.
 
-### <a id="version"></a> Selecting the Tanzu MySQL Version
+### <a id="version"></a> Selecting the VMware MySQL Operator Version
 
-The Tanzu MySQL Operator by default deploys the latest supported MySQL database version. The Tanzu Operator supports
-four versions: mysql-8.0.27, mysql-8.0.28, mysql-8.0.29, and mysql-8.0.31. To view your Operator's available Tanzu MySQL
-versions, run the command:
+The VMware MySQL Operator by default deploys the latest supported MySQL database version. The VMware MySQL Operator supports
+four versions: mysql-8.0.27, mysql-8.0.28, mysql-8.0.29, and mysql-8.0.31. To view your Operator's available VMware MySQL
+Operator versions, run the command:
 
 ```
 kubectl get mysqlversions
@@ -76,8 +76,8 @@ mysql-latest   8.0.31
 ```
 
 where:
-- `NAME` denotes the Tanzu MySQL version. The special Tanzu MySQL version named `mysql-latest` runs the latest Operator-supported MySQL version (for example, in 1.6.2 that is 8.0.29). It also configures the instance to automatically upgrade its MySQL version whenever any future Operator upgrades add support for newer MySQL versions. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
-- `DB VERSION` displays the Percona MySQL version an instance runs when that Tanzu MySQL version is named in the instance's spec. 
+- `NAME` denotes the VMware MySQL Operator version. The special VMware MySQL Operator version named `mysql-latest` runs the latest Operator-supported MySQL version (for example, in 1.6.2 that is 8.0.29). It also configures the instance to automatically upgrade its MySQL version whenever any future Operator upgrades add support for newer MySQL versions. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
+- `DB VERSION` displays the Percona MySQL version an instance runs when that VMware MySQL Operator version is named in the instance's spec.
 
 Note which value in the `DB VERSION` column you wish to deploy with your instance, if different than the default. 
 
@@ -135,7 +135,7 @@ To create a MySQL instance:
 
 5. Edit the file and customize the instance according to your requirements. 
 
-    To customize the Tanzu MySQL instance version, use one of the values under the column `NAME` displayed at the output of the command `kubectl get mysqlversions`, and specify the `mysql.spec.mysqlVersion.name` field in the MySQL instance manifest:
+    To customize the VMware MySQL Operator instance version, use one of the values under the column `NAME` displayed at the output of the command `kubectl get mysqlversions`, and specify the `mysql.spec.mysqlVersion.name` field in the MySQL instance manifest:
     ```
     ...
     metadata:
@@ -151,7 +151,7 @@ To create a MySQL instance:
 
     **IMPORTANT**: Specify `mysql-latest` as your instances version if you can tolerate occasional unscheduled database outages triggered by future Operator ugprades. Upgraded Operators immediately upgrade all `mysql-latest` instances to run any newer "latest" supported MySQL version, and the upgrade is disruptive. To avoid future Operator-induced unscheduled outages, select the highest-numbered `NAME` value, e.g. `mysql-8.0.28`.
     
-    You may also customize your Tanzu MySQL instance resources, instance storage class, storage size, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For details on the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
+    You may also customize your VMware MySQL Operator instance resources, instance storage class, storage size, high availability, node affinity and tolerations, PVC retention policy, service type (ClusterIP or LoadBalancer), and TLS secret. For details on the properties that you can set for the MySQL resource, see [Property Reference for the MySQL Resource](property-reference-mysql.html).
 
 6. Deploy a MySQL instance to Kubernetes by running:
 
@@ -179,13 +179,13 @@ To create a MySQL instance:
     kubectl -n my-namespace get mysql mysql-sample
     ```
     ```
-    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION
+    NAME           READY   STATUS    AGE    VMWARE VERSION   DB VERSION   UPDATE STATUS       USER ACTION
     mysql-sample   true    Running   162m   1.6.2           8.0.29       NoUpdateRequired
     ``` 
-8. Review [Configuring TLS for MySQL Instances](configure-tls.html) if you need to configure a custom `ClusterIssuer`. By default, the MySQL instances created by Tanzu Operator 1.2.0 (and later) use TLS certificates provided by the cert-manager `ClusterIssuer`, using a self-signed certificate authority (CA). 
+8. Review [Configuring TLS for MySQL Instances](configure-tls.html) if you need to configure a custom `ClusterIssuer`. By default, the MySQL instances created by VMware MySQL Operator 1.2.0 (and later) use TLS certificates provided by the cert-manager `ClusterIssuer`, using a self-signed certificate authority (CA).
 
     
-## <a id='delete-instance'></a> Delete a Tanzu MySQL Instance
+## <a id='delete-instance'></a> Delete a VMware MySQL Operator Instance
 
 This section provides some conceptual information about deleting an instance, and the procedure for how to delete an instance.
 

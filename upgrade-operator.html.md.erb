@@ -1,5 +1,5 @@
 ---
-title: Upgrading the Tanzu SQL for Kubernetes Operator
+title: Upgrading the VMware SQL with MySQL for Kubernetes Operator
 owner: MySQL
 ---
 
@@ -18,11 +18,11 @@ Ensure you have access to [Tanzu Network](https://network.tanzu.vmware.com) and 
 
 ### <a id="access"></a> Access the Resources
 
-You can access and install the new Tanzu MySQL Operator using any of the two different methods used during the initial installation.
+You can access and install the new VMware MySQL Operator using any of the two different methods used during the initial installation.
 
-- Use [Setup the Tanzu MySQL Operator via Tanzu Network Registry](install-operator.html#install-via-tanzu) for a faster installation process, and if your server hosts have access to the internet.
+- Use [Setup the VMware MySQL Operator via Tanzu Network Registry](install-operator.html#install-via-tanzu) for a faster installation process, and if your server hosts have access to the internet.
 
-- Use [Setup the Tanzu MySQL Operator via Downloadable Archive File](install-operator.html#install-via-tar) if your server hosts do not have access to the internet, or if you want to install from a private registry.
+- Use [Setup the VMware MySQL Operator via Downloadable Archive File](install-operator.html#install-via-tar) if your server hosts do not have access to the internet, or if you want to install from a private registry.
 
 
 ### <a id="upgrading_operator"></a>Upgrade the Operator
@@ -31,7 +31,7 @@ After downloading the Helm chart, upgrade the operator following these steps:
 
 1. Set the environment variable `CHART_DIR` to the location of the downloaded helm chart. 
 
-1. Update the existing Tanzu MySQL Custom Resource Definitions (CRDs) with the new values:
+1. Update the existing VMware MySQL Operator Custom Resource Definitions (CRDs) with the new values:
 
     ```
     kubectl apply -f ${CHART_DIR}/crds/
@@ -60,7 +60,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     ```
     ```
     NAME                NAMESPACE                           REVISION	UPDATED                             	STATUS  	CHART                              	APP VERSION
-    my-mysql-operator   tanzu-mysql-for-kubernetes-system	4       	2022-07-13 07:19:04.877537 -0700 PDT	deployed	tanzu-sql-with-mysql-operator-1.5.0	1.5.0
+    my-mysql-operator   vmware-mysql-for-kubernetes-system	4       	2022-07-13 07:19:04.877537 -0700 PDT	deployed	tanzu-sql-with-mysql-operator-1.5.0	1.5.0
     ```
     
 1. Upgrade the Operator using:
@@ -79,7 +79,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     Release "my-mysql-operator" has been upgraded. Happy Helming!
     NAME: my-mysql-operator 
     LAST DEPLOYED: Mon Oct 3 15:31:43 2022
-    NAMESPACE: tanzu-mysql-for-kubernetes-system
+    NAMESPACE: vmware-mysql-for-kubernetes-system
     STATUS: deployed
     REVISION: 5
     TEST SUITE: None
@@ -102,7 +102,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
    where:
    - `MY-REGISTRY` is your own image registry
    - `TARGET-REPOSITORY` is your target repository
-   - `TDS-VERSION` is the tag for the image bundle (e.g `1.4.0`). Each Tanzu MySQL release corresponds to a TDS package version. For instance, MySQL Operator version 1.6.2 is part of TDS version 1.6.0. Insert the right version for your Tanzu MySQL Operator release.
+   - `TDS-VERSION` is the tag for the image bundle (e.g `1.4.0`). Each VMware MySQL Operator release corresponds to a TDS package version. For instance, MySQL Operator version 1.6.2 is part of TDS version 1.6.0. Insert the right version for your VMware MySQL Operator release.
 
 1. Find the package repository name of the VMware Tanzu Data Services package repository:
     ```

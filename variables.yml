@@ -1,18 +1,21 @@
 ---
 template_variables:
-  book_title: VMware Tanzu Documentation
-  book_title_short: VMware Tanzu Docs
-  title: <span class="title-deemph">VMware Tanzu</span> Documentation
+  book_title: VMware SQL with MySQL for Kubernetes Documentation
+  book_title_short: VMware SQL with MySQL Docs
+  title: <span class="title-deemph">VMware SQL with MySQL for Kubernetes</span> Documentation
   title_image: images/icon-p-green.jpg
-  hero_text: "Detailed documentation to help you install, understand, and succeed with VMware Tanzu's enterprise-grade software."
+  hero_text: "Detailed documentation to help you install, understand, and succeed with VMware SQL's enterprise-grade software."
   platform_code: PCF
   product_name_lc: pcf
 
-  # VMware Tanzu Variables
+  # VMware MySQL Operator Variables
 
-  product_full: VMware Tanzu™ SQL with MySQL for Kubernetes
-  product_short: Tanzu MySQL for Kubernetes
+  product_full: VMware SQL with MySQL for Kubernetes
+  product_short: VMware MySQL Operator
 
+  product_network: VMware Tanzu Network
+
+  # Other variables
   app_runtime_full: VMware Tanzu Application Service for VMs
   app_runtime_abbr: TAS for VMs
 
@@ -26,9 +29,6 @@ template_variables:
 
   ops_manager: Ops Manager
 
-  product_network: VMware Tanzu Network
-
-  # Other variables
   tile_name: VMware Tanzu SQL &#91;MySQL for VMs&#93;
   product_url: https://network.pivotal.io/products/pivotal-cf
   product_link: <div class="header-item"><a href="https://network.pivotal.io/products/VMware Tanzu-cf">Back to Product Page</a> </div>

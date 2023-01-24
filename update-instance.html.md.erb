@@ -1,12 +1,12 @@
 ---
-title: Updating MySQL Instances
+title: Updating VMware SQL with MySQL for Kubernetes Instances
 owner: MySQL
 ---
 
 <strong><%= modified_date %></strong>
 
 This topic describes how to scale, or change configurations on a
-<%= vars.product_full %> instance. It also covers how to update a Tanzu MySQL instance after an Operator upgrade. 
+<%= vars.product_full %> instance. It also covers how to update a MySQL instance after an Operator upgrade.
 
 ## <a id='prereq'></a> Prerequisites
 
@@ -20,7 +20,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
 ## <a id='update-instance'></a> Updating an Instance 
 
-After an Operator upgrade, instances created under an older Tanzu MySQL Operator require reconciliation. Reconciliation allows the older instances to take advantage of the new features of the upgraded Operator. 
+After an Operator upgrade, instances created under an older VMware MySQL Operator require reconciliation. Reconciliation allows the older instances to take advantage of the new features of the upgraded Operator.
 
 
  1. Review the Operator's supported MySQL versions by running:
@@ -50,10 +50,10 @@ After an Operator upgrade, instances created under an older Tanzu MySQL Operator
     The output is similar to:
     
     ```
-    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS      USER ACTION
+    NAME           READY   STATUS    AGE    VMWARE VERSION   DB VERSION   UPDATE STATUS      USER ACTION
     mysql-sample   true    Running   6m5s   1.6.2           8.0.29       NoUpdateRequired
  
-    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION
+    NAME           READY   STATUS    AGE    VMWARE VERSION   DB VERSION   UPDATE STATUS       USER ACTION
          
     mysql-sample   true    Running   6m5s   1.6.2           8.0.29       NoUpdateRequired
     DBUPDONC-9     true    Running   20d    1.5.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”

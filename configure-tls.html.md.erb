@@ -1,17 +1,17 @@
 ---
-title: Configuring TLS for MySQL Instances
+title: Configuring TLS for VMware SQL with MySQL for Kubernetes Instances
 owner: MySQL
 ---
 
-This topic describes how to configure TLS for a Tanzu MySQL instance.
+This topic describes how to configure TLS for a VMware SQL with MySQL for Kubernetes instance.
 
 ## <a id='overview'></a> Overview
 
 <%= vars.product_short %> is configured to require an encrypted connection for client communication. 
 
-The Tanzu MySQL TLS configuration provides various options:
+The VMware MySQL Operator TLS configuration provides various options:
 
-- By default, the Tanzu MySQL Operator configures a self-signed `ClusterIssuer` for issuing MySQL instance TLS certificates. See [Using the Default provided TLS](#using-default-tls). 
+- By default, the VMware MySQL Operator configures a self-signed `ClusterIssuer` for issuing MySQL instance TLS certificates. See [Using the Default provided TLS](#using-default-tls).
 
 - Administrators can also customize the Certificate Authority (CA) to comply with an organization's CA. See [Configuring a Custom TLS Issuer](#configuring-custom-tls-issuer).
 
@@ -29,7 +29,7 @@ By default, the Operator will create a `ClusterIssuer` named `tanzu-sql-with-mys
 To verify that your MySQL Operator is using the default settings, with no `ClusterIssuer` customization, use:
 
 ``` 
-helm --namespace=tanzu-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
+helm --namespace=vmware-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
 ```
 The output should be similar to:
 
@@ -67,17 +67,17 @@ To override the default `ClusterIssuer` follow the steps in [Configuring a Custo
 
 ## <a id="configuring-custom-tls-issuer"></a> Configuring a Custom TLS Issuer
 
-This procedure describes how to configure a custom Certificate Authority (CA) and custom certificates using cert-manager. When you complete these steps, your Tanzu MySQL Operator will use the custom CA for any MySQL instance certificates. 
+This procedure describes how to configure a custom Certificate Authority (CA) and custom certificates using cert-manager. When you complete these steps, your VMware MySQL Operator will use the custom CA for any MySQL instance certificates.
 
 ### Prerequisites
 
-Before you configure TLS using a custom CA authority, you must have access permissions to install or upgrade the Tanzu MySQL Operator using Helm. 
+Before you configure TLS using a custom CA authority, you must have access permissions to install or upgrade the VMware MySQL Operator using Helm.
 
 **IMPORTANT**: Helm 3.7.0 is currently not supported. Use Helm 3.7.1 and above.
 
 ### Procedure
 
-1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#tanzu-network-prerequisites) prerequisites:
+1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#vmware-network-prerequisites) prerequisites:
 
     ```
     kubectl get all --namespace=cert-manager
@@ -133,13 +133,13 @@ Before you configure TLS using a custom CA authority, you must have access permi
 
     For certificate creation troubleshooting see the [cert-manager](https://cert-manager.io/docs/faq/troubleshooting/) documentation.
 
-5. For new Tanzu MySQL customers, create the MySQL Operator and set it to use the custom TLS issuer by using a command similar to:
+5. For new VMware MySQL Operator customers, create the MySQL Operator and set it to use the custom TLS issuer by using a command similar to:
 
     ```
     helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
     ```
 
-    For existing Tanzu MySQL customers, update the Operator using a command similar to:
+    For existing VMware MySQL Operator customers, update the Operator using a command similar to:
 
     ```
     helm update tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
@@ -151,7 +151,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 6. To verify the custom `ClusterIssuer` setup, use:
 
     ```
-    helm --namespace=tanzu-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
+    helm --namespace=vmware-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
     ```
     ```
     USER-SUPPLIED VALUES:
@@ -242,7 +242,7 @@ To create the TLS Secret through the kubectl instead,
 see [Create the TLS Secret Manually](#create-tls-secret) above.
 
 
-1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#tanzu-network-prerequisites) prerequisites:
+1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#vmware-network-prerequisites) prerequisites:
 
     ```
     kubectl get all --namespace=cert-manager
