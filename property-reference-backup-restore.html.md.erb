@@ -44,6 +44,24 @@ The table below explains the properties that can be set for the MySQLBackupLocat
   <td><code>backuplocation-sample</code></td>
   <td>Yes</td>
 </tr>
+</table>
+
+### S3 configuration
+<table style="width:1000px" class="nice">
+<col width="10%">
+<col width="10%">
+<col width="10%">
+<col width="50%">
+<col width="15%">
+<col width="5%">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Example</th>
+  <th>Req?</th>
+</tr>
 <tr>
   <td>spec.storage.s3.bucket</td>
   <td>String</td>
@@ -52,7 +70,7 @@ The table below explains the properties that can be set for the MySQLBackupLocat
       The name of an existing S3-compatible bucket for this backup location.
   </td>
   <td><code>s3-bucket-sample</code></td>
-  <td>Yes</tr>
+  <td>Yes</td>
 </tr>
 <tr>
   <td>spec.storage.s3.bucketPath</td>
@@ -60,7 +78,7 @@ The table below explains the properties that can be set for the MySQLBackupLocat
   <td><em>n/a</em></td>
   <td>The name of the path where backup artifacts will be uploaded.
       If a folder in the path does not already exist, it is created automatically.
-      The trailing slash in the path is required.</td>
+  </td>
   <td><code>s3-sample-path/sample-subpath/</code></td>
   <td>No</td>
 </tr>
@@ -89,7 +107,7 @@ The table below explains the properties that can be set for the MySQLBackupLocat
   <td></td>
   <td>No</td>
 </tr>
-<tr>
+<td>
   <td>spec.storage.s3.forcePathStyle</td>
   <td>boolean</td><td>false</td>
   <td><code>true</code> forces the use of path-style S3 URLs for compatibility.
@@ -99,14 +117,68 @@ The table below explains the properties that can be set for the MySQLBackupLocat
       AWS blog site</a> .
   </td>
   <td><code>false</code></td>
-  <td>No</tr>
-</tr>
+  <td>No</td>
+<tr>
   <td>spec.storage.s3.secret.name</td>
   <td>String</td>
   <td><em>n/a</em></td>
   <td>The name of the Kubernetes secret that contains the credentials for connecting to S3.</td>
   <td><code>backuplocation-sample-creds</code></td>
-  <td>Yes</tr>
+  <td>Yes</td>
+</tr>
+</table>
+
+### Azure configuration
+<table style="width:1000px" class="nice">
+<col width="10%">
+<col width="10%">
+<col width="10%">
+<col width="50%">
+<col width="15%">
+<col width="5%">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Example</th>
+  <th>Req?</th>
+</tr>
+<tr>
+  <td>spec.storage.azure.container</td>
+  <td>String</td>
+  <td><em>n/a</em></td>
+  <td>
+      The name of an existing Azure storage container in Azure Blob Storage
+  </td>
+  <td><code>azure-backups-sample</code></td>
+  <td>Yes</td>
+</tr>
+<tr>
+  <td>spec.storage.azure.repoPath</td>
+  <td>String</td>
+  <td><em>n/a</em></td>
+  <td>The name of the path where backup artifacts will be uploaded.
+      If a folder in the path does not already exist, it is created automatically.
+  </td>
+  <td><code>buckets-sample-path/sample-subpath/</code></td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.storage.azure.domain</td>
+  <td>String</td>
+  <td>blob.core.windows.net</td>
+  <td>The storage endpoint for the Azure cloud environment. Leave blank for public cloud.</td>
+  <td><code>blob.core.usgovcloudapi.net</code></td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.storage.azure.secret.name</td>
+  <td>String</td>
+  <td><em>n/a</em></td>
+  <td>The name of the Kubernetes secret that contains the credentials for connecting to Azure.</td>
+  <td><code>backuplocation-sample-creds</code></td>
+  <td>Yes</td>
 </tr>
 </table>
 
@@ -135,10 +207,28 @@ The table below explains the properties that can be set in the `secret` for the 
   <td>metadata.name</td>
   <td>String</td>
   <td><em>n/a</em></td>
-  <td>The name of the Secret. Must match <code>spec.storage.s3.secret.name</code> in a BackupLocation.
+  <td>The name of the Secret. Must match <code>spec.storage.s3.secret.name</code> or <code>spec.storage.azure.secret.name</code> in a BackupLocation.
       Must be unique within a namespace.</td>
   <td><code>backuplocation-sample-creds</code></td>
   <td>Yes</td>
+</tr>
+</table>
+
+### S3 credentials
+<table style="width:1000px" class="nice">
+<col width="10%">
+<col width="15%">
+<col width="10%">
+<col width="40%">
+<col width="15%">
+<col width="5%">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Example</th>
+  <th>Req?</th>
 </tr>
 <tr>
   <td>stringData.accessKeyId</td>
@@ -155,6 +245,50 @@ The table below explains the properties that can be set in the `secret` for the 
   <td>The Secret Access Key for an AWS IAM user that has permissions to read/write from the S3 bucket</td>
   <td><code>wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY</code></td>
   <td>Yes</td>
+</tr>
+</table>
+
+### Azure credentials
+Please provide either a shared access key or a shared access signature token to authorize access to the container in Azure Blob Storage.
+
+<table style="width:1000px" class="nice">
+<col width="10%">
+<col width="15%">
+<col width="10%">
+<col width="40%">
+<col width="15%">
+<col width="5%">
+<tr>
+  <th>Property</th>
+  <th>Type</th>
+  <th>Default</th>
+  <th>Description</th>
+  <th>Example</th>
+  <th>Req?</th>
+</tr>
+<tr>
+  <td>stringData.accountName</td>
+  <td> String</td>
+  <td> <em>n/a</em></td>
+  <td> The storage account name in the Azure cloud environment.</td>
+  <td> <code>my-storage-account</code></td>
+  <td> Yes</td>
+</tr>
+<tr>
+  <td>stringData.accountKey</td>
+  <td>String</td>
+  <td><em>n/a</em></td>
+  <td>The storage access key to read/write from the container in the storage account</td>
+  <td><code>my-storage-access-key</code></td>
+  <td>Yes, or set <code>sasToken</code> instead</td>
+</tr>
+<tr>
+  <td>stringData.sasToken</td>
+  <td>String</td>
+  <td><em>n/a</em></td>
+  <td>The shared access signature token with the appropriate permissions on the container in the storage account</td>
+  <td><code>storage-access-token-value</code></td>
+  <td>Yes, or set <code>accountKey</code> instead</td>
 </tr>
 </table>
 
