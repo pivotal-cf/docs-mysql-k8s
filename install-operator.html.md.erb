@@ -150,7 +150,7 @@ You can access and install <%=vars.product_name %> using two different methods:
 	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator   	       1.6.2     8b46a4d26aa0   2 weeks ago    76.9MB
 	```
 
-1.  Push the VMware MySQL Operator Docker images to the container registry of your choice. Set each image's project and image repo name, tag the images, and then push them using the Docker command `docker push`.
+1.  Push the VMware MySQL Docker images to the container registry of your choice. Set each image's project and image repo name, tag the images, and then push them using the Docker command `docker push`.
 
     This example tags and pushes the images to the Google Cloud Registry, using the default (core) project name for the example Google Cloud account.
 
@@ -195,7 +195,7 @@ You can access and install <%=vars.product_name %> using two different methods:
 
 1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with a private image registry, or the Tanzu Registry, so it can pull images. 
 
-    <p class='note important'><strong>IMPORTANT:</strong> Re-run the commands below to create identical or equivalent secrets in every namespace in which users will create VMware MySQL Operator instances</strong>, and replace the Operator namespace <code>vmware-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
+    <p class='note important'><strong>IMPORTANT:</strong> Re-run the commands below to create identical or equivalent secrets in every namespace in which users will create VMware MySQL instances</strong>, and replace the Operator namespace <code>vmware-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
     If these secrets are not created in the instance namespace, the users will receive "ImagePullBackOff" errors when creating instances, as their MySQL pods fail to pull instance images from the image registry.</p>
     
     These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR. 
@@ -312,7 +312,7 @@ Create an Operator Values Override file:
         <tr>
           <td><code>registry</code></td>
           <td>URI</td>
-          <td>The registry from which to download VMware MySQL Operator images.</td>
+          <td>The registry from which to download VMware MySQL images.</td>
         </tr>
         <tr>
           <td><code>resources</code></td>

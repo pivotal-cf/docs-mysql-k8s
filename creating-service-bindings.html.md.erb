@@ -1,5 +1,5 @@
 ---
-title: Connecting an Application to a VMware SQL with MySQL for Kubernetes Instance
+title: Connecting an Application to a MySQL Instance
 owner: MySQL
 ---
 
@@ -8,7 +8,7 @@ This topic describes how to connect applications to a VMware MySQL instance. Thi
 
 ## <a id="tap_apps"></a> Binding an Application to a MySQL Instance using TAP workflow
 
-The VMware MySQL Operator 1.3 supports Service Binding with Tanzu Application Platform (TAP). This feature eliminates the manual management of the configuration steps needed to securely and successfuly bind a TAP application to a VMware MySQL Operator deployment. For more information on Service Binding, see [Service Binding Specification for Kubernetes](https://github.com/servicebinding/spec) in the Kubernetes documentation.
+The VMware MySQL 1.3 supports Service Binding with Tanzu Application Platform (TAP). This feature eliminates the manual management of the configuration steps needed to securely and successfuly bind a TAP application to a VMware MySQL deployment. For more information on Service Binding, see [Service Binding Specification for Kubernetes](https://github.com/servicebinding/spec) in the Kubernetes documentation.
 
 For more information on how to create or update TAP workloads, see [Working with Workloads] in the TAP documentation.
 
@@ -381,7 +381,7 @@ To check if your application has been successfully bound to the MySQL instance:
    10 rows in set (0.01 sec)```
    ```
 
-## <a id="tas_apps"></a>Binding VMware MySQL Operator to a TAS Application
+## <a id="tas_apps"></a>Binding VMware MySQL to a TAS Application
 
 ### <a id="tas_prereqs"></a>Prerequisites
 
