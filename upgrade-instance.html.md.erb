@@ -37,8 +37,8 @@ NAME           DB VERSION
 mysql-8.0.27   8.0.27
 mysql-8.0.28   8.0.28
 mysql-8.0.29   8.0.29
-mysql-8.0.30   8.0.30
-mysql-latest   8.0.30     
+mysql-8.0.31   8.0.31
+mysql-latest   8.0.31
 ```
 For a mapping of the Tanzu Operator version, with the corresponding instance version(s) supported with that Operator, review the table under [Software Component Versions](release-notes.html#components) in the release notes.
 
@@ -98,7 +98,7 @@ The Tanzu Operator supports two columns to help users identify upgrade actions f
       name: instance-7
     spec:
       mysqlVersion:
-        name: mysql-8.0.30
+        name: mysql-8.0.31
       ...
     ```
 
@@ -124,4 +124,3 @@ The Tanzu Operator supports two columns to help users identify upgrade actions f
     The `UPDATE STATUS` column of the instance should display `NoUpdateRequired`. The `TANZU VERSION` should display the latest Operator.
     
     For instances requiring an update (`UPDATE STATUS`="UpdateRequired"), refer to [Updating an Instance](update-instance.html#update-instance).
-    
