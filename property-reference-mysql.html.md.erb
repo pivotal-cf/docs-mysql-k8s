@@ -154,7 +154,8 @@ versions of your Operator release.  <br />
 Use the "floating version tag" `mysql-latest` to configure your instance to always upgrade to the latest MySQL version
 supported by future Operator upgrades.<br/>
 **Example**: `mysql-8.0.31`<br/>
-**WARNING**: After an Operator upgrade, instances with `mysqlVersion.name` as`mysql-latest` will automatically reboot
+
+> **Caution** After an Operator upgrade, instances with `mysqlVersion.name` as `mysql-latest` will automatically reboot
 and upgrade to the latest supported MySQL version for that Operator.
 
 **`storageSize: <Quantity>`**<br />
