@@ -79,7 +79,7 @@ For a list of the exposed VMware MySQL metrics collectors see [MySQL Server Expo
     apiVersion: monitoring.coreos.com/v1
     kind: PodMonitor
     metadata:
-      name: tanzu-mysql-instances
+      name: vmware-mysql-instances
       namespace: prometheus
     spec:
       namespaceSelector:
@@ -100,7 +100,7 @@ For a list of the exposed VMware MySQL metrics collectors see [MySQL Server Expo
     ```
 
 - To check if Prometheus is successfully monitoring the instances, open the Prometheus UI in the browser and visit the `/targets` URI  to check the status of the `PodMonitor` under
-`podMonitor/prometheus/tanzu-mysql-instances/0 (1/1 up)`. 
+`podMonitor/prometheus/vmware-mysql-instances/0 (1/1 up)`. 
 
     You should view something similar to:
 

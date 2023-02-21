@@ -45,7 +45,7 @@ After the Operator deployment, to create an instance refer to [Creating MySQL In
 If you want to uninstall the operator, run the following commands:
 
 ```
-helm uninstall tanzu-sql-with-mysql-operator -n vmware-mysql-for-kubernetes-system
+helm uninstall vmware-sql-with-mysql-operator -n vmware-mysql-for-kubernetes-system
 ```
 ```
 kubectl get crds -o name | grep with.sql.tanzu.vmware.com | xargs kubectl delete

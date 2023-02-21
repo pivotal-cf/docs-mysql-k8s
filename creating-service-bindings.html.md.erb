@@ -412,7 +412,7 @@ To bind a MySQL instance to an application running on TAS:
 1.  Create a credentials hash for a TAS user-provided service configuration:
 
     ```bash
-    cf create-user-provided-service k8s-tanzu-sql -p "{\"uri\":\"mysql://$USER:$PASSWORD@$HOSTNAME:3306/$DATABASE?reconnect=true&sslMode=required&ssl_mode=required\"}"
+    cf create-user-provided-service k8s-vmware-sql -p "{\"uri\":\"mysql://$USER:$PASSWORD@$HOSTNAME:3306/$DATABASE?reconnect=true&sslMode=required&ssl_mode=required\"}"
     ```
 
 If autoconnect is supported by the applicatioin buildpack, as is common with data services, the application will automatically connect to the database instance. If

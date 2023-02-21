@@ -24,12 +24,12 @@ The VMware MySQL Operator TLS configuration provides various options:
 
 The MySQL Operator deploys the instances with TLS from the self-signed `ClusterIssuer` configured during Operator install.
 
-By default, the Operator will create a `ClusterIssuer` named `tanzu-sql-with-mysql-operator-ca-certificate-clusterissuer` and will retrieve MySQL instance certificates issued via this resource. 
+By default, the Operator will create a `ClusterIssuer` named `vmware-sql-with-mysql-operator-ca-certificate-clusterissuer` and will retrieve MySQL instance certificates issued via this resource. 
 
 To verify that your MySQL Operator is using the default settings, with no `ClusterIssuer` customization, use:
 
 ``` 
-helm --namespace=vmware-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
+helm --namespace=vmware-mysql-for-kubernetes-system get values vmware-sql-with-mysql-operator
 ```
 The output should be similar to:
 
@@ -136,13 +136,13 @@ Before you configure TLS using a custom CA authority, you must have access permi
 5. For new VMware MySQL Operator customers, create the MySQL Operator and set it to use the custom TLS issuer by using a command similar to:
 
     ```
-    helm install tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
+    helm install vmware-sql-with-mysql-operator ./vmware-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
     ```
 
     For existing VMware MySQL Operator customers, update the Operator using a command similar to:
 
     ```
-    helm update tanzu-sql-with-mysql-operator ./tanzu-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
+    helm update vmware-sql-with-mysql-operator ./vmware-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
     ```
     <p class="note">
        <strong>Note:</strong> If you need to use more than one CA issuer, either see <a href="#explicitly-configure-instance-for-TLS">Explicitly Configure a MySQL instance for TLS</a> or run another MySQL Operator in a different Kubernetes cluster.
@@ -151,7 +151,7 @@ Before you configure TLS using a custom CA authority, you must have access permi
 6. To verify the custom `ClusterIssuer` setup, use:
 
     ```
-    helm --namespace=vmware-mysql-for-kubernetes-system get values tanzu-sql-with-mysql-operator
+    helm --namespace=vmware-mysql-for-kubernetes-system get values vmware-sql-with-mysql-operator
     ```
     ```
     USER-SUPPLIED VALUES:

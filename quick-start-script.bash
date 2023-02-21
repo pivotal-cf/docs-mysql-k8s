@@ -41,7 +41,7 @@ create_docker_registry_secret() {
 
 deploy_operator() {
     if [ "$(kubectl api-resources --api-group=with.sql.tanzu.vmware.com -o name | grep mysql | wc -l)" -eq 0 ] ; then
-        helm install "tanzu-sql-with-mysql-operator" oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart \
+        helm install "vmware-sql-with-mysql-operator" oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/charts/vmware-sql-with-mysql-operator \
             --version "${OPERATOR_VERSION}" \
             --namespace "${OPERATOR_NAMESPACE}" \
             --wait
