@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This script will deploy Tanzu MySQL Operator from Tanzu Network Registry in the `tanzu-mysql-for-kubernetes-system` namespace.
+# This script will deploy VMware MySQL Operator from Tanzu Network Registry in the `vmware-mysql-for-kubernetes-system` namespace.
 # It also deploys the dependencies (latest version of cert-manager) needed by the operator to run.
 
 SCRIPT_USAGE_MESSAGE="Run the script as $0 <MYSQL_OPERATOR_VERSION> <TANZU_REGISTRY_USERNAME> <TANZU_REGISTRY_PASSWORD>"
@@ -41,7 +41,7 @@ create_docker_registry_secret() {
 
 deploy_operator() {
     if [ "$(kubectl api-resources --api-group=with.sql.tanzu.vmware.com -o name | grep mysql | wc -l)" -eq 0 ] ; then
-        helm install "tanzu-sql-with-mysql-operator" oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/tanzu-mysql-operator-chart \
+        helm install "vmware-sql-with-mysql-operator" oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/charts/vmware-sql-with-mysql-operator \
             --version "${OPERATOR_VERSION}" \
             --namespace "${OPERATOR_NAMESPACE}" \
             --wait
@@ -55,7 +55,7 @@ main() {
     OPERATOR_VERSION=${1?$SCRIPT_USAGE_MESSAGE}
     TANZU_REGISTRY_USERNAME=${2?$SCRIPT_USAGE_MESSAGE}
     TANZU_REGISTRY_PASSWORD=${3?$SCRIPT_USAGE_MESSAGE}
-    OPERATOR_NAMESPACE="tanzu-mysql-for-kubernetes-system"
+    OPERATOR_NAMESPACE="vmware-mysql-for-kubernetes-system"
 
     install_cert_manager
 
@@ -68,7 +68,7 @@ main() {
     echo -e "\nCreating a registry secret ..."
     create_docker_registry_secret
 
-    echo -e "\nDeploying Tanzu MySQL Operator in ${OPERATOR_NAMESPACE} namespace with the default values..."
+    echo -e "\nDeploying VMware MySQL Operator in ${OPERATOR_NAMESPACE} namespace with the default values..."
     deploy_operator
 }
 

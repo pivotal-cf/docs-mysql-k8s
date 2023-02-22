@@ -11,7 +11,7 @@ This topic describes how to upgrade a <%= vars.product_short %> instance after [
 
 Before you upgrade a MySQL instance, you must have:
 
-* **Upgraded the MySQL operator.** See [Upgrading the Tanzu SQL for Kubernetes Operator](./upgrade-operator.html).
+* **Upgraded the MySQL operator.** See [Upgrading the VMware SQL with MySQL for Kubernetes Operator](./upgrade-operator.html).
 
 * **Access to and permissions for the MySQL instance.**
 
@@ -20,7 +20,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
 ## <a id='list-instances-by-version'></a> List Instance Versions 
 
-The MySQL instance property `spec.mysqlVersion.name` can be used to specify a required MySQL version. Every Tanzu MySQL Operator (after 1.4.0 release) supports several MySQL versions, giving the customers the flexibility to specify their preference, and upgrade to a later MySQL version. 
+The MySQL instance property `spec.mysqlVersion.name` can be used to specify a required MySQL version. Every VMware MySQL Operator (after 1.4.0 release) supports several MySQL versions, giving the customers the flexibility to specify their preference, and upgrade to a later MySQL version.
 
 <p class='note'><strong>NOTE:</strong>  Upgrading the MySQL Operator does not automatically upgrade any existing MySQL instances. Any instance upgrades require user intervention.</p>
 
@@ -40,11 +40,11 @@ mysql-8.0.29   8.0.29
 mysql-8.0.31   8.0.31
 mysql-latest   8.0.31
 ```
-For a mapping of the Tanzu Operator version, with the corresponding instance version(s) supported with that Operator, review the table under [Software Component Versions](release-notes.html#components) in the release notes.
+For a mapping of the VMware Operator version, with the corresponding instance version(s) supported with that Operator, review the table under [Software Component Versions](release-notes.html#components) in the release notes.
 
 ## <a id='upgrade-steps'></a> Upgrade an Instance
 
-The Tanzu Operator supports two columns to help users identify upgrade actions for existing instances, `UPDATE STATUS` and `USER ACTION`. 
+The VMware MySQL Operator supports two columns to help users identify upgrade actions for existing instances, `UPDATE STATUS` and `USER ACTION`.
 
 **WARNING**: User actions specified under the `USER ACTION` column result in instance reboot. Ensure these actions are executed during an agreed maintenance window.
 
@@ -56,22 +56,22 @@ The Tanzu Operator supports two columns to help users identify upgrade actions f
     with an output similar to:
 
     ```
-    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION      
-    mysql-sample   true    Running   41m    1.4.0           8.0.26       NoUpdateRequired       
-    DBUPDONC-9     true    Running   20d    1.3.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
-    instance-8     true    Running   21d    1.3.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
-    instance-7     true    Running   22d    1.3.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-    DBAUTOUPG-6    true    Running   120d   1.2.0           8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once” 
-    instance-5     true    Running   121d   1.2.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”         
-    instance-4     true    Running   122d   1.2.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-    DBAUTOUPG-3    true    Running   150d   1.1.0           8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”           
-    instance-2     true    Running   151d   1.1.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
-    instance-1     true    Running   202d   1.0.0           8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version                              
+    NAME           READY   STATUS    AGE    OPERATOR VERSION   DB VERSION   UPDATE STATUS       USER ACTION
+    mysql-sample   true    Running   41m    1.4.0              8.0.26       NoUpdateRequired
+    DBUPDONC-9     true    Running   20d    1.3.0              8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”
+    instance-8     true    Running   21d    1.3.0              8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”
+    instance-7     true    Running   22d    1.3.0              8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    DBAUTOUPG-6    true    Running   120d   1.2.0              8.0.26       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”
+    instance-5     true    Running   121d   1.2.0              8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”
+    instance-4     true    Running   122d   1.2.0              8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    DBAUTOUPG-3    true    Running   150d   1.1.0              8.0.25       UpdateRequired      Annotate “mysql.with.sql.tanzu.vmware.com/update=once”
+    instance-2     true    Running   151d   1.1.0              8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
+    instance-1     true    Running   202d   1.0.0              8.0.23       DBUpgradeRequired   Set spec.mysqlVersion.name to a supported DB version
     ```
     
     Where:
     
-    - `TANZU VERSION` column refers to the Operator version that the instance was last reconciled (synchronized) with. 
+    - `OPERATOR VERSION` column refers to the Operator version that the instance was last reconciled (synchronized) with.
     - `DB VERSION` column refers to the instance's current MySQL database version.
     - `UPDATE STATUS` refers to whether the instance needs an update or a database version upgrade. 
         - "UpdateRequired" indicates that the instance's last reconciled Operator version is different to the current Operator version. For more details, see [Updating an Instance](update-instance.html#update-instance).
@@ -121,6 +121,6 @@ The Tanzu Operator supports two columns to help users identify upgrade actions f
     ```
     kubectl get mysql 
     ```
-    The `UPDATE STATUS` column of the instance should display `NoUpdateRequired`. The `TANZU VERSION` should display the latest Operator.
+    The `UPDATE STATUS` column of the instance should display `NoUpdateRequired`. The `OPERATOR VERSION` should display the latest Operator.
     
     For instances requiring an update (`UPDATE STATUS`="UpdateRequired"), refer to [Updating an Instance](update-instance.html#update-instance).

@@ -4,11 +4,11 @@ owner: MySQL
 ---
 
 
-This topic describes how to connect applications to a Tanzu MySQL instance. This topic covers two methods, either using a Tanzu Application Platform (TAP) workflow, or Tanzu Application Services (TAS). 
+This topic describes how to connect applications to a VMware MySQL instance. This topic covers two methods, either using a Tanzu Application Platform (TAP) workflow, or Tanzu Application Services (TAS).
 
 ## <a id="tap_apps"></a> Binding an Application to a MySQL Instance using TAP workflow
 
-The Tanzu MySQL Operator 1.3 supports Service Binding with Tanzu Application Platform (TAP). This feature eliminates the manual management of the configuration steps needed to securely and successfuly bind a TAP application to a Tanzu MySQL deployment. For more information on Service Binding, see [Service Binding Specification for Kubernetes](https://github.com/servicebinding/spec) in the Kubernetes documentation. 
+The VMware MySQL 1.3 supports Service Binding with Tanzu Application Platform (TAP). This feature eliminates the manual management of the configuration steps needed to securely and successfuly bind a TAP application to a VMware MySQL deployment. For more information on Service Binding, see [Service Binding Specification for Kubernetes](https://github.com/servicebinding/spec) in the Kubernetes documentation.
 
 For more information on how to create or update TAP workloads, see [Working with Workloads] in the TAP documentation.
 
@@ -19,8 +19,8 @@ For more information on how to create or update TAP workloads, see [Working with
 [Installing Tanzu Application Platform]: https://docs.vmware.com/en/VMware-Tanzu-Application-Platform/1.2/tap/GUID-install-intro.html
 
 - TAP v1.2.0 or higher has been installed. See [Installing Tanzu Application Platform] for instructions.
-- Tanzu MySQL Operator has been successfully installed on a Kubernetes cluster. See [Installing a MySQL Operator for instructions](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.3/tanzu-mysql-k8s/GUID-install-operator.html).
-- MySQL instance has been deployed. See [Deploying a MySQL Instance](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.3/tanzu-mysql-k8s/GUID-create-delete-mysql.html) for instructions.
+- VMware MySQL Operator has been successfully installed on a Kubernetes cluster. See [Installing a MySQL Operator for instructions](https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.3/vmware-mysql-k8s/GUID-install-operator.html).
+- MySQL instance has been deployed. See [Deploying a MySQL Instance](https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.3/vmware-mysql-k8s/GUID-create-delete-mysql.html) for instructions.
 
 ### <a id="tap_setup_mysql_with_stk"></a> Setup MySQL with Services Toolkit
 
@@ -381,7 +381,7 @@ To check if your application has been successfully bound to the MySQL instance:
    10 rows in set (0.01 sec)```
    ```
 
-## <a id="tas_apps"></a>Binding Tanzu MySQL to a TAS Application
+## <a id="tas_apps"></a>Binding VMware MySQL to a TAS Application
 
 ### <a id="tas_prereqs"></a>Prerequisites
 
@@ -412,7 +412,7 @@ To bind a MySQL instance to an application running on TAS:
 1.  Create a credentials hash for a TAS user-provided service configuration:
 
     ```bash
-    cf create-user-provided-service k8s-tanzu-sql -p "{\"uri\":\"mysql://$USER:$PASSWORD@$HOSTNAME:3306/$DATABASE?reconnect=true&sslMode=required&ssl_mode=required\"}"
+    cf create-user-provided-service k8s-vmware-sql -p "{\"uri\":\"mysql://$USER:$PASSWORD@$HOSTNAME:3306/$DATABASE?reconnect=true&sslMode=required&ssl_mode=required\"}"
     ```
 
 If autoconnect is supported by the applicatioin buildpack, as is common with data services, the application will automatically connect to the database instance. If

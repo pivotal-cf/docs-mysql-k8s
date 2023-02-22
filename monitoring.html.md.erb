@@ -44,7 +44,7 @@ The output shows the metrics collection, for example:
 mysql_global_status_open_tables 165
 ```
     
-For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Exporter Collector Flag Reference](#collectors).
+For a list of the exposed VMware MySQL metrics collectors see [MySQL Server Exporter Collector Flag Reference](#collectors).
 
 
 ## <a id='using_prometheus'></a> Using Prometheus Operator to Scrape the <%= vars.product_short %> Metrics
@@ -79,7 +79,7 @@ For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Expor
     apiVersion: monitoring.coreos.com/v1
     kind: PodMonitor
     metadata:
-      name: tanzu-mysql-instances
+      name: vmware-mysql-instances
       namespace: prometheus
     spec:
       namespaceSelector:
@@ -100,7 +100,7 @@ For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Expor
     ```
 
 - To check if Prometheus is successfully monitoring the instances, open the Prometheus UI in the browser and visit the `/targets` URI  to check the status of the `PodMonitor` under
-`podMonitor/prometheus/tanzu-mysql-instances/0 (1/1 up)`. 
+`podMonitor/prometheus/vmware-mysql-instances/0 (1/1 up)`. 
 
     You should view something similar to:
 
@@ -113,7 +113,7 @@ For a list of the exposed Tanzu MySQL metrics collectors see [MySQL Server Expor
 
 ## <a id='prometheus_TLS'></a> Using TLS for the Metrics Endpoint
 
-During the Tanzu MySQL initialization, the Tanzu MySQL operator creates a metrics related self-signed certificate. The TLS credentials are stored in a Secret named after the MySQL instance name: if the instance name is `mysql-db`, the metrics Secret name is `mysql-db-metrics-tls`.
+During the VMware MySQL initialization, the VMware MySQL Operator creates a metrics related self-signed certificate. The TLS credentials are stored in a Secret named after the MySQL instance name: if the instance name is `mysql-db`, the metrics Secret name is `mysql-db-metrics-tls`.
 
 In order to use TLS for a metrics endpoint, configure Prometheus to use the CA certificate from the Secret. Use the following command to fetch the CA certificate:
 
