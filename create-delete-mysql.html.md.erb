@@ -178,8 +178,8 @@ To create a MySQL instance:
     kubectl -n my-namespace get mysql mysql-sample
     ```
     ```
-    NAME           READY   STATUS    AGE    TANZU VERSION   DB VERSION   UPDATE STATUS       USER ACTION
-    mysql-sample   true    Running   162m   1.6.2           8.0.29       NoUpdateRequired
+    NAME           READY   STATUS    AGE    OPERATOR VERSION   DB VERSION   UPDATE STATUS       USER ACTION
+    mysql-sample   true    Running   162m   1.6.2              8.0.29       NoUpdateRequired
     ``` 
 8. Review [Configuring TLS for MySQL Instances](configure-tls.html) if you need to configure a custom `ClusterIssuer`. By default, the MySQL instances created by VMware MySQL Operator 1.2.0 (and later) use TLS certificates provided by the cert-manager `ClusterIssuer`, using a self-signed certificate authority (CA).
 
