@@ -99,7 +99,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   - The helm chart changed from `tanzu-mysql-operator-chart` to `charts/vmware-sql-with-mysql-operator`
 - The helm chart is published with a new media type: `application/vnd.cncf.helm.chart.content.v1.tar+gzip`. Users should use helm version 3.8.x or higher where OCI support is enabled by default.
 - The base image for the operator and instance images has been changed from Ubuntu 18.04 LTS to Ubuntu 20.04 LTS.
-- Release 1.7.0 updates the VMware Tanzu Data Services package to version 1.7.0: `registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.7.0`. For more information see [Installing using the Tanzu CLI](./install-operator.html#tanzu_cli_install).
+- Release 1.7.0 is included in the VMware Tanzu Data Services package version 1.7.0: `registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.7.0`. For more information see [Installing using the Tanzu CLI](./install-operator.html#tanzu_cli_install).
 
 ### <a id="17_resolved"></a> Resolved Issues
 
@@ -111,7 +111,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * Backups can be taken consistently regardless of whether the backup location is using a custom CA bundle.
 * The MySQL Operator no longer panics when attempting to sync backups from an invalid backup location endpoint.
 * Synced backups are no longer created with a failed status.
-* The S3 bucket path in a backup location no longer requires a trailing forward slash.
+* The S3 bucket path in a backup location no longer requires a trailing slash.
 * The MySQL Operator should upgrade without upgrading the instances when upgrading through the Tanzu CLI.
   * This fix will only be observable when upgrading from 1.7.0 to the next version.
 
