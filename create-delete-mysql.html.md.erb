@@ -52,6 +52,9 @@ Use these templates as a starting point for the instance creation, and backup/re
 
 [//]: # (Note to authors: if you change step numbers in this procedure, edit high-availability topic.)
 
+<p class="note"><b>Note:</b> On OpenShift clusters, MySQL Instances cannot run on the "default" namespace because OpenShift does not assign SCC (Security Context Constraints) to pods in this namespace. See <a href="https://docs.openshift.com/container-platform/latest/authentication/managing-security-context-constraints.html#role-based-access-to-ssc_configuring-internal-oauth">Managing security context constraints</a> in the RedHat OpenShift documentation.</p>
+
+
 When you create a MySQL instance, the MySQL Operator also creates PVCs. The PVCs are attached to the instance and contain the data for the MySQL database. Single-node instances have one PVC, and high-availability (HA) instances have three. The PVC name contains the instance name and the MySQL Pod number. The PVC name is of the form `mysql-data-INSTANCE-NAME-N`, for example `mysql-data-mysql-sample-0`.
 
 ### <a id="version"></a> Selecting the VMware MySQL Version
