@@ -25,10 +25,7 @@ Before you deploy the VMware MySQL Operator, you need:
 
 - The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) command-line tool, configured and authenticated to communicate with your Kubernetes cluster.
 
-- The Helm v3 command-line tool installed. For more information, see [Installing Helm](https://helm.sh/docs/intro/install/) from the Helm documentation. <br>
-    <p class="note">
-       <strong>Note:</strong> Helm 3.7.0 is not supported. Use Helm 3.7.1 and above, or Helm 3.6 and earlier.
-    </p>
+- The Helm CLI version 3.8.0 or newer. For more information, see [Installing Helm](https://helm.sh/docs/intro/install/) from the Helm documentation. <br>
 
 - `cluster-admin` ClusterRole access to the Kubernetes cluster. For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles).
 
@@ -65,16 +62,6 @@ You can access and install <%=vars.product_name %> using two different methods:
 
 #### <a id="install-via-tanzu"></a>  Setup the VMware MySQL Operator via the Tanzu Network Registry
 
-1. Set the environment variable to enable OCI support in the Helm v3 client by running:
-
-    ```
-    export HELM_EXPERIMENTAL_OCI=1
-    ```
-
-    If you skip this step, the following error message might appear:
-    ``` 
-    Error: this feature has been marked as experimental and is not enabled by default.
-    ``` 
 
 1. Use Helm to log in to the Tanzu Network Registry by running:
 
@@ -86,17 +73,7 @@ You can access and install <%=vars.product_name %> using two different methods:
 
 
 1. Download the Helm chart from the Tanzu Distribution Registry, and export into a local `/tmp/` directory:
-    
-    If you're using Helm CLI 3.6 and earlier:
 
-    ```
-    helm chart pull registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/charts/vmware-sql-with-mysql-operator:1.7.0
-    ```
-    ```
-    helm chart export registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/charts/vmware-sql-with-mysql-operator:1.7.0 --destination=/tmp/
-    ```
-
-    If you're using Helm CLI 3.7.1 and later:
     ```
     helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/charts/vmware-sql-with-mysql-operator --version 1.7.0 --untar --untardir /tmp
     ```
@@ -346,9 +323,7 @@ Create an Operator Values Override file:
 
 #### <a id="create-operator"></a> Deploy the Operator 
 
-**IMPORTANT**: Helm 3.7.0 is not supported. Use Helm 3.7.1 and above, or Helm 3.6 and earlier.
-
-1.  By default, the VMware MySQL Operator configures a `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page.
+1.  By default, the VMware MySQL Operator configures a `ClusterIssuer` for issuing MySQL instance TLS certificates. Customers requiring a custom Certificate Authority for TLS, follow the Operator install steps in [Configuring a Custom TLS Issuer](configure-tls.html#configuring-custom-tls-issuer) in the _Configuring TLS for MySQL Instances_ page. 
 
     Use Helm to install the MySQL Operator in your Kubernetes cluster:
 
