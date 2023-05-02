@@ -125,7 +125,7 @@ To change a single-node instance into an HA instance:
 1. Open the YAML file that you created in step 4 of [Create a MySQL Instance](create-delete-mysql.html#create-instance)
    in _Creating and Deleting MySQL Instances_.
 
-2. Change the value of `spec.highAvailability.enabled` to `true` and save the file.
+2. Change the value of `spec.highAvailability.enabled` to `true` to obtain a three-member HA instance and save the file. To change the number of members in the HA instance, see [Change Number of Members in HA MySQL Instance](high-availability.html#configuring-ha).
 
 3. Apply the change and deploy the HA instance by running:
 
@@ -145,6 +145,18 @@ To change a single-node instance into an HA instance:
     ```
     mysql.with.sql.tanzu.vmware.com/mysql-sample created
     ``` 
+
+## <a id="configuring-ha"></a>  Change Number of Members in HA MySQL Instance
+* A high-availability instance can have 3, 5, 7, or 9 members.
+* The default number of members for an HA instance is 3.
+* The number of members can be scaled up but not down. 
+* MySQL supports a maximum of 9 members of a single replication group. An even number of members is not a best practice for maintaining quorum. See the MySQL documentation on [Network Partition and Loss of Quorum](https://dev.mysql.com/doc/refman/8.0/en/group-replication-network-partitioning.html)
+* To change the number of members in your HA instance, change the value of `spec.highAvailability.members`. 
+    ```
+    spec:
+      highAvailabillity:
+        members: 5
+    ```
 
 ## <a id="inspect-instance"></a>  Inspect an HA MySQL Instance
 

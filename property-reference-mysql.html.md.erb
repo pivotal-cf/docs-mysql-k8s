@@ -36,6 +36,7 @@ spec:
 #### Enable highly available cluster
 #  highAvailability:
 #    enabled: true
+#    members: 3
 
 #### Enable affinity
 #  databasePodConfig:
@@ -194,9 +195,15 @@ The name of the Kubernetes secret containing the TLS certificate and private key
 
 **`highAvailability.enabled: <boolean>`**<br />
 **Optional**<br />
-**Default**: false<br />
+**Default**: false, unless `highAvailability.members` is greater than 1<br />
 Whether the instance is a high-availability cluster (not single-node). After being set to `true`, it cannot be modified. For information about high availability, see [Configuring MySQL Instances for High Availability](high-availability.html).
 **Example**: true
+
+**`highAvailability.members: <int>`**<br />
+**Optional**<br />
+**Default**: 3 when `highAvailability.enabled` is `true`<br />
+Total number of members in the HA cluster. Can be 3, 5, 7, or 9. A value of 1 would be a single instance. An even number creates the potential for a split-brain scenario, which must be avoided. For information about HA members, see [Change Number of Members in HA MySQL Instance](high-availability.html#configuring-ha).
+**Example**: 5
 
 **`databasePodConfig.affinity: <corev1.Affinity>`**<br />
 **Optional**<br />
