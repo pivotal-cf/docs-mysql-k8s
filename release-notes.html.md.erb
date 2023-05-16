@@ -69,14 +69,14 @@ The <%= vars.product_short %> releases support the components listed below:
 
 ### <a id="1_7_1_supported_platforms"></a> Supported Platforms
 
-This version of VMware SQL with MySQL for Kubernetes is supported on the following platforms:
+VMware SQL with MySQL for Kubernetes is intended to be used with any Kubernetes-compliant platform that is version 1.21 or newer.
 
-- [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI), version 1.13.x - 1.16.x
-- [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKGm) on AWS, version 1.4.x - 1.6.x
+Specifically, this version of VMware SQL with MySQL for Kubernetes is tested on the following platforms:
+- [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI)
+- [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKG)
 - Google Kubernetes Engine (GKE)
 - Amazon Elastic Kubernetes Service (EKS)
 - Red Hat OpenShift, version 4.10+
-- Kubernetes version 1.21+
 
 Additional Kubernetes environments, such as Minikube, can be used for testing or demonstration purposes.
 
@@ -640,6 +640,3 @@ For an overview of this product, see [About <%= vars.product_short %>](index.htm
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more on server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
-
-
-
