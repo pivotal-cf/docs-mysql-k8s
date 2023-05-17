@@ -71,13 +71,14 @@ while re-creating the failed Pod in the background.
 ## <a id='controllers-crds'></a> Controllers and Custom Resource Definitions (CRDs)
 
 <%= vars.product_full %> provides extensions to the Kubernetes API through custom resources.
-The product provides five separate custom resources:
+The product provides six separate custom resources:
 
 + [MySQL](#mysql): A managed MySQL instance
 + [MySQLBackupLocation](#mysqlbackuplocation): Defines an S3 storage bucket for backups
 + [MySQLBackup](#mysqlbackup): Requests for a backup
 + [MySQLBackupSchedule](#mysqlbackupschedule): Defines a backup schedule
 + [MySQLRestore](#mysqlrestore): Requests a data restore
++ [MySQLVersion](#mysqlversion): Provides a selection of MySQL database versions
 
 ### <a id="mysql"></a>  MySQL
 
@@ -117,8 +118,8 @@ Initially, this instance is in a pending state:
 kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
-NAME           READY   STATUS    VERSION   AGE
-mysql-sample   true    Pending   1.3.0     2s
+NAME           READY   STATUS    AGE   OPERATOR VERSION    DB VERSION   UPDATE STATUS      USER ACTION
+mysql-sample           Pending   5s    1.7.0               8.0.28       NoUpdateRequired
 ``` 
 
 
@@ -128,8 +129,8 @@ Later, the instance transitions to a running state:
 kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
-NAME           READY   STATUS    AGE
-mysql-sample   true    Running   27s
+NAME           READY   STATUS    AGE   OPERATOR VERSION    DB VERSION   UPDATE STATUS      USER ACTION
+mysql-sample   true    Running   40s   1.7.0               8.0.28       NoUpdateRequired
 ``` 
 
 ### <a id="mysqlbackuplocation"></a>  MySQLBackupLocation
@@ -319,6 +320,35 @@ For example:
 kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
-NAME           READY   STATUS    AGE
-mysql-sample   true    Running   30s
+NAME           READY   STATUS    AGE   OPERATOR VERSION     DB VERSION   UPDATE STATUS      USER ACTION
+mysql-sample   true    Running   25m   1.7.0                8.0.28       NoUpdateRequired
 ``` 
+
+### <a id="mysqlversion"></a>  MySQLVersion
+
+Use this resource to see what MySQL database versions are provided by the operator,
+or to specify a version when creating a MySQL custom resource.
+
+```
+kubectl get mysqlversions.with.sql.tanzu.vmware.com
+```
+```
+NAME           DB VERSION
+mysql-8.0.27   8.0.27
+mysql-8.0.28   8.0.28
+mysql-8.0.29   8.0.29
+mysql-8.0.31   8.0.31
+mysql-latest   8.0.31
+```
+
+To create a MySQL database with version 8.0.29, define the MySQL custom resource similar to:
+```
+  ---
+  apiVersion: with.sql.tanzu.vmware.com/v1
+  kind: MySQL
+  metadata:
+    name: mysql-sample
+  spec:
+    mysqlVersion:
+      name: mysql-8.0.29
+```
