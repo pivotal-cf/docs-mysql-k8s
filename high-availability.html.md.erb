@@ -150,8 +150,8 @@ To change a single-node instance into an HA instance:
 * A high-availability instance can have 3, 5, 7, or 9 members.
 * The default number of members for an HA instance is 3.
 * The number of members can be scaled up but not down. 
-* MySQL supports a maximum of 9 members of a single replication group. An even number of members is not a best practice for maintaining quorum. See the MySQL documentation on [Network Partition and Loss of Quorum](https://dev.mysql.com/doc/refman/8.0/en/group-replication-network-partitioning.html)
-* To change the number of members in your HA instance, change the value of `spec.highAvailability.members`. 
+* MySQL supports a maximum of 9 members of a single replication group. An even number of members is not a best practice for maintaining quorum. See the MySQL documentation on [Network Partition and Loss of Quorum](https://dev.mysql.com/doc/refman/8.0/en/group-replication-network-partitioning.html).
+* To change the number of members in your HA instance, change the value of `spec.highAvailability.members`: 
     ```
     spec:
       highAvailabillity:
