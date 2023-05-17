@@ -326,8 +326,8 @@ mysql-sample   true    Running   25m   1.7.0                8.0.28       NoUpdat
 
 ### <a id="mysqlversion"></a>  MySQLVersion
 
-This resource allows users to see what MySQL database versions are provided by the operator
-and to specify a version when creating a MySQL custom resource.
+Use this resource to see what MySQL database versions are provided by the operator,
+or to specify a version when creating a MySQL custom resource.
 
 ```
 kubectl get mysqlversions.with.sql.tanzu.vmware.com
@@ -341,7 +341,7 @@ mysql-8.0.31   8.0.31
 mysql-latest   8.0.31
 ```
 
-If a user wishes to create a MySQL database with 8.0.29, the MySQL custom resource can be defined like such:
+To create a MySQL database with version 8.0.29, define the MySQL custom resource similar to:
 ```
   ---
   apiVersion: with.sql.tanzu.vmware.com/v1
