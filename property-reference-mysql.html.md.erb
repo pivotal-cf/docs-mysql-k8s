@@ -15,7 +15,7 @@ spec:
 
 #### Specify the MySQL Version
 #  mysqlVersion:
-#    name: mysql-8.0.31
+#    name: mysql-8.0.32
 
 #### Set the storage size for the database persistent storage volume
 #  storageSize: 1Gi
@@ -147,14 +147,14 @@ The name of the MySQL instance. Must be unique within a namespace. Cannot be mod
 **Optional**<br />
 **Default**: <latest MySQL release supported><br />
 The MySQL version that will be used for creating an instance. If the user does not specify a value, the latest supported
-version will be used as the default. For example, if the VMware MySQL Operator supports mysql-8.0.27, mysql-8.0.28,
-mysql-8.0.29, and mysql-8.0.31 this value defaults to mysql-8.0.31.<br/>
+version will be used as the default. For example, if the VMware MySQL Operator supports mysql-8.0.28, mysql-8.0.29,
+mysql-8.0.31, and mysql-8.0.32 this value defaults to mysql-8.0.32.<br/>
 Each Operator release supports several MySQL versions. Only the permitted version strings are valid input for the field.
 Entries that do not match a supported version generate an error. Use `kubectl get mysqlversion` to verify the MySQL
 versions of your Operator release.  <br />
 Use the "floating version tag" `mysql-latest` to configure your instance to always upgrade to the latest MySQL version
 supported by future Operator upgrades.<br/>
-**Example**: `mysql-8.0.31`<br/>
+**Example**: `mysql-8.0.32`<br/>
 
 > **Caution** After an Operator upgrade, instances with `mysqlVersion.name` as `mysql-latest` will automatically reboot
 and upgrade to the latest supported MySQL version for that Operator.
@@ -447,6 +447,3 @@ resources:
 **Default**: Retain<br />
 Describes the PVC retention policy when the associated MySQL instance is deleted. Values can be `Retain` or `Delete`.<br />
 **Example**: Delete
-
-
-
