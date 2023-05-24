@@ -75,7 +75,7 @@ You can access and install <%=vars.product_name %> using two different methods:
 1. Download the Helm chart from the Tanzu Distribution Registry, and export into a local `/tmp/` directory:
 
     ```
-    helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/vmware-sql-with-mysql-operator --version 1.7.1 --untar --untardir /tmp
+    helm pull oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/vmware-sql-with-mysql-operator --version 1.8.0 --untar --untardir /tmp
     ```
 
 #### <a id="install-via-tar"></a> Setup the VMware MySQL Operator via a Downloaded Archive File
@@ -89,7 +89,7 @@ You can access and install <%=vars.product_name %> using two different methods:
     tar xzf mysql-for-kubernetes-<version>.tgz
     ``` 
 
-    This command unpacks the distribution into a new directory named `mysql-for-kubernetes-<version>`, for example `mysql-for-kubernetes-1.7.1`.
+    This command unpacks the distribution into a new directory named `mysql-for-kubernetes-<version>`, for example `mysql-for-kubernetes-1.8.0`.
 
 1.  Change to the new `mysql-for-kubernetes-<version>` directory. For example:
 
@@ -101,10 +101,10 @@ You can access and install <%=vars.product_name %> using two different methods:
 1.  Load the MySQL instance images to the Docker registry:
 
     ``` 
-    docker load -i ./images/mysql-instance-8.0.27
     docker load -i ./images/mysql-instance-8.0.28
     docker load -i ./images/mysql-instance-8.0.29
     docker load -i ./images/mysql-instance-8.0.31
+    docker load -i ./images/mysql-instance-8.0.32
     ```
 
 1.  Load the MySQL Operator image to the Docker registry:
@@ -113,19 +113,19 @@ You can access and install <%=vars.product_name %> using two different methods:
     docker load -i ./images/mysql-operator
     ``` 
 
-1.  Verify that the four Docker images are now available.
+1.  Verify that the five Docker images are now available.
 
     ``` 
     docker images
     ```
-	```
-	   REPOSITORY                                                                  	 TAG       IMAGE ID       CREATED        SIZE
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-instance-8.0.27    1.7.0     b2767c434c61   2 weeks ago    907MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-instance-8.0.28    1.7.0     3j2h83j93msl   2 weeks ago    917MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-instance-8.0.29    1.7.0     19j38fj20xk3   2 weeks ago    902MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-instance-8.0.31    1.7.0     a5cb44250541   2 weeks ago    902MB
-	   registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-operator           1.7.0     8b46a4d26aa0   2 weeks ago    76.9MB
-	```
+	  ```
+	  REPOSITORY                                                             TAG                    IMAGE ID       CREATED        SIZE
+	  registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-instance    1.8.0-mysql-8.0.28     19j38fj20xk3   2 weeks ago    1.03GB
+	  registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-instance    1.8.0-mysql-8.0.29     3j2h83j93msl   2 weeks ago    1.03GB
+	  registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-instance    1.8.0-mysql-8.0.31     a5cb44250541   2 weeks ago    1.13GB
+	  registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-instance    1.8.0-mysql-8.0.32     a5cb44250541   2 weeks ago    1.52GB
+	  registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-operator    1.8.0                  8b46a4d26aa0   2 weeks ago    92.3MB
+	  ```
 
 1.  Push the VMware MySQL Docker images to the container registry of your choice. Set each image's project and image repo name, tag the images, and then push them using the Docker command `docker push`.
 
@@ -138,10 +138,6 @@ You can access and install <%=vars.product_name %> using two different methods:
     REGISTRY="gcr.io/${PROJECT}"
 
 
-    INSTANCE_IMAGE_NAME="${REGISTRY}/mysql-instance:$(cat ./images/mysql-instance-8.0.27-tag)"
-    docker tag $(cat ./images/mysql-instance-8.0.27-id) ${INSTANCE_IMAGE_NAME}
-    docker push ${INSTANCE_IMAGE_NAME}
-
     INSTANCE_IMAGE_NAME="${REGISTRY}/mysql-instance:$(cat ./images/mysql-instance-8.0.28-tag)"
     docker tag $(cat ./images/mysql-instance-8.0.28-id) ${INSTANCE_IMAGE_NAME}
     docker push ${INSTANCE_IMAGE_NAME}
@@ -152,6 +148,10 @@ You can access and install <%=vars.product_name %> using two different methods:
 
     INSTANCE_IMAGE_NAME="${REGISTRY}/mysql-instance:$(cat ./images/mysql-instance-8.0.31-tag)"
     docker tag $(cat ./images/mysql-instance-8.0.31-id) ${INSTANCE_IMAGE_NAME}
+    docker push ${INSTANCE_IMAGE_NAME}
+
+    INSTANCE_IMAGE_NAME="${REGISTRY}/mysql-instance:$(cat ./images/mysql-instance-8.0.32-tag)"
+    docker tag $(cat ./images/mysql-instance-8.0.32-id) ${INSTANCE_IMAGE_NAME}
     docker push ${INSTANCE_IMAGE_NAME}
 
     OPERATOR_IMAGE_NAME="${REGISTRY}/mysql-operator:$(cat ./images/mysql-operator-tag)"
@@ -216,12 +216,12 @@ You can access and install <%=vars.product_name %> using two different methods:
 
 The below Operator configuration files are in the helm chart directory `vmware-sql-with-mysql-operator`.
 
-- If you setup the VMware MySQL Operator via Tanzu Network Registry, `vmware-sql-with-mysql-operator` should be in the temporary `CHART_DIR` directory (created when you ran `helm chart export...`).
+- If you setup the VMware MySQL Operator via Tanzu Network Registry, `vmware-sql-with-mysql-operator` should be in the directory created when you ran `helm pull ...`.
 
 - If you setup the VMware MySQL Operator via a downloaded archive file, go to the directory of helm charts within the unpacked the archive file:
 
   ```
-  cd vmware-mysql-for-kubernetes-*/charts
+  cd mysql-for-kubernetes-*/charts
   ```
 
   (or `cd charts` from within that unpacked archive file).
@@ -252,7 +252,7 @@ Create an Operator Values Override file:
     ```
     ---
     imagePullSecretName: tanzu-image-registry
-    operatorImage: registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-operator:1.7.1
+    operatorImage: registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/mysql-operator:1.8.0
     registry: "registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/"
     resources: {}
     certManagerClusterIssuerName: ""
@@ -425,7 +425,7 @@ To relocate images from the VMware Tanzu Network registry to a private registry:
    where:
     - `MY-REGISTRY` is your own image registry
     - `TARGET-REPOSITORY` is your target repository
-    - `TDS-VERSION` is the tag for the image bundle (e.g `1.7.1`). Each VMware MySQL Operator release corresponds to a TDS package version. For instance, MySQL Operator version 1.7.1 is part of TDS version 1.7.1. Insert the right version for your VMware MySQL Operator release.
+    - `TDS-VERSION` is the tag for the image bundle (e.g `1.8.0`). Each VMware MySQL Operator release corresponds to a TDS package version. For instance, MySQL Operator version 1.8.0 is part of TDS version 1.9.0. Insert the right version for your VMware MySQL Operator release.
 
 ### <a id="secret_cli"></a> Create a Kubernetes Secret
 
@@ -470,7 +470,7 @@ tanzu package repository add tanzu-data-services-repository \
 where:
 - `MY-REGISTRY` is your own image registry
 - `TARGET-REPOSITORY` is your target repository
-- `TDS-VERSION` is the tag for the image bundle (e.g. `1.4.0`)
+- `TDS-VERSION` is the tag for the image bundle (e.g. `1.9.0`)
 - `NAMESPACE` is the namespace where the Package and PackageInstall will be created
 
 List the latest packages to confirm the addition:
@@ -480,21 +480,21 @@ tanzu package available list -n <NAMESPACE>
 ```
 - Retrieving available packages...
   NAME                                      DISPLAY-NAME                             SHORT-DESCRIPTION                   LATEST-VERSION
-  mysql-operator.with.sql.tanzu.vmware.com  VMware SQL with MySQL for Kubernetes     Kubernetes Operator for MySQL       1.7.1
-  postgres-operator.sql.tanzu.vmware.com    VMware SQL with Postgres for Kubernetes  Kubernetes Operator for PostgreSQL  2.0.0
+  mysql-operator.with.sql.tanzu.vmware.com  VMware SQL with MySQL for Kubernetes     Kubernetes Operator for MySQL       1.8.0
+  postgres-operator.sql.tanzu.vmware.com    VMware SQL with Postgres for Kubernetes  Kubernetes Operator for PostgreSQL  2.1.0
 ```
 
 Check the values for the MySQL Operator package:
 
 ```
-tanzu package available get mysql-operator.with.sql.tanzu.vmware.com/1.7.1 --values-schema -n <NAMESPACE>
+tanzu package available get mysql-operator.with.sql.tanzu.vmware.com/1.8.0 --values-schema -n <NAMESPACE>
 ```
 ```
-- Retrieving package details for mysql-operator.with.sql.tanzu.vmware.com/1.7.1...
+- Retrieving package details for mysql-operator.with.sql.tanzu.vmware.com/1.8.0...
   KEY                           DEFAULT                                                      TYPE    DESCRIPTION
   certManagerClusterIssuerName  vmware-sql-with-mysql-operator-ca-certificate-clusterissuer  string  A cert-manager based clusterissuer used to sign mysql certificates using a custom certificate authority
   imagePullSecretName           tanzu-image-registry                                         string  Reference to a secret in the same namespace as the operator to use for pulling any of the images used by the operator.
-  resources                     map[]                                                        object  Specifies the resource requests and limits for the operator pod
+  resources                                                                                  object  Specifies the resource requests and limits for the operator pod
   enableSecurityContext         true                                                         object  EnableSecurityContext sets the security context for the operator and its managed instances, typically disabled on OpenShift
 ```
 
@@ -522,7 +522,7 @@ enableSecurityContext: true
    Install the MySQL operator package, using the overrides file you created:
 
     ```
-    tanzu package install <PACKAGE-NAME> --package-name mysql-operator.with.sql.tanzu.vmware.com --version 1.7.1 -f <YOUR-OVERRIDES-FILE-PATH> -n <NAMESPACE>
+    tanzu package install <PACKAGE-NAME> --package-name mysql-operator.with.sql.tanzu.vmware.com --version 1.8.0 -f <YOUR-OVERRIDES-FILE-PATH> -n <NAMESPACE>
     ```
    where:
 
@@ -555,10 +555,10 @@ enableSecurityContext: true
     ```
     - Retrieving installed packages...
       NAME                   PACKAGE-NAME                              PACKAGE-VERSION  STATUS
-      vmware-mysql-operator  mysql-operator.with.sql.tanzu.vmware.com  1.7.1            Reconcile succeeded
+      vmware-mysql-operator  mysql-operator.with.sql.tanzu.vmware.com  1.8.0            Reconcile succeeded
     ```
 
-   A service account is created so that the `kapp-controller` can create cluster-scope objects such as CustomResourceDefinitions, and so it will have permissions to create     objects on any namespace. This service account is different than the service account for the MySQL operator to manage other Kubernetes resources (statefulsets, secrets, etc...)
+   A service account is created so that the `kapp-controller` can create cluster-scope objects such as CustomResourceDefinitions, and so it will have permissions to create objects on any namespace. This service account is different than the service account for the MySQL operator to manage other Kubernetes resources (statefulsets, secrets, etc...)
 
 
     To check the service accounts run:
