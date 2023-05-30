@@ -429,7 +429,7 @@ To relocate images from the VMware Tanzu Network registry to a private registry:
     - `TARGET-REPOSITORY` is your target repository
     - `TDS-VERSION` is the tag for the image bundle (e.g `1.9.0`). Each VMware MySQL Operator release corresponds to a TDS package version. For instance, MySQL Operator version 1.8.0 is part of TDS version 1.9.0. Insert the right version for your VMware MySQL Operator release.
 
-    For example,
+    For example:
     ```
     imgpkg copy -b registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.9.0 \
          --to-repo gcr.io/my-project/tds-packages
@@ -481,7 +481,7 @@ where:
 - `TDS-VERSION` is the tag for the image bundle (e.g. `1.9.0`)
 - `NAMESPACE` is the namespace where the Package and PackageInstall will be created
 
-For example,
+For example:
 ```
 tanzu package repository add sql-data-services \
      --url registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.9.0
@@ -545,7 +545,7 @@ enableSecurityContext: true
     - `YOUR-OVERRIDES-FILE-PATH` is your custom overrides path and file, for example `overrides.yaml`.
     - `NAMESPACE` is the namespace where the Package Repository has been added
 
-   For example,
+   For example:
    ```
    tanzu package install vmware-mysql-operator --package-name mysql-operator.with.sql.tanzu.vmware.com --version 1.8.0 -n data-services-operators
    ```
@@ -571,7 +571,7 @@ enableSecurityContext: true
     tanzu package installed list -n <NAMESPACE>
     ```
 
-    For example,
+    For example:
     ```
     tanzu package installed list -n data-services-operators
     ```
