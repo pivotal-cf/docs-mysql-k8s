@@ -23,14 +23,7 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
 
 ## <a id='create-app-db'></a> Create a Database and Privileged MySQL User for the App
 
-1. Log in to the MySQL server as the root user, following the instructions in [Get Root Access to the MySQL Server](./accessing.html#server-login).
-    <br /> <br />
-    For example, to connect to a single-node instance named "mysql-sample":
-
-    ``` 
-    kubectl exec -it mysql-sample-0 -c mysql -- bash
-    mysql@mysql-sample-0:/$
-    ``` 
+1. Log in to the MySQL server as the admin user, following the instructions in [Get Admin Access to the MySQL Server](./accessing.html#admin-login).
 
 1. Create any MySQL constructs needed by your app, and create a user with privileges to access those constructs as required by your app.
    <b>NOTE:</b> Older MySQL client libraries (such as those base on 5.6) need an older password encryption method. We show both type of `CREATE USER` commands below.
@@ -38,7 +31,6 @@ For more information, see the [Kubernetes documentation](https://kubernetes.io/d
     For example, the following commands create a `bitnami_wordpress` database and `bn_wordpress` user for the Bitnami WordPress Stack deployment:
 
     ``` 
-    mysql -p$(cat $MYSQL_ROOT_PASSWORD_FILE) -u root
     mysql> CREATE DATABASE bitnami_wordpress;
     Query OK, 1 row affected (0.20 sec)
 
