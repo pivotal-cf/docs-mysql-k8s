@@ -134,7 +134,8 @@ The list below explains the properties that you can set in your MySQL resource.
 
 ## <a id="metadata"></a> Metadata
 
-### `name: <string>`
+### name
+**Type**: string<br />
 **Required**<br />
 **Default**: standard<br />
 The name of the MySQL instance. Must be unique within a namespace. Cannot be modified after the MySQL instance has been created. The metadata can set the name, namespace, labels, annotations, and more for the MySQL object. For more information, see the [Kubernetes documentation](http://kubernetes.io/docs/user-guide/identifiers#names). <br/>
@@ -143,7 +144,8 @@ The name of the MySQL instance. Must be unique within a namespace. Cannot be mod
 
 ## <a id="spec"></a> Spec
 
-### `mysqlVersion: <String>`
+### mysqlVersion
+**Type**: string<br />
 **Optional**<br />
 **Default**: <latest MySQL release supported><br />
 The MySQL version that will be used for creating an instance. If the user does not specify a value, the latest supported
@@ -158,54 +160,62 @@ supported by future Operator upgrades.<br/>
 
 > **Caution** After an Operator upgrade, instances with `mysqlVersion.name` as `mysql-latest` will automatically reboot
 and upgrade to the latest supported MySQL version for that Operator.
-### `storageSize: <Quantity>`
+### storageSize 
+**Type**: quantity<br />
 **Optional**<br />
 **Default**: 1Gi<br />
 The size of the persistent volume claims (PVCs) for MySQL instance Pods. Specify a suffix for the units (for example:
 100G, 1T). After being set, cannot be reduced, but can be increased. For information about allowed size units, see the
 discussion about resource quantities in
-the [The Kubernetes resource model](https://github.com/kubernetes/design-proposals-archive/blob/main/scheduling/resources.md)
+the [Kubernetes resource model](https://github.com/kubernetes/design-proposals-archive/blob/main/scheduling/resources.md)
 in the community GitHub repository.<br />
 **Example**: 50Gi
 
-### `imagePullSecretName: <string>`
+### imagePullSecretName
+**Type**: string<br />
 **Optional**<br />
 **Default**: Defaults to the `imagePullSecretName:` used during Operator deployment, as set in the Operator's `values.yaml`. See [Configure a Kubernetes Secret for Accessing the Private Container Registry](./install-operator.html#configure-a-kubernetes-secret-for-accessing-the-private-container-registry).<br/>
 Note that the secret may need to be recreated within your pod's namespace in order for your pod to access it.<br />
 An existing Kubernetes docker-registry secret that can access the registry containing the MySQL image.<br />
 **Example**: tanzu-image-registry
 
-### `storageClassName: <string>`
+### storageClassName
+**Type**: string<br />
 **Optional**<br />
 **Default**: standard<br />
 The StorageClass used for PVCs associated with MySQL instance Pods. Cannot be modified after the MySQL instance has been created. For available types, contact your Kubernetes admin. For information about the StorageClass concept, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/storage-classes/).<br/>
 **Example**: standard
 
-### `serviceType: <string>`
+### serviceType
+**Type**: string<br />
 **Optional**<br />
 **Default**: ClusterIP<br />
 The type of Service used to provide access to the MySQL database. Only `ClusterIP` and `LoadBalancer` are supported. For more information about Kubernetes ServiceTypes, see the [Service Types](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types) in the Kubernetes documentation.<br />
 **Example**: LoadBalancer
 
-### `tls.secret.name: <string>`
+### tls.secret.name
+**Type**: string<br />
 **Optional**<br />
 **Default**: n/a<br />
 The name of the Kubernetes secret containing the TLS certificate and private key used to support encrypted connections by clients. For more configuration details, see [Configuring TLS for MySQL Instances](configure-tls.html)<br />
 **Example**: mysql-tls-secret
 
-### `highAvailability.enabled: <boolean>`
+### highAvailability.enabled
+**Type**: boolean<br />
 **Optional**<br />
 **Default**: false, unless `highAvailability.members` is greater than 1<br />
-Whether the instance is a high-availability cluster (not single-node). After being set to `true`, it cannot be modified. For information about high availability, see [Configuring MySQL Instances for High Availability](high-availability.html).
+Whether the instance is a high-availability cluster (not single-node). After being set to `true`, it cannot be modified. For information about high availability, see [Configuring MySQL Instances for High Availability](high-availability.html).</br>
 **Example**: true
 
-### `highAvailability.members: <int>`
+### highAvailability.members
+**Type**: int<br />
 **Optional**<br />
 **Default**: 3 when `highAvailability.enabled` is `true`<br />
-Total number of members in the HA cluster. Can be 3, 5, 7, or 9. A value of 1 would be a single instance. An even number creates the potential for a split-brain scenario, which must be avoided. For information about HA members, see [Change Number of Members in HA MySQL Instance](high-availability.html#configuring-ha).
+Total number of members in the HA cluster. Can be 3, 5, 7, or 9. A value of 1 would be a single instance. An even number creates the potential for a split-brain scenario, which must be avoided. For information about HA members, see [Change Number of Members in HA MySQL Instance](high-availability.html#configuring-ha).<br />
 **Example**: 5
 
-### `databasePodConfig.affinity: <corev1.Affinity>`
+### databasePodConfig.affinity
+**Type**: corev1.Affinity<br />
 **Optional**<br />
 **Default**: Database pods for a given instance are scheduled in unique Kubernetes nodes.<br />
 The affinity rules for the MySQL database pods must follow the affinity defined by the Kubernetes api, can be updated, and are not required when creating resources. For more information regarding the various fields, see the [Affinity and Anti-Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) in the Kubernetes documention.<br />
@@ -236,7 +246,8 @@ spec:
                       - <instance.name>
 ```
 
-### `databasePodConfig.tolerations: <corev1.Toleration>`
+### databasePodConfig.tolerations
+**Type**: corev1.Toleration<br />
 **Optional**<br />
 **Default**: No default tolerations are configured by the VMware MySQL Operator.<br />
 Configures Kubernetes Tolerations for the MySQL instance's database Pods. The Tolerations can be updated, and are not required when creating resources. For more details on the Kubernetes Taints and Tolerations concept, see [Taints and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) in the Kubernetes documentation. <br />
@@ -257,7 +268,8 @@ spec:
       tolerationSeconds: 3600
 ```
 
-### `proxyPodConfig.affinity: <corev1.Affinity>`
+### proxyPodConfig.affinity
+**Type**: corev1.Affinity<br />
 **Optional**<br />
 **Default**: Preference is to avoid scheduling the two proxy pods on the same Kubernetes node.<br />
 Affinity rules for the Proxy database pods. Used only when spec.highAvailability.enabled = true. For more information regarding the various fields, see the [Affinity and Anti-Affinity](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) in the Kubernetes documention.<br />
@@ -288,7 +300,8 @@ spec:
                     - <instance.name>
 ```
 
-### `proxyPodConfig.tolerations: <corev1.Toleration>`
+### proxyPodConfig.tolerations
+**Type**: corev1.Toleration<br />
 **Optional**<br />
 **Default**: No default tolerations are configured by the VMware MySQL Operator<br />
 Configures Kubernetes Tolerations for the MySQL instance's database Pods. For more details on the Kubernetes Taints and Tolerations concept, see [Taints and Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) in the Kubernetes documentation. <br />
@@ -310,139 +323,56 @@ spec:
 ```
 
 
-## <a id="resources"></a> Resources
+### resources
+**Type**: object</br>
+**Optional**</br>
+This object is a mapping of strings to `ResourceRequirements` that describes the compute resource requirements (requests and limits of cpu and memory).<br/>
+The supported keys are `mysql`, `mysql-sidecar`, `proxy`, and `metrics`. The `mysql` resources apply to the container running MySQL in the data pod. The `mysql-sidecar` resources apply the container that reconciles MySQL and MySQLBackup in the sidecar container. The `metrics` resources apply to the container running the Prometheus exporter in another sidecar. The `proxy` resources apply to the container running the MySQL Router in the proxy pods.<br/>
 
-### `resources.mysql: <limits.cpu, limits.memory>`
-**Optional**<br />
-**Default**: Best effort<br />
-The maximum CPU and memory allowed for the MySQL container. If not specified, Kubernetes does its best effort to allocate necessary compute resources
-for this container. For more information about managing resources for containers, see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.
-**Example**: 
+**Memory** specifies the amount of memory allocated to a container and defines a memory limit; if a pod tries to exceed the limit, the pod is removed and replaced by a new pod. Memory units may use a suffix, for example, `4.5Gi`. For more details on resource allocation in Kubernetes, see [Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource) in the Kubernetes documentation.
 
-```
-...
-resources:
-  mysql:
-    limits:
-      cpu: '1.0'
-      memory: 1Gi
-...
-```
+**CPU** is the amount of CPU resources allocated to a container, specified as a Kubernetes CPU unit. For example: `cpu: "1.2"`. If left empty, it inherits the default limit of its namespace (if a limit exists), or has no limit on CPU consumed. For more details on resource allocation in Kubernetes, see [Assign CPU Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/) in the Kubernetes documentation.<br/>
 
-### `resources.mysql: <requests.cpu, requests.memory>`
-**Optional**<br />
-**Default**: Best effort<br />
-The minimum CPU and memory allowed for the MySQL container. If not specified, defaults to limits, if limits have been explicitly specified. For more information about limits, see theFor more information about managing resources for containers, see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.
-**Example**: 
 
 ```
-...
-resources:
-  mysql:
-    requests:
-      cpu: 750m
-      memory: 500Mi
-...
+mysql:
+  requests:
+    cpu: 750m
+    memory: 500Mi
+  limits:
+    cpu: '1.0'
+    memory: 1Gi
+
+mysqlSidecar:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 250m
+    memory: 512Mi
+
+proxy:
+  requests:
+    cpu: 200m
+    memory: 48Mi
+  limits:
+    cpu: '1.0'
+    memory: 256Mi
+
+metrics:
+  requests:
+    cpu: 100m
+    memory: 32Mi
+  limits:
+    cpu: 250m
+    memory: 75Mi
 ```
+<p class="note">
+Note: these values are examples only. They are not recommended values.
+</p>
 
-### `resources.mysqlSidecar: <limits.cpu, limits.memory>`
-**Optional**<br />
-**Default**: Best effort<br />
-The minimum CPU and memory allowed for the MySQL Sidecar container. This sidecar container manages backups and highAvailability cluster operations.  If not specified, Kubernetes does its best effort to allocate necessary compute resources for this container. For more information about managing resources for containers, see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.<br />
-**Example**: 
-
-```
-...
-resources:
-  mysqlSidecar:
-    limits:
-      cpu: 250m
-      memory: 256Mi
-
-...
-```
-
-### `resources.mysqlSidecar: <requests.cpu, requests.memory>`
-**Optional**<br />
-**Default**: Best effort<br />
-The minimum CPU and memory allowed for the MySQL Sidecar container. This sidecar container manages backups and highAvailability cluster operations. If not specified, defaults to limits, if limits have been explicitly specified. For more information about limits, see theFor more information about managing resources for containers, see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.<br />
-**Example**: 
-
-```
-...
-resources:
-  mysqlSidecar:
-    requests:
-      cpu: 100m
-      memory: 50Mi
-...
-```
-### `resources.metrics: <limits.cpu, limits.memory>`
-**Optional**<br />
-**Default**: Best effort<br />
-The minimum CPU and memory allowed for the MySQL metrics container. This container is created during MySQL instance initialization. If not specified, Kubernetes does its best effort to allocate necessary compute resources for this container. For more information about managing resources for containers, see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.<br />
-**Example**: 
-
-```
-...
-resources:
-  metrics:
-    limits:
-      cpu: 250m
-      memory: 75Mi
-...
-```
-
-### `resources.metrics: <requests.cpu, requests.memory>`
-**Optional**<br />
-**Default**: Best effort<br />
-The minimum CPU and memory allowed for the MySQL metrics container. This container is created during MySQL instance initialization. If not specified, defaults to limits, if limits have been explicitly specified. For more information about limits, see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.<br />
-**Example**: 
-
-```
-...
-resources:
-  metrics:
-    requests:
-      cpu: 100m
-      memory: 32Mi
-...
-```
-
-### `resources.proxy: <limits.cpu, limits.memory>`
-**Optional**<br />
-**Default**: Best effort<br />
-The minimum CPU and memory allowed for the MySQL proxy container that handles connections to MySQL when `highAvailability.enabled` is true. If not specified, Kubernetes does its best effort to allocate necessary compute resources for this container. For more information about managing resources for containers, see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.<br />
-**Example**: 
-
-```
-...
-resources:
-  proxy:
-    limits:
-      cpu: '1.0''
-      memory: 256Mi
-...
-```
-
-### `resources.proxy: <requests.cpu, requests.memory>`
-**Optional**<br />
-**Default**: Best effort<br />
-The minimum CPU and memory allowed for the MySQL proxy container that handles connections to MySQL when `highAvailability.enabled` is true. If not specified, defaults to limits, if limits have been explicitly specified. For more information see [Manage Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the Kubernetes documentation.<br />
-**Example**: 
-
-```
-...
-resources:
-  proxy:
-    requests:
-      cpu: 200m
-      memory: 48Mi
-
-...
-```
-
-### `persistentVolumeClaimPolicy: <string>`
+### persistentVolumeClaimPolicy
+**Type**: string<br />
 **Optional**<br />
 **Default**: Retain<br />
 Describes the PVC retention policy when the associated MySQL instance is deleted. Values can be `Retain` or `Delete`.<br />
