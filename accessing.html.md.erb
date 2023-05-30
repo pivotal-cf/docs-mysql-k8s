@@ -39,26 +39,26 @@ To see all MySQL instance settings configured:
 
 ## <a id='admin-login'></a> Get Admin Access to the MySQL Server
 
-The `mysql-admin` user has all privileges except `SHUTDOWN`, `SUPER`, `REPLICATION SLAVE`, and `REPLICATION CLIENT`. The user can connect from outside the container so that it can be used by external applications (e.g phpMyAdmin).
+The `mysql-admin` user has all privileges except `SHUTDOWN`, `SUPER`, `REPLICATION SLAVE`, and `REPLICATION CLIENT`. This user can connect from outside the container, so it can be used by external applications such as phpMyAdmin.
 
-Common uses for this user:
+Common uses for this user are:
 - managing additional users and databases beyond those created by default
 - accessing tables in other schemas like `performance_schema`
 
-For example, to connect to a single-node instance named `mysql-sample` with the user `mysql-admin`:
+For example, to connect to a single-node instance named `mysql-sample` with the user `mysql-admin`, open a connection to the database by port forwarding over 3306 in one session:
 
-In one session, open a connection to the database by port forwarding over 3306.
 ```
 kubectl port-forward service/mysql-sample 3306
 ```
 
-In another session, fetch the credentials for the `mysql-admin` user and connect over 127.0.0.1.
+In another session, fetch the credentials for the `mysql-admin` user and connect over 127.0.0.1:
+
 ```
 ADMIN_PASSWORD=$(kubectl get secret mysql-sample-admin-user-db-secret -o go-template='{{.data.password | base64decode }}')
 mysql -u mysql-admin -p$ADMIN_PASSWORD -h 127.0.0.1 -P 3306
 ```
 
-<p class="note">The secret name will be <INSTANCE-NAME>-admin-user-db-secret</p>
+> **Note** The secret name will be `<INSTANCE-NAME>-admin-user-db-secret`.
 
 ## <a id='root-login'></a>  Get Root Access to the MySQL Server
 
