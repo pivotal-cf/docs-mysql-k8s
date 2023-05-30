@@ -66,7 +66,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     ```
     helm upgrade <RELEASE-NAME> ${CHART_DIR} -f /<path-to-your-file>/operator_overrides_values.yaml --wait
     ```
-    where
+    where:
      - `RELEASE-NAME` is the Helm release value under the `NAME` column of the list output
      - `operator_overrides_values.yaml` is the overrides file
 
@@ -128,7 +128,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
       - `TDS-VERSION` is the target version you'll like to upgrade to (e.g. `1.9.0`)
       - `OPERATOR-NAMESPACE` is the namespace of the package repository
 
-    For example,
+    For example:
     ```
     tanzu package repository update sql-data-services \
          --url registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.9.0
@@ -155,7 +155,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
       - `PACKAGE-REPOSITORY-NAME` is your chosen name for the installed package repository
       - `OPERATOR-NAMESPACE` is the namespace of the package repository.
 
-    For example,
+    For example:
     ```
     tanzu package repository get sql-data-services -n data-services-operators
     ```
@@ -175,7 +175,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     ```
     where `OPERATOR-NAMESPACE` is the namespace of the package repository.
 
-    For example,
+    For example:
     ```
     tanzu package available list mysql-operator.with.sql.tanzu.vmware.com -n data-services-operators
     ```
@@ -198,7 +198,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
    ```
    where `OPERATOR-NAMESPACE` is the namespace of the package repository.
 
-   For example,
+   For example:
    ```
    tanzu package installed list -n data-services-operators
    ```
@@ -223,7 +223,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
       - `YOUR-OVERRIDES-FILE-PATH` is your custom overrides path and file, for example `overrides.yaml`
       - `OPERATOR-NAMESPACE` is the namespace of the packagerepository
 
-    For example,
+    For example:
     ```
     tanzu package installed update vmware-mysql-operator \
       --package-name mysql-operator.with.sql.tanzu.vmware.com \
@@ -251,7 +251,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     - `OPERATOR-NAMESPACE` is the namespace of the package repository
     - `PACKAGE-NAME` is the name shown from the installed package list
 
-    For example,
+    For example:
     ```
     tanzu package installed get vmware-mysql-operator -n data-services-operators
     ```
