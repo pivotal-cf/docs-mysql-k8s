@@ -166,59 +166,50 @@ You can access and install <%=vars.product_name %> using two different methods:
 1. Create the Operator namespace: 
 
     ```
+    kubectl create namespace NAMESPACE
+    ```
+    where `NAMESPACE` is the name of a namespace where the following steps will create a docker-registry secret and install the operator.
+
+    For example:
+    ```
     kubectl create namespace vmware-mysql-for-kubernetes-system
     ```
-    where `vmware-mysql-for-kubernetes-system` is an example namespace.
     
 
 1. Create a `docker-registry` type secret to allow the Kubernetes cluster to authenticate with a private image registry, or the Tanzu Registry, so it can pull images. 
 
     <p class='note important'><strong>IMPORTANT:</strong> Re-run the commands below to create identical or equivalent secrets in every namespace in which users will create VMware MySQL instances</strong>, and replace the Operator namespace <code>vmware-mysql-for-kubernetes-system</code> by the instance namespace (e.g. <code>default</code>). </br>
     If these secrets are not created in the instance namespace, the users will receive "ImagePullBackOff" errors when creating instances, as their MySQL pods fail to pull instance images from the image registry.</p>
-    
-    These examples create a secret named `tanzu-image-registry` using Tanzu Registry, Harbor, or GCR. 
 
-    **Tanzu Registry**
-    
     ```
-    
-    kubectl create secret docker-registry tanzu-image-registry \
-        --docker-server=https://registry.tanzu.vmware.com/ \
-        --docker-username="${DOCKER_USERNAME}" \
-        --docker-password="${DOCKER_PASSWORD}" \
-        --namespace=vmware-mysql-for-kubernetes-system
+    kubectl create secret docker-registry <SECRET-NAME> \
+        --docker-server=<DOCKER-SERVER> \
+        --docker-username=<DOCKER-USERNAME> \
+        --docker-password=<DOCKER-PASSWORD> \
+        --namespace=<OPERATOR-NAMESPACE>
     ```
-    
-    **Harbor**
-    
-    ```
-    kubectl create secret docker-registry tanzu-image-registry \
-        --docker-server=${HARBOR_URL} \
-        --docker-username=${HARBOR_USER} \
-        --docker-password="${HARBOR_PASSWORD}" \
-        --namespace=vmware-mysql-for-kubernetes-system
-    ```
-    
-    **GCR**
-    
+    where:
+      - `SECRET-NAME` is the name of the secret. Choose `tanzu-image-registry` to match the default secret name used by the operator
+      - `DOCKER-SERVER` is the name of the server location for the registry
+      - `DOCKER-USERNAME` is the username for registry authentication
+      - `DOCKER-PASSWORD` is the password for registry authentication
+
+    For example:
     ```
     kubectl create secret docker-registry tanzu-image-registry \
-        --docker-server=https://gcr.io \
-        --docker-username=_json_key \
-        --docker-password="$(cat ~/key.json)" \
-        --namespace=vmware-mysql-for-kubernetes-system
+      --docker-server=registry.tanzu.vmware.com \
+      --docker-username=my-username \
+      --docker-password=my-password \
+      --namespace=vmware-mysql-for-kubernetes-system
     ```
-
-    For GKE information on how to obtain the `key.json` service account file, refer to [Creating service account credentials](https://cloud.google.com/kubernetes-engine/docs/tutorials/authenticating-to-cloud-platform#step_3_create_service_account_credentials) in the GKE documentation.
-
 
 #### <a id="create-overrides"></a> Review the Operator Values
 
 The below Operator configuration files are in the helm chart directory `vmware-sql-with-mysql-operator`.
 
-- If you setup the VMware MySQL Operator via Tanzu Network Registry, `vmware-sql-with-mysql-operator` should be in the directory created when you ran `helm pull ...`.
+- If you setup the VMware MySQL Operator via Tanzu Network Registry, `vmware-sql-with-mysql-operator` should be in the `untardir` directory specified in the `helm pull ...` command.
 
-- If you setup the VMware MySQL Operator via a downloaded archive file, go to the directory of helm charts within the unpacked the archive file:
+- If you setup the VMware MySQL Operator via a downloaded archive file, go to the directory of helm charts within the unpacked archive file:
 
   ```
   cd mysql-for-kubernetes-*/charts
@@ -230,7 +221,7 @@ List the contents of the Operator helm chart directory `vmware-sql-with-mysql-op
 ```
 ls -F vmware-sql-with-mysql-operator
 ```
-You should see it contains config files and subdirectories:
+You should see the chart directory contains config files and subdirectories:
 ```
 Chart.yaml      crds/      templates/      values.schema.json      values.yaml
 ```
@@ -239,10 +230,11 @@ In most situations, the default values supplied in the Operator configuration fi
 
 However, you will need to create an Operator Values Override file to replace those values with your own if any of the following are true:
 
-* You deployed the VMware SQL with MySQL for Kubernetes images from a registry other than registry.tanzu.vmware.com.
-* You named your registry secret something other than the default `tanzu-image-registry` in <strong>Create Operator Namespace and Secrets</strong> above.
-* You want to allocate different CPU or memory resources for your Operator.
-* You want to specify an alternate default version for new MySQL instances.
+* You relocated the VMware SQL with MySQL for Kubernetes images to a custom private registry.
+* You named the registry secret something other than the default `tanzu-image-registry` in <strong>Create Operator Namespace and Secrets</strong> above.
+* You want to allocate specific CPU or memory resources for your Operator.
+* You want to specify your ClusterIssuer for generating TLS credentials for the databases
+* You want to disable the security context on pods
 
 Create an Operator Values Override file:
 
@@ -327,19 +319,40 @@ Create an Operator Values Override file:
 
     Use Helm to install the MySQL Operator in your Kubernetes cluster:
 
+    Without an override file:
     ``` 
-    helm install --wait my-mysql-operator /tmp/vmware-sql-with-mysql-operator/ \
-      --values=operator-values-overrides.yaml \
-      --namespace=vmware-mysql-for-kubernetes-system \
-      --create-namespace
-    ``` 
+    helm install <RELEASE-NAME> <CHART-DIR> \
+      -n <OPERATOR-NAMESPACE> \
+      --wait
+    ```
+
+    If you need to specify an override file:
+    ```
+    helm install <RELEASE-NAME> <CHART-DIR> \
+      -f <OVERRIDE-FILE> \
+      -n <OPERATOR-NAMESPACE> \
+      --wait
+    ```
 
     where:
-    * `--wait` flag waits for the Operator deployment to complete before any image installation starts
-    * `my-mysql-operator` is the custom name you provide for your MySQL Operator
-    * `/tmp/vmware-sql-with-mysql-operator/` is the location of the MySQL Operator helm chart
-    * `vmware-mysql-for-kubernetes-system` is the Operator namespace you created in [Create Operator Namespace and Secrets](#create-namespace-and-secrets)
-    * `operator-values-overrides.yaml` is the overrides file with your custom values, as per [Review the Operator Values](#create-overrides)
+      - `RELEASE-NAME` is the custom name you provide for your MySQL Operator
+      - `CHART-DIR` is the location of the MySQL Operator helm chart
+      - `OPERATOR-NAMESPACE` is the Operator namespace you created in [Create Operator Namespace and Secrets](#create-namespace-and-secrets)
+      - `OVERRIDE-FILE` is the override file with your custom values, as per [Review the Operator Values](#create-overrides)
+
+    For example:
+    ```
+    helm install my-mysql-operator /tmp/vmware-sql-with-mysql-operator \
+      -n vmware-mysql-for-kubernetes-system \
+      --wait
+    ```
+
+    Or another example where the chart reference is an OCI registry name instead of a downloaded directory:
+    ```
+    helm install my-mysql-operator oci://registry.tanzu.vmware.com/tanzu-mysql-for-kubernetes/vmware-sql-with-mysql-operator --version 1.8.0 \
+      -n vmware-mysql-for-kubernetes-system \
+      --wait
+    ```
 
     The command displays a message similar to:
 
@@ -355,12 +368,18 @@ Create an Operator Values Override file:
        <strong>Note:</strong> Install the Operator in the same namespace as the secrets, as described in <a href="#create-namespace-and-secrets">Create Operator Namespace and Secrets</a>.
     </p>
 
-1.  If you used an Operator values override file, save it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different overrides file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
+1.  If you used an Operator values override file, save it for future Operator upgrades reference. By default, Helm will re-apply those override values when you later use `helm upgrade`, unless you perform the upgrade with a different override file or with the `--reset-values` flag. For more details on Helm upgrades, see [Helm Upgrade](https://helm.sh/docs/helm/helm_upgrade/) in the Helm documentation.
 
 1.  Use `watch kubectl get all` to monitor the progress of the deployment. The deployment is complete when the MySQL Operator pod status changes to `Running`.
 
     ``` 
-    watch kubectl get all --namespace=vmware-mysql-for-kubernetes-system
+    watch kubectl get all -n <OPERATOR-NAMESPACE>
+    ```
+    where`OPERATOR-NAMESPACE` is the namespace where the operator is installed
+
+    For example:
+    ```
+    watch kubectl get all -n vmware-mysql-for-kubernetes-system
     ```
     The output would be similar to: 
     
@@ -381,12 +400,19 @@ Create an Operator Values Override file:
     You may also check the logs to confirm the Operator is running properly:
 
     ``` 
-    kubectl logs -n vmware-mysql-for-kubernetes-system -l app.kubernetes.io/name=tanzu-sql-with-mysql-operator
-    ``` 
+    kubectl logs -n <OPERATOR-NAMESPACE> -l app.kubernetes.io/name=tanzu-sql-with-mysql-operator
+    ```
+    where`OPERATOR-NAMESPACE` is the namespace where the operator is installed
     
-1. Clean up the temporary directory if you no longer need the exported chart:
+1. Clean up the downloaded chart if it is no longer needed:
 	```
-	rm -rf ${CHART_DIR}
+	rm -rf <CHART-DIR>
+	```
+	where `CHART-DIR` is the directory of the downloaded helm chart
+
+	For example:
+	```
+	rm -rf /tmp/vmware-sql-with-mysql-operator
 	```
 
 ## <a id="tanzu_cli_install"></a> Installing using the Tanzu CLI
