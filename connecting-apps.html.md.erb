@@ -158,6 +158,8 @@ This section assumes that the MySQL instance is named `mysql-sample` and is depl
       database: bitnami_wordpress
 
     extraEnvVars:
+    - name: "WORDPRESS_ENABLE_DATABASE_SSL"
+      value: "yes"
     - name: "WORDPRESS_DATABASE_SSL_CA_FILE"
       value: "/etc/mysql/tls/ca.crt"
 
