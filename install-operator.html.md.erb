@@ -221,7 +221,7 @@ List the contents of the Operator helm chart directory `vmware-sql-with-mysql-op
 ```
 ls -F vmware-sql-with-mysql-operator
 ```
-You should see the chart directory contains config files and subdirectories:
+You should see that the chart directory contains config files and subdirectories:
 ```
 Chart.yaml      crds/      templates/      values.schema.json      values.yaml
 ```
@@ -233,8 +233,8 @@ However, you will need to create an Operator Values Override file to replace tho
 * You relocated the VMware SQL with MySQL for Kubernetes images to a custom private registry.
 * You named the registry secret something other than the default `tanzu-image-registry` in <strong>Create Operator Namespace and Secrets</strong> above.
 * You want to allocate specific CPU or memory resources for your Operator.
-* You want to specify your ClusterIssuer for generating TLS credentials for the databases
-* You want to disable the security context on pods
+* You want to specify your ClusterIssuer for generating TLS credentials for the databases.
+* You want to disable the security context on pods.
 
 Create an Operator Values Override file:
 
@@ -402,7 +402,7 @@ Create an Operator Values Override file:
     ``` 
     kubectl logs -n <OPERATOR-NAMESPACE> -l app.kubernetes.io/name=tanzu-sql-with-mysql-operator
     ```
-    where`OPERATOR-NAMESPACE` is the namespace where the operator is installed
+    where `OPERATOR-NAMESPACE` is the namespace where the operator is installed
     
 1. Clean up the downloaded chart if it is no longer needed:
 	```
