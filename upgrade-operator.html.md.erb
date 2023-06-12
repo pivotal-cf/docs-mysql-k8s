@@ -16,9 +16,9 @@ Ensure you have access to [Tanzu Network](https://network.tanzu.vmware.com) and 
     <strong>Note:</strong> Use Helm CLI 3.8.0 and later.
  </p>
 
-### <a id="access"></a> Access the Resources
+### <a id="access"></a> Download the helm chart
 
-You can access and install the new VMware MySQL Operator using any of the two different methods used during the initial installation.
+You can download the new VMware MySQL Operator using any of the two different methods used during the initial installation.
 
 - Use [Setup the VMware MySQL Operator via Tanzu Network Registry](install-operator.html#install-via-tanzu) for a faster installation process, and if your server hosts have access to the internet.
 
@@ -29,13 +29,14 @@ You can access and install the new VMware MySQL Operator using any of the two di
 
 After downloading the Helm chart, upgrade the operator following these steps:
 
-1. Set the environment variable `CHART_DIR` to the location of the downloaded helm chart. 
+1. Identify where the chart is downloaded.
 
 1. Update the existing VMware MySQL Operator Custom Resource Definitions (CRDs) with the new values:
 
     ```
-    kubectl apply -f ${CHART_DIR}/crds/
+    kubectl apply -f <CHART-DIR>/crds/
     ```
+    where `CHART-DIR` is the path to the downloaded helm chart.
 
 1. Update an existing overrides file or create an `operator_overrides_values.yaml` file at a location of your choice. 
 Refer to [Review the Operator Values](install-operator.html#create-overrides) for details on setting the appropriate overrides.
@@ -44,17 +45,10 @@ Refer to [Review the Operator Values](install-operator.html#create-overrides) fo
 then Helm will re-apply those override values to this upgrade, unless you perform the upgrade with other overrides or 
 with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh/docs/helm/helm_upgrade/) for details.
 
-1. Target the namespace where you installed the Helm release:
+1. Identify the name and namespace of the helm installation
 
     ```
-    kubectl config set-context --current --namespace=<MYSQL-OPERATOR-NAMESPACE>
-    ```
-    where `MYSQL-OPERATOR-NAMESPACE` is the namespace where the previous operator version is installed.
-
-    List the Helm releases using:
-    
-    ```
-    helm ls
+    helm ls -A
     ```
     ```
     NAME                NAMESPACE                           REVISION	UPDATED                             	STATUS  	CHART                              	  APP VERSION
@@ -64,11 +58,30 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
 1. Upgrade the Operator using:
 
     ```
-    helm upgrade <RELEASE-NAME> ${CHART_DIR} -f /<path-to-your-file>/operator_overrides_values.yaml --wait
+    helm upgrade <RELEASE-NAME> <CHART-DIR> \
+      -n <OPERATOR-NAMESPACE> \
+      --wait
+    ```
+
+    If you need to specify an override file:
+    ```
+    helm upgrade <RELEASE-NAME> <CHART-DIR> \
+      -f <OVERRIDE-FILE> \
+      -n <OPERATOR-NAMESPACE> \
+      --wait
     ```
     where:
-     - `RELEASE-NAME` is the Helm release value under the `NAME` column of the list output
-     - `operator_overrides_values.yaml` is the overrides file
+      - `RELEASE-NAME` is the Helm release value under the `NAME` column of the list output
+      - `CHART-DIR` is the location of the MySQL Operator helm chart
+      - `OPERATOR-NAMESPACE` is the namespace where the operator is installed
+      - `OVERRIDE-FILE` is the path to the override file
+
+    For example:
+    ```
+    helm upgrade my-mysql-operator /tmp/vmware-sql-with-mysql-operator \
+      -n vmware-mysql-for-kubernetes-system \
+      --wait
+    ```
 
     The output is similar to:
 
@@ -84,10 +97,16 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     where `REVISION` is a counter for the number of Operator upgrades you have performed. If you have upgraded from 1.0 to 1.1, and from 1.1 to 1.2, the REVISION number would be 3.
 
 
-1. Clean up the temporary directory if it is no longer needed with the exported chart by running:
-	  ```
-	  rm -rf ${CHART_DIR}
-	  ```
+1. Clean up the downloaded chart if it is no longer needed:
+	 ```
+	 rm -rf <CHART-DIR>
+	 ```
+	 where `CHART-DIR` is the directory of the downloaded helm chart.
+
+	 For example:
+	 ```
+	 rm -rf /tmp/vmware-sql-with-mysql-operator
+	 ```
 
 ## <a id="tanzu-upgrade"></a>Upgrading the Operator using the Tanzu CLI
 

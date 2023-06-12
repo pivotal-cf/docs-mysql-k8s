@@ -26,10 +26,19 @@ The MySQL Operator deploys the instances with TLS from the self-signed `ClusterI
 
 By default, the Operator will create a `ClusterIssuer` named `vmware-sql-with-mysql-operator-ca-certificate-clusterissuer` and will retrieve MySQL instance certificates issued via this resource. 
 
-To verify that your MySQL Operator is using the default settings, with no `ClusterIssuer` customization, use:
+To verify that your MySQL Operator is using the default settings, with no `ClusterIssuer` customization, fetch the helm values:
 
 ``` 
-helm --namespace=vmware-mysql-for-kubernetes-system get values vmware-sql-with-mysql-operator
+helm --namespace=OPERATOR-NAMESPACE get values RELEASE-NAME
+```
+where:
+  - `OPERATOR-NAMESPACE` is the namespace where the operator is installed
+  - `RELEASE-NAME` is the name of the release for the helm installation
+
+For example:
+
+```
+helm --namespace=vmware-mysql-for-kubernetes-system get values my-mysql-operator
 ```
 The output should be similar to:
 
@@ -78,20 +87,24 @@ Before you configure TLS using a custom CA authority, you must have access permi
 1. Verify that cert-manager was configured during [Installing the MySQL Operator](install-operator.html#vmware-network-prerequisites) prerequisites:
 
     ```
-    kubectl get all --namespace=cert-manager
+    kubectl get all --namespace=CERT-MANAGER-NAMESPACE
     ```
+    where `CERT-MANAGER-NAMESPACE` is the namespace where cert-manager is installed
 
 2. Create a Kubernetes Secret for the CA certificate. For example, create a `my-CA-secret.yaml` with values similar to:
 
     ```
+    apiVersion: v1
     kind: Secret
     metadata:
-        name: my-ca-certificate
-        namespace: cert-manager-namespace
+      name: my-ca-certificate
+      namespace: CERT-MANAGER-NAMESPACE
+    type: kubernetes.io/tls
     data:
       tls.crt: this is a CA public key
       tls.key: this is the CA private key
     ```
+    where `CERT-MANAGER-NAMESPACE` is the namespace where cert-manager is installed
 
     and apply with:
 
@@ -117,10 +130,10 @@ Before you configure TLS using a custom CA authority, you must have access permi
     apiVersion: cert-manager.io/v1
     kind: ClusterIssuer
     metadata:
-        name: my-ca-certificate-clusterissuer
+      name: my-ca-certificate-clusterissuer
     spec:
-        ca:
-         secretName: my-ca-certificate
+      ca:
+        secretName: my-ca-certificate
     ```
 
 4. Apply the Secret using:
@@ -131,17 +144,21 @@ Before you configure TLS using a custom CA authority, you must have access permi
 
     For certificate creation troubleshooting see the [cert-manager](https://cert-manager.io/docs/faq/troubleshooting/) documentation.
 
-5. For new VMware MySQL Operator customers, create the MySQL Operator and set it to use the custom TLS issuer by using a command similar to:
+5. Create or update the MySQL Operator to use the custom TLS issuer by using a command similar to:
 
     ```
-    helm install vmware-sql-with-mysql-operator ./vmware-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
+    helm --namespace=OPERATOR-NAMESPACE upgrade --install RELEASE-NAME CHART --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
+    ```
+    where:
+      - `OPERATOR-NAMESPACE` is the namespace where the operator is installed
+      - `RELEASE-NAME` is the name of the release for the helm installation
+      - `CHART` is a reference to the helm chart
+
+    For example:
+    ```
+    helm --namespace=vmware-mysql-for-kubernetes-system upgrade --install my-mysql-operator /tmp/vmware-sql-with-mysql-operator --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
     ```
 
-    For existing VMware MySQL Operator customers, update the Operator using a command similar to:
-
-    ```
-    helm update vmware-sql-with-mysql-operator ./vmware-sql-with-mysql-operator/ --set=certManagerClusterIssuerName=my-ca-certificate-clusterissuer
-    ```
     <p class="note">
        <strong>Note:</strong> If you need to use more than one CA issuer, either see <a href="#explicitly-configure-instance-for-TLS">Explicitly Configure a MySQL instance for TLS</a> or run another MySQL Operator in a different Kubernetes cluster.
     </p>
@@ -149,8 +166,12 @@ Before you configure TLS using a custom CA authority, you must have access permi
 6. To verify the custom `ClusterIssuer` setup, use:
 
     ```
-    helm --namespace=vmware-mysql-for-kubernetes-system get values vmware-sql-with-mysql-operator
+    helm --namespace=OPERATOR-NAMESPACE get values RELEASE-NAME
     ```
+    where:
+      - `OPERATOR-NAMESPACE` is the namespace for the operator
+      - `RELEASE-NAME` is the name of the release for the helm installation
+
     ```
     USER-SUPPLIED VALUES:
     certManagerClusterIssuerName: my-ca-certificate-clusterissuer
@@ -222,11 +243,11 @@ see [Create TLS Secret with cert-manager](#using-cert-manager) below.
     For example:
 
     ``` 
-      kubectl -n my-namespace create secret generic mysql-tls-secret \
-          --type kubernetes.io/tls \
-          --from-file=tls.crt=/path/server.crt \
-          --from-file=tls.key=/path/server.key \
-          --from-file=ca.crt=/path/server_ca.crt
+    kubectl -n my-namespace create secret generic mysql-tls-secret \
+      --type kubernetes.io/tls \
+      --from-file=tls.crt=/path/server.crt \
+      --from-file=tls.key=/path/server.key \
+      --from-file=ca.crt=/path/server_ca.crt
     ``` 
 
 After completing the steps above, you add the secret to the instance by following the instructions
