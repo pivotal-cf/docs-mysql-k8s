@@ -373,34 +373,35 @@ Note: these values are examples only. They are not recommended values.
 
 In some environments, `1Gi` is too low of a memory limit for the MySQL container and will cause the OOMKiller to terminate the container.
 
-    ```
-    kubectl describe pod mysql-sample-0
+```
+kubectl describe pod mysql-sample-0
+
+...
+Containers:
+  mysql:
     ...
-    Containers:
-      mysql:
-        ...
-        State:          Waiting
-          Reason:       CrashLoopBackOff
-        Last State:     Terminated
-          Reason:       OOMKilled
-          Exit Code:    137
-          Started:      Mon, 12 Jun 2023 14:53:09 -0700
-          Finished:     Mon, 12 Jun 2023 14:53:11 -0700
-    ```
+    State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       OOMKilled
+      Exit Code:    137
+      Started:      Mon, 12 Jun 2023 14:53:09 -0700
+      Finished:     Mon, 12 Jun 2023 14:53:11 -0700
+```
 
 If the Metrics API is installed on the Kubernetes cluster, you can view the resource metrics for pods using the `kubectl top` command. See [Resource metrics pipeline](https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/) for more information.
 
 For example,
-    ```
-    kubectl top pods
+```
+kubectl top pods
 
-    NAME                   CPU(cores)   MEMORY(bytes)
-    mysql-sample-0         96m          863Mi
-    mysql-sample-1         58m          645Mi
-    mysql-sample-2         34m          648Mi
-    mysql-sample-proxy-0   13m          6Mi
-    mysql-sample-proxy-1   14m          6Mi
-    ```
+NAME                   CPU(cores)   MEMORY(bytes)
+mysql-sample-0         96m          863Mi
+mysql-sample-1         58m          645Mi
+mysql-sample-2         34m          648Mi
+mysql-sample-proxy-0   13m          6Mi
+mysql-sample-proxy-1   14m          6Mi
+```
 
 To achieve a certain [Quality of Service](https://kubernetes.io/docs/tasks/configure-pod-container/quality-service-pod/), you must configure the resource requirements of the containers accordingly.
 
