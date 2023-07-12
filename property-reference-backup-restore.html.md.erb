@@ -107,7 +107,7 @@ The table below explains the properties that can be set for the MySQLBackupLocat
   <td></td>
   <td>No</td>
 </tr>
-<td>
+<tr>
   <td>spec.storage.s3.forcePathStyle</td>
   <td>boolean</td><td>false</td>
   <td><code>true</code> forces the use of path-style S3 URLs for compatibility.
@@ -118,6 +118,7 @@ The table below explains the properties that can be set for the MySQLBackupLocat
   </td>
   <td><code>false</code></td>
   <td>No</td>
+</tr>
 <tr>
   <td>spec.storage.s3.secret.name</td>
   <td>String</td>
@@ -324,28 +325,76 @@ The table below explains the properties that can be set for the MySQLBackupSched
    <td>String</td>
    <td><em>n/a</em></td>
    <td>The name of the MySQLBackupLocation that represents the blobstore where backups will be uploaded. Must be in the same namespace as the MySQLBackupSchedule.</td>
-   <td><code>backuplocation-sample</td>
+   <td><code>backuplocation-sample</code></td>
    <td>Yes</td>
-<tr>
 </tr>
    <td>spec.backupTemplate.spec.instance.name</td>
    <td>String</td>
    <td><em>n/a</em></td>
    <td>The name of the MySQL instance on which you want scheduled backups for.
        Must be in the same namespace as the MySQLBackupSchedule.</td>
-   <td><code>mysql-sample</td>
+   <td><code>mysql-sample</code></td>
    <td>Yes</td>
 <tr>
-</tr>
 <td>spec.schedule</td>
    <td>String (cron schedule)</td>
    <td><em>n/a</em></td>
    <td>The cron schedule for backups. Must be a valid cron schedule.</td>
-   <td><code>"0 23 * * 6" (every Saturday at 11PM)</td>
+   <td><code>"0 23 * * 6"</code> (every Saturday at 11PM)</td>
    <td>Yes</td>
+</tr>
+<tr>
+<td>spec.binaryLogCollection.enabled</td>
+   <td>boolean</td>
+   <td><code>false</code></td>
+   <td>Enables binary log collection</td>
+   <td><code>true</code></td>
+   <td>No</td>
+</tr>
+<tr>
+<td>spec.binaryLogCollection.resources</td>
+   <td>ResourceRequirements</td>
+   <td><em>n/a</em></td>
+   <td>Specifies Resource Requirements</td>
+   <td><code>limits: {cpu: 100m}</code></td>
+   <td>No</td>
 </tr>
 </table>
 
+More information on **ResourceRequirements**: 
+
+**Memory** specifies the amount of memory allocated to a container and defines a memory limit; if a pod tries to exceed the limit, the pod is removed and replaced by a new pod. Memory units may use a suffix, for example, `4.5Gi`. For more details on resource allocation in Kubernetes, see [Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource) in the Kubernetes documentation.
+
+**CPU** is the amount of CPU resources allocated to a container, specified as a Kubernetes CPU unit. For example: `cpu: "1.2"`. If left empty, it inherits the default limit of its namespace (if a limit exists), or has no limit on CPU consumed. For more details on resource allocation in Kubernetes, see [Assign CPU Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/) in the Kubernetes documentation.<br/>
+
+Example:
+```
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQLBackupSchedule
+metadata:
+  name: backupschedule-sample
+spec:
+  backupTemplate:
+    spec:
+      location:
+        name: backuplocation-sample
+      instance:
+        name: mysql-sample
+  schedule: "@daily"
+  binaryLogCollection:
+    enabled: true
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+```
+
+<p class="note">
+Note: these values are examples only. They are not recommended values.
+</p>
 
 ## <a name="on-demand-backup"></a>  Properties for the MySQLBackup Resource
 
@@ -460,6 +509,7 @@ The table below explains the properties that can be set for the MySQLRestore res
 <br>
 * The type MySQL is a nested YAML object.
 For example:
+
 ``` 
 metadata:
   name: mysql-sample
