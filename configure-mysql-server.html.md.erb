@@ -10,9 +10,9 @@ You can customize the MySQL Server running in new or existing <%=vars.product_na
 
 - Ensure that you have a running VMware MySQL Operator. For details, refer to [Installing a MySQL Operator](install-operator.html).
 
-- Ensure you have a running MySQL instance, or familiarity with creating a new MySQL Instance. For details review [Create and Deleting MySQL Instances](create-delete-mysql.html).
+- Ensure that you have a running MySQL instance, or familiarity with creating a new MySQL Instance. For details, review [Create and Deleting MySQL Instances](create-delete-mysql.html).
 
-- Ensure you are familiar with your instance's YAML manifest file.
+- Ensure that you are familiar with your instance's YAML manifest file.
 
 - Review the various fields that can be configured in your MySQL server version. For details, refer to [MySQL Server Variable Reference](https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html).
 
@@ -42,18 +42,18 @@ The MySQL Operator allows you to configure most of the MySQL configuration param
 - group-replication-unreachable-majority-timeout
 - group-replication-recovery-tls-version
 
-If you attempt to change any of these parameters, the changes are ignored and MySQL uses the values configured by the operator.
+If you attempt to change any of these parameters, the changes are ignored and MySQL uses the values configured by the MySQL Operator.
 
 ### <a id="autotuned"></a> Tuned Parameters
 
-The MySQL operator tunes server configuration based on the requested memory, CPU, and disk for the MySQL container.
+The MySQL Operator tunes server configuration based on the requested memory, CPU, and disk for the MySQL container.
 
-Specifically,
+Some specific values are calculated as follows:
 
 - The value of `binlog_space_limit` is calculated as one-third of the requested storage size
-- The value of `max_binlog_size` is calculated as one-ninth of requested storage size and rounded off to the nearest block of 4096 bytes
-- The value of `max_connections` is calculated as one-twelfth of requested memory (if provided)
-- The value of `innodb_buffer_pool_size` is calculated as half of requested memory (if provided)
+- The value of `max_binlog_size` is calculated as one-ninth of the requested storage size and rounded off to the nearest block of 4096 bytes
+- The value of `max_connections` is calculated as one-twelfth of the requested memory (if provided)
+- The value of `innodb_buffer_pool_size` is calculated as half of the requested memory (if provided)
 - The value of `innodb_log_file_size` is calculated as at least one-eighth of the requested memory, one-eighth of the requested storage or 1 GiB
 - The value of `max_allowed_packet` is 256M
 - The value of `innodb_log_buffer_size` is 32M
