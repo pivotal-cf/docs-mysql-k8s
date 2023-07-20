@@ -361,11 +361,13 @@ The table below explains the properties that can be set for the MySQLBackupSched
 </tr>
 </table>
 
-More information on **ResourceRequirements**: 
+### <a name="ResourceRequirements"></a>More information on the ResourceRequirements Property
 
-**Memory** specifies the amount of memory allocated to a container and defines a memory limit; if a pod tries to exceed the limit, the pod is removed and replaced by a new pod. Memory units may use a suffix, for example, `4.5Gi`. For more details on resource allocation in Kubernetes, see [Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource) in the Kubernetes documentation.
+You can specify the **CPU** and **Memory** of the `ResourceRequirements` property.
 
-**CPU** is the amount of CPU resources allocated to a container, specified as a Kubernetes CPU unit. For example: `cpu: "1.2"`. If left empty, it inherits the default limit of its namespace (if a limit exists), or has no limit on CPU consumed. For more details on resource allocation in Kubernetes, see [Assign CPU Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/) in the Kubernetes documentation.<br/>
+**Memory** specifies the amount of memory allocated to a container and defines a memory limit. If a pod tries to exceed the limit, the pod is removed and replaced by a new pod. Memory units may use a suffix, for example, `4.5Gi`. For more details on resource allocation in Kubernetes, see [Assign Memory Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource) in the Kubernetes documentation.
+
+**CPU** is the amount of CPU resources allocated to a container, specified as a Kubernetes CPU unit, for example, `cpu: "1.2"`. If you do not provide a valur for **CPU**, it inherits the default limit of its namespace (if a limit exists) or has no limit on the CPU consumed. For more details on resource allocation in Kubernetes, see [Assign CPU Resources to Containers and Pods](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/) in the Kubernetes documentation.<br/>
 
 Example:
 ```
@@ -392,8 +394,7 @@ spec:
         memory: 100Mi
 ```
 
-<p class="note">
-Note: these values are examples only. They are not recommended values.
+<p class="note"> <b>Note:</b> These values are examples of values. They are not recommended values.
 </p>
 
 ## <a name="on-demand-backup"></a>  Properties for the MySQLBackup Resource
