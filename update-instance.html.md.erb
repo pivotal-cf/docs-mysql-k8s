@@ -78,19 +78,18 @@ After an Operator upgrade, instances created under an older VMware MySQL Operato
 
     NOTE: The annotation is removed the moment the instance update is complete. You may rerun the command `kubectl get mysql` to verify that the reconciliation is complete. After the annotate action, the newly updated instances can use all the new features of the latest Operator.
 
-## <a id='scale-storage'></a> Scale storageSize
+## <a id='scale-storage'></a> Expanding storage size
 
-For storage classes that support `storageSize`, you can expand the `storageSize`
-but not reduce it.
+For storage classes that support volume expansion, you can increase the size of a volume, not reduce it.
 
-To scale `storageSize`:
+### <a id='verify-volumeexpansion'></a> Verify or enable volume expansion
 
-1. Target the namespace where you want to scale `storageSize`:
+1. Target the namespace where you want to expand volumes:
 
     ```
     kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
     ```
-    Where `DEVELOPMENT-NAMESPACE` is the namespace in which you want to scale `storageSize`.
+    Where `DEVELOPMENT-NAMESPACE` is the namespace where there are volumes associated with a MySQL instance.
 
     For example:
 
@@ -131,32 +130,20 @@ To scale `storageSize`:
     standard (default)   kubernetes.io/gce-pd   Delete          Immediate            true                   91s
     ``` 
 
-1. If the output does not show the `ALLOWVOLUMEEXPANSION` column, run:
-    ```
-    kubectl get storageclasses.storage.k8s.io standard \
-    -o custom-columns='NAME:.metadata.name,ALLOWVOLUMEEXPANSION:.allowVolumeExpansion'
-    ``` 
+1. If `ALLOWVOLUMEEXPANSION` is false and the storage class supports volume expansion, change the storage class so that the `allowVolumeExpansion` field is set to `true`. 
 
-1. If you are using Kubernetes v1.11 and volume expansion is supported, change the `allowVolumeExpansion` field to `true`
-      in StorageClass objects. Only PVCs created from a StorageClass with `allowVolumeExpansion`
-      set to `true` are allowed to perform volume expansion.
-      For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims).
+    Support for expanding CSI volumes is enabled by default, but it also requires a specific CSI driver to support volume expansion. Refer to documentation of the specific CSI driver for more information.
 
-1. Edit the PVC `spec.resources.requests.storage` field to increase the volume size by running:
+    For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims).
 
-    ```
-    kubectl patch pvc mysql-data-INSTANCE-NAME-N -p \
-    '{"spec": {"resources": {"requests": {"storage": "NEW-REQUESTED-SIZE"}}}}'
-    ```
-    Where:
-    + `INSTANCE-NAME` is the value that you configured for metadata.name for your MySQL resource.
-    + `N` is the index of the Pod in the MySQL instance.
-    + `NEW-REQUESTED-SIZE` is the increased volume size.
+### <a id='change-storagesize'></a> Increase storage size
+
+1. Edit the MySQL resource and set `spec.storageSize` field to a larger volume size.
 
     For example:
-    ``` 
-    kubectl patch pvc mysql-data-mysql-sample-0 -p '{"spec": {"resources": {"requests": {"storage": "50Gi"}}}}'
-    ``` 
+    ```
+    kubectl patch mysql mysql-sample --type=merge -p '{"spec": {"storageSize": "50Gi"}}'
+    ```
 
 1. Do one of the following:
     * **If the storageClass supports online expansion:**
@@ -174,19 +161,15 @@ To scale `storageSize`:
     For example:
     ``` 
     kubectl wait --for=condition=FileSystemResizePending pvc/mysql-data-mysql-sample-0
-    ```
-    ```
+    ...
     persistentvolumeclaim/mysql-data-mysql-sample-0 condition met 
     ```
     ```
     kubectl rollout restart statefulset mysql-sample
-    ```
-    ```
     statefulset.apps/mysql-sample restarted
     ``` 
 
-1. After the StatefulSet controller has automatically re-created the MySQL Pod, and the MySQL Pod
-has successfully restarted, verify that the storage has been resized.
+1.  Verify that the storage has been resized.
 
     ```
     kubectl exec INSTANCE-NAME-N -c mysql -- df -h /var/lib/mysql
@@ -204,7 +187,7 @@ has successfully restarted, verify that the storage has been resized.
     /dev/sdb        3.0G  346M  2.6G  12% /var/lib/mysql
     ``` 
 
-### <a id='scale-storage-downtime'></a> Expected Downtime When Scaling storageSize
+### <a id='scale-storage-downtime'></a> Expected Downtime When Scaling Storage Size
 
 For HA instances, no downtime is expected.
 
@@ -274,7 +257,7 @@ update the MySQL configuration by one of the methods below:
 * Patch the existing API object in place:
 
     ```
-    kubectl patch mysql INSTANCE-NAME -p '{"spec": {"PROPERTY": "VALUE"}}'
+    kubectl patch mysql INSTANCE-NAME --type=merge -p '{"spec": {"PROPERTY": "VALUE"}}'
     ```
     Where:
     + `INSTANCE-NAME` is the value that you configured for metadata.name for your MySQL resource.
@@ -283,7 +266,7 @@ update the MySQL configuration by one of the methods below:
 
     For example:
     ``` 
-    kubectl patch mysql mysql-sample -p '{"spec": {"imagePullSecretName": "new-secret-name"}}'
+    kubectl patch mysql mysql-sample --type=merge -p '{"spec": {"imagePullSecretName": "new-secret-name"}}'
     ``` 
 
 * If you manage MySQL resources with a set of configuration files in source control, you can
