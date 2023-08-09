@@ -78,18 +78,18 @@ After an Operator upgrade, instances created under an older VMware MySQL Operato
 
     NOTE: The annotation is removed the moment the instance update is complete. You may rerun the command `kubectl get mysql` to verify that the reconciliation is complete. After the annotate action, the newly updated instances can use all the new features of the latest Operator.
 
-## <a id='scale-storage'></a> Expanding storage size
+## <a id='scale-storage'></a> Expanding Storage Size
 
-For storage classes that support volume expansion, you can increase the size of a volume, not reduce it.
+For storage classes that support volume expansion, you can exapnd the volume, but you cannot reduce it.
 
-### <a id='verify-volumeexpansion'></a> Verify or enable volume expansion
+### <a id='verify-volumeexpansion'></a> Expanding Volume
 
-1. Target the namespace where you want to expand volumes:
+1. Target the namespace where you want to expand the volume:
 
     ```
     kubectl config set-context --current --namespace=DEVELOPMENT-NAMESPACE
     ```
-    Where `DEVELOPMENT-NAMESPACE` is the namespace where there are volumes associated with a MySQL instance.
+    Where `DEVELOPMENT-NAMESPACE` is the namespace that has volumes associated with a MySQL instance.
 
     For example:
 
@@ -97,7 +97,7 @@ For storage classes that support volume expansion, you can increase the size of 
     kubectl config set-context --current --namespace=my-namespace
     ``` 
 
-1. Look up the storage class associated with the MySQL Pod’s Persistent Volume Claim (PVC):
+1. Look up the storage class associated with the MySQL Pod's Persistent Volume Claim (PVC):
 
     ```
     kubectl get pvc mysql-data-INSTANCE-NAME-N -o jsonpath={.spec.storageClassName}
@@ -130,13 +130,13 @@ For storage classes that support volume expansion, you can increase the size of 
     standard (default)   kubernetes.io/gce-pd   Delete          Immediate            true                   91s
     ``` 
 
-1. If `ALLOWVOLUMEEXPANSION` is false and the storage class supports volume expansion, change the storage class so that the `allowVolumeExpansion` field is set to `true`. 
+1. If `ALLOWVOLUMEEXPANSION` is false and the storage class supports volume expansion, change the storage class so that the `allowVolumeExpansion` field is set to `true`.
 
-    Support for expanding CSI volumes is enabled by default, but it also requires a specific CSI driver to support volume expansion. Refer to documentation of the specific CSI driver for more information.
+   <p class="note"><b>Note:</b> Support for expanding Container Storage Interface (CSI) volumes is enabled by default, but it also requires a specific CSI driver to support volume expansion. Refer to the documentation of the specific CSI driver for more information.</p>
 
-    For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims).
+For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#expanding-persistent-volumes-claims).
 
-### <a id='change-storagesize'></a> Increase storage size
+### <a id='change-storagesize'></a> Increasing Storage Size
 
 1. Edit the MySQL resource and set `spec.storageSize` field to a larger volume size.
 
@@ -187,7 +187,7 @@ For storage classes that support volume expansion, you can increase the size of 
     /dev/sdb        3.0G  346M  2.6G  12% /var/lib/mysql
     ``` 
 
-### <a id='scale-storage-downtime'></a> Expected Downtime When Scaling Storage Size
+### <a id='scale-storage-downtime'></a> Expected Downtime During the Scaling of Storage Size
 
 For HA instances, no downtime is expected.
 
@@ -247,9 +247,7 @@ Changing `storageClassName` or `imagePullSecretName` on a running MySQL instance
 If a MySQL instance is not running due to errors in these fields, you can change them.
 The changes are propagated into the StatefulSet to correct the error.
 
-<p class="note">
-<strong>Note:</strong> You cannot modify <code>storageClassName</code> for a successfully created MySQL instance.
-</p>
+<p class="note"><b>Note:</b> You cannot modify the <code>storageClassName</code> parameter of a successfully created MySQL instance.</p>
 
 To change `storageClassName` or `imagePullSecretName`,
 update the MySQL configuration by one of the methods below:
