@@ -78,11 +78,11 @@ After an Operator upgrade, instances created under an older VMware MySQL Operato
 
     NOTE: The annotation is removed the moment the instance update is complete. You may rerun the command `kubectl get mysql` to verify that the reconciliation is complete. After the annotate action, the newly updated instances can use all the new features of the latest Operator.
 
-## <a id='scale-storage'></a> Expanding Storage Size
+## <a id='scale-storage'></a> Enabling Volume Expansion
 
-For storage classes that support volume expansion, you can exapnd the volume, but you cannot reduce it.
+For storage classes that support volume expansion, you can expand the volume, but you cannot reduce it.
 
-### <a id='verify-volumeexpansion'></a> Expanding Volume
+### <a id='verify-volumeexpansion'></a> Verifying and Enabling Volume Expansion
 
 1. Target the namespace where you want to expand the volume:
 
