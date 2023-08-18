@@ -1,0 +1,175 @@
+---
+title: Customizing the MySQL Server configuration
+---
+
+You can customize the MySQL Server running in new or existing <%=vars.product_name %> instances. The parameters you can customize depend on the MySQL version you have deployed. For a detailed parameter list, refer to [Server System Variable Reference](https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html).
+
+## <a id="mysql_configuration"></a>Configuring custom MySQL server configuration
+
+### <a id="prereq"></a>Prerequisites
+
+- Ensure that you have a running VMware MySQL Operator. For details, refer to [Installing a MySQL Operator](install-operator.html).
+
+- Ensure that you have a running MySQL instance, or familiarity with creating a new MySQL Instance. For details, review [Create and Deleting MySQL Instances](create-delete-mysql.html).
+
+- Ensure that you are familiar with your instance's YAML manifest file.
+
+- Review the various fields that can be configured in your MySQL server version. For details, refer to [MySQL Server Variable Reference](https://dev.mysql.com/doc/refman/8.0/en/server-system-variable-reference.html).
+
+
+### <a id="exceptions"></a>Exceptions
+
+The MySQL Operator allows you to configure most of the MySQL configuration parameters, EXCEPT the following:
+
+- tls-version
+- admin-tls-version
+- host-cache-size
+- innodb-flush-method
+- gtid-mode
+- enforce-gtid-consistency
+- binlog-transaction-compression
+- log-bin-trust-function-creators
+- require-secure-transport
+- disabled-storage-engines
+- log-error-suppression-list
+- log-bin
+- relay-log
+- secure-log-path
+- general-log-file
+- slow-query-log-file
+- binlog-transaction-dependency-tracking
+- replica-preserve-commit-order
+- group-replication-unreachable-majority-timeout
+- group-replication-recovery-tls-version
+
+If you attempt to change any of these parameters, the changes are ignored and MySQL uses the values configured by the MySQL Operator.
+
+### <a id="autotuned"></a> Tuned Parameters
+
+The MySQL Operator tunes server configuration based on the requested memory, CPU, and disk for the MySQL container.
+
+Some specific values are calculated as follows:
+
+- The value of `binlog_space_limit` is calculated as one-third of the requested storage size
+- The value of `max_binlog_size` is calculated as one-ninth of the requested storage size and rounded off to the nearest block of 4096 bytes
+- The value of `max_connections` is calculated as one-twelfth of the requested memory (if provided)
+- The value of `innodb_buffer_pool_size` is calculated as half of the requested memory (if provided)
+- The value of `innodb_log_file_size` is calculated as at least one-eighth of the requested memory, one-eighth of the requested storage or 1 GiB
+- The value of `max_allowed_packet` is 256M
+- The value of `innodb_log_buffer_size` is 32M
+
+You can override all of these values, as required.
+
+### <a id="procedure"></a>Procedure
+
+<p class="note important"><strong>Important:</strong> The data pods associated with the MySQL instance **are automatically restarted** when you add, update, or remove the ConfigMap.</p>
+
+Use the following steps to customize your MySQL server configuration:
+
+1. In the same namespace as your MySQL instance, create a ConfigMap with the parameters of your MySQL server. For details, refer to [Kubernetes ConfigMaps](https://kubernetes.io/docs/concepts/configuration/configmap/). An example ConfigMap is shown below:
+
+    ```
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: custom-mysql-config
+    data:
+      my.cnf: |
+        [mysqld]
+        max_connections: 250
+        slow_query_log: "on"
+    ```
+
+   <p class="note">The ConfigMap must have the key `my.cnf`.</p>
+
+   Apply the ConfigMap.
+
+    ```
+    kubectl apply -f CONFIGMAP-FILE -n DEVELOPMENT-NAMESPACE
+    ```
+   + where `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance
+   + where `CONFIGMAP-FILE` is the name of the configuration file you created
+
+1. Edit the YAML file for the MySQL instance and set the customConfig field to the name of the ConfigMap that you created.
+
+   ```
+   ...
+   spec:
+     customConfig:
+       name: custom-mysql-config
+   ```
+
+1. Create or update the MySQL instance.
+
+    ```
+    kubectl apply -f MYSQL-INSTANCE-FILE -n DEVELOPMENT-NAMESPACE
+    ```
+   where
+   - `MYSQL-INSTANCE-FILE`is the name of the Kubernetes manifest file for this instance
+   - `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance
+
+
+1. Ensure your instance has a "Running" status.
+
+    ```
+    kubectl get mysql MYSQL-INSTANCE -n DEVELOPMENT-NAMESPACE
+    ```
+    where:
+    - `MYSQL-INSTANCE` is the name of the MySQL instance
+    - `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance
+
+    with an output similar to:
+
+    ```
+    NAME           READY   STATUS    AGE    OPERATOR VERSION   DB VERSION   UPDATE STATUS       USER ACTION
+    mysql-sample   true    Running   162m   1.7.1              8.0.31       NoUpdateRequired
+    ```
+
+   If there was an error validating the server configuration, you will see the MySQL pod crashing and a StatusCondition on the MySQL instance.
+
+   ```
+   kubectl get pods -l app.kubernetes.io/instance=MYSQL-INSTANCE -n DEVELOPMENT-NAMESPACE
+
+   NAME                     READY   STATUS    RESTARTS     AGE
+   mysql-sample-0           2/3     Error     1 (7s ago)   13s
+   ```
+   where:
+   - `MYSQL-INSTANCE` is the name of the MySQL instance
+   - `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance
+
+   ```
+   kubectl describe mysql MYSQL-INSTANCE -n DEVELOPMENT-NAMESPACE
+   ```
+   where:
+   - `MYSQL-INSTANCE` is the name of the MySQL instance
+   - `DEVELOPMENT-NAMESPACE` is the namespace for the MySQL instance
+
+   Example output:
+
+   ```
+   ...
+   Status:
+     Conditions:
+       Last Transition Time:  2023-07-05T22:25:47Z
+       Message:               [ERROR] [MY-000067] [Server] unknown variable 'typo=some-value'.
+   [ERROR] [MY-010119] [Server] Aborting
+
+       Reason:               InvalidConfiguration
+       Status:               True
+       Type:                 FailedDatabaseStart
+   ```
+
+   You may also see warnings reported by MySQL in a separate Status Condition.
+
+   For example,
+   ```
+   ...
+   Status:
+     Conditions:
+       Last Transition Time:  2023-07-05T22:28:13Z
+       Message:               [Warning] [MY-000076] [Server] option 'read_only': boolean value 's' was not recognized. Set to OFF.
+
+       Reason:               ConfigurationValidation
+       Status:               True
+       Type:                 HasConfigurationWarnings
+   ```
