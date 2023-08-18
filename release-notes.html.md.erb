@@ -82,6 +82,7 @@ The <%= vars.product_short %> releases support the components listed below:
 * The MySQL general log and slow query log are located in `/var/log/mysql` instead of `/var/lib/mysql`. They are disabled by default.
 
 ### <a id="19_resolved"></a> Resolved Issues
+* Users can reference the MySQL operator helm chart as a dependency in another chart.
 
 ### <a id="19_issues"></a> Known Issues
 
@@ -136,6 +137,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   * Persisting system variables with `SET PERSIST` or `SET PERSIST_ONLY`
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
   * Azure Blob Storage uses server-side encryption by default.
+* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-7-1"></a>  Version 1.7.1
 
@@ -182,6 +184,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
   * Azure Blob Storage uses server-side encryption by default.
+* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-7-0"></a>  Version 1.7.0
 
@@ -253,7 +256,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
   * Azure Blob Storage uses server-side encryption by default.
 * Upgrading the MySQL Operator using the Tanzu CLI will result in the instances being stuck in a `Pending` state. Users must complete the upgrade for each MySQL instance for the instances to reach a `Running` state.
-
+* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-6-2"></a>  Version 1.6.2
 
@@ -296,6 +299,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
   * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
+* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-6-1"></a>  Version 1.6.1
 
@@ -333,14 +337,13 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 
 * Backups fail to sync from the blobstore to the Kubernetes cluster when the associated MySQLBackupLocation has no bucket path or a bucket path set to `/`.
 * **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The Tanzu MySQL default part size is 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
-
 * The following CVEs exist in this release:
     - [CVE-2021-3538](https://nvd.nist.gov/vuln/detail/CVE-2021-3538)
 
 ### <a id="16_limits"></a> Limitations
 
 * The Tanzu SQL release supports Helm 3.6.3 and lower, or Helm 3.7.1 and later. Helm 3.7.0 is not supported.
-* Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.  
+* Tanzu MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.
 * Backups are only supported on S3-compatible blobstores that support the S3 ListObjectsV2 API. Notably, Google Cloud Storage (GCS) does not support this API in its S3-compatibility mode.
 * To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
 * TLS is required for external connections to the database. There is no supported option to remove this requirement.
@@ -348,7 +351,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
-
+* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-6-0"></a>  Version 1.6.0 (RETRACTED)
 
@@ -365,14 +368,14 @@ This version of Tanzu MySQL is supported on the following platforms:
 
 - [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI), version 1.9.x - 1.12.x
 - [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKGm) on AWS, version 1.2.x - 1.4.x
-- Google Kubernetes Engine (GKE) 
+- Google Kubernetes Engine (GKE)
 - Amazon Elastic Kubernetes Service (EKS)
 - Kubernetes version 1.19+
 
 Additional Kubernetes environments, such as Minikube, can be used for testing or demonstration purposes.
 
 
-### <a id="14_features"></a> Features
+### <a id="15_features"></a> Features
 
 * Tanzu MySQL Operator 1.5.0 supports four different MySQL versions:
     - 8.0.25
@@ -393,7 +396,7 @@ This version of Tanzu MySQL is supported on the following platforms:
 
 - [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI), version 1.9.x - 1.12.x
 - [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKGm) on AWS, version 1.2.x - 1.4.x
-- Google Kubernetes Engine (GKE) 
+- Google Kubernetes Engine (GKE)
 - Amazon Elastic Kubernetes Service (EKS)
 - Kubernetes version 1.19+
 
