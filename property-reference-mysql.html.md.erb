@@ -38,10 +38,6 @@ spec:
 #    enabled: true
 #    members: 3
 
-#### Set the name of the ConfigMap to customize MySQL server configuration
-#  customConfig:
-#    name: my-custom-config
-
 #### Enable affinity
 #  databasePodConfig:
 #    affinity:
@@ -217,13 +213,6 @@ Whether the instance is a high-availability cluster (not single-node). After bei
 **Default**: 3 when `highAvailability.enabled` is `true`<br />
 Total number of members in the HA cluster. Can be 3, 5, 7, or 9. A value of 1 would be a single instance. An even number creates the potential for a split-brain scenario, which must be avoided. For information about HA members, see [Change Number of Members in HA MySQL Instance](high-availability.html#configuring-ha).<br />
 **Example**: 5
-
-### customConfig.name
-**Type**: string<br />
-**Optional**<br />
-**Default**: n/a<br />
-The name of the Kubernetes ConfigMap containing MySQL configuration. For more configuration details, see [Customizing the MySQL Server](./configure-mysql-server.html)<br />
-**Example**: mysql-custom-config
 
 ### databasePodConfig.affinity
 **Type**: corev1.Affinity<br />
