@@ -199,19 +199,19 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 MySQLBackup resources that are automatically generated as a result of a MySQLBackupSchedule are named
 `SCHEDULE-NAME-TIMESTAMP`.
 
-By default, <%= vars.product_short %> stores backup artifacts under the subfolder structure `mysql-<instance-name>-<instance-uuid> / backups / yyyy / mm / dd /`.
+By default, <%= vars.product_short %> stores backup artifacts under the subfolder structure `yyyy > mm > dd`.
 You can configure a custom path for backups so that backup artifacts are stored under the subfolder
-structure `CUSTOM-PATH / mysql-<instance-name>-<instance-uuid> / backups / yyyy / mm / dd`.
+structure `CUSTOM-PATH > yyyy > mm > dd`.
 
 Backup artifacts stored in the external blobstore are named `DATETIME-RANDOM_STRING-backup.xb`.
 
-For example, a user has an instance called `sample-instance` with a UUID of `bf5398d1-c0fb-4459-a024-559e9855a2cd`. If a MySQLBackupSchedule name is `mysqlbackupschedule-sample`, the custom backup
+For example, if a MySQLBackupSchedule name is `mysqlbackupschedule-sample`, the custom backup
 path is `my-backups/`, and a backup was taken on Thursday, December 10, 2020 at 8:51:03 PM GMT
 (timestamp `1607633463`), then:
 
 * The MySQLBackup resource on the Kubernetes cluster is named `mysqlbackupschedule-sample-1607633463`
 * The backup artifact in the external blobstore is named `20201210T205103-kzw54l-backup.xb`
-* The path to the artifact is `my-backups/mysql-sample-instance-bf5398d1-c0fb-4459-a024-559e9855a2cd/backups/2020/12/10/`.
+* The path to the artifact is `my-backups/2020/12/10/`.
 
 ### <a id="on-demand"></a> Perform an On-Demand Backup
 
