@@ -400,10 +400,11 @@ To delete a backup:
 
 ## <a id="restore"></a> Restore
 
-This section discusses two kinds of restore:
+This section discusses three kinds of restore:
 
 + [Restore from a Backup](#restore-from-backup)
 + [Restore a Backup to a Different Namespace or Kubernetes Cluster](#restore-to-different)
++ [Restore to a point in time using binary logs](#point-in-time)
 
 ### <a id="restore-from-backup"></a>  Restore from a Backup
 
@@ -570,6 +571,84 @@ BackupLocation in the target namespace:
     ``` 
 
 1. Trigger a restore by following steps in [Restore from a Backup](#restore-from-backup).
+
+### <a id="point-in-time"></a> Restoring to a Point in Time Using Binary Logs
+
+In order to restore a backup along with binary logs, binary log collection must first be enabled. Review the [documentation](#collect-binary-logs) to enable binary log connection.
+
+To reduce Recovery Time Objective (RTO), restoring to a point in time first restores using the full backup right before the time of recovery and then applying binary logs on top of it.
+
+There are two ways to restore using binary logs using the field `spec.pitr.type` in a MySQLRestore object:
+* `Timestamp`: The recovery process will restore binary logs until the timestamp is reached.
+* `Latest`: The recovery process will restore all the binary logs available in the blobstore.
+
+There are two ways to provide the backup artifact:
+* By providing the name of the MySQLBackup object
+* By providing the name and UID of the MySQL object and allow the operator to find the latest MySQLBackup object associated with the MySQL instance. If a recovery timestamp is provided, the operator will look for the latest MySQLBackup before the timestamp.
+
+To review all the options, see the [MySQLRestore Property Reference](property-reference-backup-restore.html.md.erb#restore)
+
+Some examples:
+
+If the most recent backup named `backup-sample` was two days ago and a user wishes to create a new MySQL instance with
+all the latest data from a source instance, then the user should create a MySQLRestore like:
+```
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQLRestore
+metadata:
+  name: restore-sample
+spec:
+  backup:
+    name: backup-sample
+  instanceTemplate:
+    metadata:
+      name: new-mysql-sample
+    spec:
+      imagePullSecretName: tanzu-image-registry
+  pitr:
+    type: Latest
+```
+
+If the most recent backup named `backup-sample` was two days ago and there was a specific transaction that was undesired,
+then the user must identify the timestamp of the transaction and provide it in the MySQLRestore.
+```
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQLRestore
+metadata:
+  name: restore-sample
+spec:
+  backup:
+    name: backup-sample
+  instanceTemplate:
+    metadata:
+      name: new-mysql-sample
+    spec:
+      imagePullSecretName: tanzu-image-registry
+  pitr:
+    type: Timestamp
+    timestamp: "2023-05-25T19:22:15Z"
+```
+
+To avoid the work of finding the latest MySQLBackup before a specific timestamp, a user can specify the identity of the source MySQL instance
+with `spec.searchForBackup` to allow the operator to find the appropriate MySQLBackup.
+```
+apiVersion: with.sql.tanzu.vmware.com/v1
+kind: MySQLRestore
+metadata:
+  name: restore-sample
+spec:
+  searchForBackup:
+    instanceName: mysql-sample
+    instanceUid: 4e1677b5-9b9a-4b2a-bd90-9799441a145f
+  instanceTemplate:
+    metadata:
+      name: new-mysql-sample
+    spec:
+      imagePullSecretName: tanzu-image-registry
+  pitr:
+    type: Timestamp
+    timestamp: "2023-05-25T19:22:15Z"
+```
 
 ## <a id="troubleshoot"></a>  Troubleshoot Backup and Restore
 
