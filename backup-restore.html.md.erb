@@ -193,6 +193,33 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
     `MySQLBackupSchedule` resource for an existing MySQL instance,
     you see backups being generated and uploaded to the external blobstore.
 
+### <a id="collect-binary-logs"></a>  Extending MySQLBackupSchedule to Collect Binary Logs for Better Recovery
+
+In order to minimize Recovery Point Objective (RPO), users need to restore transactions after a full backup. To accomplish
+this, the MySQLBackupSchedule can be configured to save binary logs to the same blob store as full backups.
+
+To enable binary log collection, users must set the `spec.binaryLogCollection` fields in the MySQLBackupSchedule. For more information, 
+see [MySQLBackupSchedule Property Reference](property-reference-backup-restore.html#backupschedule).
+
+For example, the MySQLBackupSchedule can be configured to enable binary log collection every 5 minutes as follows:
+```
+binaryLogCollection:
+  enabled: true
+  flushInterval: 5m
+```
+
+To improve Recovery Time Objective (RTO), you can configure the flush interval to be shorter so that binary logs are
+flushed and uploaded to the blobstore more frequently. To review all the options, see the 
+[MySQLBackupSchedule Property Reference](property-reference-backup-restore.html.md.erb#backupschedule)
+
+<p class="note"><strong>Note:</strong>If binary logs are purged or rotated before they can be collected, point-in-time recovery will not successfully restore all the desired data.</p>
+
+The binary logs will be collected and uploaded the blobstore in a separate Kubernetes deployment named
+`<SCHEDULE>-binlog-collector` where `SCHEDULE` is the name of the MySQLBackupSchedule.
+
+In order to configure resources for the container that is collecting and upload binary logs, set the resource
+requirements with `spec.binaryLogCollection.resources`.
+
 ### <a id="name-and-location"></a>  Name and Location for Backup Artifacts
 
 
@@ -212,6 +239,18 @@ path is `my-backups/`, and a backup was taken on Thursday, December 10, 2020 at 
 * The MySQLBackup resource on the Kubernetes cluster is named `mysqlbackupschedule-sample-1607633463`
 * The backup artifact in the external blobstore is named `20201210T205103-kzw54l-backup.xb`
 * The path to the artifact is `my-backups/mysql-sample-instance-bf5398d1-c0fb-4459-a024-559e9855a2cd/backups/2020/12/10/`.
+
+If binary log collection is enabled, then binary logs will be stored in a subfolder structure
+`CUSTOM-PATH / mysql-<instance-name>-<instance-uuid> / binlogs`.
+
+The binary logs are named as `binlog_<timestamp>`, where `timestamp` is the Unix time of the first transaction in the binary log.
+The GTID of the transactions associated with this binary log are stored in a blob named `gtid_binlog_<timestamp>`.
+
+For example, using the same instance mentioned above, if the MySQL database has flushed logs and there is a binary log
+whose first transaction occurs Unix timestamp `1607633463`, then:
+* The name of the binary log is `binlog_1607633463`
+* The path to the binary log is `my-backups/mysql-sample-instance-bf5398d1-c0fb-4459-a024-559e9855a2cd/binlogs/binlog_1607633463`.
+* The path to the GTID blob is `my-backups/mysql-sample-instance-bf5398d1-c0fb-4459-a024-559e9855a2cd/binlogs/gtid_binlog_1607633463`.
 
 ### <a id="on-demand"></a> Perform an On-Demand Backup
 
