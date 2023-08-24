@@ -195,33 +195,29 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
 ### <a id="collect-binary-logs"></a>  Extending MySQLBackupSchedule to Collect Binary Logs for Better Recovery
 
-In order to minimize Recovery Point Objective (RPO), users need to restore transactions after a full backup. To accomplish
-this, the MySQLBackupSchedule can be configured to save binary logs to the same blob store as full backups.
+To minimize Recovery Point Objective (RPO), restore transactions after a full backup. To accomplish this, configure MySQLBackupSchedule to save binary logs as full backups in the same blob store.
 
-To enable binary log collection, users must set the `spec.binaryLogCollection` fields in the MySQLBackupSchedule. For more information, 
-see [MySQLBackupSchedule Property Reference](property-reference-backup-restore.html#backupschedule).
+To enable binary log collection, set the `spec.binaryLogCollection` fields in the MySQLBackupSchedule. For more information, see [MySQLBackupSchedule Property Reference](property-reference-backup-restore.html#backupschedule).
 
-For example, the MySQLBackupSchedule can be configured to enable binary log collection every 5 minutes as follows:
+For example, you can configure `MySQLBackupSchedule` to enable binary log collection every five minutes as follows:
 ```
 binaryLogCollection:
   enabled: true
   flushInterval: 5m
 ```
 
-To improve Recovery Time Objective (RTO), you can configure the flush interval to be shorter so that binary logs are
-flushed and uploaded to the blobstore more frequently. To review all the options, see the 
-[MySQLBackupSchedule Property Reference](property-reference-backup-restore.html.md.erb#backupschedule)
+To improve Recovery Time Objective (RTO), configure the flush interval to be shorter so that binary logs are flushed and uploaded to the blobstore more frequently. To review all the options, see the 
+[MySQLBackupSchedule Property Reference](property-reference-backup-restore.html.md.erb#backupschedule).
 
-<p class="note"><strong>Note:</strong>If binary logs are purged or rotated before they can be collected, point-in-time recovery will not successfully restore all the desired data.</p>
+<p class="note"><strong>Note:</strong> If binary logs are purged or rotated before they can be collected, point-in-time recovery does not restore all the desired data successfully .</p>
 
-The binary logs will be collected and uploaded the blobstore in a separate Kubernetes deployment named
-`<SCHEDULE>-binlog-collector` where `SCHEDULE` is the name of the MySQLBackupSchedule.
+The binary logs are collected and uploaded to the blobstore in a separate Kubernetes deployment named
+`<SCHEDULE>-binlog-collector` where `SCHEDULE` is the name of the `MySQLBackupSchedule`.
 
-In order to configure resources for the container that is collecting and upload binary logs, set the resource
+To configure resources for the container that is collecting and uploading the binary logs, set the resource
 requirements with `spec.binaryLogCollection.resources`.
 
 ### <a id="name-and-location"></a>  Name and Location for Backup Artifacts
-
 
 MySQLBackup resources that are automatically generated as a result of a MySQLBackupSchedule are named
 `SCHEDULE-NAME-TIMESTAMP`.
@@ -240,14 +236,11 @@ path is `my-backups/`, and a backup was taken on Thursday, December 10, 2020 at 
 * The backup artifact in the external blobstore is named `20201210T205103-kzw54l-backup.xb`
 * The path to the artifact is `my-backups/mysql-sample-instance-bf5398d1-c0fb-4459-a024-559e9855a2cd/backups/2020/12/10/`.
 
-If binary log collection is enabled, then binary logs will be stored in a subfolder structure
-`CUSTOM-PATH / mysql-<instance-name>-<instance-uuid> / binlogs`.
+If you enable binary log collection, then binary logs are stored in a subfolder structure `CUSTOM-PATH / mysql-<instance-name>-<instance-uuid> / binlogs`.
 
-The binary logs are named as `binlog_<timestamp>`, where `timestamp` is the Unix time of the first transaction in the binary log.
-The GTID of the transactions associated with this binary log are stored in a blob named `gtid_binlog_<timestamp>`.
+The binary logs are named as `binlog_<timestamp>`, where `timestamp` is the Unix time of the first transaction in the binary log. The Global Transaction Identifier (GTID) of the transactions associated with this binary log are stored in a blob named `gtid_binlog_<timestamp>`.
 
-For example, using the same instance mentioned above, if the MySQL database has flushed logs and there is a binary log
-whose first transaction occurs Unix timestamp `1607633463`, then:
+For example, if you use the same `sample-instance`, if the MySQL database has flushed logs, and if there is a binary log whose first transaction occurs with Unix timestamp `1607633463`, then:
 * The name of the binary log is `binlog_1607633463`
 * The path to the binary log is `my-backups/mysql-sample-instance-bf5398d1-c0fb-4459-a024-559e9855a2cd/binlogs/binlog_1607633463`.
 * The path to the GTID blob is `my-backups/mysql-sample-instance-bf5398d1-c0fb-4459-a024-559e9855a2cd/binlogs/gtid_binlog_1607633463`.
@@ -400,7 +393,7 @@ To delete a backup:
 
 ## <a id="restore"></a> Restore
 
-This section discusses three kinds of restore:
+This section discusses three kinds of restores:
 
 + [Restore from a Backup](#restore-from-backup)
 + [Restore a Backup to a Different Namespace or Kubernetes Cluster](#restore-to-different)
@@ -574,24 +567,23 @@ BackupLocation in the target namespace:
 
 ### <a id="point-in-time"></a> Restoring to a Point in Time Using Binary Logs
 
-In order to restore a backup along with binary logs, binary log collection must first be enabled. Review the [documentation](#collect-binary-logs) to enable binary log connection.
+To restore a backup along with binary logs, you must first enable binary log collection. Review the [documentation](#collect-binary-logs) to enable binary log connection.
 
 To reduce Recovery Time Objective (RTO), restoring to a point in time first restores using the full backup right before the time of recovery and then applying binary logs on top of it.
 
-There are two ways to restore using binary logs using the field `spec.pitr.type` in a MySQLRestore object:
-* `Timestamp`: The recovery process will restore binary logs until the timestamp is reached.
-* `Latest`: The recovery process will restore all the binary logs available in the blobstore.
+You can use the field `spec.pitr.type` in a MySQLRestore object and restore backups to a point in time using binary logs in two ways:
+* `Timestamp`: The recovery process restores the binary logs until the required timestamp is reached.
+* `Latest`: The recovery process restores all the binary logs available in the blobstore.
 
 There are two ways to provide the backup artifact:
-* By providing the name of the MySQLBackup object
-* By providing the name and UID of the MySQL object and allow the operator to find the latest MySQLBackup object associated with the MySQL instance. If a recovery timestamp is provided, the operator will look for the latest MySQLBackup before the timestamp.
+* By providing the name of the MySQLBackup object.
+* By providing the name and UID of the MySQL object and by allowing the operator to find the latest MySQLBackup object associated with the MySQL instance. If a recovery timestamp is provided, the operator looks for the latest MySQLBackup before the timestamp.
 
-To review all the options, see the [MySQLRestore Property Reference](property-reference-backup-restore.html.md.erb#restore)
+To review all the options, see the [MySQLRestore Property Reference](property-reference-backup-restore.html.md.erb#restore).
 
 Some examples:
 
-If the most recent backup named `backup-sample` was two days ago and a user wishes to create a new MySQL instance with
-all the latest data from a source instance, then the user should create a MySQLRestore like:
+- If the most recent backup named `backup-sample` is of two days before and you wish to create a new MySQL instance with all the latest data from a source instance, then the you can create a MySQLRestore as follows:
 ```
 apiVersion: with.sql.tanzu.vmware.com/v1
 kind: MySQLRestore
@@ -609,8 +601,7 @@ spec:
     type: Latest
 ```
 
-If the most recent backup named `backup-sample` was two days ago and there was a specific transaction that was undesired,
-then the user must identify the timestamp of the transaction and provide it in the MySQLRestore.
+- If the most recent backup named `backup-sample` is of two days before and there is a specific transaction that is undesired, then you must identify the timestamp of the transaction and provide it in the MySQLRestore as follows:
 ```
 apiVersion: with.sql.tanzu.vmware.com/v1
 kind: MySQLRestore
@@ -629,8 +620,8 @@ spec:
     timestamp: "2023-05-25T19:22:15Z"
 ```
 
-To avoid the work of finding the latest MySQLBackup before a specific timestamp, a user can specify the identity of the source MySQL instance
-with `spec.searchForBackup` to allow the operator to find the appropriate MySQLBackup.
+To avoid the work of finding the latest MySQLBackup before a specific timestamp, you can specify the identity of the source MySQL instance
+with `spec.searchForBackup` to allow the operator to find the appropriate MySQLBackup as follows:
 ```
 apiVersion: with.sql.tanzu.vmware.com/v1
 kind: MySQLRestore

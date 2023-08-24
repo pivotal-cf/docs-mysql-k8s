@@ -355,7 +355,7 @@ The table below explains the properties that can be set for the MySQLBackupSched
 <td>spec.binaryLogCollection.flushInterval</td>
    <td>duration</td>
    <td><code>5m</code></td>
-   <td>MySQL binary logs will be flushed based on this interval.</td>
+   <td>MySQL binary logs are flushed based on this interval.</td>
    <td><code>6h</code></td>
    <td>No</td>
 </tr>
@@ -518,7 +518,7 @@ The table below explains the properties that can be set for the MySQLRestore res
    <td>spec.pitr.type</td>
    <td>String</td>
    <td><em>n/a</em></td>
-   <td>Type specifies the mode of recovery. `Latest` means all available binary logs after the full backup will be applied. `Timestamp` will restore all available binary logs until the specified timestamp after the full backup.</td>
+   <td>Type specifies the mode of recovery. `Latest` means all available binary logs after the full backup are applied. `Timestamp` restores all the available binary logs until the specified timestamp after the full backup.</td>
    <td>Latest</td>
    <td>No</td>
 </tr>
@@ -526,7 +526,7 @@ The table below explains the properties that can be set for the MySQLRestore res
    <td>spec.pitr.timestamp</td>
    <td>String (Timestamp)</td>
    <td><em>n/a</em></td>
-   <td>This `Timestamp` will be used to restore all available binary logs until the specified timestamp after the full backup.</td>
+   <td>This `Timestamp` is used to restore all the available binary logs until the specified timestamp after the full backup.</td>
    <td>"2023-05-25T19:22:15Z"</td>
    <td>No</td>
 </tr>
@@ -534,7 +534,7 @@ The table below explains the properties that can be set for the MySQLRestore res
    <td>spec.searchBackupLocation.instanceName</td>
    <td>String</td>
    <td><em>n/a</em></td>
-   <td>InstanceName will be used to find backups for a MySQL instance with this name.</td>
+   <td>InstanceName is used to find backups for a MySQL instance with this name.</td>
    <td>mysql-instance</td>
    <td>No</td>
 </tr>
