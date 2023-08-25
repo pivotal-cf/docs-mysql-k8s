@@ -195,9 +195,9 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
 ### <a id="collect-binary-logs"></a>  Extending MySQLBackupSchedule to Collect Binary Logs for Better Recovery
 
-To minimize Recovery Point Objective (RPO), restore transactions after a full backup. To accomplish this, configure MySQLBackupSchedule to save binary logs as full backups in the same blob store.
+To minimize Recovery Point Objective (RPO), restore transactions after a full backup. To accomplish this, configure MySQLBackupSchedule to save binary logs of the MySQL instance as full backups in the same blob store where the backups of the MySQL instance are stored.
 
-To enable binary log collection, set the `spec.binaryLogCollection` fields in the MySQLBackupSchedule. For more information, see [MySQLBackupSchedule Property Reference](property-reference-backup-restore.html#backupschedule).
+To enable binary log collection, set the `spec.binaryLogCollection` fields (`spec.binaryLogCollection.enabled`, `spec.binaryLogCollection.flushInterval`, and `spec.binaryLogCollection.resources`) in the MySQLBackupSchedule. For more information, see [MySQLBackupSchedule Property Reference](property-reference-backup-restore.html#backupschedule).
 
 For example, you can configure `MySQLBackupSchedule` to enable binary log collection every five minutes as follows:
 ```
@@ -569,7 +569,7 @@ BackupLocation in the target namespace:
 
 To restore a backup along with binary logs, you must first enable binary log collection. Review the [documentation](#collect-binary-logs) to enable binary log connection.
 
-To reduce Recovery Time Objective (RTO), restoring to a point in time first restores using the full backup right before the time of recovery and then applying binary logs on top of it.
+To speed up application recovery, you can reduce Recovery Time Objective (RTO). Thereby, you can restore the MySQL instance to a point in time first by using the full backup right before the time of recovery and recover the binary logs as well.
 
 You can use the field `spec.pitr.type` in a MySQLRestore object and restore backups to a point in time using binary logs in two ways:
 * `Timestamp`: The recovery process restores the binary logs until the required timestamp is reached.
