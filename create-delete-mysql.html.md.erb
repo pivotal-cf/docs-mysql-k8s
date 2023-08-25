@@ -28,13 +28,13 @@ To access the templates:
 
 1. Log in to [<%= vars.product_network %>](https://network.pivotal.io) and visit the [VMware MySQL Operator](https://network.pivotal.io/products/tanzu-mysql-for-kubernetes/) product page.
 
-1. Select **VMware SQL with MySQL for Kubernetes v1.7.1** and download the .tgz archive file to your local machine.<br/>
+1. Select **VMware SQL with MySQL for Kubernetes v1.8.0** and download the .tgz archive file to your local machine.<br/>
    
    <p class="note">
        <strong>Note:</strong> You do not need to download the <b>Artifact References</b> from the VMware SQL with MySQL for Kubernetes product page.
     </p>
 
-1. Expand the downloaded .tgz file. Open the directory `mysql-for-kubernetes-1.7.1`. The templates are located in the `samples` subdirectory.
+1. Expand the downloaded .tgz file. Open the directory `mysql-for-kubernetes-1.8.0`. The templates are located in the `samples` subdirectory.
 
 The templates include the following:
 
@@ -70,15 +70,15 @@ The command displays:
 
 ```
 NAME           DB VERSION
-mysql-8.0.27   8.0.27
 mysql-8.0.28   8.0.28
 mysql-8.0.29   8.0.29
 mysql-8.0.31   8.0.31
-mysql-latest   8.0.31
+mysql-8.0.32   8.0.32
+mysql-latest   8.0.32
 ```
 
 where:
-- `NAME` denotes the VMware MySQL version. The special VMware MySQL version named `mysql-latest` runs the latest Operator-supported MySQL version (for example, in 1.7.1 that is 8.0.31). It also configures the instance to automatically upgrade its MySQL version whenever any future Operator upgrades add support for newer MySQL versions. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
+- `NAME` denotes the VMware MySQL version. The special VMware MySQL version named `mysql-latest` runs the latest Operator-supported MySQL version (for example, in 1.8.0 that is 8.0.32). It also configures the instance to automatically upgrade its MySQL version whenever any future Operator upgrades add support for newer MySQL versions. For more details see [Property Reference for MySQL Resource](property-reference-mysql.html#spec).
 - `DB VERSION` displays the Percona MySQL version an instance runs when that VMware MySQL version is named in the instance's spec.
 
 Note which value in the `DB VERSION` column you wish to deploy with your instance, if different than the default. 
@@ -132,7 +132,7 @@ To create a MySQL instance:
 4. Create a copy of the `mysql.yaml` file and give it a unique name. For example:
 
     ``` 
-    cp ~/Downloads/mysql-for-kubernetes-1.7.1/samples/mysql.yaml testdb.yaml
+    cp ~/Downloads/mysql-for-kubernetes-1.8.0/samples/mysql.yaml testdb.yaml
     ``` 
 
 5. Edit the file and customize the instance according to your requirements. 

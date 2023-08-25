@@ -14,6 +14,8 @@ Before accessing a MySQL instance, you must have:
 * The Kubernetes Command Line Interface (kubectl) installed.
 For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/tasks/tools/install-kubectl/).
 
+* The MySQL 8.0 client installed
+
 ## <a id='verify-settings'></a>  (Optional) Verify MySQL Instance Settings
 
 To see all MySQL instance settings configured:
@@ -21,7 +23,7 @@ To see all MySQL instance settings configured:
 1. Access the MySQL container.
 
     ```
-    kubectl -n DEVELOPMENT-NAMESPACE exec --stdin --tty pod/INSTANCE-NAME-0 -c mysql -- /bin/bash
+    kubectl -n DEVELOPMENT-NAMESPACE exec -it pod/INSTANCE-NAME-0 -c mysql -- bash
     ```
     In this command, replace:
     * `DEVELOPMENT-NAMESPACE` with the namespace of the MySQL instance
@@ -30,15 +32,43 @@ To see all MySQL instance settings configured:
     For example:
 
     ``` 
-    kubectl -n my-namespace exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    kubectl -n my-namespace exec -it pod/mysql-sample-0 -c mysql -- bash
     ``` 
 
 1. Review the configuration files `/etc/mysql/conf.d/base.cnf` and `/etc/mysql/conf.d/autotune.cnf`.
 
-## <a id='server-login'></a>  Get Root Access to the MySQL Server
+## <a id='admin-login'></a> Get Admin Access to the MySQL Server
 
-Database administrative operations, such as creating users and databases, require connecting
-to MySQL as the root database user.
+The `mysql-admin` user has all privileges except `SHUTDOWN`, `SUPER`, `REPLICATION SLAVE`, and `REPLICATION CLIENT`. This user can connect from outside the container, so it can be used by external applications such as phpMyAdmin.
+
+Common uses for this user are:
+- managing additional users and databases beyond those created by default
+- accessing tables in other schemas like `performance_schema`
+
+For example, to connect to a single-node instance named `mysql-sample` with the user `mysql-admin`, open a connection to the database by port forwarding over 3306 in one session:
+
+```
+kubectl port-forward service/mysql-sample 3306
+```
+
+In another session, fetch the credentials for the `mysql-admin` user and connect over 127.0.0.1:
+
+```
+ADMIN_PASSWORD=$(kubectl get secret mysql-sample-admin-user-db-secret -o go-template='{{.data.password | base64decode }}')
+mysql -u mysql-admin -p$ADMIN_PASSWORD -h 127.0.0.1 -P 3306
+```
+
+> **Note** The secret name will be `<INSTANCE-NAME>-admin-user-db-secret`.
+
+## <a id='root-login'></a>  Get Root Access to the MySQL Server
+
+The `root` user has all privileges, including privileges omitted from the `mysql-admin` user.
+
+Common uses for this user:
+- enabling system variable changes at runtime
+- flushing binary logs
+- managing client connections
+
 Root account connections are only allowed from within the container running the database.
 Off-container root connections are not permitted.
 
@@ -48,22 +78,24 @@ To connect to the MySQL instance as the MySQL root user:
 (writable) Pod of the MySQL instance by running:
 
     ```
-    kubectl exec -it INSTANCE-NAME-0 -c mysql -- bash -c \
-          "mysql -B -s --user=root --password=\$(cat $MYSQL_ROOT_PASSWORD_FILE) \
-          --execute 'SELECT MEMBER_HOST FROM performance_schema.replication_group_members \
-          WHERE (MEMBER_ROLE=\"PRIMARY\")'"
+    kubectl exec pod/INSTANCE-NAME-0 -c mysql-sidecar -- \
+             mysqlsh --credential-store-helper=tanzumysql \
+             innodb-cluster-admin@localhost --sql \
+             --execute="select MEMBER_HOST from performance_schema.replication_group_members \
+             WHERE (MEMBER_ROLE=\"PRIMARY\")"
     ```
     Where `INSTANCE-NAME` is the name of the instance.
     <br /><br />
     For example:
 
     ``` 
-    kubectl exec -it mysql-sample-0 -c mysql -- bash -c \
-          "mysql -B -s --user=root --password=\$(cat $MYSQL_ROOT_PASSWORD_FILE) \
-          --execute 'SELECT MEMBER_HOST FROM performance_schema.replication_group_members \
-          WHERE (MEMBER_ROLE=\"PRIMARY\")'"
+    kubectl exec pod/mysql-sample-0 -c mysql-sidecar -- \
+         mysqlsh --credential-store-helper=tanzumysql \
+         innodb-cluster-admin@localhost --sql \
+         --execute="select MEMBER_HOST from performance_schema.replication_group_members \
+         WHERE (MEMBER_ROLE=\"PRIMARY\")"
 
-    mysql: [Warning] Using a password on the command line interface can be insecure.
+    MEMBER_HOST
     mysql-sample-1.mysql-sample-members.default.svc.cluster.local
     ``` 
 
@@ -74,7 +106,7 @@ To connect to the MySQL instance as the MySQL root user:
 1. Access the MySQL container by running:
 
     ```
-    kubectl exec --stdin --tty pod/POD-NAME -c mysql -- /bin/bash
+    kubectl exec -it pod/POD-NAME -c mysql -- bash
     ```
     Where `POD-NAME` is the name of the Pod: the MySQL instance name appended with an index of 0&ndash;2.
     If the MySQL instance is single-node, the index is 0.
@@ -82,14 +114,14 @@ To connect to the MySQL instance as the MySQL root user:
     For example:
 
     ``` 
-    kubectl exec --stdin --tty pod/mysql-sample-0 -c mysql -- /bin/bash
+    kubectl exec -it pod/mysql-sample-0 -c mysql -- bash
     mysql@mysql-sample-0:/$
     ``` 
 
 1. Log in to the MySQL server by running:
 
     ```
-    mysql -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
+    mysql -u root -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
     ```
 
 ## <a id='off-platform-access'></a>  Access the MySQL Server from an External IP Address
@@ -132,7 +164,7 @@ To access the MySQL server from an external IP address:
 1. Find the external IP address allocated for the service.
 
     ```
-    kubectl get service INSTANCE-NAME -o jsonpath={.status.loadBalancer.ingress[].ip}
+    kubectl get service INSTANCE-NAME -o jsonpath="{.status.loadBalancer.ingress[*]['ip', 'hostname']}"
     ```
     In this command, replace `INSTANCE-NAME` with the value of the `metadata.name` property for the MySQL instance.
     <br /><br />
