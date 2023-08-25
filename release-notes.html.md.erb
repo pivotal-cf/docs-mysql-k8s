@@ -82,7 +82,7 @@ The <%= vars.product_short %> releases support the components listed below:
 * The MySQL general log and slow query log are located in `/var/log/mysql` instead of `/var/lib/mysql`. They are disabled by default.
 
 ### <a id="19_resolved"></a> Resolved Issues
-* Users can reference the MySQL operator helm chart as a dependency in another chart.
+* You can reference a MySQL operator helm chart as a dependency in another chart.
 
 ### <a id="19_issues"></a> Known Issues
 
@@ -137,7 +137,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   * Persisting system variables with `SET PERSIST` or `SET PERSIST_ONLY`
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
   * Azure Blob Storage uses server-side encryption by default.
-* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
+* You cannot reference a MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-7-1"></a>  Version 1.7.1
 
@@ -184,7 +184,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
   * Azure Blob Storage uses server-side encryption by default.
-* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
+* You cannot reference a MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-7-0"></a>  Version 1.7.0
 
@@ -256,7 +256,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
   * Azure Blob Storage uses server-side encryption by default.
 * Upgrading the MySQL Operator using the Tanzu CLI will result in the instances being stuck in a `Pending` state. Users must complete the upgrade for each MySQL instance for the instances to reach a `Running` state.
-* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
+* You cannot reference a MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-6-2"></a>  Version 1.6.2
 
@@ -299,7 +299,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
   * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
-* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
+* You cannot reference a MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-6-1"></a>  Version 1.6.1
 
@@ -351,7 +351,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
-* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
+* You cannot reference a MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-6-0"></a>  Version 1.6.0 (RETRACTED)
 
