@@ -195,7 +195,9 @@ To set a schedule for automatic backups, create a MySQLBackupSchedule resource:
 
 ### <a id="collect-binary-logs"></a>  Extending MySQLBackupSchedule to Collect Binary Logs for Better Recovery
 
-To minimize Recovery Point Objective (RPO), restore transactions after a full backup. To accomplish this, configure MySQLBackupSchedule to save binary logs of the MySQL instance as full backups in the same blob store where the backups of the MySQL instance are stored.
+Recovery Point Objective (RPO) refers to how much data loss your application can tolerate. The smaller the RPO, the less data loss involved during an outage.
+
+To minimize RPO, restore transactions after a full backup. To accomplish this, configure MySQLBackupSchedule to save binary logs of the MySQL instance as full backups in the same blob store where the backups of the MySQL instance are stored.
 
 To enable binary log collection, set the `spec.binaryLogCollection` fields (`spec.binaryLogCollection.enabled`, `spec.binaryLogCollection.flushInterval`, and `spec.binaryLogCollection.resources`) in the MySQLBackupSchedule. For more information, see [MySQLBackupSchedule Property Reference](property-reference-backup-restore.html#backupschedule).
 
