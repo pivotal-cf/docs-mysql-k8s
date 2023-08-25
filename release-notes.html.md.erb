@@ -77,7 +77,7 @@ The <%= vars.product_short %> releases support the components listed below:
 ### <a id="19_features"></a> Features
 * You can now customize MySQL server parameters using a ConfigMap. This release introduces a new field in the MySQL custom resource definition, `spec.customConfig.name`. For details, refer to [Customizing the MySQL Server](./configure-mysql-server.html) and [customConfig](./property-reference-mysql.html#customconfig).
 * The backup storage artifact path is changed from `yyyy/mm/dd/` to `mysql-<InstanceName>-<InstanceUUID>/backups/yyyy/mm/dd/`. The artifact itself continues to be named `<DATETIME>-<RANDOM_STRING>-backup.xb`. Refer to [Name and Location for Backup Artifacts](backup-restore.html#name-and-location).
-* You can provide a certificate of authority for backups stored in Azure by using custom TLS certificates with the new field `spec.storage.azure.caBundle`. For more details, refer to [MySQLBackupLocation Property Reference](./property-reference-backup-restore.html).
+* If you have configured an Azure blob service with a custom server certificate, you can now provide a certificate authority by using the field `spec.storage.azure.caBundle` in a MySQLBackupLocation object. For more details, refer to [MySQLBackupLocation Property Reference](./property-reference-backup-restore.html).
 
 ### <a id="19_changes"></a> Changes
 * The MySQL general log and slow query log are located in `/var/log/mysql` instead of `/var/lib/mysql`. They are disabled by default.
