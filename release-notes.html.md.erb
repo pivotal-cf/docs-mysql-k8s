@@ -74,6 +74,9 @@ The <%= vars.product_short %> releases support the components listed below:
 
 ### <a id="19_supported_platforms"></a> Supported Platforms
 
+### <a id="19_upgrades"></a> Upgrades
+* VMware SQL with MySQL for Kubernetes is intended to be upgraded from version 1.8.0.
+
 ### <a id="19_features"></a> Features
 * Users can now customize MySQL server parameters using a ConfigMap. This release introduces a new field in the MySQL custom resource definition, `spec.customConfig.name`. For details, refer to [Customizing the MySQL Server](./configure-mysql-server.html) and [customConfig](./property-reference-mysql.html#customconfig).
 * The backup storage artifact path is changed from `yyyy/mm/dd/` to `mysql-<InstanceName>-<InstanceUUID>/backups/yyyy/mm/dd/`. The artifact itself continues to be named `<DATETIME>-<RANDOM_STRING>-backup.xb`. Refer to [Name and Location for Backup Artifacts](backup-restore.html#name-and-location).
