@@ -54,14 +54,15 @@ The <%= vars.product_short %> releases support the components listed below:
   </tr>
   <tr>
     <td>1.0.0</td>
-    <td>8.0.22–13</td>
-    <td>8.0.23–16</td>
+    <td>8.0.22-13</td>
+    <td>8.0.23-16</td>
   </tr>
 </table>
 
 <p class="note">
      <strong>IMPORTANT:</strong> VMware does not support deployments that have been modified by adding layers to the packaged Docker images, or deployments that reference images other than the VMware MySQL Operator. VMware does not support changing the contents of the deployed containers and pods in any way.
  </p>
+
 
 ## <a id="1-7-1"></a>  Version 1.7.1
 
@@ -108,6 +109,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
   * Azure Blob Storage uses server-side encryption by default.
+* You cannot reference a MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-7-0"></a>  Version 1.7.0
 
@@ -179,7 +181,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
   * Azure Blob Storage uses server-side encryption by default.
 * Upgrading the MySQL Operator using the Tanzu CLI will result in the instances being stuck in a `Pending` state. Users must complete the upgrade for each MySQL instance for the instances to reach a `Running` state.
-
+* You cannot reference a MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-6-2"></a>  Version 1.6.2
 
@@ -222,6 +224,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
   * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
   * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
+* Users cannot reference the MySQL operator helm chart as a dependency in another chart.
 
 ## <a id="1-6-1"></a>  Version 1.6.1
 
@@ -274,6 +277,7 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
    * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
    * Configuring schemas and users for an application.
 * Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
+* You cannot reference a MySQL operator helm chart as a dependency in another chart.
 
 
 ## <a id="1-6-0"></a>  Version 1.6.0 (RETRACTED)
