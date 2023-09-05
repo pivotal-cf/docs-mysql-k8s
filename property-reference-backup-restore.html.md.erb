@@ -360,6 +360,14 @@ The table below explains the properties that can be set for the MySQLBackupSched
    <td>No</td>
 </tr>
 <tr>
+<td>spec.binaryLogCollection.flushInterval</td>
+   <td>duration</td>
+   <td><code>5m</code></td>
+   <td>MySQL binary logs are flushed based on this interval.</td>
+   <td><code>6h</code></td>
+   <td>No</td>
+</tr>
+<tr>
 <td>spec.binaryLogCollection.resources</td>
    <td>ResourceRequirements</td>
    <td><em>n/a</em></td>
@@ -393,6 +401,7 @@ spec:
   schedule: "@daily"
   binaryLogCollection:
     enabled: true
+    flushInterval: 5m
     resources:
       limits:
         cpu: 100m
@@ -511,6 +520,38 @@ The table below explains the properties that can be set for the MySQLRestore res
    <td><em>n/a</em></td>
    <td>The name of the secret used to restore the backup pulled from the instance spec. MySQLRestore will default to use the imagePullSecretName that is configured in the helm chart, when the user does not provide it.</td>
    <td>tanzu-image-registry</td>
+   <td>No</td>
+</tr>
+<tr>
+   <td>spec.pitr.type</td>
+   <td>String</td>
+   <td><em>n/a</em></td>
+   <td>Type specifies the mode of recovery. `Latest` means all available binary logs after the full backup are applied. `Timestamp` restores all the available binary logs until the specified timestamp after the full backup.</td>
+   <td>Latest</td>
+   <td>No</td>
+</tr>
+<tr>
+   <td>spec.pitr.timestamp</td>
+   <td>String (Timestamp)</td>
+   <td><em>n/a</em></td>
+   <td>This `Timestamp` is used to restore all the available binary logs until the specified timestamp after the full backup.</td>
+   <td>"2023-05-25T19:22:15Z"</td>
+   <td>No</td>
+</tr>
+<tr>
+   <td>spec.searchBackupLocation.instanceName</td>
+   <td>String</td>
+   <td><em>n/a</em></td>
+   <td>InstanceName is used to find backups for a MySQL instance with this name.</td>
+   <td>mysql-instance</td>
+   <td>No</td>
+</tr>
+<tr>
+   <td>spec.searchBackupLocation.instanceUid</td>
+   <td>String</td>
+   <td><em>n/a</em></td>
+   <td>InstanceUid will be used to find backups for a MySQL instance with this uid</td>
+   <td>4e1677b5-9b9a-4b2a-bd90-9799441a145f</td>
    <td>No</td>
 </tr>
 </table>
