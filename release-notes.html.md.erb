@@ -91,8 +91,8 @@ Specifically, this version of VMware SQL with MySQL for Kubernetes is tested on 
 
 Additional Kubernetes environments, such as Minikube, can be used for testing or demonstration purposes.
 
-### <a id="19_upgrades"></a> Upgrades
-* Upgrade VMware SQL with MySQL for Kubernetes from version 1.8.0 to 1.9.0.
+### <a id="19_upgrades"></a> Upgrading to 1.9.0
+* VMware SQL with MySQL for Kubernetes supports upgrading to 1.9.0 from 1.8.x.
 
 ### <a id="19_features"></a> Features
 * You can now customize MySQL server parameters using a ConfigMap. This release introduces a new field in the MySQL custom resource definition, `spec.customConfig.name`. For details, refer to [Customizing the MySQL Server](./configure-mysql-server.html) and [customConfig](./property-reference-mysql.html#customconfig).
@@ -109,8 +109,19 @@ Additional Kubernetes environments, such as Minikube, can be used for testing or
 * You can reference a MySQL operator helm chart as a dependency in another chart.
 
 ### <a id="19_issues"></a> Known Issues
+* **S3 backups cannot exceed 50 GB**: AWS limits the multipart upload to 10,000 parts per upload. The VMware MySQL Operator uses the default part size of 5MB, which results in an upper limit of 50 GB for the full backup. For more details, see [Amazon S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html).
+* OpenShift clusters running MySQL version 8.0.29 or lower may not successfully upgrade to MySQL version 8.0.31 due to a crash that can occur during the upgrade process. Users on OpenShift should either use MySQL version 8.0.31+, or use a backup to restore into a new instance running MySQL version 8.0.31+.
 
 ### <a id="19_limits"></a> Limitations
+* VMware MySQL metrics are exposed to a metrics collector that is currently installed inside the Kubernetes cluster.
+* Backups are not supported for Google Cloud Storage (GCS) in its S3-compatibility mode.
+* To rotate MySQL system account passwords, you must manually restart the pods. For details, see [Rotating MySQL Credentials](./rotating-credentials.html).
+* TLS is required for external connections to the database. There is no supported option to remove this requirement.
+* Some common operations require an administrator to run `kubectl exec` to access a pod. Some examples are:
+  * Checking for an HA instance that is not tolerant to additional members leaving the replication group.
+  * Persisting system variables with `SET PERSIST` or `SET PERSIST_ONLY`
+* Backups are unencrypted. Enable S3 server-side encryption and ensure that the MySQLBackupLocation object is configured with a secure endpoint (`spec.endpoint` should begin with `https://`). For more information about S3 server-side encryption, see the [AWS documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
+  * Azure Blob Storage uses server-side encryption by default.
 
 ## <a id="1-8-0"></a>  Version 1.8.0
 
