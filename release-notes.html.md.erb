@@ -12,16 +12,17 @@ These are the release notes for <%= vars.product_full %>.
 The <%= vars.product_short %> releases support the components listed below:
 
 <table border="1" class="nice">
+  
   <tr>
     <th><%= vars.product_short %> Version</th>
     <th>Percona Server</th>
     <th>Percona XtraBackup</th>
   </tr>
   <tr>
-  <td>1.9.0</td>
-  <td>8.0.29<br/>8.0.31<br/>8.0.32<br/>8.0.33</td>
-  <td>8.0.29<br/>8.0.31<br/>8.0.32<br/>8.0.33</td>
-</tr>
+    <td>1.9.0</td>
+    <td>8.0.28<br/>8.0.29<br/>8.0.31<br/>8.0.32</td>
+    <td>8.0.28<br/>8.0.29<br/>8.0.31<br/>8.0.32</td>
+  </tr>
   <tr>
     <td>1.8.0</td>
     <td>8.0.28<br/>8.0.29<br/>8.0.31<br/>8.0.32</td>
@@ -75,9 +76,20 @@ The <%= vars.product_short %> releases support the components listed below:
 
 ## <a id="1-9-0"></a>  Version 1.9.0
 
-**Release Date: TBD**
+**Release Date: September 6th, 2023**
 
 ### <a id="19_supported_platforms"></a> Supported Platforms
+
+VMware SQL with MySQL for Kubernetes is intended to be used with any Kubernetes-compliant platform that is version 1.21 or newer.
+
+Specifically, this version of VMware SQL with MySQL for Kubernetes is tested on the following platforms:
+- [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI)
+- [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKG)
+- Google Kubernetes Engine (GKE)
+- Amazon Elastic Kubernetes Service (EKS)
+- Red Hat OpenShift, version 4.10+
+
+Additional Kubernetes environments, such as Minikube, can be used for testing or demonstration purposes.
 
 ### <a id="19_upgrades"></a> Upgrades
 * Upgrade VMware SQL with MySQL for Kubernetes from version 1.8.0 to 1.9.0.
