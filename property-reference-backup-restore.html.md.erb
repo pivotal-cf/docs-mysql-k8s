@@ -44,6 +44,24 @@ The table below explains the properties that can be set for the MySQLBackupLocat
   <td><code>backuplocation-sample</code></td>
   <td>Yes</td>
 </tr>
+<tr>
+  <td>spec.retentionPolicy.type</td>
+  <td>String</td>        
+  <td>Days</td>
+  <td>The type of measure for retention duration, such as number of days.</td>
+  <td><code>Days</code></td>
+  <td>No</td>
+</tr>
+<tr>
+  <td>spec.retentionPolicy.days</td>
+  <td>integer</td>
+  <td><em>n/a</em></td>
+  <td>The minimum age in days of the oldest backup retained. There will be one backup of this age or older. When there are multiple backups older than this, taking a new backup will trigger deletion of all but one backup of the retention age.
+   An omitted or zero value indicates all backups should be retained (i.e. no deletion policy).
+  </td>
+  <td><code>21</code></td>
+  <td>No</td>
+</tr>
 </table>
 
 ### S3 configuration

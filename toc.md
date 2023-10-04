@@ -11,6 +11,7 @@
 * [Accessing Instances](./accessing.html)
 * [Configuring High Availability](./high-availability.html)
 * [Configuring MySQL Server](./configure-mysql-server.html)
+* [Configuring LDAP Authentication](configure-ldap-auth.html.md.erb)
 * [Monitoring Instances](./monitoring.html)
 * [Configuring TLS](./configure-tls.html)
 * [Rotating MySQL Credentials](./rotating-credentials.html)

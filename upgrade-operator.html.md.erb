@@ -52,8 +52,8 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     helm ls -A
     ```
     ```
-    NAME                NAMESPACE                           REVISION	UPDATED                             	STATUS  	CHART                              	  APP VERSION
-    my-mysql-operator   vmware-mysql-for-kubernetes-system	4       	2022-07-13 07:19:04.877537 -0700 PDT	deployed	vmware-sql-with-mysql-operator-1.7.1	1.7.1
+    NAME                NAMESPACE                           REVISION	UPDATED                             	STATUS  	CHART                                  APP VERSION
+    my-mysql-operator   vmware-mysql-for-kubernetes-system	4       	2022-07-13 07:19:04.877537 -0700 PDT	deployed	vmware-sql-with-mysql-operator-1.9.0   1.9.0
     ```
     
 1. Upgrade the Operator using:
@@ -119,7 +119,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     where:
       - `MY-REGISTRY` is your own image registry
       - `TARGET-REPOSITORY` is your target repository
-      - `TDS-VERSION` is the tag for the image bundle (e.g. `1.11.0`). Each VMware MySQL Operator release corresponds to a TDS package version. For instance, MySQL Operator version 1.9.0 is part of TDS version 1.11.0. Insert the correct version for your VMware MySQL Operator release.
+      - `TDS-VERSION` is the tag for the image bundle (e.g. `1.12.0`). Each VMware MySQL Operator release corresponds to a TDS package version. For instance, MySQL Operator version 1.10.0 is part of TDS version 1.12.0. Insert the correct version for your VMware MySQL Operator release.
 
 1. Find the package repository name of the VMware Tanzu Data Services package repository:
     ```
@@ -128,7 +128,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     ```
   NAMESPACE                NAME                 SOURCE                                                                                 STATUS
   data-services-operators  sql-data-services    (imgpkg)                                                                               Reconcile succeeded
-                                                registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.9.0
+                                                registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.11.0
   rabbitmq-operator        tanzu-rabbitmq-repo  (imgpkg)                                                                               Reconcile succeeded
                                                 registry.tanzu.vmware.com/p-rabbitmq-for-kubernetes/tanzu-rabbitmq-package-repo:1.5.1
     ```
@@ -146,13 +146,13 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
       - `PACKAGE-REPOSITORY-NAME` is the name listed for the installed package repository
       - `MY-REGISTRY` is your own image registry
       - `TARGET-REPOSITORY` is your target repository
-      - `TDS-VERSION` is the target version you'll like to upgrade to (e.g. `1.9.0`)
+      - `TDS-VERSION` is the target version you'll like to upgrade to (e.g. `1.12.0`)
       - `OPERATOR-NAMESPACE` is the namespace of the package repository
 
     For example:
     ```
     tanzu package repository update sql-data-services \
-         --url registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.11.0 \
+         --url registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.12.0 \
          -n data-services-operators
     ```
 
@@ -171,7 +171,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     ```
     NAMESPACE:               data-services-operators
     NAME:                    sql-data-services
-    SOURCE:                  (imgpkg) registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.11.0
+    SOURCE:                  (imgpkg) registry.tanzu.vmware.com/packages-for-vmware-tanzu-data-services/tds-packages:1.12.0
     STATUS:                  Reconcile succeeded
     CONDITIONS:              - type: ReconcileSucceeded
       status: "True"
@@ -200,6 +200,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     mysql-operator.with.sql.tanzu.vmware.com  1.7.1    2023-04-05 12:12:15 -0700 PDT
     mysql-operator.with.sql.tanzu.vmware.com  1.8.0    2023-06-05 08:22:43 -0700 PDT
     mysql-operator.with.sql.tanzu.vmware.com  1.9.0    2023-09-06 08:22:43 -0700 PDT
+    mysql-operator.with.sql.tanzu.vmware.com  1.10.0   2023-10-18 09:42:33 -0700 PDT
     ```
    
 1. List the installed packages.
@@ -215,7 +216,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
    ```
    ```
      NAME                   PACKAGE-NAME                              PACKAGE-VERSION  STATUS
-     vmware-mysql-operator  mysql-operator.with.sql.tanzu.vmware.com  1.8.0            Reconcile succeeded
+     vmware-mysql-operator  mysql-operator.with.sql.tanzu.vmware.com  1.9.0            Reconcile succeeded
    ```
 
 1. Update the MySQL Operator installed package to your desired version:
@@ -237,7 +238,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     ```
     tanzu package installed update vmware-mysql-operator \
       --package mysql-operator.with.sql.tanzu.vmware.com \
-      --version 1.9.0 \
+      --version 1.10.0 \
       -n data-services-operators
     ```
 
@@ -257,7 +258,7 @@ with the `--reset-values` flag. See [Helm Upgrade documentation](https://helm.sh
     NAMESPACE:          data-services-operators
     NAME:               vmware-mysql-operator
     PACKAGE-NAME:       mysql-operator.with.sql.tanzu.vmware.com
-    PACKAGE-VERSION:    1.9.0
+    PACKAGE-VERSION:    1.10.0
     STATUS:             Reconcile succeeded
     CONDITIONS:         - type: ReconcileSucceeded
       status: "True"
