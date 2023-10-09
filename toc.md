@@ -10,6 +10,7 @@
 * [Upgrading Instances](./upgrade-instance.html)
 * [Accessing Instances](./accessing.html)
 * [Configuring High Availability](./high-availability.html)
+* [Configuring MySQL Server](./configure-mysql-server.html)
 * [Monitoring Instances](./monitoring.html)
 * [Configuring TLS](./configure-tls.html)
 * [Rotating MySQL Credentials](./rotating-credentials.html)
