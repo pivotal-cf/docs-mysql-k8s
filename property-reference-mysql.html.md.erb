@@ -15,7 +15,7 @@ spec:
 
 #### Specify the MySQL Version
 #  mysqlVersion:
-#    name: mysql-8.0.32
+#    name: mysql-8.0.34
 
 #### Set the storage size for the database persistent storage volume
 #  storageSize: 1Gi
@@ -32,6 +32,14 @@ spec:
 #  tls:
 #    secret:
 #      name: mysql-tls-secret
+
+#### Set the name of the Secret used for LDAP CA
+#  trustedCertificates:
+#    ldap:
+#      name:
+
+### Set the policy to Retain or Delete so that PVCs are either saved or deleted when MySQL is deleted
+# persistentVolumeClaimPolicy: Delete
 
 #### Enable highly available cluster
 #  highAvailability:
@@ -204,6 +212,13 @@ The type of Service used to provide access to the MySQL database. Only `ClusterI
 The name of the Kubernetes secret containing the TLS certificate and private key used to support encrypted connections by clients. For more configuration details, see [Configuring TLS for MySQL Instances](configure-tls.html)<br />
 **Example**: mysql-tls-secret
 
+### trustedCertificates.ldap.name
+**Type**: string<br />
+**Optional**<br />
+**Default**: n/a<br />
+The name of the Kubernetes secret containing the certificate authority for an LDAP server. The secret must contain a key named `ca.crt` that contains a PEM formatted certificate.
+**Example**: ldap-ca-secret
+
 ### highAvailability.enabled
 **Type**: boolean<br />
 **Optional**<br />
@@ -212,7 +227,7 @@ Whether the instance is a high-availability cluster (not single-node). After bei
 **Example**: true
 
 ### highAvailability.members
-**Type**: int<br />
+**Type**: integer<br />
 **Optional**<br />
 **Default**: 3 when `highAvailability.enabled` is `true`<br />
 Total number of members in the HA cluster. Can be 3, 5, 7, or 9. A value of 1 would be a single instance. An even number creates the potential for a split-brain scenario, which must be avoided. For information about HA members, see [Change Number of Members in HA MySQL Instance](high-availability.html#configuring-ha).<br />

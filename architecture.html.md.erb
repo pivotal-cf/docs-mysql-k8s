@@ -119,7 +119,7 @@ kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
 NAME           READY   STATUS    AGE   OPERATOR VERSION    DB VERSION   UPDATE STATUS      USER ACTION
-mysql-sample           Pending   5s    1.7.0               8.0.28       NoUpdateRequired
+mysql-sample           Pending   5s    1.7.0               8.0.34       NoUpdateRequired
 ``` 
 
 
@@ -130,7 +130,7 @@ kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
 NAME           READY   STATUS    AGE   OPERATOR VERSION    DB VERSION   UPDATE STATUS      USER ACTION
-mysql-sample   true    Running   40s   1.7.0               8.0.28       NoUpdateRequired
+mysql-sample   true    Running   40s   1.7.0               8.0.34       NoUpdateRequired
 ``` 
 
 ### <a id="mysqlbackuplocation"></a>  MySQLBackupLocation
@@ -321,7 +321,7 @@ kubectl get mysqls.with.sql.tanzu.vmware.com
 ```
 ```
 NAME           READY   STATUS    AGE   OPERATOR VERSION     DB VERSION   UPDATE STATUS      USER ACTION
-mysql-sample   true    Running   25m   1.7.0                8.0.28       NoUpdateRequired
+mysql-sample   true    Running   25m   1.7.0                8.0.34       NoUpdateRequired
 ``` 
 
 ### <a id="mysqlversion"></a>  MySQLVersion
@@ -334,11 +334,11 @@ kubectl get mysqlversions.with.sql.tanzu.vmware.com
 ```
 ```
 NAME           DB VERSION
-mysql-8.0.28   8.0.28
 mysql-8.0.29   8.0.29
 mysql-8.0.31   8.0.31
 mysql-8.0.32   8.0.32
-mysql-latest   8.0.32
+mysql-8.0.34   8.0.34
+mysql-latest   8.0.34
 ```
 
 To create a MySQL database with version 8.0.29, define the MySQL custom resource similar to:

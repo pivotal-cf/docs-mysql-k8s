@@ -1,0 +1,161 @@
+---
+title: Configuring LDAP authentication for VMware SQL with MySQL for Kubernetes Instances
+owner: MySQL
+---
+
+This topic describes how to configure LDAP authentication for a VMware SQL with MySQL for Kubernetes instance.
+
+## <a id='overview'></a> Overview
+
+<%= vars.product_short %> can be configured to enable authentication plugins for LDAP (Lightweight Directory Access Protocol). See more documentation about the plugins from [Percona Documentation](https://docs.percona.com/percona-server/8.0/ldap-authentication.html).
+
+In order to enable one of the LDAP authentication plugins, provide the configuration options for the plugin in a ConfigMap. 
+
+## Create a ConfigMap
+
+An example ConfigMap that configures MySQL for an LDAP server that uses simple LDAP authentication could look like:
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ldap-config
+data:
+  my.cnf: |
+    [mysqld]
+    plugin-load-add=authentication_ldap_simple.so
+    loose_authentication_ldap_simple_server_host=<LDAP_HOSTNAME>
+    loose_authentication_ldap_simple_bind_base_dn=<LDAP_BASE_DISTINGUISHED_NAME>
+```
+
+where:
+- `LDAP_HOSTNAME` is the name of the LDAP server
+- `LDAP_BASE_DISTINGUISHED_NAME` is the base distinguished name for entries in the LDAP server
+
+You may already have a ConfigMap providing some other custom configuration for the database. In that case, update the existing ConfigMap with the necessary LDAP configuration.
+
+The ConfigMap must use the key `my.cnf`. For more details, refer to [Customizing the MySQL Server](./configure-mysql-server.html.md.erb).
+
+<p class="note">
+    <strong>Note</strong>: The database will NOT recognize the authentication_ldap_* variables until the plugin is loaded, which happens after database initialization. 
+The parameters use the prefix <code>loose_</code> so that the database will not fail to initialize.
+</p>
+
+If the LDAP server uses TLS, consider adding other system variables such as:
+```
+loose_authentication_ldap_simple_server_port=636
+loose_authentication_ldap_simple_ssl=ON
+```
+
+Review the other authentication plugin system variables listed in the [Percona Documentation](https://docs.percona.com/percona-server/8.0/ldap-system-variables.html).
+
+## Use ConfigMap with MySQL instance
+
+After the ConfigMap is applied, specify the name of the ConfigMap in the MySQL instance.
+
+```
+...
+   spec:
+     customConfig:
+       name: <CONFIG-MAP-NAME>
+```
+
+In this example above, we would use `ldap-config` as the name of the ConfigMap.
+
+### Verify the authentication plugin has been loaded.
+
+```
+kubectl exec -it pod/POD-NAME -c mysql -- bash
+```
+Where `POD-NAME` is the name of the Pod.
+
+```
+mysql -u root -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
+```
+
+```
+mysql> select * from mysql.plugin;
++----------------------------+-------------------------------+
+| name                       | dl                            |
++----------------------------+-------------------------------+
+| authentication_ldap_simple | authentication_ldap_simple.so |
+| binlog_utils_udf           | binlog_utils_udf.so           |
++----------------------------+-------------------------------+
+```
+
+## Configuring A Custom Certificate Authority for LDAP
+
+If the LDAP server is configured with a server certificate issued by a custom certificate authority, then the MySQL database
+must be provided the custom certificate to connect and authenticate users. 
+
+Create a Kubernetes secret where the data has a key named `ca.crt` with the base64 encoded PEM certificate.
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ldap-ca-certificate
+data:
+  ca.crt: <BASE64-ENCODED-PEM-CERTIFICATE>
+```
+
+After creating the Secret, specify the name of the Secret in the MySQL instance.
+```
+...
+   spec:
+     trustedCertificates:
+       ldap:
+         name: <SECRET-NAME>
+```
+
+In this example above, we would use `ldap-ca-certificate` as the name of the Secret.
+
+## Create a user for each LDAP entry
+
+1. Access the `mysql` container on the Kubernetes cluster:
+
+    ```
+    kubectl exec -it <POD_NAME> -c mysql -- bash
+    ```
+   where:
+
+    - `POD_NAME` is the name of the MySQL pod
+
+2. Log in as root in order to create objects as needed:
+
+    ```
+    mysql -u root -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
+    ```
+
+3. Create a user with an auth option.
+
+    ```
+    mysql> CREATE USER 'user'@'%' IDENTIFIED WITH authentication_ldap_simple AS 'auth_string';
+    ```
+   where:
+    - `user` is the name of the user to create
+    - `auth_string` is the auth string that describes the user
+
+   For example,
+    ```
+    mysql> CREATE USER 'user01'@'%' IDENTIFIED WITH authentication_ldap_simple AS 'cn=user01,ou=users,dc=example,dc=org';
+    ```
+   
+   This creates a MySQL user named `user01` using the LDAP simple authentication plugin with a unique entry for the LDAP user.
+   
+   For additional documentation, refer to the [CREATE USER documentation](https://dev.mysql.com/doc/refman/8.0/en/create-user.html).
+
+### Connecting with the LDAP user
+
+For users created with the LDAP simple authentication plugin, the client database connector must enable the `mysql_clear_password` plugin. 
+This is because the client will send the password to the server as cleartext. Since there is no password hashing or encryption to prevent the password from being observed, 
+a secure connection between the MySQL client and MySQL server is critical to avoid exposing the password.
+
+For the mysql client, you could verify simple LDAP authentication with:
+
+   ```
+   $ mysql -u user01 -pMY-LDAP-PASSWORD --enable-cleartext-plugin
+   ```
+   where `MY-LDAP-PASSWORD` is the LDAP password for the user `user01`
+
+For users created with the LDAP SASL authentication plugin, the client does not need to enable any plugins as the 
+communication between is based on SASL messages for secure transmission of credentials within the LDAP protocol.
