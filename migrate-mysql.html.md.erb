@@ -24,7 +24,7 @@ Before following the migration steps, you must:
   * The Cloud Foundry Command-Line Interface (cf CLI). See [Installing the cf CLI](https://docs.pivotal.io/application-service/2-10/cf-cli/install-go-cli.html). 
 * Have the correct credentials to access the TAS service instances you will be migrating. 
 * Review which schemas you wish to migrate. The default schema created for MySQL for VMs service instances is named `service_instance_db`. For details on schemas and databases to backup and restore, refer to [Create a Tanzu SQL for VMs Logical Backup](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-VMs/2.10/tanzu-mysql-vms/GUID-backup-mysqldump.html#create-a-tanzu-sql-for-vms-logical-backup-2).
-* Review and complete the prerequisites for [Creating and Deleting MySQL Instances in Kubernetes](https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.6/vmware-mysql-k8s/GUID-create-delete-mysql.html).
+* Review and complete the prerequisites for [Creating and Deleting MySQL Instances in Kubernetes](https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.10/vmware-mysql-k8s/create-delete-mysql.html).
 
 
 
@@ -118,7 +118,7 @@ Create the  MySQL instances. For details, refer to [Creating and Deleting MySQL 
     FLUSH PRIVILEGES;
     ```
     
-    For more information on creating a user for the associated database refer to [Create a Database and Privileged MySQL User for the App](https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.6/vmware-mysql-k8s/GUID-connecting-apps.html#create-a-database-and-privileged-mysql-user-for-the-app).
+    For more information on creating a user for the associated database refer to [Create a Database and Privileged MySQL User for the App](https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.10/vmware-mysql-k8s/connecting-apps.html#create-a-database-and-privileged-mysql-user-for-the-app).
     
 4. Use a mysql 8.0 client and ensure the MySQL server can be accessed, and you can connect with the newly created user. 
     
@@ -127,7 +127,7 @@ Create the  MySQL instances. For details, refer to [Creating and Deleting MySQL 
 
 There are several methods to connect to the MySQL server in order to load the backup:
 
-- Change the MySQL Kubernetes service to use an external IP. See [Access the MySQL Server from an External IP Address](https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.6/vmware-mysql-k8s/GUID-accessing.html#access-the-mysql-server-from-an-external-ip-address). Once the restore is done, remember to remove the external access.
+- Change the MySQL Kubernetes service to use an external IP. See [Access the MySQL Server from an External IP Address](https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.10/vmware-mysql-k8s/accessing.html#access-the-mysql-server-from-an-external-ip-address). Once the restore is done, remember to remove the external access.
 - [Use Port Forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) to access the MySQL pod from a local port.
 - Use `kubectl copy` to copy the backup onto a pod that has the `mysql` 8 client. This method also requires `kubectl exec` permissions to get a shell for running a container on that pod.
 - If the backup is too large to send over a local port through the Kubernetes API server or copy onto a pod, the backup could be stored on cloud storage and streamed  to `mysql` client.
