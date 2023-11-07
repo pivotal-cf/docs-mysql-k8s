@@ -19,7 +19,7 @@ The <%= vars.product_short %> releases support the components listed below:
     <th>Percona XtraBackup</th>
   </tr>
   <tr>
-    <td>1.10.0</td>
+    <td>1.10.0, 1.10.1</td>
     <td>8.0.29<br/>8.0.31<br/>8.0.32<br/>8.0.34</td>
     <td>8.0.29<br/>8.0.31<br/>8.0.32<br/>8.0.34</td>
   </tr>
@@ -78,6 +78,30 @@ The <%= vars.product_short %> releases support the components listed below:
 <p class="note">
      <strong>IMPORTANT:</strong> VMware does not support deployments that have been modified by adding layers to the packaged Docker images, or deployments that reference images other than the VMware MySQL Operator. VMware does not support changing the contents of the deployed containers and pods in any way.
  </p>
+
+## <a id="1-10-1"></a>  Version 1.10.1
+
+**Release Date: November 7th, 2023**
+
+### <a id="1_10_1_supported_platforms"></a> Supported Platforms
+
+VMware SQL with MySQL for Kubernetes is intended to be used with any Kubernetes-compliant platform that is version 1.21 or newer.
+
+Specifically, this version of VMware SQL with MySQL for Kubernetes is tested on the following platforms:
+- [VMware Tanzu Kubernetes Grid Integrated Edition](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid-Integrated-Edition/index.html) (TKGI)
+- [VMware Tanzu Kubernetes Grid](https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/index.html) (TKG)
+- Google Kubernetes Engine (GKE)
+- Amazon Elastic Kubernetes Service (EKS)
+- Red Hat OpenShift, version 4.10+
+
+Additional Kubernetes environments, such as Minikube, can be used for testing or demonstration purposes.
+
+### <a id="1_10_1_changes"></a> Changes
+This release addresses the following CVEs:
+
+* [gRPC-Go HTTP/2 Rapid Reset vulnerability](https://github.com/advisories/GHSA-m425-mq94-257g)
+* [CVE-2023-39325](https://avd.aquasec.com/nvd/2023/cve-2023-39325/)
+
 
 ## <a id="1-10-0"></a>  Version 1.10.0
 
