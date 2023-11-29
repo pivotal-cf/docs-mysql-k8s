@@ -76,8 +76,8 @@ Use the following steps to customize your MySQL server configuration:
     data:
       my.cnf: |
         [mysqld]
-        max_connections: 250
-        slow_query_log: "on"
+        max_connections=250
+        slow_query_log=on
     ```
 
    <p class="note">The ConfigMap must have the key `my.cnf`.</p>
