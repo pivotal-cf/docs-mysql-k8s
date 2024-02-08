@@ -10,7 +10,7 @@ template_variables:
 
   # VMware Tanzu Variables
 
-  product_full: VMware Tanzu™ SQL with MySQL for Kubernetes
+  product_full: VMware Tanzu SQL with MySQL for Kubernetes
   product_short: Tanzu MySQL for Kubernetes
 
   app_runtime_full: VMware Tanzu Application Service for VMs
