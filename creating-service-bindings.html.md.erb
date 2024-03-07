@@ -15,8 +15,8 @@ For more information on how to create or update TAP workloads, see [Working with
 ### <a id="tap_prereqs"></a> Prerequisites
 
 - TAP v1.0.0 has been installed. See [Installing Tanzu Application Platform](https://docs.vmware.com/en/Tanzu-Application-Platform/1.0/tap/GUID-overview.html) for instructions.
-- Tanzu MySQL Operator has been successfully installed on a Kubernetes cluster. See [Installing a MySQL Operator for instructions](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.3/tanzu-mysql-k8s/GUID-install-operator.html).
-- MySQL instance has been deployed. See [Deploying a MySQL Instance](https://docs.vmware.com/en/VMware-Tanzu-SQL-with-MySQL-for-Kubernetes/1.3/tanzu-mysql-k8s/GUID-create-delete-mysql.html) for instructions.
+- Tanzu MySQL Operator has been successfully installed on a Kubernetes cluster. See [Installing a MySQL Operator for instructions](install-operator.html.md.erb).
+- MySQL instance has been deployed. See [Deploying a MySQL Instance](create-delete-mysql.html.md.erb) for instructions.
 
 - TAP services-toolkit will need correct permissions to access MySQL instances. For this, you need a ClusterRole and ClusterRoleBinding that binds the role to `services-toolkit-controller-manager`  service account in `services-toolkit` namespace. Save the below contents in `mysql-service-binding-rbac.yaml`
 
