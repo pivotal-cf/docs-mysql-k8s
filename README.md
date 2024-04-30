@@ -10,9 +10,9 @@ Documentation for VMware SQL with MySQL for Kubernetes
 | Branch name | Use for… |
 |-------------| -------|
 | main      | the development branch for the doc, publishes to https://docs-pcf-staging.cfapps.io/tanzu-mysql-kubernetes/1-n |
-| 1.0      | v1.0 GA, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/1-0/  This app must be `cf push`-ed manually. No concourse jobs or CI as of 2021.04.15.| 
-| 0.2      | v0.2.x beta, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/0-2/|
-| 0.1      | v0.1.x beta, publishes to http://docs.pivotal.io/tanzu-mysql-kubernetes/0-1/|
+| 1.10      | v1.10 publishes to https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.10/vmware-mysql-k8s/index.html  | 
+| 1.9      | v1.9 publishes to https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.9/vmware-mysql-k8s/index.html|
+| 1.8      | v1.8 publishes to https://docs.vmware.com/en/VMware-SQL-with-MySQL-for-Kubernetes/1.8/vmware-mysql-k8s/index.html|
 
 
 ## Where is the book repository?
