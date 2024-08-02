@@ -12,7 +12,9 @@ template_variables:
 
   product_full: VMware Tanzu™ SQL with MySQL for Kubernetes
   product_short: Tanzu MySQL for Kubernetes
+  product_network: Broadcom Support
 
+  # Other variables
   app_runtime_full: VMware Tanzu Application Service for VMs
   app_runtime_abbr: TAS for VMs
 
@@ -30,8 +32,8 @@ template_variables:
 
   # Other variables
   tile_name: VMware Tanzu SQL &#91;MySQL for VMs&#93;
-  product_url: https://network.tanzu.vmware.com/
-  product_link: <div class="header-item"><a href="https://network.tanzu.vmware.com/products/tanzu-mysql-for-kubernetes/">VMware Tanzu for MySQL for Kubernetes</a> </div>
+  product_url: https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Tanzu%20for%20MySQL%20for%20Kubernetes
+  product_link: <div class="header-item"><a href="https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Tanzu%20for%20MySQL%20for%20Kubernetes">VMware Tanzu for MySQL for Kubernetes</a> </div>
   service_name: VMware Tanzu SQL &#91;MySQL for VMs&#93;
   service_name_article: VMware Tanzu SQL &#91;MySQL for VMs&#93;
   service_name_article_full: the VMware Tanzu SQL &#91;MySQL for VMs&#93; service
